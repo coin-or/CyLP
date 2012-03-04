@@ -1,0 +1,62 @@
+  1 June 1987:   mpc.src added.
+  6 May 1988:    GREENBEA, GREENBEB, AGG, AGG2, AGG3 added.
+  25 June 1988:  STOCFOR1,2 added
+  16 Jan. 1989:  STOCFOR3 added; bound and range information added to
+index file; MINOS 5.3 optimal values inserted.
+  23 Jan. 1989:  correction to bound-handling portion of STOCFOR3 source
+code.  This does not affect STOCFOR3 itself, but is relevant to other
+uses of this Fortran code.
+  6 April 1989: BLEND BOEING1 BOEING2 FINNIS PEROLD SC105 SC50A SC50B
+added.
+  27 June 1989: CYCLE KB2 LOTFI TUFF WOOD1P WOODW added.
+  30 Oct. 1989: BNL1 BNL2 D2Q06C DEGEN2 DEGEN3 added.
+  30 Nov. 1989: options -s and -S added to emps.c so you can request
+several problems at once and split them into files named by the
+problem name (in upper case with -S or in lower case with -s).  For
+use with these new options, the NAME line of several problems has now
+been modified so that the first word after "NAME" gives the name
+specified above for the problem.  Now all compressed MPS files have
+this property.  The problems whose NAME line was thus modified are
+BLEND, BOEING1, FINNIS, FORPLAN, PEROLD, PILOT, PILOTNOV, STANDGUB,
+STANDMPS, STOCFOR1, and STOCFOR2.
+  22 Jan. 1990: all material described here made available by
+anonymous ftp from research.att.com .
+  31 Jan. 1990: FIT1D, FIT1P, FIT2D, FIT2P added.
+  8 Feb. 1990: emps.c, emps.f modified to quietly ignore extra lines at
+the end of a compressed MPS file (e.g., those that mailers add).
+  15 Feb. 1990: added table of optimal values reported by Bob Bixby.
+  26 Feb. 1990: TRUSS added.
+  30 Apr. 1990: ascii (table of ASCII codes) added; MINOS(MIPS)
+optimal values added to this index file.
+  15 June 1990: MAROS and PILOT87 added.
+  11 Oct. 1990: DFL001 added.
+  9 Jan. 1991: Bixby's remarks about DFL001 added to index.
+  6 June 1991: emps.c and emps.f adjusted to pass "mystery lines"
+through, for possible use in conveying other problem information
+(in connection with mpc -m).  [For years emps.c has had this ability;
+today's change fixes a bug with mystery lines just before ENDATA.]
+  4 Sept. 1991: "Kennington" problems made available by ftp from netlib.
+  21 Oct. 1991: minor cleanups...
+1. BOEING1: remove duplicate upper bounds for columns N1019AC3 and
+N1019AC4.
+2. PILOT: remove 8 duplicate right-hand side values for row BTRB01.
+3. PILOT87: remove lower bound of 49.5 on U[OG]ST0[12], which are
+subsequently fixed at 99 (UOST[12]) or 65.4.
+  2 May 1992: emps.c ANSIfied (with #ifdef KR_headers lines for
+old-style C compilers); new option -b changes blanks within names
+to underscores (and changes blank RHS names to RHS, etc.) -- for
+awk scripts and other programs that assume no blanks in names.
+  4 Feb. 1993: stocfor3 updated.  STOCFOR3 and the other problems
+you can generate with the data in the stocfor3 bundle are the same
+numerically as before (but with different row and column labels).
+The update (courtesy of Gus Gassmann) fixes some bugs in other uses
+of the generator and expands your options in using the generator.
+The previous version is now stocfor3.old.
+  26 March 1993: D6CUBE added.
+  17 Jan. 1994: MAROS-R7, MODSZK1 added.
+  12 April 1996: QAP8, QAP12, QAP15 added to result table; directory
+lp/generators/qap added for generating these problems.
+  7 August 2005:  objective value for STOCFOR3 in CPLEX(Sparc) column
+of readme adjusted; some file names in "read.me" in the stocfor3
+bundle corrected; portability tweaks to mpc.src.
+  25 Feb. 2008: emps.c, mpc.src: tweak to compile with fewer complaints.

@@ -1,0 +1,9 @@
+Cy*.cpp
+*.html
+*.swp
+*~
+.DS_Store
+*.o
+*.so
+*.pyc
+

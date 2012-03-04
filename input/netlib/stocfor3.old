@@ -1,0 +1,4600 @@
+# to unbundle, sh this file (in an empty directory)
+echo read.me 1>&2
+sed >read.me <<'//GO.SYSIN DD read.me' 's/^-//'
+-
+-This bundle includes 10 files:
+-  1. read.me
+-  2. input.f
+-  3. std2mps.f
+-  4. common5.for
+-  5. time7.frs
+-  6. core.mpc
+-  7. stoch1.frs
+-  8. stoch2.frs
+-  9. stoch3.frs
+- 10. paper.lis
+-
+-If the beginning of this bundle makes no sense to you (i.e., if you
+-are not using a UNIX(R) system), then use your favorite editor to
+-remove the - at the start of each line and to split this bundle into
+-the requisite files, each of which starts with a line of the form
+-"sed >filename ..." and ends with a line of the form
+-"//GO.SYSIN DD filename".
+-
+-Files 2, 3, and 4 are Fortran source files:  input5.f is an input
+-routine for stochastic linear programming problems, stdtomps.f is a
+-main program that writes an MPS file for the deterministic equivalent
+-problem, and common5.for is an include file containing all the common
+-blocks for the .f files.  You'll have to include common5.for by hand
+-(insert it in place of each "include" statement) if your compiler
+-won't do this for you.
+-
+-Compiling and loading stdtomps.f and input5.f together will give you a
+-program that expects input files on Fortran units 1, 2, and 3.  For the
+-forestry problems STOCFOR1,2,3, time7.frs should be attached to unit 1,
+-the EMPS output from expanding core.mpc should be attached to unit 2,
+-and one of the files stoch1.frs, stoch2.frs, or stoch3.frs should be
+-attached to unit 3 to produce, respectively, problem STOCFOR1,
+-STOCFOR2, or STOCFOR3.  These LP problems are output on Fortran unit 7.
+-(The present version of std2mps.f prints numerical values to more
+-decimal places than did the version that generated the STOCFOR1 and
+-STOCFOR2 in netlib's lp/data .)
+-
+-paper.lis is a summary of "A Standard Input Format for Multistage
+-Stochastic Linear Programs" by J.R. Birge, M.A.H. Dempster, H.I.
+-Gassmann, E.A. Gunn, A.J. King, and S.W. Wallace [COAL Newsletter
+-No. 17 (Dec. 1987), pp. 1-19].
+-
+-Complain to dmg if this read.me is unclear.  Gus Gassmann provided the
+-other files in this bundle.  He says,
+-
+-    I cannot give any guarantees that the programs will run
+-    correctly, or that they will run at all.  If you experience
+-    any problems, I would appreciate hearing about them, on the
+-    off chance that I might be able to assist:
+-
+-         Gus Gassmann
+-         School of Business Administration
+-         Dalhousie University
+-         Halifax, N.S. B3H 1Z5
+-         Canada
+-         
+-         ph. (902)-424-7080
+-         
+-         email: GASSMANN @ Dalac.bitnet
+//GO.SYSIN DD read.me
+echo input.f 1>&2
+sed >input.f <<'//GO.SYSIN DD input.f' 's/^-//'
+-C************************************************************************
+-C*                                                                     **
+-C*    This routine is distributed with the understanding that it is    **
+-C*    not to be re-distributed to third parties without the consent    **
+-C*    of the author.  The author cannot assume any responsibilities    **
+-C*    for the correctness of the routine.                              **
+-C*                                                                     **
+-C*    In case of problems, please contact                              **
+-C*                                                                     **
+-C*                  Professor H.I. Gassmann                            **
+-C*                  School of Business Administration                  **
+-C*                  Dalhousie University                               **
+-C*                  Halifax, Nova Scotia                               **
+-C*                  CANADA,  B3H 1Z5                                   **
+-C*                  (902)-424-7080                                     **
+-C*                                                                     **
+-C************************************************************************
+-C
+-      SUBROUTINE INPUT ( PROBNM, IOBJ1 )
+-C
+-C     This subroutine is the top level input routine. It first reads a
+-C time file in the format laid out in Birge et al. (COAL newsletter, No.17,
+-C December 1987) and described in a bit more detail below. It then calls
+-C further subroutines to read in the core file and the stoch file in one
+-C of the four formats described in the paper.
+-C
+-C   -----------------------------------------------------
+-C
+-C     A brief description of the input format follows:
+-C
+-C     All the information is contained in three input files, which are in
+-C     the order they are accessed:
+-C
+-C     - the TIME  FILE which breaks the rows and columns up into periods
+-C     - the CORE  FILE which contains information for a 'base scenario'
+-C     - the STOCH FILE which describes the stochastics of the problem
+-C
+-C     TIME FILE:
+-C
+-C     The first column and row of each period appear in the first two name
+-C     fields in standard MPSX format. The period is given a name in the
+-C     third name field.
+-C
+-C
+-C     CORE FILE:
+-C
+-C     Standard MPSX format: The ROWS section lists all the rows for the
+-C     entire problem period by period, starting with period 1 and ending
+-C     with period T. The objective row is considered to be part of period 1.
+-C
+-C     The COLUMNS section is dealt with in the same way, columns are listed
+-C     period by period. The RHS, BOUNDS and RANGES sections follow as in the
+-C     MPSX standard.
+-C
+-C
+-C     STOCH FILE:
+-C
+-C     Three different ways to specify random elements have been implemented
+-C     to date. They are considered mutually exclusive, although a certain
+-C     amount of mixing may be possible. THIS REQUIRES MORE WORK.
+-C
+-C     Independent random elements are specified with the keyword INDEP, one
+-C     element per data record.
+-C
+-C     Blocks of random data which vary jointly but exhibit period-to-period
+-C     independence can be specified with the BLOCKS option.
+-C
+-C     The SCEN option allows dependence across time periods, but assumes
+-C     that all nodes in the decision tree belonging to the same time period
+-C     have identical problem dimensions and sparsity pattern in the
+-C     constraint matrix.
+-C
+-C
+-C     In all cases, the program attempts to minimize storage by reducing
+-C     redundancies as much as possible. (MY VERSION OF SUPERSPARSITY.)
+-C
+-C     Version 5 is intended to read a full lower triangular constraint
+-C     structure, but will detect staircase structure.
+-C
+-C     -----------------------------------------------------------------
+-C
+-C     The internal representation is as follows.
+-C
+-C     DISCRETE distributions:
+-C
+-C     For each node N in the decision tree, N = 1,...,NODES,
+-C
+-C     find                         in array     with offset address
+-C     A matrix coefficients        A            KELMA (KDATA(N)+LMTX) (+)
+-C     A matrix locations           IA           KELMA (KDATA(N)+LMTX)
+-C     A matrix column pointers     LA           KCOLA (KDATA(N)+LMTX)
+-C     cost coefficients            COST         KCOST (N)
+-C     variable names               NAMES        KNAMES(N)
+-C     upper bounds                 XUB          KBOUND(N)
+-C     lower bound                  XLB          KBOUND(N)
+-C     right hand sides             XI           KRHS  (N)
+-C     decision variables           X            KROW  (N)
+-C     dual variables               YPI          KCOL  (N)
+-C
+-C     (+) LMTX = 1 for blocks on the main diagonal
+-C              = 2 for blocks immediately to the LEFT of the main diagonal
+-C              > 2 for blocks further away.
+-C         Staircase problems are indicated by MARKOV = .TRUE.
+-C
+-C     Problem dimensions are in arrays NROW, NCOL (number of columns
+-C        including slacks) and NELMA.
+-C
+-C
+-C     Note that the identity matrix for the slack variables is at present
+-C     *NOT* stored as part of the A matrix and that the cost coefficients
+-C     are separated, even if costs are deterministic.
+-C
+-C     The tree itself is represented by three pointer arrays IANCTR, IDESC,
+-C     IBROTH, which for each node give, respectively, the ancestor node,
+-C     the immediate successor node, and the next node in the same period.
+-C     If IBROTH > 0, then both nodes have the same ancestor, but it has
+-C     proven advantageous to link nodes in the same time period which have
+-C     different ancestors. This is indicated by a negative value for IBROTH,
+-C     and the next node in this case is given by ABS(IBROTH).
+-C
+-C     The network standard described in the paper has not been implemented yet.
+-C
+-C  ------------------------------------------------------------------------
+-C
+-C     This version dated 29 December 1988
+-C
+-C  ---------------------------------------------------------------------
+-C
+-C                    ***DESCRIPTION OF PARAMETERS***
+-C
+-C        PROBNM = 8-CHARACTER STRING VARIABLE CONTAINING THE PROBLEM NAME
+-C        IOBJ1  = ORIGINAL OBJECTIVE ROW (MAY BE ZERO)
+-C                    THE OBJECTIVE ROW IS INTERCEPTED AND SWAPPED TO
+-C                    POSITION 1 FOR EASIER IDENTIFICATION IN SUBPROBLEMS
+-C                    IN PERIODS 2, 3, ..., T.
+-C
+-C  ---------------------------------------------------------------------
+-C
+-C&    Include file COMMON5.FOR which is accessed in all routines:
+-C
+-      IMPLICIT REAL*8(A-H,O,P,R-Z), INTEGER(I-N), CHARACTER*1 (Q)
+-      CHARACTER*8 NAMES, DXI, DBOUND, DRANGE
+-      LOGICAL   MARKOV
+-C
+-      COMMON A(30000),E(10000),B(20000),X(20000),XLB(3000),XUB(3000),
+-     1       XI(10000),YPI(20000),YPIBAR(600),Y(350),YTEMP(600),
+-     2       YTEMP1(600),IA(30000),IE(10000),JH(20000),KINBAS(40000),
+-     3       LA(10000),LE(1001),MARKOV
+-C
+-      COMMON /ATLAS/  MAPCOL(600),MAPROW(350),MAPCUT(2000)
+-      COMMON /CHARS/  QA,QAST,QB,QBL,QC,QD,QE,QF,QG,QH,QI,QK,QL,QM,QN,
+-     *                QO,QP,QR,QS,QT,QU,QV,QX,QSTAT
+-      COMMON /CONST/  ZTOLZE, ZTOLPV, ZTCOST, NAMAX,  NBMAX,  NCMAX,
+-     *                NEMAX,  NLMAX,  NPMAX,  NRMAX,  NTMAX,  NVMAX,
+-     *                NROWMX, NCOLMX, NEGINF
+-C
+-      COMMON /CUTDAT/ICTYPE(2000),ICUT1(2000),KFIRST(2000),LINKUT(2000),
+-     *                KCUT0, MAXCOL,MAXROW,MAXRHS,NOFCUT
+-      COMMON /INDATA/ LASTC, LASTD, LASTR, LASTBD,LASTNM,LASTCA
+-      COMMON /LPSTAT/ LPCUTS,LPPROB,LPBINV,LPNORM,LPOPTC
+-C
+-      COMMON /PARAM/  IBASIS,ICONST,IDUAL,INDEP,INVFRQ,IOBJ,ISCHUR,
+-     *                ISTOCH,ITRFRQ,INFLAG,JVRSN,MULTI,NECHO,NREADB
+-      COMMON /PIVOT/  APV,CMAX,CMIN,DE,DP,DRES,IPTYPE,NINF,NOPT,NPIVOT,
+-     *                IROWP,IROWQ,ITCNT,JCOLP,JCOLQ,JCOUT,NETA,
+-     *                NELEM,LASTA,NLELEM,NLETA,NUELEM,NUETA
+-      COMMON /SCHUR/  DRHS(100),DZBAR(100),XMACH(10),JIN(100),JOUT(100),
+-     *                NTLBAS(350),NTLROW(600),ICHAIN(301),
+-     *                INCH,IQFST,IRFST,LENC,INVT
+-C
+-      COMMON /SCINFO/ XOLD(2000),  PROB(2000),  KCOL(2000), KCOLA(5000),
+-     1                KCOST(2000), KELMA(5000), KROW(2000), KRHS(2000),
+-     2                KNAMES(2000),KBOUND(2000),NCOL(2000), NCUT(2000),
+-     3                IANCTR(2000),IBROTH(2000),IDESC(2000),INHBT(2000),
+-     4                NELMA(5000), LOOKAT(2000),NROW(2000), NTH(2000),
+-     5                NUDATA(2000),NUDUAL(2000),NDESC(2000),KDATA(2000)
+-      COMMON /SEQ/    IDIR,IPER,INODE,JPASS,LPER,NPASS,NPER,NODES,
+-     *                IASTO(10,10),IRNGE0(10),IRNGE1(10),IRNGE2(10)
+-      COMMON /TRIKL/  COST(3000),XLTEMP(350),XUTEMP(350),XPREV
+-      COMMON /UNITS / IOTIM,IOCOR,IOSTO,IOINB,IOPAR,IOLOG,IOBAS,IOSUM,
+-     *                IOSOL
+-      COMMON /VARNAM/ NAMES(3000), DXI, DBOUND, DRANGE
+-C#
+-C     -----------   end of include file COMMON5.FOR   ----------
+-C
+-      LOGICAL SIMPLE, ERRCOR, ERRSTO, ERRTIM
+-      CHARACTER*8 DNAME(3), DTIME(10), DBLANK, DSIMPL,
+-     *            PROBNM, DTIMEC(10), DTIMER(10), DROW, DCOL, DOTS,
+-     *            DISCR
+-      DIMENSION IROTYP(3000), KREF(10)
+-      EQUIVALENCE (IROTYP,E)
+-C
+-      DATA DBLANK/'        '/, DSIMPL/'SIMPLE  '/, DOTS  /'  ...   '/,
+-     *     DISCR /'DISCRETE'/
+-C
+-C --------------------------------------------------------------------------
+-C
+-C     Set up some name fields first
+-C        (This should probably be read from a SPECS file.)
+-C
+-      PROBNM = DBLANK
+-      DXI    = DOTS
+-      DBOUND = DOTS
+-      DRANGE = DOTS
+-      ERRCOR = .FALSE.
+-      ERRSTO = .FALSE.
+-      ERRTIM = .FALSE.
+-      NPER   = 0
+-      SIMPLE = .FALSE.
+-      MARKOV = .TRUE.
+-C
+-C     Next process the time file to get the partitioning into periods
+-C
+-      NREC   = 0
+-      IENDAT = 0
+-      IF (NECHO .GE. 2) WRITE (IOLOG, 1100)
+-C
+-  100 CONTINUE
+-      READ (IOTIM, 1000, END=101, ERR=102)
+-     *   Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-      NREC = NREC + 1
+-      IF (Q1 .EQ. QAST ) GOTO 100
+-      IF (IENDAT .EQ. 0) IENDAT = 1
+-      IF (Q1 .EQ. QT .AND. Q2 .EQ. QI) GOTO 105
+-      IF (Q1 .EQ. QP .AND. Q2 .EQ. QE) GOTO 110
+-      IF (Q1 .EQ. QE)  GOTO 130
+-      IF (Q1 .EQ. QBL) GOTO 120
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1400)
+-         GOTO 9999
+-C
+-C     Missing ENDATA card
+-C
+-  101 CONTINUE
+-      IF (IENDAT .EQ. 0) GOTO 102
+-      IF (IENDAT .EQ. 1) GOTO 9050
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1700)
+-         GOTO 140
+-C
+-C     ERROR WHILE READING THE TIME FILE. TREAT AS MISSING AND PROCEED
+-C
+-  102 CONTINUE
+-         IF (NREC .GT. 0) WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3970)
+-         DTIMEC(1) = DOTS
+-         DTIMER(1) = DOTS
+-         DTIME(1)  = 'PERIOD1'
+-         ERRTIM = .TRUE.
+-         PROBNM = DOTS
+-         NPER   = 1
+-         GOTO 140
+-C
+-C     WE HAVE FOUND A TIME FILE AND A NAME FOR OUR PROBLEM
+-C
+-  105 CONTINUE
+-         PROBNM = DNAME(2)
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2)
+-         GOTO 100
+-  110 CONTINUE
+-         IENDAT = 2
+-         IF (DNAME(2) .EQ. DSIMPL) SIMPLE = .TRUE.
+-         IF (NECHO .GE. 5) WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2)
+-         GOTO 100
+-  120 CONTINUE
+-         NPER = NPER + 1
+-         IF (NPER .GT. NPMAX) GOTO 9030
+-            IF (NECHO .GE. 5)
+-     *         WRITE (IOLOG, 2500) NREC,DNAME(3),DNAME(2),DNAME(1)
+-            DTIMEC(NPER) = DNAME(1)
+-            DTIMER(NPER) = DNAME(2)
+-            DTIME(NPER)  = DNAME(3)
+-            GOTO 100
+-C
+-C     End of TIME file
+-C
+-  130 CONTINUE
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2)
+-  140 CONTINUE
+-      IF (SIMPLE) GOTO 9100
+-         NREC   = 0
+-         NPSEEN = 0
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1800)
+-C
+-C     *****       READ THE CORE FILE       *****
+-C
+-  150 CONTINUE
+-         READ (IOCOR, 1000, END=151, ERR=151)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QN .AND. Q2. EQ. QA) GOTO 155
+-         IF (Q1 .EQ. QAST) GOTO 150
+-            WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 2300)
+-            GOTO 9999
+-C
+-C     Error during read or missing CORE file. Keep going.
+-C
+-  151    CONTINUE
+-            IF (NREC .GT. 0) WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 3980)
+-            ERRCOR = .TRUE.
+-            IF (PROBNM .EQ. DBLANK) PROBNM = DOTS
+-            GOTO 450
+-C
+-C     WE HAVE FOUND THE PROBLEM NAME. DOES IT MATCH?
+-C
+-  155 CONTINUE
+-         IF (PROBNM .EQ. DOTS) PROBNM = DNAME(2)
+-         IF (DNAME(2) .NE. PROBNM) GOTO 9150
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1200) NREC,Q1,Q2,Q3,Q4,
+-     *         DNAME(1),DNAME(2)
+-            CALL INCORE ( DTIMEC, DTIMER, IROTYP, SIMPLE, PROBNM,
+-     *                    IOBJ1,  NPSEEN, IERR,   NREC)
+-
+-C     *****     PROCESS THE STOCH-FILE     *****
+-C
+-  450 CONTINUE
+-         DROW    = DBLANK
+-         DCOL    = DBLANK
+-         QTYP    = QBL
+-         NREALS  = 1
+-         JNODES  = 1
+-         IPREV   = 1
+-         NODES   = NPER
+-         IIPER   = 0
+-         IPER0   = 0
+-         PROB(1) = 1.0
+-         NREC    = 0
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1900)
+-  451 CONTINUE
+-         READ (IOSTO, 1000, ERR=455, END=455)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QAST) GOTO 451
+-         IF (Q1 .EQ. QS .AND. Q2 .EQ. QT) GOTO 452
+-         IF (Q1 .EQ. QI .AND. Q2 .EQ. QN) GOTO 460
+-         IF (Q1 .EQ. QB .AND. Q2 .EQ. QL) GOTO 470
+-         IF (Q1 .EQ. QS .AND. Q2 .EQ. QC) GOTO 480
+-            WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 1600)
+-            GOTO 9999
+-C
+-  452    CONTINUE
+-            IF (PROBNM .EQ. DOTS) PROBNM = DNAME(2)
+-            IF (DNAME(2) .NE. PROBNM) GOTO 9150
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1200) NREC,Q1,Q2,Q3,Q4,
+-     *            DNAME(1),DNAME(2)
+-               GOTO 451
+-C
+-C     Error during read or missing STOCH file - Keep going
+-C     (This means the problem is assumed to be deterministic)
+-C
+-  455    CONTINUE
+-            IF (NREC .GT. 0) WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 3990)
+-            IF (ERRCOR .OR. PROBNM .EQ. DOTS) GOTO 9995
+-               IF (NPER .EQ. 0) NPER = 1
+-               NODES = NPER
+-               GOTO 955
+-C
+-C     THE RANDOM ELEMENTS ARE INDEPENDENT
+-C
+-  460    CONTINUE
+-            IF (ERRCOR   .OR. ERRTIM) GOTO 9995
+-            IF (NPSEEN   .NE. NPER  ) WRITE (IOLOG, 2000)
+-            NPER = NPSEEN
+-            IF (NECHO    .GE. 5     ) WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2)
+-            IF (DNAME(2) .NE. DISCR ) GOTO 500
+-               L = 1
+-               CALL INELEM(IROTYP,DTIME,IIPER,IPER0,JNODES,IERR,NREC)
+-               GOTO 900
+-C
+-C     HERE WE HAVE BLOCK STRUCTURE AND PERIOD-TO-PERIOD INDEPENDENCE
+-C
+-  470    CONTINUE
+-            IF (ERRCOR   .OR. ERRTIM) GOTO 9995
+-            IF (NPSEEN   .NE. NPER  ) WRITE (IOLOG, 2000)
+-            NPER = NPSEEN
+-            IF (NECHO    .GE. 5     ) WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2)
+-            IF (DNAME(2) .NE. DISCR ) GOTO 500
+-               L = 2
+-               CALL INBLOK(IROTYP,DTIME,IIPER,IPER0,JNODES,IERR,NREC)
+-               GOTO 900
+-C
+-C     TIME DEPENDENCE: SCENARIOS
+-C
+-  480    CONTINUE
+-            IF (ERRCOR   .OR. ERRTIM) GOTO 9995
+-            IF (NPSEEN   .NE. NPER  ) WRITE (IOLOG, 2000)
+-            NPER = NPSEEN
+-            IF (NECHO    .GE. 5     ) WRITE (IOLOG, 1200)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2)
+-            IF (DNAME(2) .NE. DISCR ) GOTO 500
+-               L = 3
+-               CALL INSCEN(IROTYP,IIPER,IPER0,DTIME,IERR,NREC)
+-               GOTO 900
+-C
+-C     ONLY DISCRETE DISTRIBUTIONS ARE ALLOWED
+-C
+-  500    CONTINUE
+-            WRITE (IOLOG, 2400)
+-            GOTO 9999
+-C
+-C     END OF INPUT
+-C
+-  900    CONTINUE
+-            WRITE (IOLOG, 2100)
+-               DO 901 I=1,NPER
+-                  IRNGE0(I) = I
+-  901          CONTINUE
+-C
+-C     NOW LINK TOGETHER ALL NODES OF THE SAME PERIOD
+-C
+-  925       CONTINUE
+-               KREF(NPER+1) = NODES + 1
+-               IF (IPER0 .EQ. 0) GOTO 951
+-               DO 950 IP=IPER0,NPER
+-                  ISC1 = IRNGE0(IP)
+-  930             CONTINUE
+-                     IF (IBROTH(ISC1) .EQ. 0) GOTO 940
+-                        ISC1 = IBROTH(ISC1)
+-                        GOTO 930
+-  940             CONTINUE
+-                     IAN = IANCTR(ISC1)
+-                     IF (IAN .EQ. 0) GOTO 950
+-  942             CONTINUE
+-                        IBRO = IABS(IBROTH(IAN))
+-                        IF (IBRO .EQ. 0) GOTO 950
+-                           ISC2 = IDESC(IBRO)
+-                           IF (ISC2 .EQ. 0) GOTO 945
+-                              IBROTH(ISC1) = -ISC2
+-                              ISC1 = ISC2
+-                              GOTO 930
+-  945                      CONTINUE
+-                              IAN = IBRO
+-                              GOTO 942
+-  950          CONTINUE
+-  951    CONTINUE
+-            IF (L .NE. 3) GOTO 955
+-C
+-C     FOR SCENARIOS WE HAVE TO FIND CONDITIONAL PROBABILITIES
+-C
+-               DO 954 IP=2,NPER
+-                  ISC1 = IRNGE0(NPER+2-IP)
+-  952             CONTINUE
+-                     PROB(ISC1) = PROB(ISC1)/PROB(IANCTR(ISC1))
+-                     ISC1 = IABS(IBROTH(ISC1))
+-                     IF (ISC1 .GT. 0) GOTO 952
+-  954          CONTINUE
+-C
+-  955    CONTINUE
+-            DO 960 IP=1,NPER
+-               NROWS = NROW(IP)
+-               NSCOL = NCOL(IP) - NROWS
+-               RELEM = NELMA(KDATA(IP)+1)
+-               RDENS = RELEM / (NROWS * NSCOL)
+-               IF (NECHO .GE. 2)
+-     *            WRITE (IOLOG, 1300) IP, NROWS, NSCOL, RDENS
+-  960       CONTINUE
+-C
+-            NP1    = IANCTR(NODES)
+-            NEXT   = NODES + 1
+-            NROWS  = NROW(NODES)
+-            NCOLS  = NCOL(NODES)
+-            MAXCOL = KCOL(NODES) + NCOLS + 1
+-            MAXROW = KROW(NODES) + NROWS
+-            NCMAX  = MIN( NCMAX, NCOLMX-MAXCOL, NROWMX-MAXROW )
+-            IF (MAXCOL .GE. NCOLMX .OR. MAXROW .GE. NROWMX) GOTO 9200
+-            IF (NECHO  .GE. 1) WRITE (IOLOG, 1500) NCMAX
+-               KCOL(NEXT)   = MAXCOL
+-               KROW(NEXT)   = MAXROW
+-               KRHS(NEXT)   = LASTR
+-               KCOST(NEXT)  = LASTC
+-               KBOUND(NEXT) = LASTBD
+-               KNAMES(NEXT) = KNAMES(NODES) + NCOLS + 1
+-               LASTBD       = LASTBD + 1
+-               XLB(LASTBD)  = 0.D0
+-               XUB(LASTBD)  = 1.D8
+-C
+-C     COUNT DESCENDANTS FOR EACH PROBLEM
+-C
+-      DO 999 I=1,NODES
+-         N0 = 0
+-         I0 = IDESC(I)
+-  995    CONTINUE
+-            IF (I0 .LE. 0) GOTO 998
+-               I0 = IBROTH(I0)
+-               N0 = N0 + 1
+-               GOTO 995
+-  998    CONTINUE
+-            NDESC(I) = N0
+-  999 CONTINUE
+-         RETURN
+-C
+-C     COME HERE IF ANYTHING WENT WRONG
+-C
+- 9030 CONTINUE
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3030) NPMAX
+-         GOTO 9999
+-C
+- 9050 CONTINUE
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3050)
+-         GOTO 9999
+-C
+- 9100 CONTINUE
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3100)
+-         GOTO 9999
+-C
+- 9150 CONTINUE
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3150)
+-         GOTO 9999
+-C
+- 9200 CONTINUE
+-         WRITE (IOLOG, 1200)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3200)
+-         GOTO 9999
+-C
+- 9995 CONTINUE
+-         WRITE (IOLOG, 3995)
+- 9999 CONTINUE
+-         CALL STOPIT
+-C
+- 1000 FORMAT(4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1100 FORMAT(/,' Process TIME file:')
+- 1200 FORMAT(I8,4X,4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1300 FORMAT(' Period',I3,' has',I4,' rows and',I4,' columns.',
+-     *        ' Density of constraint matrix:',F6.3)
+- 1400 FORMAT(' XXX -  FATAL  - Illegal record in TIME file')
+- 1500 FORMAT(' There is space for at most',I5,' cuts')
+- 1600 FORMAT(' XXX -  FATAL  - Illegal record in STOCH file')
+- 1700 FORMAT(' XXX - WARNING - Missing ENDATA card')
+- 1800 FORMAT(/,' Process CORE file:')
+- 1900 FORMAT(/,' Process STOCH file:')
+- 2000 FORMAT(' XXX - WARNING - Number of periods in CORE file does not',
+-     *       ' match information in TIME file')
+- 2100 FORMAT(' ')
+- 2300 FORMAT(' XXX -  FATAL  - Illegal record in CORE file')
+- 2400 FORMAT(' XXX -  FATAL  - Only DISCRETE distributions can be',
+-     *       ' handled so far.')
+- 2500 FORMAT(I8,4X,' Period ',A8,' - first row ',A8,', first column ',
+-     *       A8)
+- 2600 FORMAT(' ***   Number of periods has been adjusted to',I3,'  ***')
+- 2700 FORMAT(I8,4X,4A1,A8,2X,A8)
+- 3030 FORMAT(' XXX -  FATAL  - Too many periods specified: Use at most',
+-     *       I4)
+- 3050 FORMAT(' XXX -  FATAL  - Detected EOF while reading TIME_FILE')
+- 3100 FORMAT(' XXX -  FATAL  - Simple recourse has not been',
+-     *       ' implemented')
+- 3150 FORMAT(' XXX -  FATAL  - Name does not match info in TIME file')
+- 3200 FORMAT(' XXX -  FATAL  - Global problem dimensions exceed',
+-     *       ' capacity')
+- 3970 FORMAT(' XXX - WARNING - Error during READ or non-existent TIME',
+-     *       ' file')
+- 3980 FORMAT(' XXX - WARNING - Error during READ or non-existent CORE',
+-     *       ' file')
+- 3990 FORMAT(' XXX - WARNING - Error during READ or non-existent STOCH',
+-     *       ' file')
+- 3995 FORMAT(' XXX -  FATAL  - Not enough information to solve the',
+-     *       ' problem')
+-      END
+-C
+-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE INCORE ( DTIMEC, DTIMER, IROTYP, SIMPLE, PROBNM,
+-     *                    IOBJ1,  NPSEEN, IERR,   NREC)
+-C
+-C     This subroutine reads the core file in the modified MPS format
+-C     described in the standards paper.
+-C
+-C     ---------------------------------------
+-C     This version dated November 3, 1987.
+-C     ---------------------------------------
+-C
+-      include 'common5.for'
+-C
+-      LOGICAL SIMPLE
+-      CHARACTER*8 DNAME(3), DROWNM(3000), DBLANK, DSIMPL,
+-     *            PROBNM, DTIMEC(10), DTIMER(10), DROW, DCOL, DOTS,
+-     *            DISCR, OBJNAM
+-      DIMENSION IROTYP(3000),AUX(3000,10),IAUX(3000,10),LAUX(1000,10),
+-     *          LMNS(10)
+-      EQUIVALENCE (DROWNM,X)
+-C
+-      DATA DBLANK/'        '/, DSIMPL/'SIMPLE  '/, DOTS  /'  ...   '/,
+-     *     DISCR /'DISCRETE'/
+-C
+-C     INITIALIZE POINTERS
+-C
+-         IOBJ      = 0
+-         IOBJ1     = 0
+-         NPSEEN    = 1
+-         INODE     = 1
+-         KDATA(1)  = 0
+-         KCOLA(1)  = 0
+-         KELMA(1)  = 0
+-         KBOUND(1) = 0
+-         KROW(1)   = 0
+-         KCOL(1)   = 0
+-         KRHS(1)   = 0
+-         KCOST(1)  = 0
+-         KNAMES(1) = 0
+-         IANCTR(1) = 0
+-         IBROTH(1) = 0
+-         PROB(1)   = 1.D0
+-         IROW      = KROW(1)
+-         IRHS      = KRHS(1)
+-         NROWS     = 0
+-         MAXROW    = 0
+-         OBJNAM    = DBLANK
+-         IENDAT    = 0
+-C
+-C     Now read the core-file. Start with the ROWS section
+-C
+-  150 CONTINUE
+-         READ (IOCOR, 1000, ERR=9980, END=9000)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QBL)  GOTO 160
+-         IF (Q1 .EQ. QN .AND. Q2 .EQ. QA) GOTO 155
+-         IF (Q1 .EQ. QR .AND. Q2 .EQ. QO) GOTO 151
+-         IF (Q1 .EQ. QC .AND. Q2 .EQ. QO) GOTO 200
+-         IF (Q1 .EQ. QR .AND. Q2 .EQ. QH) GOTO 9300
+-         IF (Q1 .EQ. QB)  GOTO 9300
+-         IF (Q1 .EQ. QR .AND. Q2 .EQ. QA) GOTO 9300
+-         IF (Q1 .EQ. QE)  GOTO 9300
+-         IF (Q1 .EQ. QAST) GOTO 150
+-            WRITE (IOLOG, 1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 2300)
+-            GOTO 9999
+-C
+-  151    CONTINUE
+-            IENDAT = 1
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            GOTO 150
+-C
+-  155    CONTINUE
+-            IF (DNAME(2) .NE. PROBNM) GOTO 9150
+-            GOTO 150
+-  160    CONTINUE
+-            IF (NECHO .GE. 5) WRITE (IOLOG, 1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1)
+-            IF (DNAME(1) .NE. DTIMER(NPSEEN+1)) GOTO 180
+-C
+-C   Here we have the first row of a new time period
+-C
+-            IF (IOBJ .GT. 0) GOTO 165
+-               NROWS         = NROWS + 1
+-               MAXROW        = MAXROW + 1
+-               IOBJ          = NROWS
+-               NROW(INODE)   = NROWS
+-               NCOL(INODE)   = NROWS
+-               DROWNM(NROWS) = DROWNM(1)
+-               DROWNM(1)     = DOTS
+-               IROTYP(NROWS) = IROTYP(1)
+-               IROTYP(1)     = 2
+-  165       CONTINUE
+-               NPSEEN         = NPSEEN  + 1
+-               IPREV          = INODE
+-               INODE          = INODE + 1
+-               IDESC(IPREV)   = INODE
+-               IRNGE0(IPREV)  = IPREV
+-               IRNGE1(IPREV)  = IPREV
+-               IRNGE2(IPREV)  = IPREV
+-               IBROTH(INODE)  = 0
+-               IANCTR(INODE)  = IPREV
+-               PROB(INODE)    = 1.0
+-               KROW(INODE)    = KROW(IPREV)  + NROW(IPREV)
+-               KRHS(INODE)    = KRHS(IPREV)  + NROW(IPREV)
+-               IROW           = KROW(INODE)
+-               DROWNM(IROW+1) = DROWNM(1)
+-               IROTYP(IROW+1) = 2
+-               NROWS = 1
+-C
+-C     Test row type
+-C
+-  180    CONTINUE
+-            MAXROW             = MAXROW + 1
+-            NROWS              = NROWS + 1
+-            NROW(INODE)        = NROWS
+-            NCOL(INODE)        = NROWS
+-            DROWNM(IROW+NROWS) = DNAME(1)
+-            IF ( NROWS .GT. NRMAX) GOTO 9100
+-            IF ((Q2 .EQ. QG).OR.(Q3 .EQ. QG)) GOTO 185
+-            IF ((Q2 .EQ. QL).OR.(Q3 .EQ. QL)) GOTO 186
+-            IF ((Q2 .EQ. QN).OR.(Q3 .EQ. QN)) GOTO 187
+-               IROTYP(IROW+NROWS) = 0
+-               GOTO 150
+-  185       CONTINUE
+-               IROTYP(IROW+NROWS) = -1
+-               GOTO 150
+-  186       CONTINUE
+-               IROTYP(IROW+NROWS) = 1
+-               GOTO 150
+-  187       CONTINUE
+-               IF (NPSEEN .GT. 1 .OR. IOBJ .GT. 0) GOTO 188
+-               IF (DNAME(1) .NE. OBJNAM .AND. OBJNAM .NE. DBLANK)
+-     *               GOTO 188
+-                  IOBJ          = NROWS
+-                  IOBJ1         = NROWS
+-                  IROTYP(NROWS) = IROTYP(1)
+-                  IROTYP(1)     = 2
+-                  DROWNM(NROWS) = DROWNM(1)
+-                  DROWNM(1)     = DNAME(1)
+-                  GOTO 150
+-  188       CONTINUE
+-               IROTYP(IROW+NROWS) = 2
+-               GOTO 150
+-C
+-C     Now start the column section
+-C
+-  200 CONTINUE
+-         IF (NECHO  .GE.    2) WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         IF (NPSEEN .GT. NPER) GOTO 9200
+-         IF (IENDAT .EQ.    0) GOTO 9700
+-            IENDAT         = 2
+-            IDESC(INODE)   = 0
+-            IBROTH(INODE)  = 0
+-            IANCTR(INODE)  = INODE - 1
+-            IRNGE0(NPSEEN) = INODE
+-            IRNGE1(NPSEEN) = INODE
+-            IRNGE2(NPSEEN) = INODE
+-            IPER   = 1
+-            IOBJ   = 1
+-            IROW   = 0
+-            ICOL   = 0
+-            IRHS   = 0
+-            INODE  = 1
+-            ICOLA  = 0
+-            ICOST  = 0
+-            IDATA  = 0
+-            IELMA  = 0
+-            INAMES = 0
+-            IBOUND = 0
+-            NROWS  = NROW(1)
+-            IROW1  = NROWS
+-            KMTX   = 1
+-            DO 201 JR=1,NROWS
+-               NAMES(JR) = DROWNM(JR)
+-               XLB(JR)   = 0.D0
+-               XUB(JR)   = 1.D8
+-               IF (IROTYP(JR) .LE. 0) XUB(JR) = 0.D0
+-               IF (IROTYP(JR) .EQ. 2) XLB(JR) =-1.D8
+-               IF (IROTYP(JR) .EQ.-1) XLB(JR) =-1.D8
+-  201       CONTINUE
+-            NELEM  = 0
+-            DO 2015 JJ=1,NPMAX
+-               LMNS(JJ) = 0
+- 2015       CONTINUE
+-C
+-  202    CONTINUE
+-            READ (IOCOR, 1000, ERR=9980, END=9000)
+-     *         Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            NREC = NREC + 1
+-            IF (Q1 .EQ. QR .AND. Q2 .EQ. QH) GOTO 260
+-            IF (Q1 .EQ. QB .AND. Q2 .EQ. QO) GOTO 270
+-            IF (Q1 .EQ. QR .AND. Q2 .EQ. QA) GOTO 280
+-            IF (Q1 .EQ. QE  ) GOTO 290
+-            IF (Q1 .EQ. QBL ) GOTO 205
+-            IF (Q1 .EQ. QAST) GOTO 202
+-               WRITE (IOLOG, 1300) NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),
+-     *            ATEMP1,DNAME(3),ATEMP2
+-               WRITE (IOLOG, 2300)
+-               GOTO 9999
+-C
+-  205    CONTINUE
+-            IF (NECHO .GE. 5) WRITE (IOLOG, 1300) NREC,Q1,Q2,Q3,Q4,
+-     *         DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            JNM = 2
+-            IF (DABS(ATEMP1) .GT. ZTOLZE) GOTO 206
+-            IF (DABS(ATEMP2) .LE. ZTOLZE) GOTO 202
+-               JNM = 3
+-               ATEMP1 = ATEMP2
+-  206    CONTINUE
+-         IF (DNAME(1) .EQ. DCOL) GO TO 220
+-         IF (DNAME(1) .NE. DTIMEC(IPER+1)) GOTO 215
+-C
+-C     A NEW PERIOD IS COMING UP.
+-C
+-         IF (IPER .GE. NPSEEN) GOTO 9200
+-            NCOL(IPER)     = NCOLS
+-            NELMA(IDATA+1) = NELEM
+-            LASTA  = LASTA + NELEM
+-            LASTCA = LASTCA + NCOLS + 1 -NROW(IPER)
+-            IF (IPER .EQ. NPSEEN) GOTO 211
+-C
+-C     CHECK IF PROBLEM STILL HAS STAIRCASE STRUCTURE.
+-C
+-               NMTX = NPSEEN - IPER
+-               DO 210 JMTX=1,NMTX
+-                  LMNJ = LMNS(JMTX)
+-                  IF (LMNJ .EQ. 0 .AND. JMTX .GE. 2   .AND.    MARKOV)
+-     *               GOTO 210
+-                  IF (LMNJ .EQ. 0 .OR.  JMTX .LT. 2 .OR. .NOT. MARKOV)
+-     *               GOTO 2105
+-                     MARKOV = .FALSE.
+-                     DO 2101 JAUX = 4,IPER
+-                        J = IPER + 4 - JAUX
+-                        KDAT2    = J * (J-1)/2 + 3
+-                        KDAT1    = J * 2
+-                        KDATA(J) = KDAT2
+-                        DO 2100 K=1,2
+-                           KCOLA(KDAT2-K) = KCOLA(KDAT1-K)
+-                           KELMA(KDAT2-K) = KELMA(KDAT1-K)
+-                           NELMA(KDAT2-K) = NELMA(KDAT1-K)
+-                           KCOLA(KDAT1-K) = 0
+-                           KELMA(KDAT1-K) = 0
+-                           NELMA(KDAT1-K) = 0
+- 2100                   CONTINUE
+- 2101                CONTINUE
+-                     DO 2104 JN=1,IPER
+-                        NCOLA = NCOL(JN) + 1 - NROW(JN)
+-                        DO 2103 JP=3,NPSEEN+1-JN
+-                           IF (JN .EQ. IPER .AND. JP .GT. NMTX)
+-     *                        GOTO 2103
+-                              JAUX = JN + JP - 1
+-                              JDAT = JAUX*(JAUX-1)/2 + JP
+-                              KCOLA(JDAT) = LASTCA
+-                              KELMA(JDAT) = LASTA
+-                              NELMA(JDAT) = 0
+-                              DO 2102 JC=1,NCOLA
+-                                 LA(LASTCA+JC) = 1
+- 2102                         CONTINUE
+-                              LASTCA = LASTCA + NCOLA
+- 2103                   CONTINUE
+- 2104             CONTINUE
+-C
+-C     COPY SUB-DIAGONAL MATRICES OF CURRENT NODE
+-C
+- 2105          CONTINUE
+-                  JAUX = IPER + JMTX
+-                  JLOC = JAUX*(JAUX-1)/2 + JMTX + 1
+-                  IF (MARKOV) JLOC = JAUX*2 + JMTX - 2
+-                  KCOLA(JLOC) = LASTCA
+-                  KELMA(JLOC) = LASTA
+-                  NELMA(JLOC) = LMNJ
+-                  DO 209 JC=1,NCOLS-NROW(IPER)
+-                     LL = LAUX(JC,JMTX)
+-                     KK = LAUX(JC+1,JMTX) - 1
+-                     LA(LASTCA+JC) = LL
+-                     DO 208 JR=LL,KK
+-                        IA(LASTA+JR) = IAUX(JR,JMTX)
+-                         A(LASTA+JR) =  AUX(JR,JMTX)
+-  208                CONTINUE
+-  209             CONTINUE
+-                  LASTA  = LASTA  + LMNS(JMTX)
+-                  LASTCA = LASTCA + NCOLS + 1 - NROW(IPER)
+-                  LA(LASTCA) = KK + 1
+-  210          CONTINUE
+-C
+-C     NOW SET THE POINTER VALUES
+-C
+-  211    CONTINUE
+-            NMTX = IPER
+-            KMTX = NPSEEN - IPER
+-            IF (MARKOV) KMTX = 1
+-            IF (MARKOV .AND. IPER .GT. 2) NMTX = 2
+-            IPREV = IPER
+-            IPER  = IPER  + 1
+-            INODE = INODE + 1
+-            IDATA = KDATA(IPREV) + NMTX
+-            KCOL(IPER)     = KCOL(IPREV) + NCOLS + 1
+-            KCOLA(IDATA+1) = LASTCA
+-            KCOST(IPER)    = KCOST(IPREV) + NCOLS - NROW(IPREV)
+-            KELMA(IDATA+1) = LASTA
+-            KBOUND(IPER)   = KBOUND(IPREV) + NCOLS + 1
+-            KNAMES(IPER)   = KNAMES(IPREV) + NCOLS + 1
+-            KDATA(IPER)    = IDATA
+-            NELEM  = 0
+-            DO 2115 JJ=1,NPMAX
+-               LMNS(JJ) = 0
+- 2115       CONTINUE
+-            ICOL   = KCOL(IPER)
+-            IROW   = KROW(IPER)
+-            IRHS   = KRHS(IPER)
+-            ICOLA  = LASTCA
+-            ICOST  = KCOST(IPER)
+-            IELMA  = LASTA
+-            INAMES = KNAMES(IPER)
+-            IBOUND = KBOUND(IPER)
+-            NROWS  = NROW(IPER)
+-            DO 213 JR=1,NROWS
+-               NAMES(INAMES+JR)  = DROWNM(IROW+JR)
+-               XLB(IBOUND+JR)    = 0.D0
+-               XUB(IBOUND+JR)    = 1.D8
+-               IF (IROTYP(IROW+JR) .LE. 0) XUB(IBOUND+JR) = 0.D0
+-               IF (IROTYP(IROW+JR) .EQ. 2) XLB(IBOUND+JR) =-1.D8
+-               IF (IROTYP(IROW+JR) .EQ.-1) XLB(IBOUND+JR) =-1.D8
+-  213       CONTINUE
+-C
+-C     START A NEW COLUMN
+-C
+-  215    CONTINUE
+-            NCOLS                  = NCOL(INODE) + 1
+-            NCOL(INODE)            = NCOLS
+-            DCOL                   = DNAME(1)
+-            NAMES(INAMES+NCOLS)    = DCOL
+-            ICC                    = ICOLA + NCOLS - NROWS
+-            LA(ICC)                = NELEM + 1
+-            LA(ICC+1)              = NELEM + 1
+-            IF (NCOLS .GE. NVMAX ) GOTO 9110
+-            IF (IPER  .EQ. NPSEEN) GOTO 220
+-               DO 218 JMTX=1,KMTX
+-                  LAUX(NCOLS-NROWS,  JMTX) = LMNS(JMTX) + 1
+-                  LAUX(NCOLS-NROWS+1,JMTX) = LMNS(JMTX) + 1
+-  218          CONTINUE
+-C
+-C        TEST FOR ROW MATCH
+-C
+-  220    CONTINUE
+-         DROW = DNAME(JNM)
+-         DO 230 I=1,NROWS
+-            IF (DROW .EQ. NAMES(INAMES+I)) GOTO 240
+-  230    CONTINUE
+-         IF (IPER .GE. NPER) GOTO 236
+-            DO 235 JMTX=1,NPER-IPER
+-               JROWS = NROW(IPER+JMTX)
+-               IROW1 = KROW(IPER+JMTX)
+-               DO 235 I=2,JROWS
+-                  IF (DROW .EQ. DROWNM(IROW1+I)) GOTO 250
+-  235       CONTINUE
+-  236    CONTINUE
+-C
+-C     PERHAPS WE ARE DEALING WITH AN ALTERNATIVE OBJECTIVE ROW?
+-C
+-         LROWS = NROW(1)
+-         DO 237 I=1,LROWS
+-            IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2) GOTO 255
+-  237    CONTINUE
+-C
+-         WRITE (IOLOG, 1300) NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),
+-     *      ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1100)
+-         GOTO 9999
+-C
+-C    MATCHED A COEFFICIENT IN THE A-MATRIX
+-C
+-  240    CONTINUE
+-         IF (I .EQ. IOBJ) GOTO 245
+-            NELEM           = NELEM + 1
+-            IA(IELMA+NELEM) = I
+-            A(IELMA+NELEM)  = ATEMP1
+-            LA(ICOLA+NCOLS-NROWS+1) = NELEM + 1
+-            GOTO 255
+-C
+-C     COST COEFFICIENTS (EVEN IF FIXED) ARE NOT STORED IN THE A-MATRIX
+-C
+-  245    CONTINUE
+-            COST(ICOST+NCOLS-NROWS) = ATEMP1
+-            GOTO 255
+-C
+-C     WE HAVE FOUND AN ELEMENT OF THE JMTX-th SUBDIAGONAL MATRIX
+-C
+-  250    CONTINUE
+-            IF (JMTX .LE. KMTX) GOTO 253
+-               KMTX = NPSEEN - IPER
+-               DO 252 JJ=2,KMTX
+-                  DO 251 JC=1,NCOLS+1-NROWS
+-                     LAUX(JC,JJ) = 1
+-  251            CONTINUE
+-  252          CONTINUE
+-  253    CONTINUE
+-            LMNS(JMTX)               = LMNS(JMTX) + 1
+-            LAUX(NCOLS+1-NROWS,JMTX) = LMNS(JMTX) + 1
+-            IAUX(LMNS(JMTX),   JMTX) = I
+-             AUX(LMNS(JMTX),   JMTX) = ATEMP1
+-C
+-  255    CONTINUE
+-            IF (JNM .EQ. 3) GOTO 202
+-            IF (DABS(ATEMP2) .LE. ZTOLZE) GOTO 202
+-               JNM = 3
+-               ATEMP1 = ATEMP2
+-               GOTO 220
+-C
+-C     THE COLUMNS SECTION IS DONE. WHAT IS NEXT?
+-C
+-  260    CONTINUE
+-            L = 1
+-            GOTO 300
+-  270    CONTINUE
+-            L = 2
+-            GOTO 300
+-  280    CONTINUE
+-            L = 3
+-            GOTO 300
+-  290    CONTINUE
+-            L = 4
+-C
+-C     SET RHS AND BOUNDS TO DEFAULT VALUES AND SET INITIAL BASIS
+-C
+-  300 CONTINUE
+-         IF (IPER .NE. NPSEEN) GOTO 9200
+-            LASTA  = LASTA + NELEM
+-            LASTC  = KCOST(IPER) + NCOLS - NROW(IPER)
+-            LASTCA = LASTCA + 1  + NCOLS - NROW(IPER)
+-            LASTR  = KRHS(IPER) + NROW(IPER)
+-            LASTBD = KBOUND(IPER) + NCOLS + 1
+-            LASTD  = 2 * IPER - 1
+-            IF (.NOT. MARKOV) LASTD = IPER * (IPER+1)/2
+-            IF (IPER .EQ.  1) LASTD = 1
+-            NCOL(IPER)     = NCOLS
+-            NELMA(IDATA+1) = NELEM
+-            DEFRHS = 0.D0
+-            DEFLOB = 0.D0
+-            DEFUPB = 99999999.
+-            DO 301 J=1,MAXROW
+-               XI(J) = DEFRHS
+-  301       CONTINUE
+-            DO 304 IP=1,NPSEEN
+-               MINC = KBOUND(IP) + NROW(IP) + 1
+-               MAXC = KBOUND(IP) + NCOL(IP)
+-               DO 302 J=MINC,MAXC
+-                  XLB(J) = DEFLOB
+-                  XUB(J) = DEFUPB
+-  302          CONTINUE
+-               NROWS = NROW(IP)
+-               NCOLS = NCOL(IP)
+-               IROW  = KROW(IP)
+-               ICOL  = KCOL(IP)
+-               DO 303 I=1,NROWS
+-                  JH(IROW+I)     = ICOL + I
+-                  KINBAS(ICOL+I) = IROW + I
+-  303          CONTINUE
+-               DO 304 I=NROWS+1,NCOLS+1
+-                  KINBAS(ICOL+I) = 0
+-  304       CONTINUE
+-            IF (L .EQ. 4) GOTO 450
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1300) NREC,Q1,Q2,Q3,Q4,
+-     *         DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-C
+-C        RHS, BOUNDS AND RANGES
+-C
+-  305    CONTINUE
+-            IP0 = 1
+-            I0  = 1
+-  306    CONTINUE
+-         READ (IOCOR, 1000, ERR=9980, END=9000)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QAST) GOTO 306
+-         IF (Q1 .EQ. QE  ) GOTO 450
+-         IF (Q1 .EQ. QBL ) GOTO 309
+-         L = 2
+-         IF (Q1 .EQ. QB .AND. Q2 .EQ. QO) GOTO 307
+-         L = 3
+-         IF (Q1 .EQ. QR .AND. Q2 .EQ. QA) GOTO 307
+-            WRITE (IOLOG,1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 2300)
+-            GOTO 9999
+-C
+-  307    CONTINUE
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1300) NREC,Q1,Q2,Q3,Q4,
+-     *         DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-               GOTO 305
+-C
+-  309    CONTINUE
+-            IF (NECHO .GE. 5) WRITE (IOLOG, 1300) NREC,Q1,Q2,Q3,Q4,
+-     *         DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            GOTO (310,350,400,450), L
+-C
+-  310    CONTINUE
+-         J = 2
+-         IF (DABS(ATEMP1) .GT. ZTOLZE) GOTO 312
+-         IF (DABS(ATEMP2) .LE. ZTOLZE) GOTO 306
+-            J = 3
+-            ATEMP1 = ATEMP2
+-C
+-C        TEST FOR ROW MATCH
+-C
+-  312    CONTINUE
+-         IF (DXI .EQ. DOTS     ) DXI = DNAME(1)
+-         IF (DXI .NE. DNAME(1) ) GOTO 306
+-         DROW = DNAME(J)
+-         IP = IP0
+-         DO 318 I=I0,NROW(IP)
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 330
+-  318    CONTINUE
+-         DO 319 I=1,I0
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 330
+-  319    CONTINUE
+-         DO 320 IP=IP0+1,NPER
+-         DO 320 I=1,NROW(IP)
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 330
+-  320    CONTINUE
+-         DO 321 IP=1,NPER
+-         DO 321 I=1,NROW(IP)
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 330
+-  321    CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1200)
+-         GOTO 9999
+-C
+-C   MATCHED
+-C
+-  330    CONTINUE
+-         IP0 = IP
+-         I0  = I
+-         XI(KRHS(IP)+I) = ATEMP1
+-         IF (J .EQ. 3) GOTO 306
+-            IF (DABS(ATEMP2) .LE. ZTOLZE) GOTO 306
+-               J = 3
+-               ATEMP1 = ATEMP2
+-               GOTO 312
+-C
+-C     BOUNDS SECTION. MATCH THE COLUMN NAME.
+-C
+-  350    CONTINUE
+-         IF (DBOUND .EQ. DOTS     ) DBOUND = DNAME(1)
+-         IF (DBOUND .NE. DNAME(1) ) GOTO 306
+-            DROW = DNAME(2)
+-            IP = IP0
+-            DO 354 I=I0,NCOL(IP)
+-               IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 360
+-  354       CONTINUE
+-            DO 355 I=1,I0
+-               IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 360
+-  355       CONTINUE
+-            DO 356 IP=IP0+1,NPER
+-            DO 356 I=1,NCOL(IP)
+-               IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 360
+-  356       CONTINUE
+-            DO 357 IP=1,NPER
+-            DO 357 I=1,NCOL(IP)
+-               IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 360
+-  357       CONTINUE
+-            WRITE (IOLOG, 1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 1200)
+-            GOTO 9999
+-C
+-C   MATCHED. NOW DETERMINE THE BOUND TYPE
+-C
+-  360    CONTINUE
+-         IP0 = IP
+-         I0  = I
+-         IC  = KBOUND(IP) + I
+-         IF (Q2 .EQ. QL .AND. Q3 .EQ. QO) GOTO 361
+-         IF (Q2 .EQ. QU .AND. Q3 .EQ. QP) GOTO 366
+-         IF (Q2 .EQ. QF .AND. Q3 .EQ. QX) GOTO 365
+-         IF (Q2 .EQ. QF .AND. Q3 .EQ. QR) GOTO 370
+-         IF (Q2 .EQ. QM .AND. Q3 .EQ. QI) GOTO 368
+-         IF (Q2 .EQ. QP .AND. Q3 .EQ. QL) GOTO 372
+-            WRITE (IOLOG, 1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 1700)
+-            GOTO 9999
+-C
+-  361    CONTINUE
+-            XLB(IC) = ATEMP1
+-            GOTO 306
+-  365    CONTINUE
+-            XLB(IC) = ATEMP1
+-  366    CONTINUE
+-            XUB(IC) = ATEMP1
+-            GOTO 306
+-  368    CONTINUE
+-            XLB(IC) = -1.D8
+-            GOTO 306
+-  370    CONTINUE
+-            XLB(IC) = -1.D8
+-  372    CONTINUE
+-            XUB(IC) =  1.D8
+-            GOTO 306
+-C
+-C     RANGES SECTION. MATCH THE ROW NAME.
+-C
+-  400    CONTINUE
+-         IF (DRANGE .EQ. DOTS     ) DRANGE = DNAME(1)
+-         IF (DRANGE .NE. DNAME(1) ) GOTO 306
+-         J = 2
+-         IF (DABS(ATEMP1) .GT. ZTOLZE) GOTO 412
+-         IF (DABS(ATEMP2) .LE. ZTOLZE) GOTO 306
+-            J = 3
+-            ATEMP1 = ATEMP2
+-C
+-C        TEST FOR ROW MATCH
+-C
+-  412    CONTINUE
+-         DROW = DNAME(J)
+-         IP = IP0
+-         DO 418 I=I0,NROW(IP)
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 430
+-  418    CONTINUE
+-         DO 419 I=1,I0
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 430
+-  419    CONTINUE
+-         DO 420 IP=IP0+1,NPER
+-         DO 420 I=1,NROW(IP)
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 430
+-  420    CONTINUE
+-         DO 421 IP=1,NPER
+-         DO 421 I=1,NROW(IP)
+-            IF (DROW .EQ. NAMES(KNAMES(IP)+I)) GOTO 430
+-  421    CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1200)
+-         GOTO 9999
+-C
+-C   MATCHED
+-C
+-  430    CONTINUE
+-         IP0 = IP
+-         I0  = I
+-         IR = KRHS(IP) + I
+-         IT = IROTYP(IR)
+-         IF (IT .EQ.  1) GOTO 435
+-         IF (IT .EQ. -1) GOTO 440
+-         IF (IT .NE.  0) GOTO 9600
+-            IF (ATEMP1 .GT. 0.) XUB(KBOUND(IP)+I) = ATEMP1
+-            IF (ATEMP1 .LT. 0.) XLB(KBOUND(IP)+I) =-ATEMP1
+-            GOTO 442
+-  435    CONTINUE
+-            XUB(KBOUND(IP)+I) =  DABS(ATEMP1)
+-            GOTO 442
+-  440    CONTINUE
+-            XLB(KBOUND(IP)+I) = -DABS(ATEMP1)
+-  442    CONTINUE
+-         IF (J .EQ. 3) GOTO 306
+-            IF (DABS(ATEMP2) .LE. ZTOLZE) GOTO 306
+-               J = 3
+-               ATEMP1 = ATEMP2
+-               GOTO 412
+-C
+-C     END OF CORE FILE
+-C
+-  450 CONTINUE
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         RETURN
+-C
+-C     COME HERE IF ANYTHING WENT WRONG
+-C
+- 9000 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         IF (IENDAT .EQ. 0) GOTO 9020
+-         IF (IENDAT .EQ. 1 .OR. NPER .NE. NPSEEN) GOTO 9010
+-            WRITE (IOLOG, 3000)
+-            RETURN
+-C
+- 9010    CONTINUE
+-            WRITE (IOLOG, 3010)
+-            GOTO 9999
+-C
+- 9020    CONTINUE
+-            IERR = 1
+-            WRITE (IOLOG, 3020)
+-            RETURN
+-C
+- 9100 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3100)
+-         GOTO 9999
+-C
+- 9110 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3110)
+-         GOTO 9999
+-C
+- 9150 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3150)
+-         GOTO 9999
+-C
+- 9200 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3200)
+-         GOTO 9999
+-C
+- 9300 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3300)
+-         GOTO 9999
+-C
+- 9600 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3600)
+-         GOTO 9999
+-C
+- 9700 CONTINUE
+-         WRITE (IOLOG, 1300)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3700)
+-         GOTO 9999
+-C
+- 9980 CONTINUE
+-         WRITE (IOLOG, 3980)
+-         GOTO 9999
+-C
+- 9999 CONTINUE
+-         CALL STOPIT
+-C
+- 1000 FORMAT(4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1100 FORMAT(' XXX -  FATAL  - Unmatched row and column names')
+- 1200 FORMAT(' XXX -  FATAL  - Unmatched variable name in column',
+-     *       ' section')
+- 1300 FORMAT(I8,4X,4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1700 FORMAT(' XXX -  FATAL  - Error in BOUNDS section.')
+- 2300 FORMAT(' XXX -  FATAL  - Illegal header card in CORE file')
+- 3000 FORMAT(' XXX - WARNING - Missing ENDATA card in CORE file')
+- 3010 FORMAT(' XXX -  FATAL  - Detected EOF in CORE file')
+- 3020 FORMAT(' XXX - WARNING - No information in CORE file')
+- 3100 FORMAT(' XXX -  FATAL  - Exceeded row capacity for single node')
+- 3110 FORMAT(' XXX -  FATAL  - Exceeded column capacity for one node')
+- 3150 FORMAT(' XXX -  FATAL  - Duplicate NAME card in core file')
+- 3200 FORMAT(' XXX -  FATAL  - Number of periods misspecified in ROWS',
+-     *       ' or COLUMNS section')
+- 3300 FORMAT(' XXX -  FATAL  - No COLUMNS section specified')
+- 3450 FORMAT(' XXX -  FATAL  - Simple recourse not implemented yet')
+- 3600 FORMAT(' XXX -  FATAL  - Illegal row type in RANGES section')
+- 3700 FORMAT(' XXX -  FATAL  - ROWS section is non-existent')
+- 3980 FORMAT(' XXX -  FATAL  - Error while reading CORE_FILE')
+-      END
+-C
+-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE INELEM (IROTYP, DTIME, IIPER, IPER0, JNODES, IERR,
+-     *                   NREC)
+-C
+-C     This subroutine reads the stoch file for independent realizations
+-C     of the random variables. It distinguishes between staircase and
+-C     block-triangular problems by means of the logical variable MARKOV.
+-C     This can be set in INCORE, since the sparsity structure is assumed
+-C     to be the same for all scenarios.
+-C
+-C                      -------------------------------
+-C                            Dated April 14, 1988
+-C                      -------------------------------
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*8 DNAME(3), DTIME(10), DBLANK, DSIMPL, DROW, DCOL,
+-     *            DOTS, DISCR, DBLOCK
+-      DIMENSION IROTYP(3000), LOC1(2000), LOC2(2000)
+-      EQUIVALENCE (LOC1,X), (LOC2,IE)
+-C
+-      DATA DBLANK/'        '/, DSIMPL/'SIMPLE  '/, DOTS  /'  ...   '/,
+-     *     DISCR /'DISCRETE'/
+-C
+-         DROW    = DBLANK
+-         DCOL    = DBLANK
+-         QTYP    = QBL
+-         NREALS  = 1
+-         JNODES  = 1
+-         IPREV   = 1
+-         NODES   = NPER
+-         IIPER   = 0
+-         IPER0   = 0
+-         PROB(1) = 1.0
+-C
+-C     START WITH SOME BOOK-KEEPING AND FIX THE PERIOD
+-C
+-  100    CONTINUE
+-         READ (IOSTO, 1000, ERR=9990, END=910)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QAST) GOTO 100
+-         IF (Q1 .EQ. QE  ) GOTO 900
+-         IF (Q1 .EQ. QBL ) GOTO 110
+-            WRITE (IOLOG, 1100)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 1600)
+-            GOTO 9999
+-C
+-C     First determine the period of this element
+-C
+-  110    CONTINUE
+-            IF (NECHO .GE. 5) WRITE (IOLOG, 1100)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            DO 130 IP=1,NPER
+-               IF (DNAME(3) .EQ. DTIME(IP)) GOTO 140
+-  130       CONTINUE
+-C
+-C     Infer the period from the row or column name
+-C
+-            DBLOCK = DNAME(2)
+-            IF (DBLOCK .EQ. NAMES(1)) DBLOCK = DNAME(1)
+-            DO 138 IP=1,NPER
+-            DO 138 J=1,NCOL(IP)
+-               IF (DBLOCK .EQ. NAMES(KNAMES(IP)+J)) GOTO 140
+-  138       CONTINUE
+-            GOTO 9875
+-C
+-C     First realization or repeat?
+-C
+-  140       CONTINUE
+-               IF (DNAME(1) .EQ. DCOL .AND. DNAME(2) .EQ. DROW .AND.
+-     *             IP .EQ. IIPER) GOTO 160
+-               IF (IP .LT. IIPER) GOTO 9850
+-                  DCOL   = DNAME(1)
+-                  DROW   = DNAME(2)
+-                  PROB1  = ATEMP2
+-                  JNODES = JNODES * NREALS
+-                  NREALS = 1
+-                  IIPER  = IP
+-                  NCURR = IRNGE0(IP)
+-                  IF (NECHO .GE. 2) WRITE (IOLOG, 1700)
+-     *               NREC,NREALS,DROW,DCOL
+-  150             CONTINUE
+-                     PROB(NCURR) = PROB(NCURR) * ATEMP2
+-                     NCURR = IABS(IBROTH(NCURR))
+-                     IF (NCURR .GT. 0) GOTO 150
+-                        GOTO 300
+-C
+-C     ANOTHER REALIZATION OF AN ELEMENT DETECTED BEFORE
+-C
+-  160    CONTINUE
+-            NREALS = NREALS + 1
+-            NREF   = IRNGE0(IP)
+-            NMTX   = IP
+-            IF (MARKOV .AND. IP .GT. 2) NMTX = 2
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1800) NREC,NREALS
+-C
+-C     Duplicate all the nodes existing in the current period
+-C
+-            DO 220 I=1,JNODES
+-               REFPRB = PROB(NREF)
+-               IF (NREALS .LE. 2) GOTO 180
+-                  DO 170 J=1,NREALS-2
+-                     NREF = IABS(IBROTH(NREF))
+-  170             CONTINUE
+-  180          CONTINUE
+-               NCURR = NODES + I
+-               IANCTR(NCURR) = IANCTR(NREF)
+-               IBROTH(NCURR) = IBROTH(NREF)
+-               IBROTH(NREF)  = NCURR
+-               PROB(NCURR)   = REFPRB * ATEMP2 / PROB1
+-               KROW(NCURR)   = KROW(NCURR-1) + NROW(NCURR-1)
+-               KCOL(NCURR)   = KCOL(NCURR-1) + NCOL(NCURR-1) + 1
+-               KNAMES(NCURR) = KNAMES(NREF)
+-               KBOUND(NCURR) = KBOUND(NREF)
+-               KCOST(NCURR)  = KCOST(NREF)
+-               KDATA(NCURR)  = LASTD
+-               KRHS(NCURR)   = KRHS(NREF)
+-               NROW(NCURR)   = NROW(IP)
+-               NCOL(NCURR)   = NCOL(IP)
+-               NTH(NCURR)    = NTH(IP)
+-               NCUT(NCURR)   = NCUT(IP)
+-               NREF  = IABS(IBROTH(NCURR))
+-               NROWS = NROW(NCURR)
+-               NCOLS = NCOL(NCURR)
+-               ICOL  = KCOL(NCURR)
+-               IROW  = KROW(NCURR)
+-               LASTD = LASTD + NMTX
+-               KDATC = KDATA(NCURR)
+-               KDATI = KDATA(IP)
+-               DO 190 IMTX=1,NMTX
+-                  KCOLA(KDATC+IMTX) = KCOLA(KDATI+IMTX)
+-                  KELMA(KDATC+IMTX) = KELMA(KDATI+IMTX)
+-                  NELMA(KDATC+IMTX) = NELMA(KDATI+IMTX)
+-  190          CONTINUE
+-               DO 200 J=1,NROWS
+-                  JH(IROW+J)     = ICOL + J
+-                  KINBAS(ICOL+J) = IROW + J
+-  200          CONTINUE
+-               DO 210 J=NROWS+1,NCOLS+1
+-                  KINBAS(ICOL+J) = 0
+-  210          CONTINUE
+-  220       CONTINUE
+-            NODES = NODES + JNODES
+-            IRNGE2(IP) = NODES
+-C
+-C     Now duplicate the rest of the tree as well
+-C
+-         DO 290 JP=IP+1,NPER
+-            NREF   = IRNGE0(JP)
+-            NMTX   = JP
+-            IF (MARKOV .AND. JP .GT. 2) NMTX = 2
+-            DO 280 I=1,JNODES
+-               IF (NREALS .LE. 2) GOTO 240
+-                  DO 230 J=1,NREALS-2
+-                     NREF = IABS(IBROTH(NREF))
+-  230             CONTINUE
+-  240          CONTINUE
+-               NCURR = NODES + I
+-               NPREV = NCURR - JNODES
+-               IANCTR(NCURR) = NPREV
+-               IDESC(NPREV)  = NCURR
+-               IBROTH(NCURR) = IBROTH(NREF)
+-               IBROTH(NREF)  = -NCURR
+-               PROB(NCURR)   = 1.0
+-               KROW(NCURR)   = KROW(NCURR-1) + NROW(NCURR-1)
+-               KCOL(NCURR)   = KCOL(NCURR-1) + NCOL(NCURR-1) + 1
+-               KNAMES(NCURR) = KNAMES(NREF)
+-               KBOUND(NCURR) = KBOUND(NREF)
+-               KCOST(NCURR)  = KCOST(NREF)
+-               KDATA(NCURR)  = LASTD
+-               KRHS(NCURR)   = KRHS(NREF)
+-               NROW(NCURR)   = NROW(JP)
+-               NCOL(NCURR)   = NCOL(JP)
+-               NTH(NCURR)    = NTH(JP)
+-               NCUT(NCURR)   = NCUT(JP)
+-               NREF  = IABS(IBROTH(NCURR))
+-               NROWS = NROW(NCURR)
+-               NCOLS = NCOL(NCURR)
+-               ICOL  = KCOL(NCURR)
+-               IROW  = KROW(NCURR)
+-               LASTD = LASTD + NMTX
+-               KDATC = KDATA(NCURR)
+-               KDATI = KDATA(JP)
+-               DO 250 IMTX=1,NMTX
+-                  KCOLA(KDATC+IMTX) = KCOLA(KDATI+IMTX)
+-                  KELMA(KDATC+IMTX) = KELMA(KDATI+IMTX)
+-                  NELMA(KDATC+IMTX) = NELMA(KDATI+IMTX)
+-  250          CONTINUE
+-               DO 260 J=1,NROWS
+-                  JH(IROW+J)     = ICOL + J
+-                  KINBAS(ICOL+J) = IROW + J
+-  260          CONTINUE
+-               DO 270 J=NROWS+1,NCOLS+1
+-                  KINBAS(ICOL+J) = 0
+-  270          CONTINUE
+-  280       CONTINUE
+-            NODES = NODES + JNODES
+-            IRNGE2(JP) = NODES
+-  290    CONTINUE
+-C
+-C     DETERMINE THE TYPE OF THE RANDOM ELEMENT AND ITS ROW
+-C
+-  300          CONTINUE
+-                  DO 310 LP=IP,NPER
+-                  DO 310 LROW=1,NCOL(LP)
+-                     IF (DROW .EQ. NAMES(KNAMES(LP)+LROW)) GOTO 330
+-  310             CONTINUE
+-C
+-                  DO 320 I=1,NROW(1)
+-                     IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2)
+-     *                  GOTO 890
+-  320             CONTINUE
+-                  GOTO 9875
+-C
+-  330          CONTINUE
+-                  IF (DROW .EQ. NAMES(1)) GOTO 400
+-                  IF (DCOL .EQ. DBOUND  ) GOTO 600
+-                  IF (DCOL .EQ. DRANGE  ) GOTO 610
+-                  IF (DCOL .EQ. DXI     ) GOTO 500
+-                  DO 350 JMTX=1,LP
+-                     IF (MARKOV .AND. JMTX .GE. 3) GOTO 360
+-                        JP = LP + 1 - JMTX
+-                        JNAME = KNAMES(JP) + NROW(JP)
+-                        DO 340 LCOL=1,NCOL(JP)-NROW(JP)
+-                           IF (DCOL .EQ. NAMES(JNAME+LCOL)) GOTO 700
+-  340                   CONTINUE
+-  350             CONTINUE
+-C
+-  360          CONTINUE
+-                  LROWS = NROW(1)
+-                  DO 370 I=1,LROWS
+-                     IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2)
+-     *                  GOTO 890
+-  370             CONTINUE
+-                  GOTO 9875
+-C
+-C     HERE WE HAVE A RANDOM COST COEFFICIENT. COPY INFO IF NECESSARY
+-C
+-  400          CONTINUE
+-                  DO 410 LP=IP,NPER
+-                     JNAME = KNAMES(LP) + NROW(LP)
+-                     DO 410 LPOSC=1,NCOL(LP)-NROW(LP)
+-                        IF (DCOL .EQ. NAMES(JNAME+LPOSC)) GOTO 420
+-  410             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 2100)
+-                  GOTO 9999
+-C
+-  420          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 440
+-                     NREF = IRNGE0(LP)
+-                     DO 430 I=1,JNODES
+-                        COST(KCOST(NREF)+LPOSC) = ATEMP1
+-                        NREF = IABS(IBROTH(NREF))
+-  430                CONTINUE
+-                     GOTO 890
+-C
+-  440             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IF (KCOST(NODE0+1) .NE. KCOST(IRNGE0(LP))) GOTO 480
+-C
+-C     Copy the cost coefficients
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 470 I=1,JNODES
+-                        DO 450 JC=1,NCPD
+-                           IF (KCOST(NREF) .NE. LOC1(JC)) GOTO 450
+-                              KCOST(NODE0+I) = LOC2(JC)
+-                              GOTO 465
+-  450                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KCOST(NREF)
+-                           LOC2(NCPD) = LASTC
+-                           KCOST(NODE0+I) = LASTC
+-                           KCREF = KCOST(NREF)
+-                           DO 460 JCOEF=1,NCOL(LP)-NROW(LP)
+-                              COST(LASTC+JCOEF) = COST(KCREF+JCOEF)
+-  460                      CONTINUE
+-                           COST(LASTC+LPOSC) = ATEMP1
+-                           LASTC = LASTC + NCOL(LP) - NROW(LP)
+-  465                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 465
+-  470                CONTINUE
+-                     GOTO 890
+-C
+-  480             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 490 I=1,JNODES
+-                        COST(KCOST(NODE0+I)+LPOSC) = ATEMP1
+-  490                CONTINUE
+-                     GOTO 890
+-C
+-C     HERE WE HAVE A RANDOM RHS
+-C
+-  500          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 540
+-                     NREF = IRNGE0(LP)
+-                     DO 530 I=1,JNODES
+-                        XI(KRHS(NREF)+LROW) = ATEMP1
+-                        NREF = IABS(IBROTH(NREF))
+-  530                CONTINUE
+-                     GOTO 890
+-C
+-  540             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IF (KRHS(NODE0+1) .NE. KRHS(IRNGE0(LP))) GOTO 580
+-C
+-C     Copy the coefficients of the rhs.
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 570 I=1,JNODES
+-                        DO 550 JC=1,NCPD
+-                           IF (KRHS(NREF) .NE. LOC1(JC)) GOTO 550
+-                              KRHS(NODE0+I) = LOC2(JC)
+-                              GOTO 565
+-  550                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KRHS(NREF)
+-                           LOC2(NCPD) = LASTR
+-                           KRHS(NODE0+I) = LASTR
+-                           KCREF = KRHS(NREF)
+-                           DO 560 JCOEF=1,NROW(LP)
+-                              XI(LASTR+JCOEF) = XI(KCREF+JCOEF)
+-  560                      CONTINUE
+-                           XI(LASTR+LROW) = ATEMP1
+-                           LASTR = LASTR + NROW(LP)
+-  565                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 565
+-  570                CONTINUE
+-                     GOTO 890
+-C
+-  580             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 590 I=1,JNODES
+-                        XI(KRHS(NODE0+I)+LROW) = ATEMP1
+-  590                CONTINUE
+-                     GOTO 890
+-C
+-C     RANDOM BOUND ON A DECISION VARIABLE
+-C
+-  600          CONTINUE
+-                  JL = 0
+-                  JU = 0
+-                  IF (LROW .LE. NROW(IP)) GOTO 9060
+-                     IF (Q3 .EQ. QP .OR. Q3 .EQ. QX) JU = 1
+-                     IF (Q3 .EQ. QP .OR. Q3 .EQ. QX) TMPU = ATEMP1
+-                     IF (Q3 .EQ. QO .OR. Q3 .EQ. QX) JL = 1
+-                     IF (Q3 .EQ. QO .OR. Q3 .EQ. QX) TMPL = ATEMP1
+-                     IF (Q3 .EQ. QR .OR. Q3 .EQ. QL) JU = 1
+-                     IF (Q3 .EQ. QR .OR. Q3 .EQ. QL) TMPU = 1.D8
+-                     IF (Q3 .EQ. QL .OR. Q3 .EQ. QI) JL = 1
+-                     IF (Q3 .EQ. QL .OR. Q3 .EQ. QI) TMPL = -1.D8
+-                     GOTO 620
+-C
+-C     STOCHASTIC RANGE FOR ONE OF THE ROWS
+-C
+-  610          CONTINUE
+-                  JL = 0
+-                  JU = 0
+-                  IT = IROTYP(KRHS(IP) + LROW)
+-                  IF (IT .EQ. -1) GOTO 617
+-                  IF (IT .EQ.  1) GOTO 616
+-                  IF (IT .NE.  0) GOTO 9070
+-                  IF (ATEMP1 .GT. 0.0) GOTO 615
+-                     JL = 1
+-                     TMPL = ATEMP1
+-                     GOTO 620
+-  615             CONTINUE
+-                     JU = 1
+-                     TMPU = ATEMP1
+-                     GOTO 620
+-  616             CONTINUE
+-                     JU = 1
+-                     TMPU = DABS(ATEMP1)
+-                     GOTO 620
+-  617             CONTINUE
+-                     JL = 1
+-                     TMPL = -DABS(ATEMP1)
+-C
+-C     Store the coefficients in arrays XLB and XUB.
+-C
+-  620          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 640
+-                     NREF = IRNGE0(LP)
+-                     DO 630 I=1,JNODES
+-                        IF (JL .EQ. 1) XLB(KBOUND(NREF)+LROW) = TMPL
+-                        IF (JU .EQ. 1) XUB(KBOUND(NREF)+LROW) = TMPU
+-                        NREF = IABS(IBROTH(NREF))
+-  630                CONTINUE
+-                     GOTO 890
+-C
+-  640             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IF (KBOUND(NODE0+1) .NE. KBOUND(IRNGE0(LP)))
+-     *                  GOTO 680
+-C
+-C     Copy the bounds.
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 670 I=1,JNODES
+-                        DO 650 JC=1,NCPD
+-                           IF (KBOUND(NREF) .NE. LOC1(JC)) GOTO 650
+-                              KBOUND(NODE0+I) = LOC2(JC)
+-                              GOTO 665
+-  650                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KBOUND(NREF)
+-                           LOC2(NCPD) = LASTBD
+-                           KBOUND(NODE0+I) = LASTBD
+-                           KCREF = KBOUND(NREF)
+-                           DO 660 JCOEF=1,NCOL(LP)+1
+-                              XLB(LASTBD+JCOEF) = XLB(KCREF+JCOEF)
+-                              XLB(LASTBD+JCOEF) = XLB(KCREF+JCOEF)
+-  660                      CONTINUE
+-                           IF (JL .EQ. 1) XLB(LASTBD+LROW) = TMPL
+-                           IF (JU .EQ. 1) XUB(LASTBD+LROW) = TMPU
+-                           LASTBD = LASTBD + NCOL(LP) + 1
+-  665                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 665
+-  670                CONTINUE
+-                     GOTO 890
+-C
+-  680             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 690 I=1,JNODES
+-                        IF (JL .EQ. 1) XLB(KBOUND(NODE0+I)+LROW) = TMPL
+-                        IF (JU .EQ. 1) XUB(KBOUND(NODE0+I)+LROW) = TMPU
+-  690                CONTINUE
+-                     GOTO 890
+-C
+-C     HERE WE HAVE A RANDOM COEFFICIENT IN THE CONSTRAINT MATRIX
+-C
+-  700          CONTINUE
+-                  IASTO(LP,JMTX) = 1
+-                  JELMA = KELMA(KDATA(LP)+JMTX)
+-                  LL = LA(KCOLA(KDATA(LP)+JMTX)+LCOL)
+-                  KK = LA(KCOLA(KDATA(LP)+JMTX)+LCOL+1) - 1
+-                  DO 710 LPOSA=LL,KK
+-                     IF (IA(JELMA+LPOSA) .EQ. LROW) GOTO 720
+-  710             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 2200)
+-                  GOTO 9999
+-C
+-  720          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 740
+-                     NREF = IRNGE0(LP)
+-                     DO 730 I=1,JNODES
+-                        A(KELMA(KDATA(NREF)+JMTX)+LPOSA) = ATEMP1
+-                        NREF = IABS(IBROTH(NREF))
+-  730                CONTINUE
+-                     GOTO 890
+-C
+-  740             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IAREF = KDATA(IRNGE0(LP)) + JMTX
+-                     IACUR = KDATA(NODE0+1)    + JMTX
+-                     IF (KELMA(IACUR) .NE. KELMA(IAREF)) GOTO 780
+-C
+-C     Copy the A coefficients
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 770 I=1,JNODES
+-                        DO 750 JC=1,NCPD
+-                           IAREF = KDATA(NREF) + JMTX
+-                           IF (KELMA(IAREF) .NE. LOC1(JC)) GOTO 750
+-                              KELMA(KDATA(NODE0+I)+JMTX) = LOC2(JC)
+-                              GOTO 765
+-  750                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KELMA(KDATA(NREF)+JMTX)
+-                           LOC2(NCPD) = LASTA
+-                           KELMA(KDATA(NODE0+I)+JMTX) = LASTA
+-                           KCREF = KELMA(KDATA(NREF)+JMTX)
+-                           NELMS = NELMA(KDATA(NREF)+JMTX)
+-                           DO 760 JCOEF=1,NELMS
+-                               A(LASTA+JCOEF) =  A(KCREF+JCOEF)
+-                              IA(LASTA+JCOEF) = IA(KCREF+JCOEF)
+-  760                      CONTINUE
+-                           A(LASTA+LPOSA) = ATEMP1
+-                           LASTA = LASTA + NELMS
+-  765                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 765
+-  770                CONTINUE
+-                     GOTO 890
+-C
+-  780             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 790 I=1,JNODES
+-                        A(KELMA(KDATA(NODE0+I)+JMTX)+LPOSA) = ATEMP1
+-  790                CONTINUE
+-C
+-C     ONLY ONE ELEMENT PER RECORD. GET THE NEXT CASE.
+-C
+-  890             CONTINUE
+-                     GOTO 100
+-C
+-C     Have found an ENDATA card
+-C
+-  900 CONTINUE
+-         JNODES = JNODES * NREALS
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         RETURN
+-C
+-  910 CONTINUE
+-         JNODES = JNODES * NREALS
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1200)
+-         RETURN
+-C
+-C     COME HERE IF ANYTHING WENT WRONG
+-C
+- 9060 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3060)
+-         GOTO 9999
+-C
+- 9070 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3070)
+-         GOTO 9999
+-C
+- 9850 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3850)
+-         GOTO 9999
+-C
+- 9875 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3875)
+-         GOTO 9999
+-C
+- 9990 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3990)
+- 9999 CONTINUE
+-         CALL STOPIT
+-C
+- 1000 FORMAT(4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1100 FORMAT(I8,4X,4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1200 FORMAT(' XXX - WARNING - Missing ENDATA card')
+- 1600 FORMAT(' XXX -  FATAL  - Illegal header card in STOCH file')
+- 1700 FORMAT(I8,4X,' Found realization number',I4,' in location ',A8,
+-     *       ' - ',A8)
+- 1800 FORMAT(I8,4X,' Found realization number',I4)
+- 1900 FORMAT(' XXX -  FATAL  - Illegal type of random element')
+- 2100 FORMAT(' XXX -  FATAL  - Unmatched variable name')
+- 2200 FORMAT(' XXX -  FATAL  - Location of random element undefined')
+- 3060 FORMAT(' XXX -  FATAL  - Attempt to set explicit bound on logical'
+-     *       ,' variable')
+- 3070 FORMAT(' XXX -  FATAL  - Illegal row type in stochastic RANGES',
+-     *       ' section')
+- 3850 FORMAT(' XXX -  FATAL  - Chronological order violated for random',
+-     *       ' elements')
+- 3875 FORMAT(' XXX -  FATAL  - Illegal type of random element')
+- 3990 FORMAT(' XXX -  FATAL  - Error while reading STOCH_FILE')
+-      END
+-C
+-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE INBLOK (IROTYP, DTIME, IIPER, IPER0, JNODES, IERR,
+-     *                   NREC)
+-C
+-C     This subroutine reads BLOCK structure, both for staircase and
+-C     full block-triangular problems.
+-C
+-C                    -----------------------------------
+-C                    |   Version of January 28, 1988   |
+-C                    -----------------------------------
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*8 DNAME(3), DTIME(10), DBLANK, DSIMPL, DROW, DCOL,
+-     *            DOTS, DISCR, DBLOCK
+-      DIMENSION IROTYP(3000), LOC1(2000), LOC2(2000)
+-      EQUIVALENCE (LOC1,X), (LOC2,IE)
+-C
+-      DATA DBLANK/'        '/, DSIMPL/'SIMPLE  '/, DOTS  /'  ...   '/,
+-     *     DISCR /'DISCRETE'/
+-C
+-         DROW    = DBLANK
+-         DCOL    = DBLANK
+-         QTYP    = QBL
+-         NREALS  = 1
+-         JNODES  = 1
+-         IPREV   = 1
+-         NODES   = NPER
+-         IIPER   = 0
+-         IPER0   = 0
+-         PROB(1) = 1.0
+-C
+-C     START WITH SOME BOOK-KEEPING AND FIX THE PERIOD
+-C
+-  100    CONTINUE
+-         READ (IOSTO, 1000, ERR=9990, END=910)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QAST) GOTO 100
+-         IF (Q1 .EQ. QE  ) GOTO 900
+-         IF (Q1 .EQ. QBL ) GOTO 110
+-            WRITE (IOLOG, 1100)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 1600)
+-            GOTO 9999
+-C
+-  110    CONTINUE
+-            IF (Q2 .EQ. QB .AND. Q3 .EQ. QL) GOTO 120
+-            IF (NECHO .GE. 5) WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,
+-     *                DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-               DCOL = DNAME(1)
+-               DROW = DNAME(2)
+-               GOTO 300
+-C
+-  120       CONTINUE
+-               IF (DNAME(1) .EQ. DBLOCK) GOTO 160
+-C
+-C     Another BL card has been detected. Find period of this block
+-C
+-                  DBLOCK = DNAME(1)
+-                  DO 130 IP=1,NPER
+-                     IF (DNAME(2) .EQ. DTIME(IP)) GOTO 140
+-  130             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 2000)
+-                  GOTO 9999
+-C
+-C     First realization of a new block
+-C
+-  140       CONTINUE
+-               IF (IP .LT. IIPER) GOTO 9850
+-                  PROB1  = ATEMP1
+-                  JNODES = JNODES * NREALS
+-                  NREALS = 1
+-                  IIPER  = IP
+-                  NCURR  = IRNGE0(IP)
+-                  IF (NECHO .LT. 2) GOTO 150
+-                  IF (NECHO .LT. 5) WRITE (IOLOG, 1700)
+-     *               NREC, NREALS, DBLOCK
+-                  IF (NECHO .GE. 5) WRITE (IOLOG, 1300)
+-     *               NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),DNAME(3),NREALS
+-  150             CONTINUE
+-                     PROB(NCURR) = PROB(NCURR) * ATEMP1
+-                     NCURR = IABS(IBROTH(NCURR))
+-                     IF (NCURR .GT. 0) GOTO 150
+-                        GOTO 100
+-C
+-C     ANOTHER REALIZATION OF A BLOCK DETECTED BEFORE
+-C
+-  160    CONTINUE
+-            NREALS = NREALS + 1
+-            NREF   = IRNGE0(IP)
+-            NMTX   = IP
+-            IF (MARKOV .AND. IP .GT. 2) NMTX = 2
+-            IF (NECHO .LT. 2) GOTO 165
+-            IF (NECHO .LT. 5) WRITE (IOLOG, 1800) NREC,NREALS
+-            IF (NECHO .GE. 5) WRITE (IOLOG, 1300)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),DNAME(3),NREALS
+-C
+-C     Duplicate all the nodes existing in the current period
+-C
+-  165    CONTINUE
+-            DO 220 I=1,JNODES
+-               REFPRB = PROB(NREF)
+-               IF (NREALS .LE. 2) GOTO 180
+-                  DO 170 J=1,NREALS-2
+-                     NREF = IABS(IBROTH(NREF))
+-  170             CONTINUE
+-  180          CONTINUE
+-               NCURR = NODES + I
+-               IANCTR(NCURR) = IANCTR(NREF)
+-               IBROTH(NCURR) = IBROTH(NREF)
+-               IBROTH(NREF)  = NCURR
+-               PROB(NCURR)   = REFPRB * ATEMP1 / PROB1
+-               KROW(NCURR)   = KROW(NCURR-1) + NROW(NCURR-1)
+-               KCOL(NCURR)   = KCOL(NCURR-1) + NCOL(NCURR-1) + 1
+-               KNAMES(NCURR) = KNAMES(NREF)
+-               KBOUND(NCURR) = KBOUND(NREF)
+-               KCOST(NCURR)  = KCOST(NREF)
+-               KDATA(NCURR)  = LASTD
+-               KRHS(NCURR)   = KRHS(NREF)
+-               NROW(NCURR)   = NROW(IP)
+-               NCOL(NCURR)   = NCOL(IP)
+-               NTH(NCURR)    = NTH(IP)
+-               NCUT(NCURR)   = NCUT(IP)
+-               NREF  = IABS(IBROTH(NCURR))
+-               NROWS = NROW(NCURR)
+-               NCOLS = NCOL(NCURR)
+-               ICOL  = KCOL(NCURR)
+-               IROW  = KROW(NCURR)
+-               LASTD = LASTD + NMTX
+-               KDATC = KDATA(NCURR)
+-               KDATI = KDATA(IP)
+-               DO 190 IMTX=1,NMTX
+-                  KCOLA(KDATC+IMTX) = KCOLA(KDATI+IMTX)
+-                  KELMA(KDATC+IMTX) = KELMA(KDATI+IMTX)
+-                  NELMA(KDATC+IMTX) = NELMA(KDATI+IMTX)
+-  190          CONTINUE
+-               DO 200 J=1,NROWS
+-                  JH(IROW+J)     = ICOL + J
+-                  KINBAS(ICOL+J) = IROW + J
+-  200          CONTINUE
+-               DO 210 J=NROWS+1,NCOLS+1
+-                  KINBAS(ICOL+J) = 0
+-  210          CONTINUE
+-  220       CONTINUE
+-            NODES = NODES + JNODES
+-            IRNGE2(IP) = NODES
+-C
+-C     Now duplicate the rest of the tree as well
+-C
+-         DO 290 JP=IP+1,NPER
+-            NREF   = IRNGE0(JP)
+-            NMTX   = JP
+-            IF (MARKOV .AND. JP .GT. 2) NMTX = 2
+-            DO 280 I=1,JNODES
+-               IF (NREALS .LE. 2) GOTO 240
+-                  DO 230 J=1,NREALS-2
+-                     NREF = IABS(IBROTH(NREF))
+-  230             CONTINUE
+-  240          CONTINUE
+-               NCURR = NODES + I
+-               NPREV = NCURR - JNODES
+-               IANCTR(NCURR) = NPREV
+-               IDESC(NPREV)  = NCURR
+-               IBROTH(NCURR) = IBROTH(NREF)
+-               IBROTH(NREF)  = -NCURR
+-               PROB(NCURR)   = 1.0
+-               KROW(NCURR)   = KROW(NCURR-1) + NROW(NCURR-1)
+-               KCOL(NCURR)   = KCOL(NCURR-1) + NCOL(NCURR-1) + 1
+-               KNAMES(NCURR) = KNAMES(NREF)
+-               KBOUND(NCURR) = KBOUND(NREF)
+-               KCOST(NCURR)  = KCOST(NREF)
+-               KDATA(NCURR)  = LASTD
+-               KRHS(NCURR)   = KRHS(NREF)
+-               NROW(NCURR)   = NROW(JP)
+-               NCOL(NCURR)   = NCOL(JP)
+-               NTH(NCURR)    = NTH(JP)
+-               NCUT(NCURR)   = NCUT(JP)
+-               NREF  = IABS(IBROTH(NCURR))
+-               NROWS = NROW(NCURR)
+-               NCOLS = NCOL(NCURR)
+-               ICOL  = KCOL(NCURR)
+-               IROW  = KROW(NCURR)
+-               LASTD = LASTD + NMTX
+-               KDATC = KDATA(NCURR)
+-               KDATI = KDATA(JP)
+-               DO 250 IMTX=1,NMTX
+-                  KCOLA(KDATC+IMTX) = KCOLA(KDATI+IMTX)
+-                  KELMA(KDATC+IMTX) = KELMA(KDATI+IMTX)
+-                  NELMA(KDATC+IMTX) = NELMA(KDATI+IMTX)
+-  250          CONTINUE
+-               DO 260 J=1,NROWS
+-                  JH(IROW+J)     = ICOL + J
+-                  KINBAS(ICOL+J) = IROW + J
+-  260          CONTINUE
+-               DO 270 J=NROWS+1,NCOLS+1
+-                  KINBAS(ICOL+J) = 0
+-  270          CONTINUE
+-  280       CONTINUE
+-            NODES = NODES + JNODES
+-            IRNGE2(JP) = NODES
+-  290    CONTINUE
+-            GOTO 100
+-C
+-C     DETERMINE THE TYPE OF THE RANDOM ELEMENT AND ITS ROW
+-C
+-  300          CONTINUE
+-                  DO 310 LP=IP,NPER
+-                  DO 310 LROW=1,NCOL(LP)
+-                     IF (DROW .EQ. NAMES(KNAMES(LP)+LROW)) GOTO 330
+-  310             CONTINUE
+-C
+-                  DO 320 I=1,NROW(1)
+-                     IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2)
+-     *                  GOTO 890
+-  320             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 1900)
+-                  GOTO 9999
+-C
+-  330          CONTINUE
+-                  IF (DROW .EQ. NAMES(1)) GOTO 400
+-                  IF (DCOL .EQ. DBOUND  ) GOTO 600
+-                  IF (DCOL .EQ. DRANGE  ) GOTO 610
+-                  IF (DCOL .EQ. DXI     ) GOTO 500
+-                  DO 350 JMTX=1,LP
+-                     IF (MARKOV .AND. JMTX .GE. 3) GOTO 360
+-                        JP = LP + 1 - JMTX
+-                        JNAME = KNAMES(JP) + NROW(JP)
+-                        DO 340 LCOL=1,NCOL(JP)-NROW(JP)
+-                           IF (DCOL .EQ. NAMES(JNAME+LCOL)) GOTO 700
+-  340                   CONTINUE
+-  350             CONTINUE
+-C
+-  360          CONTINUE
+-                  LROWS = NROW(1)
+-                  DO 370 I=1,LROWS
+-                     IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2)
+-     *                  GOTO 890
+-  370             CONTINUE
+-                  GOTO 9875
+-C
+-C     HERE WE HAVE A RANDOM COST COEFFICIENT. COPY INFO IF NECESSARY
+-C
+-  400          CONTINUE
+-                  DO 410 LP=IP,NPER
+-                     JNAME = KNAMES(LP) + NROW(LP)
+-                     DO 410 LPOSC=1,NCOL(LP)-NROW(LP)
+-                        IF (DCOL .EQ. NAMES(JNAME+LPOSC)) GOTO 420
+-  410             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 2100)
+-                  GOTO 9999
+-C
+-  420          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 440
+-                     NREF = IRNGE0(LP)
+-                     DO 430 I=1,JNODES
+-                        COST(KCOST(NREF)+LPOSC) = ATEMP1
+-                        NREF = IABS(IBROTH(NREF))
+-  430                CONTINUE
+-                     GOTO 890
+-C
+-  440             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IF (KCOST(NODE0+1) .NE. KCOST(IRNGE0(LP))) GOTO 480
+-C
+-C     Copy the cost coefficients
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 470 I=1,JNODES
+-                        DO 450 JC=1,NCPD
+-                           IF (KCOST(NREF) .NE. LOC1(JC)) GOTO 450
+-                              KCOST(NODE0+I) = LOC2(JC)
+-                              GOTO 465
+-  450                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KCOST(NREF)
+-                           LOC2(NCPD) = LASTC
+-                           KCOST(NODE0+I) = LASTC
+-                           KCREF = KCOST(NREF)
+-                           DO 460 JCOEF=1,NCOL(LP)-NROW(LP)
+-                              COST(LASTC+JCOEF) = COST(KCREF+JCOEF)
+-  460                      CONTINUE
+-                           COST(LASTC+LPOSC) = ATEMP1
+-                           LASTC = LASTC + NCOL(LP) - NROW(LP)
+-  465                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 465
+-  470                CONTINUE
+-                     GOTO 890
+-C
+-  480             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 490 I=1,JNODES
+-                        COST(KCOST(NODE0+I)+LPOSC) = ATEMP1
+-  490                CONTINUE
+-                     GOTO 890
+-C
+-C     HERE WE HAVE A RANDOM RHS
+-C
+-  500          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 540
+-                     NREF = IRNGE0(LP)
+-                     DO 530 I=1,JNODES
+-                        XI(KRHS(NREF)+LROW) = ATEMP1
+-                        NREF = IABS(IBROTH(NREF))
+-  530                CONTINUE
+-                     GOTO 890
+-C
+-  540             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IF (KRHS(NODE0+1) .NE. KRHS(IRNGE0(LP))) GOTO 580
+-C
+-C     Copy the coefficients of the rhs.
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 570 I=1,JNODES
+-                        DO 550 JC=1,NCPD
+-                           IF (KRHS(NREF) .NE. LOC1(JC)) GOTO 550
+-                              KRHS(NODE0+I) = LOC2(JC)
+-                              GOTO 565
+-  550                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KRHS(NREF)
+-                           LOC2(NCPD) = LASTR
+-                           KRHS(NODE0+I) = LASTR
+-                           KCREF = KRHS(NREF)
+-                           DO 560 JCOEF=1,NROW(LP)
+-                              XI(LASTR+JCOEF) = XI(KCREF+JCOEF)
+-  560                      CONTINUE
+-                           XI(LASTR+LROW) = ATEMP1
+-                           LASTR = LASTR + NROW(LP)
+-  565                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 565
+-  570                CONTINUE
+-                     GOTO 890
+-C
+-  580             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 590 I=1,JNODES
+-                        XI(KRHS(NODE0+I)+LROW) = ATEMP1
+-  590                CONTINUE
+-                     GOTO 890
+-C
+-C     RANDOM BOUND ON A DECISION VARIABLE
+-C
+-  600          CONTINUE
+-                  JL = 0
+-                  JU = 0
+-                  IF (LROW .LE. NROW(IP)) GOTO 9060
+-                     IF (Q3 .EQ. QP .OR. Q3 .EQ. QX) JU = 1
+-                     IF (Q3 .EQ. QP .OR. Q3 .EQ. QX) TMPU = ATEMP1
+-                     IF (Q3 .EQ. QO .OR. Q3 .EQ. QX) JL = 1
+-                     IF (Q3 .EQ. QO .OR. Q3 .EQ. QX) TMPL = ATEMP1
+-                     IF (Q3 .EQ. QR .OR. Q3 .EQ. QL) JU = 1
+-                     IF (Q3 .EQ. QR .OR. Q3 .EQ. QL) TMPU = 1.D8
+-                     IF (Q3 .EQ. QL .OR. Q3 .EQ. QI) JL = 1
+-                     IF (Q3 .EQ. QL .OR. Q3 .EQ. QI) TMPL = -1.D8
+-                     GOTO 620
+-C
+-C     STOCHASTIC RANGE FOR ONE OF THE ROWS
+-C
+-  610          CONTINUE
+-                  JL = 0
+-                  JU = 0
+-                  IT = IROTYP(KRHS(IP) + LROW)
+-                  IF (IT .EQ. -1) GOTO 617
+-                  IF (IT .EQ.  1) GOTO 616
+-                  IF (IT .NE.  0) GOTO 9070
+-                  IF (ATEMP1 .GT. 0.0) GOTO 615
+-                     JL = 1
+-                     TMPL = ATEMP1
+-                     GOTO 620
+-  615             CONTINUE
+-                     JU = 1
+-                     TMPU = ATEMP1
+-                     GOTO 620
+-  616             CONTINUE
+-                     JU = 1
+-                     TMPU = DABS(ATEMP1)
+-                     GOTO 620
+-  617             CONTINUE
+-                     JL = 1
+-                     TMPL = -DABS(ATEMP1)
+-C
+-C     Store the coefficients in arrays XLB and XUB.
+-C
+-  620          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 640
+-                     NREF = IRNGE0(LP)
+-                     DO 630 I=1,JNODES
+-                        IF (JL .EQ. 1) XLB(KBOUND(NREF)+LROW) = TMPL
+-                        IF (JU .EQ. 1) XUB(KBOUND(NREF)+LROW) = TMPU
+-                        NREF = IABS(IBROTH(NREF))
+-  630                CONTINUE
+-                     GOTO 890
+-C
+-  640             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IF (KBOUND(NODE0+1) .NE. KBOUND(IRNGE0(LP)))
+-     *                  GOTO 680
+-C
+-C     Copy the bounds.
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 670 I=1,JNODES
+-                        DO 650 JC=1,NCPD
+-                           IF (KBOUND(NREF) .NE. LOC1(JC)) GOTO 650
+-                              KBOUND(NODE0+I) = LOC2(JC)
+-                              GOTO 665
+-  650                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KBOUND(NREF)
+-                           LOC2(NCPD) = LASTBD
+-                           KBOUND(NODE0+I) = LASTBD
+-                           KCREF = KBOUND(NREF)
+-                           DO 660 JCOEF=1,NCOL(LP)+1
+-                              XLB(LASTBD+JCOEF) = XLB(KCREF+JCOEF)
+-                              XLB(LASTBD+JCOEF) = XLB(KCREF+JCOEF)
+-  660                      CONTINUE
+-                           IF (JL .EQ. 1) XLB(LASTBD+LROW) = TMPL
+-                           IF (JU .EQ. 1) XUB(LASTBD+LROW) = TMPU
+-                           LASTBD = LASTBD + NCOL(LP) + 1
+-  665                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 665
+-  670                CONTINUE
+-                     GOTO 890
+-C
+-  680             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 690 I=1,JNODES
+-                        IF (JL .EQ. 1) XLB(KBOUND(NODE0+I)+LROW) = TMPL
+-                        IF (JU .EQ. 1) XUB(KBOUND(NODE0+I)+LROW) = TMPU
+-  690                CONTINUE
+-                     GOTO 890
+-C
+-C     HERE WE HAVE A RANDOM COEFFICIENT IN THE CONSTRAINT MATRIX
+-C
+-  700          CONTINUE
+-                  IASTO(LP,JMTX) = 1
+-                  JELMA = KELMA(KDATA(LP)+JMTX)
+-                  LL = LA(KCOLA(KDATA(LP)+JMTX)+LCOL)
+-                  KK = LA(KCOLA(KDATA(LP)+JMTX)+LCOL+1) - 1
+-                  DO 710 LPOSA=LL,KK
+-                     IF (IA(JELMA+LPOSA) .EQ. LROW) GOTO 720
+-  710             CONTINUE
+-                  WRITE (IOLOG, 1000) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 2200)
+-                  GOTO 9999
+-C
+-  720          CONTINUE
+-                  IF (NREALS .GT. 1) GOTO 740
+-                     NREF = IRNGE0(LP)
+-                     DO 730 I=1,JNODES
+-                        A(KELMA(KDATA(NREF)+JMTX)+LPOSA) = ATEMP1
+-                        NREF = IABS(IBROTH(NREF))
+-  730                CONTINUE
+-                     GOTO 890
+-C
+-  740             CONTINUE
+-                     NODE0 = NODES - JNODES*(NPER+1-LP)
+-                     IAREF = KDATA(IRNGE0(LP)) + JMTX
+-                     IACUR = KDATA(NODE0+1)    + JMTX
+-                     IF (KELMA(IACUR) .NE. KELMA(IAREF)) GOTO 780
+-C
+-C     Copy the A coefficients
+-C
+-                     NREF = IRNGE0(LP)
+-                     NCPD = 0
+-                     DO 770 I=1,JNODES
+-                        DO 750 JC=1,NCPD
+-                           IAREF = KDATA(NREF) + JMTX
+-                           IF (KELMA(IAREF) .NE. LOC1(JC)) GOTO 750
+-                              KELMA(KDATA(NODE0+I)+JMTX) = LOC2(JC)
+-                              GOTO 765
+-  750                   CONTINUE
+-                           NCPD = NCPD + 1
+-                           LOC1(NCPD) = KELMA(KDATA(NREF)+JMTX)
+-                           LOC2(NCPD) = LASTA
+-                           KELMA(KDATA(NODE0+I)+JMTX) = LASTA
+-                           KCREF = KELMA(KDATA(NREF)+JMTX)
+-                           NELMS = NELMA(KDATA(NREF)+JMTX)
+-                           DO 760 JCOEF=1,NELMS
+-                               A(LASTA+JCOEF) =  A(KCREF+JCOEF)
+-                              IA(LASTA+JCOEF) = IA(KCREF+JCOEF)
+-  760                      CONTINUE
+-                           A(LASTA+LPOSA) = ATEMP1
+-                           LASTA = LASTA + NELMS
+-  765                   CONTINUE
+-                           NREF = IABS(IBROTH(NREF))
+-                           IF (NREF .GT. NODE0) GOTO 765
+-  770                CONTINUE
+-                     GOTO 890
+-C
+-  780             CONTINUE
+-                     NREF = IRNGE0(LP)
+-                     DO 790 I=1,JNODES
+-                        A(KELMA(KDATA(NODE0+I)+JMTX)+LPOSA) = ATEMP1
+-  790                CONTINUE
+-C
+-C     THE DATA ROW COULD CONTAIN INFO IN THE THIRD NAME FIELD
+-C
+-  890             CONTINUE
+-                     IF (DNAME(3) .EQ. DBLANK) GOTO 100
+-                        DROW = DNAME(3)
+-                        DNAME(3) = DBLANK
+-                        ATEMP1 = ATEMP2
+-                        GOTO 300
+-C
+-C     Have found an ENDATA card
+-C
+-  900 CONTINUE
+-         JNODES = JNODES * NREALS
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         RETURN
+-C
+-  910 CONTINUE
+-         JNODES = JNODES * NREALS
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1200)
+-         RETURN
+-C
+-C     COME HERE IF ANYTHING WENT WRONG
+-C
+- 9060 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3060)
+-         GOTO 9999
+-C
+- 9070 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3070)
+-         GOTO 9999
+-C
+- 9850 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3850)
+-         GOTO 9999
+-C
+- 9875 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3875)
+-         GOTO 9999
+-C
+- 9990 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3990)
+- 9999 CONTINUE
+-         CALL STOPIT
+-C
+- 1000 FORMAT(4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1100 FORMAT(I8,4X,4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1200 FORMAT(' XXX - WARNING - Missing ENDATA card')
+- 1300 FORMAT(I8,4X,4A1,A8,2X,A8,17X,A8,14X,' : Realization',I3)
+- 1600 FORMAT(' XXX -  FATAL  - Illegal header card in STOCH file')
+- 1700 FORMAT(I8,4X,' Found realization number',I4,' of block ',A8)
+- 1800 FORMAT(I8,4X,' Found realization number',I4)
+- 1900 FORMAT(' XXX -  FATAL  - Illegal type of random element')
+- 2000 FORMAT(' XXX -  FATAL  - Illegal name for a time period')
+- 2100 FORMAT(' XXX -  FATAL  - Unmatched variable name')
+- 2200 FORMAT(' XXX -  FATAL  - Location of random element undefined')
+- 3060 FORMAT(' XXX -  FATAL  - Attempt to set explicit bound on logical'
+-     *       ,' variable')
+- 3070 FORMAT(' XXX -  FATAL  - Illegal row type in stochastic RANGES',
+-     *       ' section')
+- 3850 FORMAT(' XXX -  FATAL  - Chronological order violated for random',
+-     *       ' elements')
+- 3875 FORMAT(' XXX -  FATAL  - Illegal type of random element')
+- 3990 FORMAT(' XXX -  FATAL  - Error while reading STOCH_FILE')
+-      END
+-C
+-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE INSCEN (IROTYP, IIPER, IPER0, DTIME, IERR, NREC)
+-C
+-C     Subroutine to input stoch file in SCENARIO format
+-C
+-C     ------------------------
+-C
+-C     Version of 31 January 1988
+-C
+-C     ------------------------
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*8 DNAME(3), DTIME(10), DBLANK, DSIMPL, DISCR,
+-     *            DROW, DCOL, DOTS, DSCNAM(2000)
+-      DIMENSION IROTYP(3000), LNODE(2000), KREF(10)
+-      EQUIVALENCE (DSCNAM,X), (LNODE,IE)
+-      DATA DBLANK/'        '/, DSIMPL/'SIMPLE  '/, DOTS  /'  ...   '/,
+-     *     DISCR /'DISCRETE'/
+-C
+-         L       = 0
+-         DROW    = DBLANK
+-         DCOL    = DBLANK
+-         QTYP    = QBL
+-         NREALS  = 1
+-         JNODES  = 1
+-         IPREV   = 1
+-         NODES   = NPER
+-         IIPER   = 1
+-         IPER0   = NPER
+-         PROB(1) = 1.0
+-         NSCEN   = 0
+-C
+-  700 CONTINUE
+-         READ (IOSTO, 1000, ERR=9990, END=910)
+-     *      Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         NREC = NREC + 1
+-         IF (Q1 .EQ. QAST) GOTO 700
+-         IF (Q1 .EQ. QE  ) GOTO 900
+-         IF (Q1 .EQ. QBL ) GOTO 701
+-            WRITE (IOLOG, 1100)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            WRITE (IOLOG, 1600)
+-            GOTO 9999
+-C
+-  701    CONTINUE
+-         IF (Q2 .EQ. QS .AND. Q3 .EQ. QC) GOTO 702
+-         IF (NECHO .GE. 5) WRITE (IOLOG, 1100)
+-     *         NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-            DCOL = DNAME(1)
+-            DROW = DNAME(2)
+-            QTYP = Q3
+-            GOTO 720
+-C
+-C     SET UP PROBABILITIES
+-C
+-  702    CONTINUE
+-            IF (NECHO .GE. 2) WRITE (IOLOG, 1800) NREC,DNAME(1)
+-            IF (NSCEN .GT. 0) GOTO 704
+-               DO 703 I=1,NPER
+-                  PROB(I) = ATEMP1
+-  703          CONTINUE
+-               NSCEN = NSCEN + 1
+-               DSCNAM(NSCEN) = DNAME(1)
+-               LNODE(NSCEN)  = NPER
+-               GOTO 700
+-C
+-C     THIS IS NOT SCENARIO 1, FIND THE SCENARIO IT BRANCHES FROM
+-C
+-  704       CONTINUE
+-               DO 705 I=1,NSCEN
+-                  IF (DNAME(2) .EQ. DSCNAM(I)) GOTO 706
+-  705          CONTINUE
+-               WRITE (IOLOG, 1100) NREC, Q1,Q2,Q3,Q4,DNAME(1),
+-     *            DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-               WRITE (IOLOG, 2000)
+-               GOTO 9999
+-C
+-C     GOT IT.
+-C
+-  706          CONTINUE
+-                  NSCEN = NSCEN + 1
+-                  DSCNAM(NSCEN) = DNAME(1)
+-                  LNODE(NSCEN) = NODES + 1
+-                  LASTN = LNODE(I)
+-                  IP = NPER
+-  707          CONTINUE
+-                  NMTX = IP
+-                  IF (MARKOV .AND. IP .GT. 2) NMTX = 2
+-                  KREF(IP) = LASTN
+-                  NODES = NODES + 1
+-                  IBROTH(NODES) = 0
+-                  IF (IP .EQ. NPER) IDESC(NODES) = 0
+-                  IF (IP .LT. NPER) IDESC(NODES) = NODES - 1
+-                  IF (IP .LT. NPER) IANCTR(NODES-1) = NODES
+-                  IRNGE2(IP) = NODES
+-                  KROW(NODES)   = KROW(NODES-1) + NROW(NODES-1)
+-                  KCOL(NODES)   = KCOL(NODES-1) + NCOL(NODES-1) + 1
+-                  KCOST(NODES)  = KCOST(LASTN)
+-                  KDATA(NODES)  = LASTD
+-                  KBOUND(NODES) = KBOUND(LASTN)
+-                  KNAMES(NODES) = KNAMES(LASTN)
+-                  KRHS(NODES)   = KRHS(LASTN)
+-                  NROW(NODES)   = NROW(LASTN)
+-                  NCOL(NODES)   = NCOL(LASTN)
+-                  NCUT(NODES)   = NCUT(LASTN)
+-                  NTH(NODES)    = NTH(LASTN)
+-                  PROB(NODES)   = ATEMP1
+-C
+-                  NROWS = NROW(NODES)
+-                  NCOLS = NCOL(NODES)
+-                  IROW  = KROW(NODES)
+-                  ICOL  = KCOL(NODES)
+-                  LASTD = LASTD + NMTX
+-                  KDATC = KDATA(NODES)
+-                  KDATI = KDATA(IP)
+-                  DO 7079 IMTX=1,NMTX
+-                     KCOLA(KDATC+IMTX) = KCOLA(KDATI+IMTX)
+-                     KELMA(KDATC+IMTX) = KELMA(KDATI+IMTX)
+-                     NELMA(KDATC+IMTX) = NELMA(KDATI+IMTX)
+- 7079             CONTINUE
+-                  DO 708 I=1,NROWS
+-                     KINBAS(ICOL+I) = IROW + I
+-                     JH(IROW+I)     = ICOL + I
+-  708             CONTINUE
+-                  DO 709 I=NROWS+1,NCOLS+1
+-                     KINBAS(ICOL+I) = 0
+-  709             CONTINUE
+-                  IF (DTIME(IP) .EQ. DNAME(3)) GOTO 710
+-                  IF (IP .EQ. 1) GOTO 9040
+-                     IP = IP - 1
+-                     LASTN = IANCTR(LASTN)
+-                     GOTO 707
+-C
+-  710             CONTINUE
+-                     IANCTR(NODES) = IANCTR(LASTN)
+-                     IIPER = IP
+-                     IBRO1 = LASTN
+-  711             CONTINUE
+-                     IF (IBROTH(IBRO1) .EQ. 0) GOTO 712
+-                        IBRO1 = IBROTH(IBRO1)
+-                        GOTO 711
+-C
+-C     FIX THE PROBABILITIES
+-C
+-  712                CONTINUE
+-                        IBROTH(IBRO1) = NODES
+-  713                CONTINUE
+-                        LASTN = IANCTR(LASTN)
+-                        IF (LASTN .EQ. 0) GOTO 700
+-                           PROB(LASTN) = PROB(LASTN) + ATEMP1
+-                           GOTO 713
+-C
+-C     FIRST DETERMINE THE PERIOD
+-C
+-  720          CONTINUE
+-                  DO 721 IP=IIPER,NPER
+-                  DO 721 LROW=1,NCOL(IP)
+-                     IF (DROW .EQ. NAMES(KNAMES(IP)+LROW)) GOTO 723
+-  721             CONTINUE
+-C
+-                  DO 722 II=1,NROW(1)
+-                     IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2)
+-     *                  GOTO 788
+-  722             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 1900)
+-                  GOTO 9999
+-C
+-  723          CONTINUE
+-                  NCURR   = NODES + IIPER - IP
+-                  IF (NSCEN .EQ.  1) NCURR = IP
+-                  IF (IPER0 .GT. IP) IPER0 = IP
+-                  IF (DROW .EQ. NAMES(1)) GOTO 730
+-                  IF (DCOL .EQ. DBOUND  ) GOTO 750
+-                  IF (DCOL .EQ. DRANGE  ) GOTO 752
+-                  IF (DCOL .EQ. DXI     ) GOTO 740
+-                  DO 727 JMTX=1,IP
+-                     IF (MARKOV .AND. JMTX .GE. 3) GOTO 728
+-                        JP = IP + 1 - JMTX
+-                        JNAMES = KNAMES(JP)
+-                        DO 726 I=NROW(JP)+1,NCOL(JP)
+-                           IF (DCOL .EQ. NAMES(JNAMES+I)) GOTO 770
+-  726                   CONTINUE
+-  727             CONTINUE
+-C
+-  728          CONTINUE
+-                  LROWS = NROW(1)
+-                  DO 729 I=1,LROWS
+-                     IF (DROW .EQ. NAMES(I) .AND. IROTYP(I) .EQ. 2)
+-     *                  GOTO 788
+-  729             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 1900)
+-                  GOTO 9999
+-C
+-C     HERE WE HAVE A RANDOM COST COEFFICIENT. COPY INFO IF NECESSARY
+-C
+-  730          CONTINUE
+-                  DO 731 I=NROW(IP)+1,NCOL(IP)
+-                     IF (DCOL .EQ. NAMES(KNAMES(IP)+I))
+-     *                  GOTO 732
+-  731             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG,2100)
+-                  GOTO 9999
+-C
+-  732          CONTINUE
+-                  LPOSC = I - NROW(IP)
+-                  IF (NSCEN .EQ. 1) GOTO 736
+-                     NREF = KREF(IP)
+-                     NCURR = NODES + IIPER - IP
+-                     IF (KCOST(NCURR) .NE. KCOST(NREF)) GOTO 736
+-                        DO 734 J=1,NCOL(IP)-NROW(IP)
+-                           COST(LASTC+J) = COST(KCOST(NREF)+J)
+-  734                   CONTINUE
+-                        COST(LASTC+LPOSC) = ATEMP1
+-                        KCOST(NCURR) = LASTC
+-                        LASTC = LASTC + NCOL(IP) - NROW(IP)
+-                        GOTO 788
+-C
+-  736                CONTINUE
+-                        COST(KCOST(NCURR)+LPOSC) = ATEMP1
+-                        GOTO 788
+-C
+-C     HERE WE HAVE A RANDOM RHS
+-C
+-  740          CONTINUE
+-                  IF (NSCEN .EQ. 1) GOTO 745
+-                     NREF = KREF(IP)
+-                     NCURR = NODES + IIPER - IP
+-                     IF (KRHS(NCURR) .NE. KRHS(NREF)) GOTO 745
+-                        DO 742 J=1,NROW(IP)
+-                           XI(LASTR+J) = XI(KRHS(NREF)+J)
+-  742                   CONTINUE
+-                        XI(LASTR+LROW) = ATEMP1
+-                        KRHS(NCURR) = LASTR
+-                        LASTR = LASTR + NROW(IP)
+-                        GOTO 748
+-C
+-  745          CONTINUE
+-                  XI(KRHS(NCURR)+LROW) = ATEMP1
+-  748          CONTINUE
+-                  GOTO 788
+-C
+-C     RANDOM BOUND ON A DECISION VARIABLE
+-C
+-  750          CONTINUE
+-                  JL = 0
+-                  JU = 0
+-                  IF (LROW .LE. NROW(IP)) GOTO 9060
+-                     IF (QTYP .EQ. QP .OR. QTYP .EQ. QX) JU = 1
+-                     IF (QTYP .EQ. QP .OR. QTYP .EQ. QX) TMPU = ATEMP1
+-                     IF (QTYP .EQ. QO .OR. QTYP .EQ. QX) JL = 1
+-                     IF (QTYP .EQ. QO .OR. QTYP .EQ. QX) TMPL = ATEMP1
+-                     IF (QTYP .EQ. QR .OR. QTYP .EQ. QL) JU = 1
+-                     IF (QTYP .EQ. QR .OR. QTYP .EQ. QL) TMPU = 1.D8
+-                     IF (QTYP .EQ. QL .OR. QTYP .EQ. QI) JL = 1
+-                     IF (QTYP .EQ. QL .OR. QTYP .EQ. QI) TMPL = -1.D8
+-                     GOTO 756
+-C
+-C     STOCHASTIC RANGE FOR ONE OF THE ROWS
+-C
+-  752          CONTINUE
+-                  JL = 0
+-                  JU = 0
+-                  IT = IROTYP(KRHS(IP) + LROW)
+-                  IF (IT .EQ. -1) GOTO 755
+-                  IF (IT .EQ.  1) GOTO 754
+-                  IF (IT .NE.  0) GOTO 9070
+-                  IF (ATEMP1 .GT. 0.0) GOTO 753
+-                     JL = 1
+-                     TMPL = ATEMP1
+-                     GOTO 756
+-  753             CONTINUE
+-                     JU = 1
+-                     TMPU = ATEMP1
+-                     GOTO 756
+-  754             CONTINUE
+-                     JU = 1
+-                     TMPU = DABS(ATEMP1)
+-                     GOTO 756
+-  755             CONTINUE
+-                     JL = 1
+-                     TMPL = -DABS(ATEMP1)
+-  756          CONTINUE
+-                  IF (NSCEN .EQ. 1) GOTO 765
+-                     NREF = KREF(IP)
+-                     NCURR = NODES + IIPER - IP
+-                     IF (KBOUND(NCURR) .NE. KBOUND(NREF)) GOTO 765
+-                        DO 762 J=1,NCOL(IP)
+-                           XLB(LASTBD+J) = XLB(KBOUND(NREF)+J)
+-                           XUB(LASTBD+J) = XUB(KBOUND(NREF)+J)
+-  762                   CONTINUE
+-                        IF (JL .EQ. 1) XLB(LASTBD+LROW) = TMPL
+-                        IF (JU .EQ. 1) XUB(LASTBD+LROW) = TMPU
+-                        GOTO 768
+-C
+-  765             CONTINUE
+-                        IF (JL .EQ. 1) XLB(KBOUND(NCURR)+LROW) = TMPL
+-                        IF (JU .EQ. 1) XUB(KBOUND(NCURR)+LROW) = TMPU
+-  768          CONTINUE
+-                  IF (LROW .GT. NROW(IP)) GOTO 700
+-                     GOTO 788
+-C
+-C     HERE WE HAVE A RANDOM COEFFICIENT IN THE CONSTRAINT MATRIX
+-C
+-  770          CONTINUE
+-                  IASTO(IP,JMTX) = 1
+-                  LCOL = I - NROW(JP)
+-                  JELMA = KELMA(KDATA(IP)+JMTX)
+-                  LL = LA(KCOLA(KDATA(IP)+JMTX)+LCOL)
+-                  KK = LA(KCOLA(KDATA(IP)+JMTX)+LCOL+1) - 1
+-                  DO 771 I=LL,KK
+-                     IF (IA(JELMA+I) .EQ. LROW) GOTO 772
+-  771             CONTINUE
+-                  WRITE (IOLOG, 1100) NREC,Q1,Q2,Q3,Q4,DNAME(1),
+-     *               DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-                  WRITE (IOLOG, 2200)
+-                  GOTO 9999
+-C
+-  772          CONTINUE
+-                  LPOSA = I
+-                  IF (NSCEN .EQ. 1) GOTO 776
+-                     NREF = KREF(IP)
+-                     NCURR = NODES + IIPER - IP
+-                     LMREF = KELMA(KDATA(NREF)+JMTX)
+-                     IF (KELMA(KDATA(NCURR)+JMTX) .NE. LMREF) GOTO 776
+-                     NELMS = NELMA(KDATA(IP)+JMTX)
+-                        DO 774 J=1,NELMS
+-                            A(LASTA+J) =  A(LMREF+J)
+-                           IA(LASTA+J) = IA(LMREF+J)
+-  774                   CONTINUE
+-                        A(LASTA+LPOSA) = ATEMP1
+-                        KELMA(KDATA(NCURR)+JMTX) = LASTA
+-                        LASTA = LASTA + NELMS
+-                        GOTO 788
+-C
+-  776                CONTINUE
+-                        A(KELMA(KDATA(NCURR)+JMTX)+LPOSA) = ATEMP1
+-                        GOTO 788
+-C
+-C     THE THIRD NAME FIELD MIGHT CONTAIN MORE INFORMATION
+-C
+-  788             CONTINUE
+-                     IF (DNAME(3) .EQ. DBLANK) GOTO 700
+-                        DROW = DNAME(3)
+-                        DNAME(3) = DBLANK
+-                        ATEMP1 = ATEMP2
+-                        GOTO 720
+-C
+-C     END OF STOCH FILE
+-C
+-  900 CONTINUE
+-         IF (NECHO .GE. 2) WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         RETURN
+-C
+-  910 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 1200)
+-         RETURN
+-C
+-C     COME HERE IF ANYTHING WENT WRONG
+-C
+- 9040 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3040)
+-         GOTO 9999
+-C
+- 9060 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3060)
+-         GOTO 9999
+-C
+- 9070 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3070)
+-         GOTO 9999
+-C
+- 9990 CONTINUE
+-         WRITE (IOLOG, 1100)
+-     *      NREC,Q1,Q2,Q3,Q4,DNAME(1),DNAME(2),ATEMP1,DNAME(3),ATEMP2
+-         WRITE (IOLOG, 3990)
+- 9999 CONTINUE
+-         CALL STOPIT
+-C
+- 1000 FORMAT(4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1100 FORMAT(I8,4X,4A1,A8,2X,A8,2X,F12.4,3X,A8,2X,F12.4)
+- 1200 FORMAT(' XXX - WARNING - Missing ENDATA card')
+- 1600 FORMAT(' XXX -  FATAL  - Illegal header card in STOCH file')
+- 1800 FORMAT(I8,4X,' Found scenario ',A8)
+- 1900 FORMAT(' XXX -  FATAL  - Illegal type of random element')
+- 2000 FORMAT(' XXX -  FATAL  - Misspecified branch in decision tree')
+- 2100 FORMAT(' XXX -  FATAL  - Unmatched variable name')
+- 2200 FORMAT(' XXX -  FATAL  - Location of random element undefined')
+- 3040 FORMAT(' XXX -  FATAL  - Period could not be found')
+- 3060 FORMAT(' XXX -  FATAL  - Attempt to set explicit bound on logical'
+-     *       ,' variable')
+- 3070 FORMAT(' XXX -  FATAL  - Illegal row type in stochastic RANGES',
+-     *       ' section')
+- 3990 FORMAT(' XXX -  FATAL  - Error while reading STOCH_FILE')
+-      END
+//GO.SYSIN DD input.f
+echo std2mps.f 1>&2
+sed >std2mps.f <<'//GO.SYSIN DD std2mps.f' 's/^-//'
+-C
+-C     This program is used to create an MPS file for MINOS from the
+-C     MPS-like input files for program MSLiP. To distinguish various
+-C     time periods, the row and column names are truncated to the first 6
+-C     characters and a two-character code for the period is appended.
+-C     This allows for up to 1295 nodes in the decision tree, which should
+-C     be sufficient in almost all cases.
+-C
+-C     (NO CHECK IS PERFORMED TO SEE IF THE FIRST SIX CHARACTERS RESULT
+-C      IN UNIQUE VARIABLE NAMES)
+-C
+-C     More information about the input format can be found in the top
+-C     level input routine INPUT. The format used is also described in
+-C     a paper by Birge et al. (IIASA working paper 87-118).
+-C     The input routine allows for non-Markovian full block lower-triangular
+-C     constraint matrices, but uses a more compact format for staircase
+-C     problems.
+-C
+-C     ----------------------
+-C
+-C     THE FOLLOWING ROUTINES FROM PROGRAM MSLiP5 ARE CALLED
+-C         BLOCK DATA, INIT, INPUT, IOPREP, STOPIT, UNPACK
+-C
+-C     (these routines should be given to the linker)
+-C
+-C     ----------------------
+-C
+-C     THIS VERSION DATED APRIL 17, 1988
+-C
+-C     ----------------------
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*8 PROBNM
+-C
+-C     INITIALIZE
+-C
+-      CALL INIT
+-      CALL IOPREP(1)
+-C
+-C     INPUT PROBLEM DATA
+-C
+-         NECHO = 2
+-         CALL INPUT(PROBNM,IOBJ1)
+-C
+-C     NOW FIND THE PATH PROBABILITIES FROM THE CONDITIONAL PROBABILITIES
+-C
+-         DO 100 I=2,NPER
+-            I0 = IRNGE0(I)
+-  95        CONTINUE
+-               PROB(I0) = PROB(I0) * PROB(IANCTR(I0))
+-               I0 = IABS(IBROTH(I0))
+-               IF (I0 .GT. 0) GOTO 95
+-  100    CONTINUE
+-C
+-         WRITE (IOBAS, 4000) PROBNM
+-         WRITE (IOBAS, 4010)
+-         WRITE (IOBAS, 4020) NAMES(IOBJ)
+-         WRITE (IOLOG, 5000)
+-         DO 110 I=1,NPER
+-            I0 = IRNGE0(I)
+-  105       CONTINUE
+-               CALL ROWPUT(I0,0)
+-               I0 = IABS(IBROTH(I0))
+-               IF (I0 .GT. 0) GOTO 105
+-  110    CONTINUE
+-C
+-         WRITE (IOBAS, 4040)
+-         WRITE (IOLOG, 5010)
+-         NDC = 0
+-         DO 120 I=1,NPER
+-            I0 = IRNGE0(I)
+-            NMTX = NPER + 1 - I
+-            IF (MARKOV .AND. NMTX .GT. 2) NMTX = 2
+-  115       CONTINUE
+-               NDC = NDC + 1
+-               IF (NDC .EQ. (NDC/100) * 100) WRITE (IOLOG, 5020) NDC
+-               CALL COLPUT(I0,NMTX)
+-               I0 = IABS(IBROTH(I0))
+-               IF (I0 .GT. 0) GOTO 115
+-  120    CONTINUE
+-C
+-         WRITE (IOBAS, 4070)
+-         WRITE (IOLOG, 5030)
+-         DO 130 I=1,NPER
+-            I0 = I
+-  125       CONTINUE
+-               CALL RHSPUT(I0,1)
+-               I0 = IABS(IBROTH(I0))
+-               IF (I0 .GT. 0) GOTO 125
+-  130    CONTINUE
+-C
+-         WRITE (IOBAS, 4090)
+-         WRITE (IOLOG, 5040)
+-C
+- 9999 CONTINUE
+-      CALL STOPIT
+-C
+- 4000 FORMAT('NAME',10X,A8)
+- 4010 FORMAT('ROWS')
+- 4020 FORMAT(' N  ',A8)
+- 4040 FORMAT('COLUMNS')
+- 4070 FORMAT('RHS')
+- 4090 FORMAT('ENDATA')
+-C
+- 5000 FORMAT(' Writing ROWS section')
+- 5010 FORMAT(' Begin COLUMNS section')
+- 5020 FORMAT('       Writing at node',I6)
+- 5030 FORMAT(' Writing RHS section')
+- 5040 FORMAT(' MPS file has been written')
+-C
+- 6000 FORMAT(' Error in input deck.')
+-      END
+-C
+-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      BLOCK DATA
+-C
+-C        INITIALIZES GLOBAL PROGRAM CONSTANTS
+-C        SUBROUTINE ADAPTED FROM LINEAR PROGRAMMING CODE LPM-1, WRITTEN
+-C        BY J.A. TOMLIN (OPERATIONS RESEARCH, STANFORD UNIVERSITY),
+-C        MODIFIED FROM STOCHASTIC PROGRAMMING CODE NDSP, WRITTEN BY
+-C        JOHN BIRGE (INDUSTRIAL ENGINEERING, UNIVERSITY OF MICHIGAN)
+-C
+-      IMPLICIT REAL*8(A-H,O,P,R-Z), INTEGER(I-N), CHARACTER*1 (Q)
+-C
+-      COMMON /CHARS/  QA,QAST,QB,QBL,QC,QD,QE,QF,QG,QH,QI,QK,QL,QM,QN,
+-     *                QO,QP,QR,QS,QT,QU,QV,QX,QSTAT
+-      COMMON /CONST/  ZTOLZE, ZTOLPV, ZTCOST, NAMAX,  NBMAX,  NCMAX,
+-     *                NEMAX,  NLMAX,  NPMAX,  NRMAX,  NTMAX,  NVMAX,
+-     *                NROWMX, NCOLMX, NEGINF
+-C
+-C  NAMAX  - maximal size of A matrix
+-C  NBMAX  - maximal number of blocks in constraint matrix
+-C  NCMAX  - maximal number of cuts
+-C  NEMAX  - maximal size of inverse
+-C  NLMAX  - maximal number of columns in A-matrices
+-C  NPMAX  - maximal number of time periods
+-C  NRMAX  - maximal number of rows per node
+-C  NTMAX  - maximal number of eta-vectors in inverse
+-C  NVMAX  - maximal number of variables including cuts and thetas
+-C  NROWMX - maximal number of rows altogether, including active cuts
+-C  NCOLMX - maximal number of columns, including cuts and theta columns
+-C
+-      DATA ZTOLZE/1.0E-7/,ZTOLPV/1.0E-5/,ZTCOST/1.0E-4/
+-      DATA NAMAX/30000/, NBMAX/5000/, NCMAX/2000/, NEMAX/10000/,
+-     *     NLMAX/10000/, NPMAX/10/,   NRMAX/350/,  NTMAX/1000/,
+-     *     NVMAX/600/, NROWMX/20000/, NCOLMX/40000/, NEGINF/-100000/
+-      DATA QBL /' '/, QA  /'A'/, QB  /'B'/, QC  /'C'/, QD  /'D'/,
+-     *     QE  /'E'/, QF  /'F'/, QG  /'G'/, QH  /'H'/, QI  /'I'/,
+-     *     QK  /'K'/, QL  /'L'/, QM  /'M'/, QN  /'N'/, QO  /'O'/,
+-     *     QP  /'P'/, QR  /'R'/, QS  /'S'/, QT  /'T'/, QU  /'U'/,
+-     *     QV  /'V'/, QX  /'X'/, QAST/'*'/
+-C
+-      END
+-C
+-C :::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE ROWPUT(I0,JT)
+-C
+-C     THIS SUBROUTINE WRITES THE ROWS SECTION FOR NODE I0.
+-C     JT=0 IF NO OBJECTIVE ROW IS WRITTEN, JT=1 OTHERWISE.
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*1 TYPE,CODE(36),PER1,PER2
+-      CHARACTER*8 DRNAM
+-      DATA CODE/ '0','1','2','3','4','5','6','7','8','9','A','B',
+-     *           'C','D','E','F','G','H','I','J','K','L','M','N',
+-     *           'O','P','Q','R','S','T','U','V','W','X','Y','Z'/
+-C
+-      I1 = I0/36
+-      IF (I1 .GE. 36) CALL STOPIT
+-      I2 = I0 - I1*36
+-      PER1 = CODE(I1+1)
+-      PER2 = CODE(I2+1)
+-C
+-      IROW   = KROW(I0)
+-      NROWS  = NROW(I0)
+-      IBOUND = KBOUND(I0)
+-      INAMES = KNAMES(I0)
+-C
+-      DO 150 IR=1,NROWS
+-         IF (IR .EQ. IOBJ .AND. JT .EQ. 0) GOTO 150
+-            XUPPER = XUB(IBOUND+IR)
+-            XLOWER = XLB(IBOUND+IR)
+-            IF (XUPPER .GT.  1.) GOTO 110
+-            IF (XLOWER .LT. -1.) GOTO 120
+-            IF (XUPPER - XLOWER .LT. ZTOLZE) GOTO 130
+-               TYPE = QN
+-               GOTO 140
+-  110       CONTINUE
+-               TYPE = QL
+-               GOTO 140
+-  120       CONTINUE
+-               TYPE = QG
+-               GOTO 140
+-  130       CONTINUE
+-               TYPE = QE
+-  140       CONTINUE
+-            DRNAM = NAMES(INAMES+IR)
+-            WRITE (IOBAS, 4000) TYPE, DRNAM, PER1, PER2
+-  150    CONTINUE
+-         RETURN
+-C
+- 4000 FORMAT(' ',A1,2X,A6,2A1)
+-      END
+-C
+-C ::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE COLPUT(I0,NMTX)
+-C
+-C     THIS SUBROUTINE WRITES THE COEFFICIENTS FOR ONE BLOCK OF
+-C     THE A MATRIX.
+-C
+-C     I0      - GIVES THE NODE FOR THE COLUMN NAMES
+-C     NMTX    - GIVES THE NUMBER OF BLOCKS TO BE EXPANDED
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*1 CODE(36),PER1,PER2,PER3,PER4
+-      CHARACTER*8 DCNAM, DRNAM
+-      CHARACTER*30 F4060
+-      DATA CODE/ '0','1','2','3','4','5','6','7','8','9','A','B',
+-     *           'C','D','E','F','G','H','I','J','K','L','M','N',
+-     *           'O','P','Q','R','S','T','U','V','W','X','Y','Z'/
+-C
+-      I1 = I0/36
+-      IF (I1 .GE. 36) CALL STOPIT
+-      I2 = I0 - I1*36
+-      PER1 = CODE(I1+1)
+-      PER2 = CODE(I2+1)
+-C
+-      IROW   = KROW(I0)
+-      NROWS  = NROW(I0)
+-      NCOLS  = NCOL(I0)
+-      IBOUND = KBOUND(I0)
+-      INAMES = KNAMES(I0)
+-C
+-      DO 180 JC=NROWS+1,NCOLS
+-         DCNAM = NAMES(INAMES+JC)
+-         INODE = I0
+-         LMTX  = 1
+-  110    CONTINUE
+-            L1 = INODE/36
+-            IF (L1 .GE. 36) CALL STOPIT
+-            L2 = INODE - L1*36
+-            PER3 = CODE(L1+1)
+-            PER4 = CODE(L2+1)
+-            JROWS  = NROW(INODE)
+-            JNAMES = KNAMES(INODE)
+-            CALL UNPACK(JC,LMTX)
+-            DO 140 JR=1,JROWS
+-               IF (DABS(Y(JR)) .LT. ZTOLZE) GOTO 140
+-               IF (JR .EQ. IOBJ) GOTO 130
+-                  DRNAM = NAMES(JNAMES+JR)
+-                  WRITE (IOBAS, 4050)
+-     *               DCNAM, PER1, PER2, DRNAM, PER3, PER4, Y(JR)
+-                  GOTO 140
+-  130          CONTINUE
+-                  YT = Y(JR) * PROB(I0)
+-                  DRNAM = NAMES(JR)
+-                  AYT = DABS(YT)
+-                  IF (AYT .LT. 1.D-8 .OR. AYT .GE. 1.D+10) THEN
+-                        F4060 = '(4X,A6,2A1,2X,A8,2X,G12.6)'
+-                  ELSE IF (AYT .LT. 1.D-4) THEN
+-                        F4060 = '(4X,A6,2A1,2X,A8,2X,G12.7E1)'
+-                  ELSE IF (AYT .LT. 1.D-1) THEN
+-                        F4060 = '(4X,A6,2A1,2X,A8,2X,F12.10)'
+-                  ELSE
+-                        F4060 = '(4X,A6,2A1,2X,A8,2X,G16.10)'
+-                        END IF
+-                  WRITE (IOBAS, F4060) DCNAM, PER1, PER2, DRNAM, YT
+-  140       CONTINUE
+-            IF (IDESC(INODE) .GT. 0 .AND. LMTX .LT. NMTX) GOTO 160
+-            IF (INODE .EQ. I0) GOTO 180
+-  150       CONTINUE
+-               IF (IBROTH(INODE) .GT.  0) GOTO 170
+-               IF (IANCTR(INODE) .EQ. I0) GOTO 180
+-                  INODE = IANCTR(INODE)
+-                  LMTX = LMTX - 1
+-                  GOTO 150
+-  160       CONTINUE
+-               INODE = IDESC(INODE)
+-               LMTX = LMTX + 1
+-               GOTO 110
+-  170       CONTINUE
+-               INODE = IBROTH(INODE)
+-               GOTO 110
+-  180 CONTINUE
+-C
+-         RETURN
+-C
+- 4050 FORMAT(4X,A6,2A1,2X,A6,2A1,2X,F12.7)
+-C4060 FORMAT(4X,A6,2A1,2X,A8,2X,G16.10)
+- 4070 FORMAT(4X,A6,2A1,2X,A8,2X,'00000.000000')
+-      END
+-C
+-C :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+-C
+-      SUBROUTINE RHSPUT(I0,JT)
+-C
+-      include 'common5.for'
+-C
+-      CHARACTER*1 CODE(36),PER1,PER2
+-      CHARACTER*8 DRNAM
+-      CHARACTER*32 F4080
+-      DATA CODE/ '0','1','2','3','4','5','6','7','8','9','A','B',
+-     *           'C','D','E','F','G','H','I','J','K','L','M','N',
+-     *           'O','P','Q','R','S','T','U','V','W','X','Y','Z'/
+-C
+-      I1 = I0/36
+-      IF (I1 .GE. 36) CALL STOPIT
+-      I2 = I0 - I1*36
+-      PER1 = CODE(I1+1)
+-      PER2 = CODE(I2+1)
+-      IRHS = KRHS(I0)
+-      NR   = NROW(I0)
+-      INAM = KNAMES(I0)
+-      DO 208 IR = 1,NR
+-         DRNAM = NAMES(INAM+IR)
+-         IROW = IR + IRHS
+-         AXI = DABS(XI(IROW))
+-         IF (AXI .LT. ZTOLZE) GOTO 208
+-            IF (AXI .LT. 1.D-8 .OR. AXI .GE. 1.D+10) THEN
+-                F4080 = '(4X,3HRHS,7X,A6,2A1,2X,G12.6)'
+-            ELSE IF (AXI .LT. 1.D-4) THEN
+-                F4080 = '(4X,3HRHS,7X,A6,2A1,2X,G12.7E1)'
+-            ELSE IF (AXI .LT. 1.D-1) THEN
+-                F4080 = '(4X,3HRHS,7X,A6,2A1,2X,F12.10)'
+-            ELSE
+-                F4080 = '(4X,3HRHS,7X,A6,2A1,2X,G16.10)'
+-                END IF
+-            WRITE (IOBAS, F4080) DRNAM, PER1, PER2, XI(IROW)
+-  208 CONTINUE
+-      RETURN
+-C
+-C4080 FORMAT(4X,'RHS',7X,A6,2A1,2X,G16.10)
+-      END
+-      SUBROUTINE INIT
+-C
+-C     THIS SUBROUTINE SETS MOST VARIABLES IN THE COMMON BLOCKS TO 0.
+-C
+-      include 'common5.for'
+-C
+-      DO 100 I=1,NCOLMX
+-         KINBAS(I) = 0
+-  100 CONTINUE
+-      DO 101 I=1,NAMAX
+-         A(I)  = 0.0
+-         IA(I) = 0
+-  101 CONTINUE
+-      DO 102 I=1,NROWMX
+-         JH(I)  = 0
+-         B(I)   = 0.0
+-         X(I)   = 0.0
+-         YPI(I) = 0.0
+-  102 CONTINUE
+-      DO 103 I=1,NEMAX
+-         E(I)  = 0.0
+-         IE(I) = 0
+-         XI(I) = 0.0
+-  103 CONTINUE
+-      DO 104 I=1,NBMAX
+-         KCOLA(I) = 0
+-         KELMA(I) = 0
+-         NELMA(I) = 0
+-  104 CONTINUE
+-      DO 110 I=1,3000
+-         LA(I)  = 0
+-         XLB(I) = 0.D0
+-         XUB(I) = 0.D0
+-  110 CONTINUE
+-      DO 120 I=1,2000
+-         NCOL(I)   = 0
+-         NROW(I)   = 0
+-         NUDATA(I) = 0
+-         NUDUAL(I) = 0
+-         NTH(I)    = 0
+-         NCUT(I)   = 0
+-         LINKUT(I) = 0
+-         LOOKAT(I) = 0
+-         ICUT1(I)  = 0
+-         INHBT(I)  = 0
+-         KCOL(I)   = 0
+-         KCOST(I)  = 0
+-         KROW(I)   = 0
+-         KRHS(I)   = 0
+-         KBOUND(I) = 0
+-         KNAMES(I) = 0
+-         IANCTR(I) = 0
+-         IBROTH(I) = 0
+-         IDESC(I)  = 0
+-         NDESC(I)  = 0
+-         KDATA(I)  = 0
+-         PROB(I)   = 0.0
+-  120 CONTINUE
+-      DO 130 I=1,1001
+-         LE(I) = 0
+-  130 CONTINUE
+-      DO 150 L=1,10
+-         IRNGE0(L) = 0
+-         IRNGE1(L) = 0
+-         IRNGE2(L) = 0
+-  150 CONTINUE
+-      DO 160 I=1,10
+-      DO 160 J=1,10
+-         IASTO(I,J) = 0
+-  160 CONTINUE
+-      DE     = 0.0
+-      DP     = 0.0
+-      IBASIS = 0
+-      IDIR   = 0
+-      IDUAL  = 0
+-      IOBJ   = 0
+-      IROWP  = 0
+-      ITCNT  = 0
+-      INVFRQ = 0
+-      ISTOCH = 0
+-      ITRFRQ = 0
+-      JCOLP  = 0
+-      MAXCOL = 0
+-      MAXROW = 0
+-      NETA   = 0
+-      NLELEM = 0
+-      NLETA  = 0
+-      NUELEM = 0
+-      NUETA  = 0
+-      NELEM  = 0
+-      NPASS  = 0
+-      IPER   = 0
+-      JPASS  = 0
+-      JVRSN  = 0
+-      NREADB = 0
+-      NPER   = 0
+-      INFLAG = 0
+-      INDEP  = 0
+-      RETURN
+-      END
+-      SUBROUTINE IOPREP(MODE)
+-C
+-C     THIS SUBROUTINE CONTAINS THE I/O UNIT ASSIGNMENTS AND OPEN/CLOSE
+-C     STATEMENTS SHOULD SUCH BE NECESSARY.
+-C
+-C          ***   PARAMETER DESCRIPTION   ***
+-C
+-C         MODE = 1   for setup/open I/O channels
+-C         MODE = 2   shutdown/close I/O channels
+-C
+-      COMMON /UNITS/ IOTIM,IOCOR,IOSTO,IOINB,IOPAR,IOLOG,IOBAS,IOSUM,
+-     *               IOSOL
+-C
+-      IF (MODE .EQ. 2) GOTO 100
+-C
+-C     ----------------------------------------------------------------
+-C
+-C     THE FOLLOWING I/O CHANNELS ARE USED:
+-C
+-C        IOTIM - Time file
+-C        IOCOR - Core file
+-C        IOSTO - Stoch file
+-C        IOINB - Input starting basis
+-C        IOPAR - Parameters
+-C        IOLOG - Detailed iteration log
+-C        IOBAS - Output final basis
+-C        IOSUM - Summary results
+-C
+-C     ----------------------------------------------------------------
+-C
+-         IOTIM = 1
+-         IOCOR = 2
+-         IOSTO = 3
+-         IOINB = 4
+-         IOPAR = 5
+-         IOLOG = 6
+-         IOBAS = 7
+-         IOSUM = 8
+-C
+-C        OPEN(IOTIM,   ...   <- input  channel
+-C        OPEN(IOCOR,   ...   <- input  channel
+-C        OPEN(IOSTO,   ...   <- input  channel
+-C        OPEN(IOINB,   ...   <- input  channel
+-C        OPEN(IOPAR,   ...   <- input  channel
+-C        OPEN(IOLOG,   ...   <- output channel
+-C        OPEN(IOBAS,   ...   <- output channel
+-C        OPEN(IOSUM,   ...   <- output channel
+-C
+-         RETURN
+-C
+-C     MODE = 2 (this section would be processed just before shutdown)
+-C
+-  100 CONTINUE
+-C        CLOSE(IOTIM, ...
+-C        CLOSE(IOCOR, ...
+-C        CLOSE(IOSTO, ...
+-C        CLOSE(IOINB, ...
+-C        CLOSE(IOPAR, ...
+-C        CLOSE(IOLOG, ...
+-C        CLOSE(IOBAS, ...
+-C        CLOSE(IOSUM, ...
+-C
+-         RETURN
+-         END
+-      SUBROUTINE STOPIT
+-C
+-C     THIS SUBROUTINE CONTAINS THE ONLY STOP OF THE PROGRAM.
+-C     BEFORE SHUTTING DOWN, ALL I/O CHANNELS ARE CLOSED.
+-C
+-      CALL IOPREP(2)
+-      STOP
+-      END
+-      SUBROUTINE UNPACK ( IV, IMTX )
+-C
+-C     This routine expands a column of one of the blocks that make up
+-C     the constraint matrix. It can be used for off-diagonal blocks as
+-C     well as blocks on the main diagonal.
+-C
+-C     --------------------
+-C
+-C     ******   PARAMETERS   ******
+-C
+-C     IV    Number of the column to be expanded in relative address mode
+-C     IMTX  Offset of the block in question
+-C           - IMTX = 1  for a block on the main diagonal    (A_t,t)
+-C           - IMTX = 2  for a block immediately to its left (A_t,t-1)
+-C           - IMTX = 3  for A_t,t-2,    etc.
+-C
+-C     --------------------
+-C
+-C     written January 31, 1988
+-C
+-C     --------------------
+-C
+-      include 'common5.for'
+-C
+-C     START BY INITIALIZING AND SETTING THE COLUMN TO ZERO
+-C
+-      NROWS = NROW(INODE)
+-      NCUTS = NCUT(INODE)
+-      NRTOT = NROWS + NCUTS
+-      NOFTH = 1
+-      ICOST = KCOST(INODE)
+-      IDATA = KDATA(INODE) + IMTX
+-      ICOLA = KCOLA(IDATA)
+-      IELMA = KELMA(IDATA)
+-      DO 100 I=1,NRTOT
+-         Y(I) = 0.0
+-  100 CONTINUE
+-      IF (IMTX .GT. 1) GOTO 190
+-         NSLACK = NROW(INODE)
+-         NCOLS  = NCOL(INODE)
+-         IF (MULTI .EQ. 1) NOFTH = NDESC(INODE)
+-C
+-C     BLOCK IS ON THE MAIN DIAGONAL. DETERMINE THE TYPE OF COLUMN
+-C
+-         IF (IV .GT. NCOLS+NOFTH) GOTO 158
+-         IF (IV .GT. NCOLS ) GOTO 140
+-         IF (IV .LE. NSLACK) GOTO 130
+-C
+-C     HERE IT IS A GENUINE COLUMN
+-C
+-            IVA = IV - NSLACK + ICOLA
+-            IVN = IV - NSLACK
+-            LL = LA(IVA)   + IELMA
+-            KK = LA(IVA+1) + IELMA - 1
+-            DO 110 I=LL,KK
+-               IR = IA(I)
+-               Y(IR) = A(I)
+-  110       CONTINUE
+-            Y(IOBJ) = COST(ICOST+IVN)
+-C
+-C       ...AND NOW FOR THE CUTS
+-C
+-            IF (NCUTS .EQ. 0) GOTO 260
+-               LK = ICUT1(INODE)
+-               DO 120 I=1,NCUTS
+-                  IR = KFIRST(LK) + IVN
+-                  IL = I + NSLACK
+-                  Y(IL) = A(IR)
+-                  LK = LINKUT(LK)
+-  120          CONTINUE
+-               GOTO 260
+-C
+-C     HERE IT IS AN ORIGINAL SLACK
+-C
+-  130    CONTINUE
+-            Y(IV) = 1.0
+-            GOTO 260
+-C
+-C     HERE IT IS THE COLUMN ASSOCIATED WITH ONE OF THE THETAS
+-C
+-  140    CONTINUE
+-            KOFTH = IV - NCOLS
+-            IF (MULTI .EQ. 1) GOTO 142
+-               IF (NTH(INODE) .EQ. 0) GOTO 260
+-                  GOTO 153
+-  142       CONTINUE
+-               ID = IDESC(INODE)
+-               IF (KOFTH .EQ. 1) GOTO 150
+-                  DO 145 I=1,KOFTH-1
+-                     ID = IBROTH(ID)
+-  145             CONTINUE
+-  150          CONTINUE
+-               IF (NTH(ID) .EQ. 0) GOTO 260
+-  153       CONTINUE
+-               Y(IOBJ) = -1.0
+-               LK = ICUT1(INODE)
+-               DO 155 I=1,NCUTS
+-                  IF (ICTYPE(LK) .NE. KOFTH) GOTO 154
+-                     IR = I + NSLACK
+-                     Y(IR) = 1.0
+-  154             CONTINUE
+-                  LK = LINKUT(LK)
+-  155          CONTINUE
+-               GOTO 260
+-C
+-C     HERE IT IS A SLACK FOR A CUT
+-C
+-  158    CONTINUE
+-            IR = IV - NCOLS - NOFTH + NSLACK
+-            Y(IR) = 1.0
+-            GOTO 260
+-C
+-C     THE COLUMN IS IN ONE OF THE SUBDIAGONAL MATRICES
+-C
+-  190 CONTINUE
+-         IOFF  = 0
+-         JNODE = INODE
+-         DO 200 I=2,IMTX
+-            IOFF  = IOFF + NCOL(JNODE) - NROW(JNODE)
+-            JNODE = IANCTR(JNODE)
+-            IF (JNODE .EQ. 0) GOTO 260
+-  200    CONTINUE
+-         NSLACK = NROW(JNODE)
+-         NCOLS  = NCOL(JNODE)
+-         IF (IV .GT. NCOLS .OR. IV .LE. NSLACK) GOTO 260
+-C
+-C     ONLY GENUINE COLUMNS MATTER, ALL OTHERS ARE ZERO
+-C
+-            IVA = IV - NSLACK + ICOLA
+-            IVN = IV - NSLACK + IOFF
+-            LL = LA(IVA)   + IELMA
+-            KK = LA(IVA+1) + IELMA - 1
+-            DO 210 I=LL,KK
+-               IR = IA(I)
+-               Y(IR) = A(I)
+-  210       CONTINUE
+-C
+-C     ... AND NOW FOR THE CUTS. NEEDED FOR NON-MARKOVIAN PROBLEMS ONLY
+-C
+-            IF (MARKOV .OR. NCUTS .EQ. 0) GOTO 260
+-               LK = ICUT1(INODE)
+-               DO 220 I=1,NCUTS
+-                  IR = KFIRST(LK) + IVN
+-                  IL = I + NSLACK
+-                  Y(IL) = A(IR)
+-                  LK = LINKUT(LK)
+-  220          CONTINUE
+-C
+-  260 CONTINUE
+-      RETURN
+-      END
+//GO.SYSIN DD std2mps.f
+echo common5.for 1>&2
+sed >common5.for <<'//GO.SYSIN DD common5.for' 's/^-//'
+-C&
+-      IMPLICIT REAL*8(A-H,O,P,R-Z), INTEGER(I-N), CHARACTER*1 (Q)
+-      CHARACTER*8 NAMES, DXI, DBOUND, DRANGE
+-      LOGICAL   MARKOV
+-C
+-      COMMON A(30000),E(10000),B(20000),X(20000),XLB(3000),XUB(3000),
+-     1       XI(10000),YPI(20000),YPIBAR(600),Y(350),YTEMP(600),
+-     2       YTEMP1(600),IA(30000),IE(10000),JH(20000),KINBAS(40000),
+-     3       LA(10000),LE(1001),MARKOV
+-C
+-      COMMON /ATLAS/  MAPCOL(600),MAPROW(350),MAPCUT(2000)
+-      COMMON /CHARS/  QA,QAST,QB,QBL,QC,QD,QE,QF,QG,QH,QI,QK,QL,QM,QN,
+-     *                QO,QP,QR,QS,QT,QU,QV,QX,QSTAT
+-      COMMON /CONST/  ZTOLZE, ZTOLPV, ZTCOST, NAMAX,  NBMAX,  NCMAX,
+-     *                NEMAX,  NLMAX,  NPMAX,  NRMAX,  NTMAX,  NVMAX,
+-     *                NROWMX, NCOLMX, NEGINF
+-C
+-      COMMON /CUTDAT/ICTYPE(2000),ICUT1(2000),KFIRST(2000),LINKUT(2000),
+-     *                KCUT0, MAXCOL,MAXROW,MAXRHS,NOFCUT
+-      COMMON /INDATA/ LASTC, LASTD, LASTR, LASTBD,LASTNM,LASTCA
+-      COMMON /LPSTAT/ LPCUTS,LPPROB,LPBINV,LPNORM,LPOPTC
+-C
+-      COMMON /PARAM/  IBASIS,ICONST,IDUAL,INDEP,INVFRQ,IOBJ,ISCHUR,
+-     *                ISTOCH,ITRFRQ,INFLAG,JVRSN,MULTI,NECHO,NREADB
+-      COMMON /PIVOT/  APV,CMAX,CMIN,DE,DP,DRES,IPTYPE,NINF,NOPT,NPIVOT,
+-     *                IROWP,IROWQ,ITCNT,JCOLP,JCOLQ,JCOUT,NETA,
+-     *                NELEM,LASTA,NLELEM,NLETA,NUELEM,NUETA
+-      COMMON /SCHUR/  DRHS(100),DZBAR(100),XMACH(10),JIN(100),JOUT(100),
+-     *                NTLBAS(350),NTLROW(600),ICHAIN(301),
+-     *                INCH,IQFST,IRFST,LENC,INVT
+-C
+-      COMMON /SCINFO/ XOLD(2000),  PROB(2000),  KCOL(2000), KCOLA(5000),
+-     1                KCOST(2000), KELMA(5000), KROW(2000), KRHS(2000),
+-     2                KNAMES(2000),KBOUND(2000),NCOL(2000), NCUT(2000),
+-     3                IANCTR(2000),IBROTH(2000),IDESC(2000),INHBT(2000),
+-     4                NELMA(5000), LOOKAT(2000),NROW(2000), NTH(2000),
+-     5                NUDATA(2000),NUDUAL(2000),NDESC(2000),KDATA(2000)
+-      COMMON /SEQ/    IDIR,IPER,INODE,JPASS,LPER,NPASS,NPER,NODES,
+-     *                IASTO(10,10),IRNGE0(10),IRNGE1(10),IRNGE2(10)
+-      COMMON /TRIKL/  COST(3000),XLTEMP(350),XUTEMP(350),XPREV
+-      COMMON /UNITS / IOTIM,IOCOR,IOSTO,IOINB,IOPAR,IOLOG,IOBAS,IOSUM,
+-     *                IOSOL
+-      COMMON /VARNAM/ NAMES(3000), DXI, DBOUND, DRANGE
+-C#
+//GO.SYSIN DD common5.for
+echo time7.frs 1>&2
+sed >time7.frs <<'//GO.SYSIN DD time7.frs' 's/^-//'
+-TIME          STOCHFOR
+-PERIODS
+-    CLASS3.1  HARV                     PERIOD1
+-    CLASS3.2  BOUND3.2                 PERIOD2
+-    CLASS3.3  BOUND3.3                 PERIOD3
+-    CLASS3.4  BOUND3.4                 PERIOD4
+-    CLASS3.5  BOUND3.5                 PERIOD5
+-    CLASS3.6  BOUND3.6                 PERIOD6
+-    CLASS3.7  BOUND3.7                 PERIOD7
+-ENDATA
+//GO.SYSIN DD time7.frs
+echo core.mpc 1>&2
+sed >core.mpc <<'//GO.SYSIN DD core.mpc' 's/^-//'
+-
+-NAME          STOCHFOR
+-      118      111        6      474        1        8        0        0
+-        0        0       21
+-jO,'yiOg#RO,'y['oa~['g`r[a^`QS-lQSBtQS+MQS;zQS?yQSE]QS?/QS66QS"VQSFXQS"w
+-QS<v
+-NHARV
+-LBOUND3.1
+-LBOUND4.1
+-LBOUND5.1
+-LBOUND6.1
+-LBOUND7.1
+-LBOUND8.1
+-EREGEN1.1
+-EREGEN2.1
+-EREGEN3.1
+-EREGEN4.1
+-EREGEN5.1
+-EREGEN6.1
+-EREGEN7.1
+-EREGEN8.1
+-EYIELD1
+-LBOUND3.2
+-LBOUND4.2
+-LBOUND5.2
+-LBOUND6.2
+-LBOUND7.2
+-LBOUND8.2
+-EREGEN1.2
+-EREGEN2.2
+-EREGEN3.2
+-EREGEN4.2
+-EREGEN5.2
+-EREGEN6.2
+-EREGEN7.2
+-EREGEN8.2
+-LTFLOW1.2
+-GTFLOW2.2
+-EYIELD2
+-LBOUND3.3
+-LBOUND4.3
+-LBOUND5.3
+-LBOUND6.3
+-LBOUND7.3
+-LBOUND8.3
+-EREGEN1.3
+-EREGEN2.3
+-EREGEN3.3
+-EREGEN4.3
+-EREGEN5.3
+-EREGEN6.3
+-EREGEN7.3
+-EREGEN8.3
+-LTFLOW1.3
+-GTFLOW2.3
+-EYIELD3
+-LBOUND3.4
+-LBOUND4.4
+-LBOUND5.4
+-LBOUND6.4
+-LBOUND7.4
+-LBOUND8.4
+-EREGEN1.4
+-EREGEN2.4
+-EREGEN3.4
+-EREGEN4.4
+-EREGEN5.4
+-EREGEN6.4
+-EREGEN7.4
+-EREGEN8.4
+-LTFLOW1.4
+-GTFLOW2.4
+-EYIELD4
+-LBOUND3.5
+-LBOUND4.5
+- 6i$Z_SW[`cgk`dhlaN[`TX]adhlaeimb4=O]aUY^beimbfjnc5>P^bVZ_cfjncgkod6?Q_c
+-LBOUND5.5
+-LBOUND6.5
+-LBOUND7.5
+-LBOUND8.5
+-EREGEN1.5
+-EREGEN2.5
+-EREGEN3.5
+-EREGEN4.5
+-EREGEN5.5
+-EREGEN6.5
+-EREGEN7.5
+-EREGEN8.5
+-LTFLOW1.5
+-GTFLOW2.5
+-EYIELD5
+-LBOUND3.6
+-LBOUND4.6
+-LBOUND5.6
+-LBOUND6.6
+-LBOUND7.6
+-LBOUND8.6
+-EREGEN1.6
+-EREGEN2.6
+-EREGEN3.6
+-EREGEN4.6
+-EREGEN5.6
+-EREGEN6.6
+-EREGEN7.6
+-EREGEN8.6
+-LTFLOW1.6
+-GTFLOW2.6
+-EYIELD6
+-LBOUND3.7
+-LBOUND4.7
+-LBOUND5.7
+-LBOUND6.7
+-LBOUND7.7
+-LBOUND8.7
+-EREGEN1.7
+-EREGEN2.7
+-EREGEN3.7
+-EREGEN4.7
+-EREGEN5.7
+-EREGEN6.7
+-EREGEN7.7
+-EREGEN8.7
+-LTFLOW1.7
+-GTFLOW2.7
+-EYIELD7
+-8CLASS3.1
+-;cIA!h9!k<!pK!qM8CLASS4.1
+-!h9!l<!pE!qC<cIB8CLASS5.1
+-=cI@!h9!m<!pJ!qF8CLASS6.1
+-!h9!n<!pN!qD>cI>8CLASS7.1
+-?cI?!h9!o<!pI!qH8CLASS8.1
+-!h9!o<!pG!qL@cI=8STATE1.1
+-Ac!h;!i98STATE2.1
+-!h;!j9Bc8STATE3.1
+-Cc;z!h;!k98STATE4.1
+-!h;!l9Dc<z8STATE5.1
+-Ec=z!h;!m98STATE6.1
+-!h;!n9Fc>z8STATE7.1
+-Gc?z!h;!o98STATE8.1
+-!h;!o9Hc@z8BALAN1
+-9zIz8CLASS3.2
+-Jc!rA!y9!|<"RK"SM8CLASS4.2
+-!y9!}<"RE"SCKc!rB8CLASS5.2
+-Lc!r@!y9!~<"RJ"SF8CLASS6.2
+-!y9"P<"RN"SDMc!r>8CLASS7.2
+-Nc!r?!y9"Q<"RI"SH8CLASS8.2
+-!y9"Q<"RG"SLOc!r=8STATE1.2
+- W[`dgkodhlpe7@R`dX]aehlpeimqf8ASaeY^bfimqfjnrg9BTLob]JrPg(N;/;omj;BEgd{
+-!hc!y;!z98STATE2.2
+-!y;!{9!ic8STATE3.2
+-!jcJz!y;!|98STATE4.2
+-!y;!}9!kcKz8STATE5.2
+-!lcLz!y;!~98STATE6.2
+-!y;"P9!mcMz8STATE7.2
+-!ncNz!y;"Q98STATE8.2
+-!y;"Q9!ocOz8BALAN2
+-9kM,[>G!rz!pz!qz8PNLTY2
+-!pz9PU&8CLASS3.3
+-!sc"TA"[9"_<"dK"eM8CLASS4.3
+-"[9"`<"dE"eC!tc"TB8CLASS5.3
+-!uc"T@"[9"a<"dJ"eF8CLASS6.3
+-"[9"b<"dN"eD!vc"T>8CLASS7.3
+-!wc"T?"[9"c<"dI"eH8CLASS8.3
+-"[9"c<"dG"eL!xc"T=8STATE1.3
+-!yc"[;"]98STATE2.3
+-"[;"^9!zc8STATE3.3
+-!{c!sz"[;"_98STATE4.3
+-"[;"`9!|c!tz8STATE5.3
+-!}c!uz"[;"a98STATE6.3
+-"[;"b9!~c!vz8STATE7.3
+-"Pc!wz"[;"c98STATE8.3
+-"[;"c9"Qc!xz8BALAN3
+-9kM+Qkp"Tz"Rz"Sz8PNLTY3
+-"Rz9QRS28CLASS3.4
+-"Uc"fA"m9"p<"uK"vM8CLASS4.4
+-"m9"q<"uE"vC"Vc"fB8CLASS5.4
+-"Wc"f@"m9"r<"uJ"vF8CLASS6.4
+-"m9"s<"uN"vD"Xc"f>8CLASS7.4
+-"Yc"f?"m9"t<"uI"vH8CLASS8.4
+-"m9"t<"uG"vL"Zc"f=8STATE1.4
+-"[c"m;"n98STATE2.4
+-"m;"o9"]c8STATE3.4
+-"^c"Uz"m;"p98STATE4.4
+-"m;"q9"_c"Vz8STATE5.4
+-"`c"Wz"m;"r98STATE6.4
+-"m;"s9"ac"Xz8STATE7.4
+-"bc"Yz"m;"t98STATE8.4
+-"m;"t9"cc"Zz8BALAN4
+-9kM*Qvy"fz"dz"ez8PNLTY4
+-"dz9QRNR8CLASS3.5
+-"gc"wA"~9#R<#WK#XM8CLASS4.5
+-"~9#S<#WE#XC"hc"wB8CLASS5.5
+-"ic"w@"~9#T<#WJ#XF8CLASS6.5
+-"~9#U<#WN#XD"jc"w>8CLASS7.5
+-"kc"w?"~9#V<#WI#XH8CLASS8.5
+-"~9#V<#WG#XL"lc"w=8STATE1.5
+-"mc"~;#P98STATE2.5
+-"~;#Q9"nc8STATE3.5
+-"oc"gz"~;#R98STATE4.5
+-"~;#S9"pc"hz8STATE5.5
+-"qc"iz"~;#T98STATE6.5
+-"~;#U9"rc"jz8STATE7.5
+-"sc"kz"~;#V98STATE8.5
+-"~;#V9"tc"lz8BALAN5
+-9kM)ZhS"wz"uz"vz8PNLTY5
+-"uz9QRJ=8CLASS3.6
+-"xc#YA#a9#d<#iK#jM8CLASS4.6
+-#a9#e<#iE#jC"yc#YB8CLASS5.6
+-"zc#Y@#a9#f<#iJ#jF8CLASS6.6
+-#a9#g<#iN#jD"{c#Y>8CLASS7.6
+-"|c#Y?#a9#h<#iI#jH8CLASS8.6
+-#a9#h<#iG#jL"}c#Y=8STATE1.6
+-"~c#a;#b98STATE2.6
+-#a;#c9#Pc8STATE3.6
+-#Qc"xz#a;#d98STATE4.6
+-#a;#e9#Rc"yz8STATE5.6
+-#Sc"zz#a;#f98STATE6.6
+-#a;#g9#Tc"{z8STATE7.6
+-#Uc"|z#a;#h98STATE8.6
+- Z?/W~}peG77NQntn^mdNr3];4AW`q05!+_'[5AS%&Cf]!-D-,Q2CP7_-(U'>1^d^n/yz)o7
+-#a;#h9#Vc"}z8BALAN6
+-9kM(lOJ#Yz#Wz#Xz8PNLTY6
+-#Wz9QRFM8CLASS3.7
+-#Zc#kA9SO;KeI8CLASS4.7
+-#[c#kB9SO>]FY8CLASS5.7
+-#]c#k@9SOBEC78CLASS6.7
+-#^c#k>9SOF)7B8CLASS7.7
+-#_c#k?9SOGUH_8CLASS8.7
+-#`c#k=9SOH'J@8STATE1.7
+-#ac9kO5LfZ8STATE2.7
+-#bc9kP#;AD8STATE3.7
+-#cc#Zz9kO;KeI8STATE4.7
+-#dc#[z9kO>]FY8STATE5.7
+-#ec#]z9kOBEC78STATE6.7
+-#fc#^z9kOF)7B8STATE7.7
+-#gc#_z9kOGUH_8STATE8.7
+-#hc#`z9kOH'J@8BALAN7
+-9kM(&Db#kz#iz#jz8PNLTY7
+-#iz9QRC!
+-8RHS
+-AQQ#[BQQ"CCQQ09DQQ6kERQ"/1FRQ"y*GQQ@YHRQ(?r
+- Zzweu72u<D/qnE5tp}rTQ
+//GO.SYSIN DD core.mpc
+echo stoch1.frs 1>&2
+sed >stoch1.frs <<'//GO.SYSIN DD stoch1.frs' 's/^-//'
+-STOCH         STOCHFOR
+-BLOCKS        DISCRETE
+-ENDATA
+//GO.SYSIN DD stoch1.frs
+echo stoch2.frs 1>&2
+sed >stoch2.frs <<'//GO.SYSIN DD stoch2.frs' 's/^-//'
+-STOCH         STOCHFOR
+-BLOCKS        DISCRETE
+- BL BLOCK1    PERIOD2       .6912
+-    CLASS3.1  REGEN1.2      -1.0000    REGEN4.2        1.0000
+-    CLASS4.1  REGEN1.2      -1.0000    REGEN5.2        1.0000
+-    CLASS5.1  REGEN1.2      -1.0000    REGEN6.2        1.0000
+-    CLASS6.1  REGEN1.2      -1.0000    REGEN7.2        1.0000
+-    CLASS7.1  REGEN1.2      -1.0000    REGEN8.2        1.0000
+-    CLASS8.1  REGEN1.2      -1.0000    REGEN8.2        1.0000
+-    STATE1.1  REGEN1.2      -.00000    REGEN2.2       -1.0000
+-    STATE2.1  REGEN1.2      -.00000    REGEN3.2       -1.0000
+-    STATE3.1  REGEN1.2      -.00000    REGEN4.2       -1.0000
+-    STATE4.1  REGEN1.2      -.00000    REGEN5.2       -1.0000
+-    STATE5.1  REGEN1.2      -.00000    REGEN6.2       -1.0000
+-    STATE6.1  REGEN1.2      -.00000    REGEN7.2       -1.0000
+-    STATE7.1  REGEN1.2      -.00000    REGEN8.2       -1.0000
+-    STATE8.1  REGEN1.2      -.00000    REGEN8.2       -1.0000
+- BL BLOCK1    PERIOD2       .3088
+-    CLASS3.1  REGEN1.2      -.79732    REGEN4.2        .79732
+-    CLASS4.1  REGEN1.2      -.79732    REGEN5.2        .79732
+-    CLASS5.1  REGEN1.2      -.79732    REGEN6.2        .79732
+-    CLASS6.1  REGEN1.2      -.79732    REGEN7.2        .79732
+-    CLASS7.1  REGEN1.2      -.79732    REGEN8.2        .79732
+-    CLASS8.1  REGEN1.2      -.79732    REGEN8.2        .79732
+-    STATE1.1  REGEN1.2      -.20268    REGEN2.2       -.79732
+-    STATE2.1  REGEN1.2      -.20268    REGEN3.2       -.79732
+-    STATE3.1  REGEN1.2      -.20268    REGEN4.2       -.79732
+-    STATE4.1  REGEN1.2      -.20268    REGEN5.2       -.79732
+-    STATE5.1  REGEN1.2      -.20268    REGEN6.2       -.79732
+-    STATE6.1  REGEN1.2      -.20268    REGEN7.2       -.79732
+-    STATE7.1  REGEN1.2      -.20268    REGEN8.2       -.79732
+-    STATE8.1  REGEN1.2      -.20268    REGEN8.2       -.79732
+- BL BLOCK2    PERIOD3       .6912
+-    CLASS3.2  REGEN1.3      -1.0000    REGEN4.3        1.0000
+-    CLASS4.2  REGEN1.3      -1.0000    REGEN5.3        1.0000
+-    CLASS5.2  REGEN1.3      -1.0000    REGEN6.3        1.0000
+-    CLASS6.2  REGEN1.3      -1.0000    REGEN7.3        1.0000
+-    CLASS7.2  REGEN1.3      -1.0000    REGEN8.3        1.0000
+-    CLASS8.2  REGEN1.3      -1.0000    REGEN8.3        1.0000
+-    STATE1.2  REGEN1.3      -.00000    REGEN2.3       -1.0000
+-    STATE2.2  REGEN1.3      -.00000    REGEN3.3       -1.0000
+-    STATE3.2  REGEN1.3      -.00000    REGEN4.3       -1.0000
+-    STATE4.2  REGEN1.3      -.00000    REGEN5.3       -1.0000
+-    STATE5.2  REGEN1.3      -.00000    REGEN6.3       -1.0000
+-    STATE6.2  REGEN1.3      -.00000    REGEN7.3       -1.0000
+-    STATE7.2  REGEN1.3      -.00000    REGEN8.3       -1.0000
+-    STATE8.2  REGEN1.3      -.00000    REGEN8.3       -1.0000
+- BL BLOCK2    PERIOD3       .3088
+-    CLASS3.2  REGEN1.3      -.79732    REGEN4.3        .79732
+-    CLASS4.2  REGEN1.3      -.79732    REGEN5.3        .79732
+-    CLASS5.2  REGEN1.3      -.79732    REGEN6.3        .79732
+-    CLASS6.2  REGEN1.3      -.79732    REGEN7.3        .79732
+-    CLASS7.2  REGEN1.3      -.79732    REGEN8.3        .79732
+-    CLASS8.2  REGEN1.3      -.79732    REGEN8.3        .79732
+-    STATE1.2  REGEN1.3      -.20268    REGEN2.3       -.79732
+-    STATE2.2  REGEN1.3      -.20268    REGEN3.3       -.79732
+-    STATE3.2  REGEN1.3      -.20268    REGEN4.3       -.79732
+-    STATE4.2  REGEN1.3      -.20268    REGEN5.3       -.79732
+-    STATE5.2  REGEN1.3      -.20268    REGEN6.3       -.79732
+-    STATE6.2  REGEN1.3      -.20268    REGEN7.3       -.79732
+-    STATE7.2  REGEN1.3      -.20268    REGEN8.3       -.79732
+-    STATE8.2  REGEN1.3      -.20268    REGEN8.3       -.79732
+- BL BLOCK3    PERIOD4       .6912
+-    CLASS3.3  REGEN1.4      -1.0000    REGEN4.4        1.0000
+-    CLASS4.3  REGEN1.4      -1.0000    REGEN5.4        1.0000
+-    CLASS5.3  REGEN1.4      -1.0000    REGEN6.4        1.0000
+-    CLASS6.3  REGEN1.4      -1.0000    REGEN7.4        1.0000
+-    CLASS7.3  REGEN1.4      -1.0000    REGEN8.4        1.0000
+-    CLASS8.3  REGEN1.4      -1.0000    REGEN8.4        1.0000
+-    STATE1.3  REGEN1.4      -.00000    REGEN2.4       -1.0000
+-    STATE2.3  REGEN1.4      -.00000    REGEN3.4       -1.0000
+-    STATE3.3  REGEN1.4      -.00000    REGEN4.4       -1.0000
+-    STATE4.3  REGEN1.4      -.00000    REGEN5.4       -1.0000
+-    STATE5.3  REGEN1.4      -.00000    REGEN6.4       -1.0000
+-    STATE6.3  REGEN1.4      -.00000    REGEN7.4       -1.0000
+-    STATE7.3  REGEN1.4      -.00000    REGEN8.4       -1.0000
+-    STATE8.3  REGEN1.4      -.00000    REGEN8.4       -1.0000
+- BL BLOCK3    PERIOD4       .3088
+-    CLASS3.3  REGEN1.4      -.79732    REGEN4.4        .79732
+-    CLASS4.3  REGEN1.4      -.79732    REGEN5.4        .79732
+-    CLASS5.3  REGEN1.4      -.79732    REGEN6.4        .79732
+-    CLASS6.3  REGEN1.4      -.79732    REGEN7.4        .79732
+-    CLASS7.3  REGEN1.4      -.79732    REGEN8.4        .79732
+-    CLASS8.3  REGEN1.4      -.79732    REGEN8.4        .79732
+-    STATE1.3  REGEN1.4      -.20268    REGEN2.4       -.79732
+-    STATE2.3  REGEN1.4      -.20268    REGEN3.4       -.79732
+-    STATE3.3  REGEN1.4      -.20268    REGEN4.4       -.79732
+-    STATE4.3  REGEN1.4      -.20268    REGEN5.4       -.79732
+-    STATE5.3  REGEN1.4      -.20268    REGEN6.4       -.79732
+-    STATE6.3  REGEN1.4      -.20268    REGEN7.4       -.79732
+-    STATE7.3  REGEN1.4      -.20268    REGEN8.4       -.79732
+-    STATE8.3  REGEN1.4      -.20268    REGEN8.4       -.79732
+- BL BLOCK4    PERIOD5       .6912
+-    CLASS3.4  REGEN1.5      -1.0000    REGEN4.5        1.0000
+-    CLASS4.4  REGEN1.5      -1.0000    REGEN5.5        1.0000
+-    CLASS5.4  REGEN1.5      -1.0000    REGEN6.5        1.0000
+-    CLASS6.4  REGEN1.5      -1.0000    REGEN7.5        1.0000
+-    CLASS7.4  REGEN1.5      -1.0000    REGEN8.5        1.0000
+-    CLASS8.4  REGEN1.5      -1.0000    REGEN8.5        1.0000
+-    STATE1.4  REGEN1.5      -.00000    REGEN2.5       -1.0000
+-    STATE2.4  REGEN1.5      -.00000    REGEN3.5       -1.0000
+-    STATE3.4  REGEN1.5      -.00000    REGEN4.5       -1.0000
+-    STATE4.4  REGEN1.5      -.00000    REGEN5.5       -1.0000
+-    STATE5.4  REGEN1.5      -.00000    REGEN6.5       -1.0000
+-    STATE6.4  REGEN1.5      -.00000    REGEN7.5       -1.0000
+-    STATE7.4  REGEN1.5      -.00000    REGEN8.5       -1.0000
+-    STATE8.4  REGEN1.5      -.00000    REGEN8.5       -1.0000
+- BL BLOCK4    PERIOD5       .3088
+-    CLASS3.4  REGEN1.5      -.79732    REGEN4.5        .79732
+-    CLASS4.4  REGEN1.5      -.79732    REGEN5.5        .79732
+-    CLASS5.4  REGEN1.5      -.79732    REGEN6.5        .79732
+-    CLASS6.4  REGEN1.5      -.79732    REGEN7.5        .79732
+-    CLASS7.4  REGEN1.5      -.79732    REGEN8.5        .79732
+-    CLASS8.4  REGEN1.5      -.79732    REGEN8.5        .79732
+-    STATE1.4  REGEN1.5      -.20268    REGEN2.5       -.79732
+-    STATE2.4  REGEN1.5      -.20268    REGEN3.5       -.79732
+-    STATE3.4  REGEN1.5      -.20268    REGEN4.5       -.79732
+-    STATE4.4  REGEN1.5      -.20268    REGEN5.5       -.79732
+-    STATE5.4  REGEN1.5      -.20268    REGEN6.5       -.79732
+-    STATE6.4  REGEN1.5      -.20268    REGEN7.5       -.79732
+-    STATE7.4  REGEN1.5      -.20268    REGEN8.5       -.79732
+-    STATE8.4  REGEN1.5      -.20268    REGEN8.5       -.79732
+- BL BLOCK5    PERIOD6       .6912
+-    CLASS3.5  REGEN1.6      -1.0000    REGEN4.6        1.0000
+-    CLASS4.5  REGEN1.6      -1.0000    REGEN5.6        1.0000
+-    CLASS5.5  REGEN1.6      -1.0000    REGEN6.6        1.0000
+-    CLASS6.5  REGEN1.6      -1.0000    REGEN7.6        1.0000
+-    CLASS7.5  REGEN1.6      -1.0000    REGEN8.6        1.0000
+-    CLASS8.5  REGEN1.6      -1.0000    REGEN8.6        1.0000
+-    STATE1.5  REGEN1.6      -.00000    REGEN2.6       -1.0000
+-    STATE2.5  REGEN1.6      -.00000    REGEN3.6       -1.0000
+-    STATE3.5  REGEN1.6      -.00000    REGEN4.6       -1.0000
+-    STATE4.5  REGEN1.6      -.00000    REGEN5.6       -1.0000
+-    STATE5.5  REGEN1.6      -.00000    REGEN6.6       -1.0000
+-    STATE6.5  REGEN1.6      -.00000    REGEN7.6       -1.0000
+-    STATE7.5  REGEN1.6      -.00000    REGEN8.6       -1.0000
+-    STATE8.5  REGEN1.6      -.00000    REGEN8.6       -1.0000
+- BL BLOCK5    PERIOD6       .3088
+-    CLASS3.5  REGEN1.6      -.79732    REGEN4.6        .79732
+-    CLASS4.5  REGEN1.6      -.79732    REGEN5.6        .79732
+-    CLASS5.5  REGEN1.6      -.79732    REGEN6.6        .79732
+-    CLASS6.5  REGEN1.6      -.79732    REGEN7.6        .79732
+-    CLASS7.5  REGEN1.6      -.79732    REGEN8.6        .79732
+-    CLASS8.5  REGEN1.6      -.79732    REGEN8.6        .79732
+-    STATE1.5  REGEN1.6      -.20268    REGEN2.6       -.79732
+-    STATE2.5  REGEN1.6      -.20268    REGEN3.6       -.79732
+-    STATE3.5  REGEN1.6      -.20268    REGEN4.6       -.79732
+-    STATE4.5  REGEN1.6      -.20268    REGEN5.6       -.79732
+-    STATE5.5  REGEN1.6      -.20268    REGEN6.6       -.79732
+-    STATE6.5  REGEN1.6      -.20268    REGEN7.6       -.79732
+-    STATE7.5  REGEN1.6      -.20268    REGEN8.6       -.79732
+-    STATE8.5  REGEN1.6      -.20268    REGEN8.6       -.79732
+- BL BLOCK6    PERIOD7       .6912
+-    CLASS3.6  REGEN1.7      -1.0000    REGEN4.7        1.0000
+-    CLASS4.6  REGEN1.7      -1.0000    REGEN5.7        1.0000
+-    CLASS5.6  REGEN1.7      -1.0000    REGEN6.7        1.0000
+-    CLASS6.6  REGEN1.7      -1.0000    REGEN7.7        1.0000
+-    CLASS7.6  REGEN1.7      -1.0000    REGEN8.7        1.0000
+-    CLASS8.6  REGEN1.7      -1.0000    REGEN8.7        1.0000
+-    STATE1.6  REGEN1.7      -.00000    REGEN2.7       -1.0000
+-    STATE2.6  REGEN1.7      -.00000    REGEN3.7       -1.0000
+-    STATE3.6  REGEN1.7      -.00000    REGEN4.7       -1.0000
+-    STATE4.6  REGEN1.7      -.00000    REGEN5.7       -1.0000
+-    STATE5.6  REGEN1.7      -.00000    REGEN6.7       -1.0000
+-    STATE6.6  REGEN1.7      -.00000    REGEN7.7       -1.0000
+-    STATE7.6  REGEN1.7      -.00000    REGEN8.7       -1.0000
+-    STATE8.6  REGEN1.7      -.00000    REGEN8.7       -1.0000
+- BL BLOCK6    PERIOD7       .3088
+-    CLASS3.6  REGEN1.7      -.79732    REGEN4.7        .79732
+-    CLASS4.6  REGEN1.7      -.79732    REGEN5.7        .79732
+-    CLASS5.6  REGEN1.7      -.79732    REGEN6.7        .79732
+-    CLASS6.6  REGEN1.7      -.79732    REGEN7.7        .79732
+-    CLASS7.6  REGEN1.7      -.79732    REGEN8.7        .79732
+-    CLASS8.6  REGEN1.7      -.79732    REGEN8.7        .79732
+-    STATE1.6  REGEN1.7      -.20268    REGEN2.7       -.79732
+-    STATE2.6  REGEN1.7      -.20268    REGEN3.7       -.79732
+-    STATE3.6  REGEN1.7      -.20268    REGEN4.7       -.79732
+-    STATE4.6  REGEN1.7      -.20268    REGEN5.7       -.79732
+-    STATE5.6  REGEN1.7      -.20268    REGEN6.7       -.79732
+-    STATE6.6  REGEN1.7      -.20268    REGEN7.7       -.79732
+-    STATE7.6  REGEN1.7      -.20268    REGEN8.7       -.79732
+-    STATE8.6  REGEN1.7      -.20268    REGEN8.7       -.79732
+-ENDATA
+//GO.SYSIN DD stoch2.frs
+echo stoch3.frs 1>&2
+sed >stoch3.frs <<'//GO.SYSIN DD stoch3.frs' 's/^-//'
+-STOCH         STOCHFOR
+-BLOCKS        DISCRETE
+- BL BLOCK1    PERIOD2       .1736
+-    CLASS3.1  REGEN1.2      -1.0000    REGEN4.2        1.0000
+-    CLASS4.1  REGEN1.2      -1.0000    REGEN5.2        1.0000
+-    CLASS5.1  REGEN1.2      -1.0000    REGEN6.2        1.0000
+-    CLASS6.1  REGEN1.2      -1.0000    REGEN7.2        1.0000
+-    CLASS7.1  REGEN1.2      -1.0000    REGEN8.2        1.0000
+-    CLASS8.1  REGEN1.2      -1.0000    REGEN8.2        1.0000
+-    STATE1.1  REGEN1.2      -.00000    REGEN2.2       -1.0000
+-    STATE2.1  REGEN1.2      -.00000    REGEN3.2       -1.0000
+-    STATE3.1  REGEN1.2      -.00000    REGEN4.2       -1.0000
+-    STATE4.1  REGEN1.2      -.00000    REGEN5.2       -1.0000
+-    STATE5.1  REGEN1.2      -.00000    REGEN6.2       -1.0000
+-    STATE6.1  REGEN1.2      -.00000    REGEN7.2       -1.0000
+-    STATE7.1  REGEN1.2      -.00000    REGEN8.2       -1.0000
+-    STATE8.1  REGEN1.2      -.00000    REGEN8.2       -1.0000
+- BL BLOCK1    PERIOD2       .0299
+-    CLASS3.1  REGEN1.2      -.79732    REGEN4.2        .79732
+-    CLASS4.1  REGEN1.2      -.79732    REGEN5.2        .79732
+-    CLASS5.1  REGEN1.2      -.79732    REGEN6.2        .79732
+-    CLASS6.1  REGEN1.2      -.79732    REGEN7.2        .79732
+-    CLASS7.1  REGEN1.2      -.79732    REGEN8.2        .79732
+-    CLASS8.1  REGEN1.2      -.79732    REGEN8.2        .79732
+-    STATE1.1  REGEN1.2      -.20268    REGEN2.2       -.79732
+-    STATE2.1  REGEN1.2      -.20268    REGEN3.2       -.79732
+-    STATE3.1  REGEN1.2      -.20268    REGEN4.2       -.79732
+-    STATE4.1  REGEN1.2      -.20268    REGEN5.2       -.79732
+-    STATE5.1  REGEN1.2      -.20268    REGEN6.2       -.79732
+-    STATE6.1  REGEN1.2      -.20268    REGEN7.2       -.79732
+-    STATE7.1  REGEN1.2      -.20268    REGEN8.2       -.79732
+-    STATE8.1  REGEN1.2      -.20268    REGEN8.2       -.79732
+- BL BLOCK1    PERIOD2       .5128
+-    CLASS3.1  REGEN1.2      -.93742    REGEN4.2        .93742
+-    CLASS4.1  REGEN1.2      -.93742    REGEN5.2        .93742
+-    CLASS5.1  REGEN1.2      -.93742    REGEN6.2        .93742
+-    CLASS6.1  REGEN1.2      -.93742    REGEN7.2        .93742
+-    CLASS7.1  REGEN1.2      -.93742    REGEN8.2        .93742
+-    CLASS8.1  REGEN1.2      -.93742    REGEN8.2        .93742
+-    STATE1.1  REGEN1.2      -.06258    REGEN2.2       -.93742
+-    STATE2.1  REGEN1.2      -.06258    REGEN3.2       -.93742
+-    STATE3.1  REGEN1.2      -.06258    REGEN4.2       -.93742
+-    STATE4.1  REGEN1.2      -.06258    REGEN5.2       -.93742
+-    STATE5.1  REGEN1.2      -.06258    REGEN6.2       -.93742
+-    STATE6.1  REGEN1.2      -.06258    REGEN7.2       -.93742
+-    STATE7.1  REGEN1.2      -.06258    REGEN8.2       -.93742
+-    STATE8.1  REGEN1.2      -.06258    REGEN8.2       -.93742
+- BL BLOCK1    PERIOD2       .2837
+-    CLASS3.1  REGEN1.2      -.91388    REGEN4.2        .91388
+-    CLASS4.1  REGEN1.2      -.91388    REGEN5.2        .91388
+-    CLASS5.1  REGEN1.2      -.91388    REGEN6.2        .91388
+-    CLASS6.1  REGEN1.2      -.91388    REGEN7.2        .91388
+-    CLASS7.1  REGEN1.2      -.91388    REGEN8.2        .91388
+-    CLASS8.1  REGEN1.2      -.91388    REGEN8.2        .91388
+-    STATE1.1  REGEN1.2      -.08612    REGEN2.2       -.91388
+-    STATE2.1  REGEN1.2      -.08612    REGEN3.2       -.91388
+-    STATE3.1  REGEN1.2      -.08612    REGEN4.2       -.91388
+-    STATE4.1  REGEN1.2      -.08612    REGEN5.2       -.91388
+-    STATE5.1  REGEN1.2      -.08612    REGEN6.2       -.91388
+-    STATE6.1  REGEN1.2      -.08612    REGEN7.2       -.91388
+-    STATE7.1  REGEN1.2      -.08612    REGEN8.2       -.91388
+-    STATE8.1  REGEN1.2      -.08612    REGEN8.2       -.91388
+- BL BLOCK2    PERIOD3       .1736
+-    CLASS3.2  REGEN1.3      -1.0000    REGEN4.3        1.0000
+-    CLASS4.2  REGEN1.3      -1.0000    REGEN5.3        1.0000
+-    CLASS5.2  REGEN1.3      -1.0000    REGEN6.3        1.0000
+-    CLASS6.2  REGEN1.3      -1.0000    REGEN7.3        1.0000
+-    CLASS7.2  REGEN1.3      -1.0000    REGEN8.3        1.0000
+-    CLASS8.2  REGEN1.3      -1.0000    REGEN8.3        1.0000
+-    STATE1.2  REGEN1.3      -.00000    REGEN2.3       -1.0000
+-    STATE2.2  REGEN1.3      -.00000    REGEN3.3       -1.0000
+-    STATE3.2  REGEN1.3      -.00000    REGEN4.3       -1.0000
+-    STATE4.2  REGEN1.3      -.00000    REGEN5.3       -1.0000
+-    STATE5.2  REGEN1.3      -.00000    REGEN6.3       -1.0000
+-    STATE6.2  REGEN1.3      -.00000    REGEN7.3       -1.0000
+-    STATE7.2  REGEN1.3      -.00000    REGEN8.3       -1.0000
+-    STATE8.2  REGEN1.3      -.00000    REGEN8.3       -1.0000
+- BL BLOCK2    PERIOD3       .0299
+-    CLASS3.2  REGEN1.3      -.79732    REGEN4.3        .79732
+-    CLASS4.2  REGEN1.3      -.79732    REGEN5.3        .79732
+-    CLASS5.2  REGEN1.3      -.79732    REGEN6.3        .79732
+-    CLASS6.2  REGEN1.3      -.79732    REGEN7.3        .79732
+-    CLASS7.2  REGEN1.3      -.79732    REGEN8.3        .79732
+-    CLASS8.2  REGEN1.3      -.79732    REGEN8.3        .79732
+-    STATE1.2  REGEN1.3      -.20268    REGEN2.3       -.79732
+-    STATE2.2  REGEN1.3      -.20268    REGEN3.3       -.79732
+-    STATE3.2  REGEN1.3      -.20268    REGEN4.3       -.79732
+-    STATE4.2  REGEN1.3      -.20268    REGEN5.3       -.79732
+-    STATE5.2  REGEN1.3      -.20268    REGEN6.3       -.79732
+-    STATE6.2  REGEN1.3      -.20268    REGEN7.3       -.79732
+-    STATE7.2  REGEN1.3      -.20268    REGEN8.3       -.79732
+-    STATE8.2  REGEN1.3      -.20268    REGEN8.3       -.79732
+- BL BLOCK2    PERIOD3       .5128
+-    CLASS3.2  REGEN1.3      -.93742    REGEN4.3        .93742
+-    CLASS4.2  REGEN1.3      -.93742    REGEN5.3        .93742
+-    CLASS5.2  REGEN1.3      -.93742    REGEN6.3        .93742
+-    CLASS6.2  REGEN1.3      -.93742    REGEN7.3        .93742
+-    CLASS7.2  REGEN1.3      -.93742    REGEN8.3        .93742
+-    CLASS8.2  REGEN1.3      -.93742    REGEN8.3        .93742
+-    STATE1.2  REGEN1.3      -.06258    REGEN2.3       -.93742
+-    STATE2.2  REGEN1.3      -.06258    REGEN3.3       -.93742
+-    STATE3.2  REGEN1.3      -.06258    REGEN4.3       -.93742
+-    STATE4.2  REGEN1.3      -.06258    REGEN5.3       -.93742
+-    STATE5.2  REGEN1.3      -.06258    REGEN6.3       -.93742
+-    STATE6.2  REGEN1.3      -.06258    REGEN7.3       -.93742
+-    STATE7.2  REGEN1.3      -.06258    REGEN8.3       -.93742
+-    STATE8.2  REGEN1.3      -.06258    REGEN8.3       -.93742
+- BL BLOCK2    PERIOD3       .2837
+-    CLASS3.2  REGEN1.3      -.91388    REGEN4.3        .91388
+-    CLASS4.2  REGEN1.3      -.91388    REGEN5.3        .91388
+-    CLASS5.2  REGEN1.3      -.91388    REGEN6.3        .91388
+-    CLASS6.2  REGEN1.3      -.91388    REGEN7.3        .91388
+-    CLASS7.2  REGEN1.3      -.91388    REGEN8.3        .91388
+-    CLASS8.2  REGEN1.3      -.91388    REGEN8.3        .91388
+-    STATE1.2  REGEN1.3      -.08612    REGEN2.3       -.91388
+-    STATE2.2  REGEN1.3      -.08612    REGEN3.3       -.91388
+-    STATE3.2  REGEN1.3      -.08612    REGEN4.3       -.91388
+-    STATE4.2  REGEN1.3      -.08612    REGEN5.3       -.91388
+-    STATE5.2  REGEN1.3      -.08612    REGEN6.3       -.91388
+-    STATE6.2  REGEN1.3      -.08612    REGEN7.3       -.91388
+-    STATE7.2  REGEN1.3      -.08612    REGEN8.3       -.91388
+-    STATE8.2  REGEN1.3      -.08612    REGEN8.3       -.91388
+- BL BLOCK3    PERIOD4       .1736
+-    CLASS3.3  REGEN1.4      -1.0000    REGEN4.4        1.0000
+-    CLASS4.3  REGEN1.4      -1.0000    REGEN5.4        1.0000
+-    CLASS5.3  REGEN1.4      -1.0000    REGEN6.4        1.0000
+-    CLASS6.3  REGEN1.4      -1.0000    REGEN7.4        1.0000
+-    CLASS7.3  REGEN1.4      -1.0000    REGEN8.4        1.0000
+-    CLASS8.3  REGEN1.4      -1.0000    REGEN8.4        1.0000
+-    STATE1.3  REGEN1.4      -.00000    REGEN2.4       -1.0000
+-    STATE2.3  REGEN1.4      -.00000    REGEN3.4       -1.0000
+-    STATE3.3  REGEN1.4      -.00000    REGEN4.4       -1.0000
+-    STATE4.3  REGEN1.4      -.00000    REGEN5.4       -1.0000
+-    STATE5.3  REGEN1.4      -.00000    REGEN6.4       -1.0000
+-    STATE6.3  REGEN1.4      -.00000    REGEN7.4       -1.0000
+-    STATE7.3  REGEN1.4      -.00000    REGEN8.4       -1.0000
+-    STATE8.3  REGEN1.4      -.00000    REGEN8.4       -1.0000
+- BL BLOCK3    PERIOD4       .0299
+-    CLASS3.3  REGEN1.4      -.79732    REGEN4.4        .79732
+-    CLASS4.3  REGEN1.4      -.79732    REGEN5.4        .79732
+-    CLASS5.3  REGEN1.4      -.79732    REGEN6.4        .79732
+-    CLASS6.3  REGEN1.4      -.79732    REGEN7.4        .79732
+-    CLASS7.3  REGEN1.4      -.79732    REGEN8.4        .79732
+-    CLASS8.3  REGEN1.4      -.79732    REGEN8.4        .79732
+-    STATE1.3  REGEN1.4      -.20268    REGEN2.4       -.79732
+-    STATE2.3  REGEN1.4      -.20268    REGEN3.4       -.79732
+-    STATE3.3  REGEN1.4      -.20268    REGEN4.4       -.79732
+-    STATE4.3  REGEN1.4      -.20268    REGEN5.4       -.79732
+-    STATE5.3  REGEN1.4      -.20268    REGEN6.4       -.79732
+-    STATE6.3  REGEN1.4      -.20268    REGEN7.4       -.79732
+-    STATE7.3  REGEN1.4      -.20268    REGEN8.4       -.79732
+-    STATE8.3  REGEN1.4      -.20268    REGEN8.4       -.79732
+- BL BLOCK3    PERIOD4       .5128
+-    CLASS3.3  REGEN1.4      -.93742    REGEN4.4        .93742
+-    CLASS4.3  REGEN1.4      -.93742    REGEN5.4        .93742
+-    CLASS5.3  REGEN1.4      -.93742    REGEN6.4        .93742
+-    CLASS6.3  REGEN1.4      -.93742    REGEN7.4        .93742
+-    CLASS7.3  REGEN1.4      -.93742    REGEN8.4        .93742
+-    CLASS8.3  REGEN1.4      -.93742    REGEN8.4        .93742
+-    STATE1.3  REGEN1.4      -.06258    REGEN2.4       -.93742
+-    STATE2.3  REGEN1.4      -.06258    REGEN3.4       -.93742
+-    STATE3.3  REGEN1.4      -.06258    REGEN4.4       -.93742
+-    STATE4.3  REGEN1.4      -.06258    REGEN5.4       -.93742
+-    STATE5.3  REGEN1.4      -.06258    REGEN6.4       -.93742
+-    STATE6.3  REGEN1.4      -.06258    REGEN7.4       -.93742
+-    STATE7.3  REGEN1.4      -.06258    REGEN8.4       -.93742
+-    STATE8.3  REGEN1.4      -.06258    REGEN8.4       -.93742
+- BL BLOCK3    PERIOD4       .2837
+-    CLASS3.3  REGEN1.4      -.91388    REGEN4.4        .91388
+-    CLASS4.3  REGEN1.4      -.91388    REGEN5.4        .91388
+-    CLASS5.3  REGEN1.4      -.91388    REGEN6.4        .91388
+-    CLASS6.3  REGEN1.4      -.91388    REGEN7.4        .91388
+-    CLASS7.3  REGEN1.4      -.91388    REGEN8.4        .91388
+-    CLASS8.3  REGEN1.4      -.91388    REGEN8.4        .91388
+-    STATE1.3  REGEN1.4      -.08612    REGEN2.4       -.91388
+-    STATE2.3  REGEN1.4      -.08612    REGEN3.4       -.91388
+-    STATE3.3  REGEN1.4      -.08612    REGEN4.4       -.91388
+-    STATE4.3  REGEN1.4      -.08612    REGEN5.4       -.91388
+-    STATE5.3  REGEN1.4      -.08612    REGEN6.4       -.91388
+-    STATE6.3  REGEN1.4      -.08612    REGEN7.4       -.91388
+-    STATE7.3  REGEN1.4      -.08612    REGEN8.4       -.91388
+-    STATE8.3  REGEN1.4      -.08612    REGEN8.4       -.91388
+- BL BLOCK4    PERIOD5       .6912
+-    CLASS3.4  REGEN1.5      -1.0000    REGEN4.5        1.0000
+-    CLASS4.4  REGEN1.5      -1.0000    REGEN5.5        1.0000
+-    CLASS5.4  REGEN1.5      -1.0000    REGEN6.5        1.0000
+-    CLASS6.4  REGEN1.5      -1.0000    REGEN7.5        1.0000
+-    CLASS7.4  REGEN1.5      -1.0000    REGEN8.5        1.0000
+-    CLASS8.4  REGEN1.5      -1.0000    REGEN8.5        1.0000
+-    STATE1.4  REGEN1.5      -.00000    REGEN2.5       -1.0000
+-    STATE2.4  REGEN1.5      -.00000    REGEN3.5       -1.0000
+-    STATE3.4  REGEN1.5      -.00000    REGEN4.5       -1.0000
+-    STATE4.4  REGEN1.5      -.00000    REGEN5.5       -1.0000
+-    STATE5.4  REGEN1.5      -.00000    REGEN6.5       -1.0000
+-    STATE6.4  REGEN1.5      -.00000    REGEN7.5       -1.0000
+-    STATE7.4  REGEN1.5      -.00000    REGEN8.5       -1.0000
+-    STATE8.4  REGEN1.5      -.00000    REGEN8.5       -1.0000
+- BL BLOCK4    PERIOD5       .3088
+-    CLASS3.4  REGEN1.5      -.79732    REGEN4.5        .79732
+-    CLASS4.4  REGEN1.5      -.79732    REGEN5.5        .79732
+-    CLASS5.4  REGEN1.5      -.79732    REGEN6.5        .79732
+-    CLASS6.4  REGEN1.5      -.79732    REGEN7.5        .79732
+-    CLASS7.4  REGEN1.5      -.79732    REGEN8.5        .79732
+-    CLASS8.4  REGEN1.5      -.79732    REGEN8.5        .79732
+-    STATE1.4  REGEN1.5      -.20268    REGEN2.5       -.79732
+-    STATE2.4  REGEN1.5      -.20268    REGEN3.5       -.79732
+-    STATE3.4  REGEN1.5      -.20268    REGEN4.5       -.79732
+-    STATE4.4  REGEN1.5      -.20268    REGEN5.5       -.79732
+-    STATE5.4  REGEN1.5      -.20268    REGEN6.5       -.79732
+-    STATE6.4  REGEN1.5      -.20268    REGEN7.5       -.79732
+-    STATE7.4  REGEN1.5      -.20268    REGEN8.5       -.79732
+-    STATE8.4  REGEN1.5      -.20268    REGEN8.5       -.79732
+- BL BLOCK5    PERIOD6       .6912
+-    CLASS3.5  REGEN1.6      -1.0000    REGEN4.6        1.0000
+-    CLASS4.5  REGEN1.6      -1.0000    REGEN5.6        1.0000
+-    CLASS5.5  REGEN1.6      -1.0000    REGEN6.6        1.0000
+-    CLASS6.5  REGEN1.6      -1.0000    REGEN7.6        1.0000
+-    CLASS7.5  REGEN1.6      -1.0000    REGEN8.6        1.0000
+-    CLASS8.5  REGEN1.6      -1.0000    REGEN8.6        1.0000
+-    STATE1.5  REGEN1.6      -.00000    REGEN2.6       -1.0000
+-    STATE2.5  REGEN1.6      -.00000    REGEN3.6       -1.0000
+-    STATE3.5  REGEN1.6      -.00000    REGEN4.6       -1.0000
+-    STATE4.5  REGEN1.6      -.00000    REGEN5.6       -1.0000
+-    STATE5.5  REGEN1.6      -.00000    REGEN6.6       -1.0000
+-    STATE6.5  REGEN1.6      -.00000    REGEN7.6       -1.0000
+-    STATE7.5  REGEN1.6      -.00000    REGEN8.6       -1.0000
+-    STATE8.5  REGEN1.6      -.00000    REGEN8.6       -1.0000
+- BL BLOCK5    PERIOD6       .3088
+-    CLASS3.5  REGEN1.6      -.79732    REGEN4.6        .79732
+-    CLASS4.5  REGEN1.6      -.79732    REGEN5.6        .79732
+-    CLASS5.5  REGEN1.6      -.79732    REGEN6.6        .79732
+-    CLASS6.5  REGEN1.6      -.79732    REGEN7.6        .79732
+-    CLASS7.5  REGEN1.6      -.79732    REGEN8.6        .79732
+-    CLASS8.5  REGEN1.6      -.79732    REGEN8.6        .79732
+-    STATE1.5  REGEN1.6      -.20268    REGEN2.6       -.79732
+-    STATE2.5  REGEN1.6      -.20268    REGEN3.6       -.79732
+-    STATE3.5  REGEN1.6      -.20268    REGEN4.6       -.79732
+-    STATE4.5  REGEN1.6      -.20268    REGEN5.6       -.79732
+-    STATE5.5  REGEN1.6      -.20268    REGEN6.6       -.79732
+-    STATE6.5  REGEN1.6      -.20268    REGEN7.6       -.79732
+-    STATE7.5  REGEN1.6      -.20268    REGEN8.6       -.79732
+-    STATE8.5  REGEN1.6      -.20268    REGEN8.6       -.79732
+- BL BLOCK6    PERIOD7       .6912
+-    CLASS3.6  REGEN1.7      -1.0000    REGEN4.7        1.0000
+-    CLASS4.6  REGEN1.7      -1.0000    REGEN5.7        1.0000
+-    CLASS5.6  REGEN1.7      -1.0000    REGEN6.7        1.0000
+-    CLASS6.6  REGEN1.7      -1.0000    REGEN7.7        1.0000
+-    CLASS7.6  REGEN1.7      -1.0000    REGEN8.7        1.0000
+-    CLASS8.6  REGEN1.7      -1.0000    REGEN8.7        1.0000
+-    STATE1.6  REGEN1.7      -.00000    REGEN2.7       -1.0000
+-    STATE2.6  REGEN1.7      -.00000    REGEN3.7       -1.0000
+-    STATE3.6  REGEN1.7      -.00000    REGEN4.7       -1.0000
+-    STATE4.6  REGEN1.7      -.00000    REGEN5.7       -1.0000
+-    STATE5.6  REGEN1.7      -.00000    REGEN6.7       -1.0000
+-    STATE6.6  REGEN1.7      -.00000    REGEN7.7       -1.0000
+-    STATE7.6  REGEN1.7      -.00000    REGEN8.7       -1.0000
+-    STATE8.6  REGEN1.7      -.00000    REGEN8.7       -1.0000
+- BL BLOCK6    PERIOD7       .3088
+-    CLASS3.6  REGEN1.7      -.79732    REGEN4.7        .79732
+-    CLASS4.6  REGEN1.7      -.79732    REGEN5.7        .79732
+-    CLASS5.6  REGEN1.7      -.79732    REGEN6.7        .79732
+-    CLASS6.6  REGEN1.7      -.79732    REGEN7.7        .79732
+-    CLASS7.6  REGEN1.7      -.79732    REGEN8.7        .79732
+-    CLASS8.6  REGEN1.7      -.79732    REGEN8.7        .79732
+-    STATE1.6  REGEN1.7      -.20268    REGEN2.7       -.79732
+-    STATE2.6  REGEN1.7      -.20268    REGEN3.7       -.79732
+-    STATE3.6  REGEN1.7      -.20268    REGEN4.7       -.79732
+-    STATE4.6  REGEN1.7      -.20268    REGEN5.7       -.79732
+-    STATE5.6  REGEN1.7      -.20268    REGEN6.7       -.79732
+-    STATE6.6  REGEN1.7      -.20268    REGEN7.7       -.79732
+-    STATE7.6  REGEN1.7      -.20268    REGEN8.7       -.79732
+-    STATE8.6  REGEN1.7      -.20268    REGEN8.7       -.79732
+-ENDATA
+//GO.SYSIN DD stoch3.frs
+echo paper.lis 1>&2
+sed >paper.lis <<'//GO.SYSIN DD paper.lis' 's/^-//'
+-    This is a condensation of the paper "A standard input format for
+-multistage stochastic linear programs" by Birge et al., which appears in COAL
+-Newsletter No. 17 (Dec. 1987).
+-
+-    Every multistage stochastic programming problem consists of three types of
+-data: deterministic information, dynamic information and stochastic information.
+-
+-    Deterministic information includes location and number of nonzero elements, 
+-certain constant coefficients (often +1 and -1) in inventory and other 
+-constraints, and any other piece of information the modeler may wish to regard
+-as fixed. Dynamic information describes the number and dimension of the time
+-stages, and stochastic information gives the distribution of the random
+-elements. We only deal here with discrete distributions and assume that the
+-modeler knows all discretizations and their probabilities.
+-
+-    All this information can be described in MPS-like format using three input
+-files. The CORE file is used to fix variable names and sparsity structure for
+-all realizations. This is useful if one wants to solve a small pilot problem
+-to obtain an advanced basis. For instance, the median problem or the mean value
+-problem could be used here. The core file has completely standard MPS structure,
+-but we assume that row and column names are ordered stage by stage, with the
+-objective row being part of the first stage.
+-
+-    This allows a very simple description of the dynamic structure in the TIME
+-file. All that is necessary are the names of the first row and column for each
+-stage, together with a string identifier for the stage. Below is a sample time
+-file for a four-stage problem. The three name fields are in the same position 
+-as the name fields on an MPS data record, i.e., in columns 5-12, 15-22, 40-47.
+-
+-TIME          EXAMPLE
+-PERIODS
+-    COLUMN1   ROW1                     PERIOD1
+-    COLUMN2   ROW2                     PERIOD2
+-    COLUMN3   ROW3                     PERIOD3
+-    COLUMN4   ROW4                     PERIOD4
+-ENDATA
+-
+-The header on the `TIME' line must match the header in the core file.
+-
+-    Finally, there is the stochastic information. We distinguish three types
+-of distributions: Independent random variables, where each random variable
+-has a distribution independent of all the others; block structure for random
+-vectors (blocks) with joint distributions which are independent of other blocks
+-- this is especially useful if the random elements are independent from one
+-period to the next. Period-to-period dependence can be modeled using scenarios.
+-
+-    Independent random variables can be put into MPS format as follows:
+-
+-STOCH         EXAMPLE
+-INDEP         DISCRETE
+-    RHS       ROW1           3.                      .4
+-    RHS       ROW1           4.                      .6
+-    COL1      ROW2           1.                      .5
+-    COL1      ROW2           2.                      .3
+-    COL1      ROW2           3.                      .2
+-ENDATA
+-
+-This stoch file defines two independent random variables in the right hand side
+-and in the constraint matrix. They are independent of each other, with two and
+-three realizations, respectively, which defines SIX nodes in the decision tree.
+-All other coefficients are assumed to have their values given in the core file.
+-
+-    Block structure is similarly translated into MPS format as given in the
+-next example.
+-
+-STOCH         EXAMPLE2
+-BLOCKS        DISCRETE
+- BL BLOCK1    PERIOD2        .4
+-    RHS       ROW1              3.
+-    RHS       ROW2              5.
+-    RHS       ROW3             10.
+- BL BLOCK1    PERIOD2        .3
+-    RHS       ROW1              4.
+-    RHS       ROW3             12.
+- BL BLOCK1    PERIOD2        .3
+-    RHS       ROW1              2.
+-    RHS       ROW2              6.
+- BL BLOCK2    PERIOD3        .5
+-    COL2      ROW2              1.
+- BL BLOCK2    PERIOD3        .5
+-    COL2      ROW3             -1.
+-ENDATA
+-
+-The records having code `BL' in the code field are markers which signal the
+-start of a new block. Each block has an identifying name, a period to indicate
+-when the information becomes known, and an associated probability.
+-The locations and values are next listed in MPS format. On subsequent
+-realizations, any location not explicitly stated is copied from the first 
+-realization. BLOCK2 is a univariate random variable which must be stated in
+-this form because mixing of distribution types is not allowed.
+-
+-    Scenarios are used to describe period-to-period dependence. It is customary
+-to represent the sequence of possible realizations and decisions in form of a
+-decision or event tree with branches at any node indicating the possible
+-realizations in the following period contingent on what has been observed in
+-the past. Each scenario can then be thought of as a path through the decision
+-tree, starting at the node associated with the deterministic first stage and
+-ending at one of the nodes in the last period. Equivalently, scenarios can be
+-identified with last-period nodes.
+-
+-    For each scenario we need the following information: 
+-- a path probability which indicates how likely it is to observe this particular
+-sample path at the beginning of the problem. (Path probabilities must sum to 1.)
+-- a name to identify each scenario
+-- a pointer to the scenario it branches from
+-- the period when the branching occurred, i.e., the first period in which the
+-two scenarios differ.
+-
+-    The example below might make this more transparent:
+-
+-STOCH         EXAMPLE3
+-SCENARIOS     DISCRETE
+- SC SCEN1     ROOT          0.5        PERIOD1
+-    COL1      ROW1            1.0
+-    COL2      ROW2            1.0
+-    COL3      ROW3            1.0
+-    COL4      ROW4            1.0
+- SC SCEN2     SCEN1         0.2        PERIOD3
+-    COL3      ROW3            1.0
+-    COL4      ROW4            1.0
+- SC SCEN3     SCEN2         0.2        PERIOD4
+-    COL4      ROW4            0.0
+- SC SCEN4     SCEN1         0.1        PERIOD2
+-    COL2      ROW2            0.0
+-    COL3      ROW3            0.0
+-    COL4      ROW4            0.0
+-ENDATA
+-
+-The stochastic information in this file corresponds to the following
+-decision tree
+-
+-
+-PERIOD1          PERIOD2             PERIOD3              PERIOD4
+-
+-  1.0                     1.0             1.0              1.0
+-o--+------o----------------+-----o---------+----------------+--   SCEN1  Prob=.5
+-           \                      \
+-            \                      \
+-             \                      \     1.0              1.0
+-              \                       -----+------o---------+--   SCEN2  Prob=.2
+-               \                                   \
+-                \                                   \
+-                 \                                   \     0.0
+-                  \                                    -----+--   SCEN3  Prob=.2
+-                   \
+-                    \
+-                     \    0.0             0.0              0.0
+-                       ----+---------------+----------------+--   SCEN4  Prob=.1
+-
+-
+-
+-    These are the bare bones of the standard. Some extensions, e.g., continuous
+-distributions are available, but they will in general not lead to large-scale
+-LP formulations, so they have been omitted from this brief write-up. For a copy
+-of the full paper, write to
+-
+-                    Gus Gassmann
+-                    School of Business Administration
+-                    Dalhousie University
+-                    Halifax, Nova Scotia
+-                    Canada   B3H 1Z5
+-
+-                    ph:(902)-424-7080
+-                    e-mail:Gassmann@dalac.bitnet
+-                           stars!gassmann@dalcs.uucp
+//GO.SYSIN DD paper.lis
