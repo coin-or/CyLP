@@ -12,174 +12,6 @@ from CyCoinModel import CyCoinModel
 from CyLP.py.utils.sparseUtil import csc_matrixPlus
 
 
-def e_sparse(k, n, value=1):
-    'returns an array with n elements, e[k] = value and e[i] = 0 for i!=k'
-    a = np.zeros(n)
-    a[k] = value
-    return sparse.lil_matrix(a)
-
-
-class IndexRange:
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-
-    def __str__(self):
-        return '(' + str(self.start) + ', ' + str(self.end) + ')'
-
-    def __getitem__(self, ind):
-        if ind < self.end - self.start:
-            return self.start + ind
-        return -1
-
-
-def printSolution(s):
-    "takes an arguments of type (CyClpSimplex) and outputs the solution"
-    print '_______________________________'
-    print 'status : ', s.getStatusString()
-    print 'objective value = ', s.objectiveValue()
-    print 'primal: '
-    print s.getPrimalSolution()
-    print s.getDualColumnSolution()
-    print 'dual: '
-    print s.getPrimalRowSolution()
-    print s.getDualRowSolution()
-    print '________________________________'
-
-
-def sparseConcat_slow(a, b, axis):
-    '''
-    concatenates two sparse matrices,
-    returns a sparse.lil_matrix. Use h for horizontal
-    concatenation and v for vertical
-    '''
-    #TODO: see if this can be re-writen with set_shape (not to use temp)
-
-    # We want to return b, if a is of np.matrix type which means
-    # the it is invalid(empty)
-    #if type(a) == np.matrixlib.defmatrix.matrix:
-    #   return b.copy().tocoo()
-    if A.nnz == 0:
-        return b.copy().tocoo()
-
-    a = a.tolil()
-    b = b.tolil()
-    if axis == 'v':
-        n = a.shape[0]
-        temp = sparse.lil_matrix((a.shape[0] + b.shape[0],
-                                    max(a.shape[1], b.shape[1])))
-        temp[:a.shape[0], :a.shape[1]] = a
-        temp[a.shape[0]:, :] = b
-    elif axis == 'h':
-        temp = sparse.lil_matrix((max(a.shape[0], b.shape[0]),
-                                    a.shape[1] + b.shape[1]))
-        temp[:a.shape[0], :a.shape[1]] = a
-        temp[:, a.shape[1]:] = b
-    else:
-        raise Exception('QP::sparseConcat : axis should be either "h" or "v"')
-    return temp.tocoo()
-
-
-def sparseConcat(a, b, axis):
-    a = a.tocoo()
-    b = b.tocoo()
-
-    if a.nnz == 0:
-        return b.copy().tocoo()
-
-    if axis == 'h':
-        nRows = max(a.shape[0], b.shape[0])
-
-        row = np.concatenate((a.row, b.row), axis=1)
-        col = np.concatenate((a.col, b.col + a.shape[1]), axis=1)
-        data = np.concatenate((a.data, b.data), axis=1)
-
-        a = sparse.coo_matrix((data, (row, col)),
-                              shape=(nRows, a.shape[1] + b.shape[1]))
-
-    elif axis == 'v':
-        nCols = max(a.shape[1], b.shape[1])
-
-        row = np.concatenate((a.row, b.row + a.shape[0]), axis=1)
-        col = np.concatenate((a.col, b.col), axis=1)
-        data = np.concatenate((a.data, b.data), axis=1)
-
-        a = sparse.coo_matrix((data, (row, col)),
-                              shape=(a.shape[0] + b.shape[0], nCols))
-
-    return a
-
-
-def sparseAddScaler(v, s):
-    return v + sparse.lil_matrix(v.shape[0] * [s])
-
-
-class IndexFactory:
-    varIndex = {}
-    constIndex = {}
-    currentVarIndex = 0
-    currentConstIndex = 0
-
-    @staticmethod
-    def addVar(varName, numberOfVars):
-        if numberOfVars == 0:
-            return
-        if varName in IndexFactory.varIndex.keys():
-            IndexFactory.varIndex[varName] += \
-                            range(IndexFactory.currentVarIndex,
-                                  IndexFactory.currentVarIndex + numberOfVars)
-        else:
-            IndexFactory.varIndex[varName] = \
-                            range(IndexFactory.currentVarIndex,
-                                  IndexFactory.currentVarIndex + numberOfVars)
-        IndexFactory.currentVarIndex += numberOfVars
-
-    @staticmethod
-    def getLastVarIndex():
-        return IndexFactory.currentVarIndex - 1
-
-    @staticmethod
-    def addConst(constName, numberOfConsts):
-        if numberOfConsts == 0:
-            return
-        if constName in IndexFactory.constIndex.keys():
-            IndexFactory.constIndex[constName] += \
-                        range(IndexFactory.currentConstIndex,
-                              IndexFactory.currentConstIndex + numberOfConsts)
-        else:
-            IndexFactory.constIndex[constName] = \
-                    range(IndexFactory.currentConstIndex,
-                          IndexFactory.currentConstIndex + numberOfConsts)
-        IndexFactory.currentConstIndex += numberOfConsts
-
-    @staticmethod
-    def getLastConstIndex():
-        return IndexFactory.currentConstIndex - 1
-
-    @staticmethod
-    def Print():
-        varind = IndexFactory.varIndex
-        cind = IndexFactory.constIndex
-
-        print "variables : "
-        for vname, rg in varind.items():
-            print vname.rjust(15) + ' : ' + str(rg)
-        print
-        print "constraints : "
-        for cname, rg in cind.items():
-            print cname.rjust(15) + ' : ' + str(rg)
-
-
-def setPositive(s, varGroupname):
-    if varGroupname in IndexFactory.varIndex.keys():
-        for varind in IndexFactory.varIndex[varGroupname]:
-            ###s.setColumnLower(varind, 0)
-            s.setVariableLower(varind, 0)
-    #else:
-    #   raise Exception('QP.py: No such variable group name ' \
-    #        'as: ' + varGroupname)
-
-
 def getSolution(s, varGroupname):
     sol = s.getPrimalVariableSolution()
     return np.array([sol[i] for i in IndexFactory.varIndex[varGroupname]])
@@ -196,12 +28,6 @@ class QP:
         return (0.5 * x * (x * self.G).T + np.dot(self.c, x) -
                 self.objectiveOffset)
 
-    #In previous versions of python each class had 'mro' as an attribute
-    #So I add this here because ipdbc.py module needs the order
-    #@staticmethod
-    #def mro():
-    #    return inspect.getmro(QP)
-
     def init(self, G, c, A, b, C, c_low, c_up, x_low, x_up):
         self.c = c.copy()
         self.A = A.copy()
@@ -217,27 +43,37 @@ class QP:
         self.x_low = x_low.copy()
         self.x_up = x_up.copy()
 
-    ## return a vector, Cx - b
     def sAll(self, x):
+        '''
+        Return Cx - b
+        '''
         return self.A * x - self.b
 
-    ## returns C_ix - b_i
-    # @param x a vector
-    # @param i an integer (index)
     def s(self, x, i):
+        '''
+        Return C_ix - b_i
+        :arg x: a vector
+        :type x: Numpy array
+        :arg i: index
+        :type x: integer
+        '''
         if i >= self.m:
             raise "i should be smaller than m"
         return self.A[i, :] * x - self.b[i]
 
-    ## returns the unconstrained minimizer of the QP, -G^{-1}a
     def getUnconstrainedSol(self):
+        '''
+        Return the unconstrained minimizer of the QP, :math:`-G^{-1}a`
+        '''
         #G = self.L * self.L.T
         #Change the following line and use self.L
         return np.linalg.solve(G, -self.c)
 
-    ## returns the gradient of the objective function at x
-    # @param x a vector
     def gradient(self, x):
+        '''
+        Return the gradient of the objective function at ``x``
+        
+        '''
         return self.G * x + self.a
 
     def fromQps(self, filename):
