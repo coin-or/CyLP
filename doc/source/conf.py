@@ -32,7 +32,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) +
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.viewcode']
 
-extensions += ['mathjax']
+extensions += ['sphinx.ext.mathjax']
 mathjax_path = 'https://d3eoax9i5htok0.cloudfront.net/mathjax/' \
                     'latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 
