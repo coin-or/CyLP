@@ -42,8 +42,13 @@ to improve it.
    Moreover, in the case that you find a bug or a mistake, we would appriciate
    it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca. 
 
+.. 
+    To get started, see :ref:`the installation guide <readme>`.
+
 .. toctree::
    :maxdepth: 2
+
+.. include:: ../../README.rst
 
 Indices and tables
 ==================
@@ -52,7 +57,7 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Modules:
+Modules
 ==========================
 
 .. toctree::
