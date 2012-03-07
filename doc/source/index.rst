@@ -20,7 +20,7 @@ CBC(https://projects.coin-or.org/Cbc) in combination with
 CGL(https://projects.coin-or.org/Cgl) to solve MIPs.
 
 CyLP is a Cython interface to COIN-OR's CLP, CBC, and CGL. At its most basic it
-provides a Python API to CLP. We can use CLP tools to read an LP from an
+provides a Python API to CLP. CyLP interfaces CLP to read an LP from an
 ``mps`` file and solve it. In addition, CyLP provides a modeling facility
 which allows easy creation of LPs. 
 
@@ -42,8 +42,6 @@ to improve it.
    Moreover, in the case that you find a bug or a mistake, we would appriciate
    it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca. 
 
-.. 
-    To get started, see :ref:`the installation guide <readme>`.
 
 .. toctree::
    :maxdepth: 2
