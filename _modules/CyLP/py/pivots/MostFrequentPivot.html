@@ -1,0 +1,182 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CyLP.py.pivots.MostFrequentPivot &mdash; CyLP 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CyLP 1.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for CyLP.py.pivots.MostFrequentPivot</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">itemgetter</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">shuffle</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
+<span class="kn">from</span> <span class="nn">PivotPythonBase</span> <span class="kn">import</span> <span class="n">PivotPythonBase</span>
+
+
+<div class="viewcode-block" id="MostFrequentPivot"><a class="viewcode-back" href="../../../../modules/MostFrequentPivot.html#CyLP.py.pivots.MostFrequentPivot.MostFrequentPivot">[docs]</a><span class="k">class</span> <span class="nc">MostFrequentPivot</span><span class="p">(</span><span class="n">PivotPythonBase</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Last-In-First-Out pivot rule implementation.</span>
+
+<span class="sd">    **Usage**</span>
+
+<span class="sd">    &gt;&gt;&gt; from CyLP.cy import CyClpSimplex</span>
+<span class="sd">    &gt;&gt;&gt; from CyLP.py.pivots import MostFrequentPivot</span>
+<span class="sd">    &gt;&gt;&gt; from CyLP.py.pivots.MostFrequentPivot import getMpsExample</span>
+<span class="sd">    &gt;&gt;&gt; # Get the path to a sample mps file</span>
+<span class="sd">    &gt;&gt;&gt; f = getMpsExample()</span>
+<span class="sd">    &gt;&gt;&gt; s = CyClpSimplex()</span>
+<span class="sd">    &gt;&gt;&gt; s.readMps(f)  # Returns 0 if OK</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; pivot = MostFrequentPivot(s)</span>
+<span class="sd">    &gt;&gt;&gt; s.setPivotMethod(pivot)</span>
+<span class="sd">    &gt;&gt;&gt; s.primal()</span>
+<span class="sd">    &#39;optimal&#39;</span>
+<span class="sd">    &gt;&gt;&gt; round(s.objectiveValue, 5)</span>
+<span class="sd">    2520.57174</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clpModel</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="n">clpModel</span><span class="o">.</span><span class="n">nRows</span> <span class="o">+</span> <span class="n">clpModel</span><span class="o">.</span><span class="n">nCols</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span> <span class="o">=</span> <span class="n">clpModel</span>
+        <span class="c">#self.banList = np.zeros(self.dim, np.int)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">banList</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priorityList</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pivotColumn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">&#39;Finds the variable with the best reduced cost and returns its index&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getReducedCosts</span><span class="p">()</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">nRows</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">nCols</span>
+
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">dualTolerance</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">priorityList</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">flagged</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">getVarStatus</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>  <span class="c"># flagged or fixed</span>
+                <span class="k">continue</span>
+
+            <span class="c">#TODO: can we just say dualInfeasibility = rc[i] ** 2</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">getVarStatus</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>  <span class="c"># upperbound</span>
+                <span class="n">dualInfeasibility</span> <span class="o">=</span> <span class="n">rc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="c"># free or superbasic</span>
+            <span class="k">elif</span> <span class="n">s</span><span class="o">.</span><span class="n">getVarStatus</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">getVarStatus</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">dualInfeasibility</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c"># lowerbound</span>
+                <span class="n">dualInfeasibility</span> <span class="o">=</span> <span class="o">-</span><span class="n">rc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">dualInfeasibility</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addFrequency</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">i</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">addFrequency</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add one to frequency of variable i,</span>
+<span class="sd">        resorts the priorityList (always sorted)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priorityList</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">priorityList</span><span class="p">[</span><span class="n">j</span><span class="p">]]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">priorityList</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priorityList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">isPivotAcceptable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+</div>
+<span class="k">def</span> <span class="nf">getMpsExample</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="n">curpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">getfile</span><span class="p">(</span><span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()))</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">curpath</span><span class="p">,</span> <span class="s">&#39;../../input/p0033.mps&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

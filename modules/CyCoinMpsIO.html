@@ -1,0 +1,181 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CyLP.cy.CyCoinMpsIO &mdash; CyLP 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CyLP 1.0 documentation" href="../index.html" />
+    <link rel="up" title="CyLP.cy" href="cy.html" />
+    <link rel="next" title="CyLP.cy.CyCoinIndexedVector" href="CyCoinIndexedVector.html" />
+    <link rel="prev" title="CyLP.cy.CyClpSimplex" href="CyClpSimplex.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="CyCoinIndexedVector.html" title="CyLP.cy.CyCoinIndexedVector"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="CyClpSimplex.html" title="CyLP.cy.CyClpSimplex"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+          <li><a href="cy.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.cy</span></tt></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-CyLP.cy.CyCoinMpsIO">
+<span id="cylp-cy-cycoinmpsio"></span><h1><a class="reference internal" href="#module-CyLP.cy.CyCoinMpsIO" title="CyLP.cy.CyCoinMpsIO"><tt class="xref py py-mod docutils literal"><span class="pre">CyLP.cy.CyCoinMpsIO</span></tt></a><a class="headerlink" href="#module-CyLP.cy.CyCoinMpsIO" title="Permalink to this headline">¶</a></h1>
+<p>This module interface COIN-OR&#8217;s <tt class="docutils literal"><span class="pre">CoinMpsIO</span></tt>. When you call
+<tt class="xref py py-func docutils literal"><span class="pre">CyLP.cy.CyClpSimplex.readMps()</span></tt> then <tt class="docutils literal"><span class="pre">CoinMpsIO</span></tt>&#8216;s <tt class="docutils literal"><span class="pre">readMps</span></tt> is
+called.  The main reason why CyLP interfaces this class is to be able to read
+an <tt class="docutils literal"><span class="pre">mps</span></tt> file without creating a Simplex object. This way it is possible to
+read a QP using CoinMpsIO and work on the elements of the problem, e.g. the
+Hessian,...</p>
+<dl class="class">
+<dt id="CyLP.cy.CyCoinMpsIO.CyCoinMpsIO">
+<em class="property">class </em><tt class="descclassname">CyLP.cy.CyCoinMpsIO.</tt><tt class="descname">CyCoinMpsIO</tt><a class="headerlink" href="#CyLP.cy.CyCoinMpsIO.CyCoinMpsIO" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.readMps">
+<tt class="descname">readMps</tt><big>(</big><big>)</big><a class="headerlink" href="#CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.readMps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read an mps file. Check if the file is a QP symmetrisize its Hessian
+and store it.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyCoinMpsIO</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy.CyCoinMpsIO</span> <span class="kn">import</span> <span class="n">getQpsExample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span> <span class="o">=</span> <span class="n">CyCoinMpsIO</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">getQpsExample</span><span class="p">())</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span><span class="o">.</span><span class="n">nVariables</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span><span class="o">.</span><span class="n">nConstraints</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signs</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">constraintSigns</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signs</span><span class="p">]</span> <span class="o">==</span> <span class="n">problem</span><span class="o">.</span><span class="n">nConstraints</span> <span class="o">*</span> <span class="p">[</span><span class="s">&#39;G&#39;</span><span class="p">]</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">matrixByRow</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">elements</span> <span class="o">-</span> 
+<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span>  <span class="mf">10.</span><span class="p">,</span>  <span class="mf">10.</span><span class="p">,</span>  <span class="o">-</span><span class="mf">3.</span><span class="p">,</span>
+<span class="gp">... </span>               <span class="mf">5.</span><span class="p">,</span> <span class="mf">4.</span><span class="p">,</span>  <span class="o">-</span><span class="mf">8.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span>
+<span class="gp">... </span>               <span class="mf">5.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.</span><span class="p">,</span>  <span class="o">-</span><span class="mf">4.</span><span class="p">,</span>  <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]))</span> <span class="o">&lt;</span> 
+<span class="gp">... </span>                           <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">indices</span> <span class="o">==</span>
+<span class="gp">... </span>      <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">vectorStarts</span> <span class="o">==</span>
+<span class="gp">... </span>       <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">25</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">rightHandSide</span> <span class="o">==</span>
+<span class="gp">... </span>       <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">5.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="o">-</span><span class="mf">40.</span><span class="p">,</span> <span class="mf">11.</span><span class="p">,</span> <span class="o">-</span><span class="mf">30.</span><span class="p">]))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">Hessian</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">H</span> <span class="o">-</span>
+<span class="gp">... </span><span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">20394.</span><span class="p">,</span> <span class="o">-</span><span class="mf">24908.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2026.</span><span class="p">,</span> <span class="mf">3896.</span><span class="p">,</span> <span class="mf">658.</span><span class="p">],</span>
+<span class="gp">... </span>           <span class="p">[</span><span class="o">-</span><span class="mf">24908.</span><span class="p">,</span> <span class="mf">41818.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3466.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9828.</span><span class="p">,</span> <span class="o">-</span><span class="mf">372.</span><span class="p">],</span>
+<span class="gp">... </span>           <span class="p">[</span><span class="o">-</span><span class="mf">2026.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3466.</span><span class="p">,</span> <span class="mf">3510.</span><span class="p">,</span> <span class="mf">2178.</span><span class="p">,</span> <span class="o">-</span><span class="mf">348.</span><span class="p">],</span>
+<span class="gp">... </span>           <span class="p">[</span><span class="mf">3896.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9828.</span><span class="p">,</span> <span class="mf">2178.</span><span class="p">,</span> <span class="mf">3030.</span><span class="p">,</span> <span class="o">-</span><span class="mf">44.</span><span class="p">],</span>
+<span class="gp">... </span>           <span class="p">[</span><span class="mf">658.</span><span class="p">,</span> <span class="o">-</span><span class="mf">372.</span><span class="p">,</span> <span class="o">-</span><span class="mf">348.</span><span class="p">,</span> <span class="o">-</span><span class="mf">44.</span><span class="p">,</span> <span class="mf">54.</span><span class="p">]]))</span> <span class="o">&lt;</span> 
+<span class="gp">... </span>                           <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="CyClpSimplex.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">CyLP.cy.CyClpSimplex</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="CyCoinIndexedVector.html"
+                        title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">CyLP.cy.CyCoinIndexedVector</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/modules/CyCoinMpsIO.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="CyCoinIndexedVector.html" title="CyLP.cy.CyCoinIndexedVector"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="CyClpSimplex.html" title="CyLP.cy.CyClpSimplex"
+             >previous</a> |</li>
+        <li><a href="../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+          <li><a href="cy.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.cy</span></tt></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

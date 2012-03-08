@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CyLP.py.modeling &mdash; CyLP 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="CyLP 1.0 documentation" href="../index.html" />
+    <link rel="up" title="CyLP.py" href="py.html" />
+    <link rel="next" title="utils.sparseUtil" href="sparseUtil.html" />
+    <link rel="prev" title="MostFrequentPivot" href="MostFrequentPivot.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sparseUtil.html" title="utils.sparseUtil"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="MostFrequentPivot.html" title="MostFrequentPivot"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+          <li><a href="py.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-CyLP.py.modeling.CyLPModel">
+<span id="cylp-py-modeling"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">CyLP.py.modeling</span></tt><a class="headerlink" href="#module-CyLP.py.modeling.CyLPModel" title="Permalink to this headline">¶</a></h1>
+<p>Module provide a facility to model a linear program.
+Although the current usage is to pass the resulting LP to CLP
+to solve it is independant of the solver.</p>
+<p id="modeling-usage"><strong>Usage</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">CyLPModel</span><span class="p">()</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Add variables</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Create coefficients and bounds</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">4.2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Add constraints</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Set the objective function</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Create a CyClpSimplex instance from the model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c"># Solve using primal Simplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
+<span class="go">&#39;optimal&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
+<span class="go">array([ 0.2,  2. ,  1.1,  0. ,  0.9])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">2.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
+<span class="go">&#39;optimal&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
+<span class="go">array([ 0. ,  2. ,  1.1,  0. ,  1. ])</span>
+</pre></div>
+</div>
+<div class="section" id="cylpvar">
+<h2><a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPVar" title="CyLP.py.modeling.CyLPModel.CyLPVar"><tt class="xref py py-class docutils literal"><span class="pre">CyLPVar</span></tt></a><a class="headerlink" href="#cylpvar" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CyLP.py.modeling.CyLPModel.CyLPVar">
+<em class="property">class </em><tt class="descclassname">CyLP.py.modeling.CyLPModel.</tt><tt class="descname">CyLPVar</tt><big>(</big><em>name</em>, <em>dim</em>, <em>isInt=False</em>, <em>fromInd=None</em>, <em>toInd=None</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPVar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPVar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains variable information such as its name, dimension,
+bounds, and whether or not it is an integer. We don&#8217;t creat
+instances directly but rather use <a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPModel.addVariable" title="CyLP.py.modeling.CyLPModel.CyLPModel.addVariable"><tt class="xref py py-func docutils literal"><span class="pre">CyLPModel.addVariable()</span></tt></a>
+to create one.</p>
+<p>See the <a class="reference internal" href="#modeling-usage"><em>modeling example</em></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="cylpmodel">
+<h2><a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPModel" title="CyLP.py.modeling.CyLPModel.CyLPModel"><tt class="xref py py-class docutils literal"><span class="pre">CyLPModel</span></tt></a><a class="headerlink" href="#cylpmodel" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CyLP.py.modeling.CyLPModel.CyLPModel">
+<em class="property">class </em><tt class="descclassname">CyLP.py.modeling.CyLPModel.</tt><tt class="descname">CyLPModel</tt><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hold all the necessary information to create a linear program, i.e.
+variables, constraints, and the objective function.</p>
+<p>See the <a class="reference internal" href="#modeling-usage"><em>modeling example</em></a>.</p>
+<dl class="method">
+<dt id="CyLP.py.modeling.CyLPModel.CyLPModel.addVariable">
+<tt class="descname">addVariable</tt><big>(</big><em>name</em>, <em>dim</em>, <em>isInt=False</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPModel.addVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPModel.addVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance of <a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPVar" title="CyLP.py.modeling.CyLPModel.CyLPVar"><tt class="xref py py-class docutils literal"><span class="pre">CyLPVar</span></tt></a> using the given
+arguments and add it to current model&#8217;s variable list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CyLP.py.modeling.CyLPModel.CyLPModel.addConstraint">
+<tt class="descname">addConstraint</tt><big>(</big><em>cons</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPModel.addConstraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPModel.addConstraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add constraint <tt class="docutils literal"><span class="pre">cons</span></tt> to the <tt class="docutils literal"><span class="pre">CyLPModel</span></tt>. Argument <tt class="docutils literal"><span class="pre">cons</span></tt> must
+be an expresion made using instances of <a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPVar" title="CyLP.py.modeling.CyLPModel.CyLPVar"><tt class="xref py py-class docutils literal"><span class="pre">CyLPVar</span></tt></a>,
+<a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPArray" title="CyLP.py.modeling.CyLPModel.CyLPArray"><tt class="xref py py-class docutils literal"><span class="pre">CyLPArray</span></tt></a>, Numpy matrices, or sparse matrices. It can
+use normal operators such as <tt class="docutils literal"><span class="pre">&gt;=</span></tt>, <tt class="docutils literal"><span class="pre">&lt;=</span></tt>, <tt class="docutils literal"><span class="pre">==</span></tt>, <tt class="docutils literal"><span class="pre">+</span></tt>, <tt class="docutils literal"><span class="pre">-</span></tt>,
+<tt class="docutils literal"><span class="pre">*</span></tt>.</p>
+<p>See the <a class="reference internal" href="#modeling-usage"><em>modeling example</em></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="cylparray">
+<h2><a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPArray" title="CyLP.py.modeling.CyLPModel.CyLPArray"><tt class="xref py py-class docutils literal"><span class="pre">CyLPArray</span></tt></a><a class="headerlink" href="#cylparray" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CyLP.py.modeling.CyLPModel.CyLPArray">
+<em class="property">class </em><tt class="descclassname">CyLP.py.modeling.CyLPModel.</tt><tt class="descname">CyLPArray</tt><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPArray"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPArray" title="Permalink to this definition">¶</a></dt>
+<dd><p>It is a tweaked Numpy array. It allows user to define objects
+comparability to an array. If we have an instance of <tt class="docutils literal"><span class="pre">CyLPVar</span></tt>
+called <tt class="docutils literal"><span class="pre">x</span></tt> and a numpy array <tt class="docutils literal"><span class="pre">b</span></tt>, then <tt class="docutils literal"><span class="pre">b</span> <span class="pre">&gt;=</span> <span class="pre">x</span></tt> returns an array
+of the same dimension as <tt class="docutils literal"><span class="pre">b</span></tt> with all elements equal to <tt class="docutils literal"><span class="pre">False</span></tt>,
+which has no sense at all. On the constrary <tt class="docutils literal"><span class="pre">CyLPArray</span></tt> will return
+<tt class="docutils literal"><span class="pre">NotImplemented</span></tt> if it doesn&#8217;t know how to compare. This is particularly
+helpful when we define LP constraints.</p>
+<p>See the <a class="reference internal" href="#modeling-usage"><em>modeling example</em></a>.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indexfactory">
+<h2><a class="reference internal" href="#CyLP.py.modeling.CyLPModel.IndexFactory" title="CyLP.py.modeling.CyLPModel.IndexFactory"><tt class="xref py py-class docutils literal"><span class="pre">IndexFactory</span></tt></a><a class="headerlink" href="#indexfactory" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="CyLP.py.modeling.CyLPModel.IndexFactory">
+<em class="property">class </em><tt class="descclassname">CyLP.py.modeling.CyLPModel.</tt><tt class="descname">IndexFactory</tt><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#IndexFactory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.IndexFactory" title="Permalink to this definition">¶</a></dt>
+<dd><p>A small class that keeps track of the indices of variables and constraints
+that you are adding to a problem gradually.</p>
+<p><strong>Usage</strong></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">IndexFactory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">IndexFactory</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">hasVar</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">varIndex</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addConst</span><span class="p">(</span><span class="s">&#39;Manpower&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addConst</span><span class="p">(</span><span class="s">&#39;Gold&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="s">&#39;Manpower&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="s">&#39;Gold&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">CyLP.py.modeling</span></tt></a><ul>
+<li><a class="reference internal" href="#cylpvar"><tt class="docutils literal"><span class="pre">CyLPVar</span></tt></a></li>
+<li><a class="reference internal" href="#cylpmodel"><tt class="docutils literal"><span class="pre">CyLPModel</span></tt></a></li>
+<li><a class="reference internal" href="#cylparray"><tt class="docutils literal"><span class="pre">CyLPArray</span></tt></a></li>
+<li><a class="reference internal" href="#indexfactory"><tt class="docutils literal"><span class="pre">IndexFactory</span></tt></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="MostFrequentPivot.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">MostFrequentPivot</span></tt></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="sparseUtil.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">utils.sparseUtil</span></tt></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/modules/modeling.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="sparseUtil.html" title="utils.sparseUtil"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="MostFrequentPivot.html" title="MostFrequentPivot"
+             >previous</a> |</li>
+        <li><a href="../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+          <li><a href="py.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>
