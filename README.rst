@@ -59,6 +59,8 @@ Use `p` instead of the trailing `d` to use the positive edge pivot rule instead 
 
 Documentation
 ===============
-You may access CyLP's documentation at http://mpy.github.com/CyLP.
+You may access CyLP's documentation:
 
-To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest. 
+    1. *Online* : http://mpy.github.com/CyLP.
+
+    2. *Offline* : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest. 
