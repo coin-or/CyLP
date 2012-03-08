@@ -27,7 +27,7 @@ which allows easy creation of LPs.
 But what makes CyLP completely different is its capability to alter the
 solution process. For example it provides a framework to define simplex pivot
 rules in Python. In the MIP part, it allows definition of branch-and-cut tree
-transversal rule In Python.  
+transversal rule in Python.  
 
 This documentation is incomplete but we, to the best of our ability, are trying
 to improve it. 
