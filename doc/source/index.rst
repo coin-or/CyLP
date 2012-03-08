@@ -15,8 +15,8 @@ where :math:`c \in \mathbb{R}^n`, :math:`b \in \mathbb{R}^m`, :math:`A \in
 \mathbb{R}^{m \times n}`. You can solve an LP using COIN-OR's CLP
 (https://projects.coin-or.org/Clp)\ ---an opensource project written in C++.
 Furthermore, if you demand some variables to be integer, then the problem is
-called a mixed-integer program (MIP). You may use
-CBC(https://projects.coin-or.org/Cbc) in combination with
+called a mixed-integer program (MIP). CBC(https://projects.coin-or.org/Cbc) 
+is used in combination with
 CGL(https://projects.coin-or.org/Cgl) to solve MIPs.
 
 CyLP is a Cython interface to COIN-OR's CLP, CBC, and CGL. At its most basic it
