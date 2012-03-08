@@ -22,7 +22,7 @@ STEP 3: Install CyLP. Go to CyLP's root directory add run 'make'
 
 STEP 4: Update you PYTHONPATH environment variable to contain the 
         parent directory of CyLP. For example, if the path to CyLP 
-        installation is /Users/Mehdi/CyLP, then "/Users/Mehdi" must
+        installation is /Users/Mehdi/CyLP, then '/Users/Mehdi' must
         be in your PYTHONPATH. To this end, you may run::
  
             $ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"
