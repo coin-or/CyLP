@@ -5,10 +5,10 @@ from time import clock
 import numpy as np
 from scipy import sparse
 from CyLP.cy import CyClpSimplex
-from QPSReader import readQPS
+from CyLP.py.QP.QPSReader import readQPS
 from CyLP.py.pivots.WolfePivot import WolfePivot
 from CyLP.py.pivots.PositiveEdgeWolfePivot import PositiveEdgeWolfePivot
-from CyCoinModel import CyCoinModel
+from CyLP.cy import CyCoinModel
 from CyLP.py.utils.sparseUtil import csc_matrixPlus
 
 
@@ -55,7 +55,7 @@ class QP:
         :arg x: a vector
         :type x: Numpy array
         :arg i: index
-        :type x: integer
+        :type i: integer
         '''
         if i >= self.m:
             raise "i should be smaller than m"
@@ -72,7 +72,8 @@ class QP:
     def gradient(self, x):
         '''
         Return the gradient of the objective function at ``x``
-        
+        :arg x: vector
+        :type x: Numpy array  
         '''
         return self.G * x + self.a
 
@@ -84,7 +85,10 @@ class QP:
             self.objectiveOffset) = readQPS(filename)
 
     def Wolfe_2(self):
-        "Solves a QP using Wolfe's method"
+        '''
+        Solve a QP using Wolfe's method
+        '''
+
         A = self.A
         G = self.G
         b = self.b
@@ -419,6 +423,12 @@ class QP:
         nVar = self.n
         nEquality = self.nEquality
         nInEquality = self.nInEquality
+
+        print A
+        print G
+        print b
+        print c
+        return
 
         varIndexDic = {}
         currentNumberOfVars = 0
