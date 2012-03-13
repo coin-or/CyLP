@@ -14,7 +14,6 @@ STEP 1: Install CoinMP. You can get the source at
         $ make
         $ make install
 
-
 STEP 2: Edit setup.py and set CoinDir to the location of the top directory of 
         CoinMP.
 
