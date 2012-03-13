@@ -89,9 +89,9 @@ it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca.</p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<dl class="docutils">
-<dt>STEP 1:</dt>
-<dd><p class="first">Install CoinMP. You can get the source at
+<p>STEP 1: Install CoinMP.</p>
+<blockquote>
+<div><p>You can get the source at
 <a class="reference external" href="http://www.coin-or.org/download/source/CoinMP/">http://www.coin-or.org/download/source/CoinMP/</a>. CyLP can be compiled against
 CoinMP-1.6.0 or CoinMP-1.4.0 (earlier versions might work too). If you
 choose CoinMP 1.6.0, to compile CyLP you will need a LAPACK
@@ -99,24 +99,28 @@ implementation and BZIP2 installed. If you are on a MAC or a linux
 system you might already have both. CoinMP-1.4.0 does not have this
 requirement.
 To compile CoinMP&#8217;s source you may need to pass &#8216;g95&#8217; to configure:</p>
-<div class="last highlight-python"><pre>$ ./configure F77=/path/to/g95
+<div class="highlight-python"><pre>$ ./configure F77=/path/to/g95
 $ make
 $ make install</pre>
 </div>
-</dd>
-<dt>STEP 2:</dt>
-<dd>Edit setup.py and set CoinDir to the location of the top directory of
-CoinMP.</dd>
-<dt>STEP 3:</dt>
-<dd>Install CyLP. Go to CyLP&#8217;s root directory add run &#8216;make&#8217;</dd>
-<dt>STEP 4:</dt>
-<dd><p class="first">Update you PYTHONPATH environment variable to contain the
+</div></blockquote>
+<p>STEP 2:</p>
+<blockquote>
+<div>Edit setup.py and set CoinDir to the location of the top directory of
+CoinMP.</div></blockquote>
+<p>STEP 3:</p>
+<blockquote>
+<div>Install CyLP. Go to CyLP&#8217;s root directory add run &#8216;make&#8217;</div></blockquote>
+<p>STEP 4:</p>
+<blockquote>
+<div><p>Update you PYTHONPATH environment variable to contain the
 parent directory of CyLP. For example, if the path to CyLP
 installation is /Users/Mehdi/CyLP, then &#8216;/Users/Mehdi&#8217; must
 be in your PYTHONPATH. To this end, you may run:</p>
-<div class="last highlight-python"><pre>$ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"</pre>
+<div class="highlight-python"><pre>$ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"</pre>
 </div>
-</dd>
+</div></blockquote>
+<dl class="docutils">
 <dt>Now you can use CyLP in your python code. For example:</dt>
 <dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
