@@ -1,7 +1,8 @@
 Installation
 ============
 
-STEP 1: Install CoinMP. You can get the source at
+STEP 1: 
+    Install CoinMP. You can get the source at
     http://www.coin-or.org/download/source/CoinMP/. CyLP can be compiled against
     CoinMP-1.6.0 or CoinMP-1.4.0 (earlier versions might work too). If you
     choose CoinMP 1.6.0, to compile CyLP you will need a LAPACK
@@ -14,17 +15,20 @@ STEP 1: Install CoinMP. You can get the source at
         $ make
         $ make install
 
-STEP 2: Edit setup.py and set CoinDir to the location of the top directory of 
-        CoinMP.
+STEP 2: 
+    Edit setup.py and set CoinDir to the location of the top directory of 
+    CoinMP.
 
-STEP 3: Install CyLP. Go to CyLP's root directory add run 'make'
+STEP 3: 
+    Install CyLP. Go to CyLP's root directory and run 'make'
 
-STEP 4: Update you PYTHONPATH environment variable to contain the 
-        parent directory of CyLP. For example, if the path to CyLP 
-        installation is /Users/Mehdi/CyLP, then '/Users/Mehdi' must
-        be in your PYTHONPATH. To this end, you may run::
+STEP 4: 
+    Update you PYTHONPATH environment variable to contain the 
+    parent directory of CyLP. For example, if the path to CyLP 
+    installation is /Users/Mehdi/CyLP, then '/Users/Mehdi' must
+    be in your PYTHONPATH. To this end, you may run::
  
-            $ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"
+        $ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"
 
 
 Now you can use CyLP in your python code. For example:
