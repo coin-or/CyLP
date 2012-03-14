@@ -15,10 +15,19 @@ class WolfePivot(PivotPythonBase):
         if s.Hessian == None:
             rc = s.reducedCosts
         else:
-            x = s.primalVariableSolution
+            x = s.primalVariableSolutionAll
             G = s.Hessian
+            
+            #print '1'
+            dim = s.nVariables + s.nConstraints
+            #print dim
+            G[dim - 1, dim - 1] = 0 
+            #print 'x shape = ', x.shape, x.__class__
+            #print 'G shape = ', G.shape, G.__class__
+            #print G * x
+            #print s.reducedCosts
             rc = G * x + s.reducedCosts
-
+            #print '2'
 
         tol = s.dualTolerance()
         #tol = 0

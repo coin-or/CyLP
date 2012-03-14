@@ -5,6 +5,7 @@ from os.path import join
 import numpy as np
 
 from CyLP.cy import CyClpSimplex
+from CyLP.py.pivots import WolfePivot 
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
@@ -12,9 +13,17 @@ class TestQP(unittest.TestCase):
     def test_1(self):
         """simplest QP test"""
         s = CyClpSimplex()
-        s.readMps(join(currentFilePath, '../input/hs35.qps'))
+        s.readMps(join(currentFilePath, '../input/hs268.qps'))
         #self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
-        print s.Hessian
+        
+        print s.Hessian.todense()
+
+        p = WolfePivot(s)
+        s.setPivotMethod(p)
+
+        s.primal()
+        print s.primalVariableSolution
+        print s.objectiveValue
 
 if __name__ == '__main__':
     unittest.main()

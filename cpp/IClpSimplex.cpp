@@ -384,10 +384,17 @@ PyObject* IClpSimplex::getPrimalRowSolution(){
 PyObject* IClpSimplex::getPrimalColumnSolution(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->primalColumnSolution() );
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->primalColumnSolution() );
 
     return Arr;
 }
+
+PyObject* IClpSimplex::getPrimalColumnSolutionAll(){
+    npy_intp dims = getNumCols() + getNumRows();
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->primalColumnSolution() );
+    return Arr;
+}
+
 
 
 PyObject* IClpSimplex::getDualRowSolution(){

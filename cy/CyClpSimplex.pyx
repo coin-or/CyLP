@@ -151,6 +151,17 @@ cdef class CyClpSimplex:
             #if self.cbcModelExists:
             #    return <object>self.cbcModel.getPrimalVariableSolution()
             return <object>self.CppSelf.getPrimalColumnSolution()
+    
+    property primalVariableSolutionAll:
+        '''
+        Solution to the primal variables. Including the slacks.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            #if self.cbcModelExists:
+            #    return <object>self.cbcModel.getPrimalVariableSolution()
+            return <object>self.CppSelf.getPrimalColumnSolutionAll()
 
     property dualVariableSolution:
         '''
@@ -1098,8 +1109,8 @@ cdef class CyClpSimplex:
                  np.ndarray[np.double_t, ndim=1] rowub,
                  np.ndarray[np.double_t, ndim=1] rowObjective=np.array([])):
         cdef double* rd
-        if rowObjective == np.array([]):
-            rd = <double*> 0
+        if len(rowObjective) == 0:
+            rd = NULL 
         else:
             rd = <double*> rowObjective.data
         self.CppSelf.loadProblem(matrix.CppSelf, <double*> collb.data,
@@ -1107,7 +1118,7 @@ cdef class CyClpSimplex:
                                          <double*> obj.data,
                                          <double*> rowlb.data,
                                          <double*> rowub.data,
-                                         <double*> rowObjective.data)
+                                         <double*> rd)
 
     def getCoinInfinity(self):
         return self.CppSelf.getCoinInfinity()
