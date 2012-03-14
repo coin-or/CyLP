@@ -424,9 +424,18 @@ class QP:
         nEquality = self.nEquality
         nInEquality = self.nInEquality
 
+        print 'A'
         print A
-        print G
         print b
+
+        print 'C'
+        print C
+        print c_low
+        print c_up
+        print 'Hessian'
+        print G
+    
+        print 'c'
         print c
         return
 

@@ -162,6 +162,11 @@ cdef extern from "IClpSimplex.hpp":
                               bint doRowObjective)
 
         int loadProblem(CppCoinModel * modelObject, int tryPlusMinusOne)
+        void loadProblem(CppCoinPackedMatrix* matrix,
+		                  double* collb,  double* colub,   
+		                  double* obj,
+		                  double* rowlb,  double* rowub,
+		                  double * rowObjective)
 
         void setComplement(int var1, int var2)
 
@@ -206,6 +211,7 @@ cdef class CyClpSimplex:
     cdef object varSelCriteria
     cdef CyCoinModel coinModel
     cdef object cyLPModel
+    cdef object Hessian
 
     #cdef void prepareForCython(self, int useCustomPrimal)
     cdef setCppSelf(self,  CppIClpSimplex* s)
@@ -255,7 +261,7 @@ cdef class CyClpSimplex:
 
     cpdef vectorTimesB_1(self, CyCoinIndexedVector vec)
 
-    cpdef int loadProblem(self, CyCoinModel modelObject, int tryPlusMinusOne=*)
+    #cpdef int loadProblem(self, CyCoinModel modelObject, int tryPlusMinusOne=*)
 
     #cpdef getPrimalConstraintSolution(self)
     #cpdef getPrimalVariableSolution(self)

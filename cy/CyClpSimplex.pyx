@@ -17,7 +17,7 @@ from CyLP.py.utils.sparseUtil import sparseConcat
 from CyLP.py.modeling.CyLPVar import CyLPVar
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
-
+from CyLP.cy cimport CyCoinMpsIO
 
 problemStatus = ['optimal', 'primal infeasible', 'dual infeasible',
                 'stopped on iterations or time',
@@ -330,6 +330,10 @@ cdef class CyClpSimplex:
         def __get__(self):
             status = self.status
             return (status & 64 == 0)
+
+    property Hessian:
+        def __get__(self):
+            return self.Hessian
 
     #############################################
     # get set
@@ -703,7 +707,21 @@ cdef class CyClpSimplex:
         '''
         Read an mps file. See this :ref:`modeling example <modeling-usage>`.
         '''
-        return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+        name, ext = os.path.splitext(filename)
+        if ext not in ['.mps', '.qps']:
+            print 'unrecognised extension %s' % ext
+            return -1
+
+        if ext == '.mps':
+            return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+        else:
+            m = CyCoinMpsIO.CyCoinMpsIO()
+            ret = m.readMps(filename)
+            self.Hessian = m.Hessian
+            self.loadProblem(m.matrixByCol, m.variableLower, m.variableUpper,
+                             m.objCoefficients,
+                             m.constraintLower, m.constraintUpper)
+            return ret
 
     def primal(self, ifValuesPass=0, startFinishOptions=0):
         '''
@@ -1068,9 +1086,28 @@ cdef class CyClpSimplex:
         #cl[var1], cl[var2] = var2, var1
         self.CppSelf.setComplement(var1, var2)
 
-    cpdef int loadProblem(self, CyCoinModel modelObject, int
+    def loadProblemFromCyCoinModel(self, CyCoinModel modelObject, int
                                         tryPlusMinusOne=False):
         return self.CppSelf.loadProblem(modelObject.CppSelf, tryPlusMinusOne)
+
+    def loadProblem(self, CyCoinPackedMatrix matrix,
+                 np.ndarray[np.double_t, ndim=1] collb,
+                 np.ndarray[np.double_t, ndim=1] colub,
+                 np.ndarray[np.double_t, ndim=1] obj,
+                 np.ndarray[np.double_t, ndim=1] rowlb,
+                 np.ndarray[np.double_t, ndim=1] rowub,
+                 np.ndarray[np.double_t, ndim=1] rowObjective=np.array([])):
+        cdef double* rd
+        if rowObjective == np.array([]):
+            rd = <double*> 0
+        else:
+            rd = <double*> rowObjective.data
+        self.CppSelf.loadProblem(matrix.CppSelf, <double*> collb.data,
+                                         <double*> colub.data,
+                                         <double*> obj.data,
+                                         <double*> rowlb.data,
+                                         <double*> rowub.data,
+                                         <double*> rowObjective.data)
 
     def getCoinInfinity(self):
         return self.CppSelf.getCoinInfinity()

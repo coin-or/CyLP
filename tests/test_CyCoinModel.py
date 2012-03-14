@@ -27,7 +27,7 @@ class TestCyCoinModel(unittest.TestCase):
         
         s = CyClpSimplex()
         # Load the problem from the CyCoinModel
-        s.loadProblem(m)
+        s.loadProblemFromCyCoinModel(m)
         
         s.primal()
          

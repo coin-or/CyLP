@@ -79,6 +79,12 @@ public:
 	
 	int loadProblem (CoinModel * modelObject,bool tryPlusMinusOne=false){return ClpSimplex::loadProblem(*modelObject, tryPlusMinusOne);}
 	//double* infeasibilityRay();
+    void loadProblem (const CoinPackedMatrix* matrix,
+		     const double* collb, const double* colub,   
+		     const double* obj,
+		     const double* rowlb, const double* rowub,
+		     const double * rowObjective=NULL){
+                   ClpSimplex::loadProblem(*matrix, collb, colub, obj, rowlb, rowub, rowObjective);}
 	
 	int primal(int ifValuesPass=0, int startFinishOptions=0);
 	
