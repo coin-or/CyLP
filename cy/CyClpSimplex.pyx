@@ -163,6 +163,17 @@ cdef class CyClpSimplex:
             #    return <object>self.cbcModel.getPrimalVariableSolution()
             return <object>self.CppSelf.getPrimalColumnSolutionAll()
 
+    property solution:
+        '''
+        Return the current point.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            #if self.cbcModelExists:
+            #    return <object>self.cbcModel.getPrimalVariableSolution()
+            return <object>self.CppSelf.getSolutionRegion()
+
     property dualVariableSolution:
         '''
         Solution to the dual variables

@@ -395,7 +395,11 @@ PyObject* IClpSimplex::getPrimalColumnSolutionAll(){
     return Arr;
 }
 
-
+PyObject* IClpSimplex::getSolutionRegion(){
+    npy_intp dims = getNumCols() + getNumRows();
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->solutionRegion() );
+    return Arr;
+}
 
 PyObject* IClpSimplex::getDualRowSolution(){
 
