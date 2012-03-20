@@ -58,6 +58,7 @@ public:
     bool varSuperBasic(int ind);
     bool varIsFixed(int ind);
 	PyObject * getReducedCosts();
+	void setReducedCosts(double*);
     PyObject * getStatusArray();
 	PyObject * getComplementarityList();
 	PyObject * getPivotVariable();

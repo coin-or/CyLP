@@ -356,6 +356,14 @@ PyObject* IClpSimplex::getReducedCosts(){
     return Arr;
 }
 
+void IClpSimplex::setReducedCosts(double* rc){
+    int dim = getNumCols() + getNumRows();
+    for (int i = 0; i < dim; i++) {
+        dj_[i] = rc[i];
+    }
+}
+ 
+
 PyObject* IClpSimplex::getComplementarityList(){
 
     npy_intp dims = getNumCols() + getNumRows();

@@ -137,6 +137,7 @@ cdef extern from "IClpSimplex.hpp":
 
         #methods that return nunmpy arrays from c (double*  ,...)
         PyObject* getReducedCosts()
+        void setReducedCosts(double* rc)
         PyObject* getStatusArray()
         PyObject* getComplementarityList()
         PyObject* getPivotVariable()

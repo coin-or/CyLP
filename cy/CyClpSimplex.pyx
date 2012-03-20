@@ -151,7 +151,7 @@ cdef class CyClpSimplex:
             #if self.cbcModelExists:
             #    return <object>self.cbcModel.getPrimalVariableSolution()
             return <object>self.CppSelf.getPrimalColumnSolution()
-    
+
     property primalVariableSolutionAll:
         '''
         Solution to the primal variables. Including the slacks.
@@ -209,6 +209,9 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             return self.getReducedCosts()
+
+        def __set__(self, np.ndarray[np.double_t, ndim=1] rc):
+            self.CppSelf.setReducedCosts(<double*> rc.data)
 
     cpdef getReducedCosts(self):
         return <object>self.CppSelf.getReducedCosts()
@@ -867,7 +870,7 @@ cdef class CyClpSimplex:
 
         if isinstance(arg, (int, long)):
             self.CppSelf.setInteger(arg)
-        elif True: #isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setInteger can be ' \
                                 'a CyLPVar only if the object is built ' \
@@ -885,7 +888,6 @@ cdef class CyClpSimplex:
             else:
                 for i in xrange(var.dim):
                     self.CppSelf.setInteger(x[i])
-
 
     def copyInIntegerInformation(self, np.ndarray[np.uint8_t, ndim=1] colType):
         '''
@@ -1121,7 +1123,7 @@ cdef class CyClpSimplex:
                  np.ndarray[np.double_t, ndim=1] rowObjective=np.array([])):
         cdef double* rd
         if len(rowObjective) == 0:
-            rd = NULL 
+            rd = NULL
         else:
             rd = <double*> rowObjective.data
         self.CppSelf.loadProblem(matrix.CppSelf, <double*> collb.data,
