@@ -56,7 +56,7 @@ import hashlib
 import numpy as np
 from scipy import sparse
 
-from CyLP.py.utils.sparseUtil import sparseConcat
+#from CyLP.py.utils.sparseUtil import sparseConcat
 
 
 class CyLPExpr:
@@ -555,6 +555,8 @@ class IndexFactory:
         return s
 
 
+from CyLP.py.utils.sparseUtil import sparseConcat
+
 class CyLPModel(object):
     '''
     Hold all the necessary information to create a linear program, i.e.
@@ -563,7 +565,7 @@ class CyLPModel(object):
     See the :ref:`modeling example <modeling-usage>`.
 
     '''
-
+    
     def __init__(self):
         self.variables = []
         self.constraints = []

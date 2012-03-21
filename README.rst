@@ -32,12 +32,16 @@ STEP 4:
 
 
 Now you can use CyLP in your python code. For example:
+    
     >>> from CyLP.cy import CyClpSimplex
     >>> s = CyClpSimplex()
-    >>> s.readMps('path/to/CyLP/input/netlib/adlittle.mps')
+    >>> s.readMps('../input/netlib/adlittle.mps')
+    0
     >>> s.initialSolve()
-    >>> print s.primalVariableSolution
-
+    'optimal'
+    >>> round(s.objectiveValue, 3)
+    225494.963
+    
 Or simply go to CyLP and run:: 
 
     $ python -m unittest discover
