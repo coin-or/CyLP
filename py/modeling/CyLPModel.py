@@ -232,7 +232,8 @@ class CyLPConstraint:
                         if len(left.shape) == 1:  # Array
                             nr = 1
                         else:
-                            nr = len(left)
+                            nr = left.shape[0]
+                            #nr = len(left)
                         if self.nRows and self.nRows != nr:
                             raise Exception("Coefficient:\n%s\n has %d rows" \
                                             " expected %d"
