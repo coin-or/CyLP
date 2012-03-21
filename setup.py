@@ -34,8 +34,8 @@ includeDirs = ['./cpp/', join('.', cythonFilesDir),
                 join(CoinDir, 'BuildTools/headers/'),
                 join(CoinDir, 'Clp/src/'), numpy.get_include(), '.']
 
-extra_link_args = ['-g', '-Wl,-framework', '-Wl,Accelerate']
-extra_compile_args = ['-g']  # , '-Wno-all']
+extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
+extra_compile_args = []
 ext_modules = []
 
 ext_modules += [Extension('CyLP.cy.CyClpPrimalColumnPivotBase',
