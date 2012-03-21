@@ -30,7 +30,7 @@ cdef class CyCoinModel:
     >>>
     >>> s = CyClpSimplex()
     >>> # Load the problem from the CyCoinModel
-    >>> s.loadProblem(m)
+    >>> s.loadProblemFromCyCoinModel(m)
     0
     >>> s.primal()
     'optimal'

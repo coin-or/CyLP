@@ -14,7 +14,7 @@ from CyPivotPythonBase cimport CyPivotPythonBase
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy cimport CyCoinModel
 from CyLP.py.utils.sparseUtil import sparseConcat
-from CyLP.py.modeling.CyLPVar import CyLPVar
+from CyLP.py.modeling.CyLPModel import CyLPVar
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
 from CyLP.cy cimport CyCoinMpsIO
