@@ -258,11 +258,15 @@ class CyLPConstraint:
                         if right in self.varCoefs.keys():
                             self.varCoefs[right] *= -1
                         else:
-                            ones = CyLPArray(np.ones(right.dim))
+                            if self.nRows == 0:
+                                self.nRows = 1
+                                coef = CyLPArray(np.ones(right.dim))
+                            else:
+                                print '&&&&&&&&&&&&&&&&&&&&&', right.name
+                                coef = np.matrix(np.eye(self.nRows)) 
                             if opr == '-':
-                                ones *= -1
-                            self.varCoefs[right] = ones
-                            self.nRows = 1
+                                coef *= -1
+                            self.varCoefs[right] = coef
                             if right.name not in self.varNames:
                                 self.varNames.append(right.name)
                                 self.parentVarDims[right.name] = \
@@ -646,7 +650,7 @@ class CyLPModel(object):
     def generateVarMatrix(self, varName):
         '''
         Create the coefficient matrix for a variable named
-        varName. Returns a csr_matrixPlus
+        varName. Return a csr_matrixPlus.
         '''
         dim = self.allParentVarDims[varName]
         mainCoef = None
@@ -657,6 +661,13 @@ class CyLPModel(object):
             elif c.nRows == 1:
                 coef = np.zeros(dim)
                 for var in keys:
+                    print 'modeling ...................................'
+                    print var.name
+                    print c
+                    print coef
+                    print coef[var.indices]
+                    print c.varCoefs[var]
+                    print '---------------------------------------'
                     coef[var.indices] += c.varCoefs[var]
 
             else:  # Constraint has matrix coefficients
