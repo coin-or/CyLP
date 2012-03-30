@@ -132,8 +132,10 @@ class CyLPExpr:
         return left + right + [self.opr]
 
     def evaluate(self):
-        '''Evaluates an expression in the postfix form
         '''
+        Evaluates an expression in the postfix form
+        '''
+        #FIXME: sometimes calling this twice is different than running it once
         tokens = self.getPostfix()
         operands = []
 
@@ -261,8 +263,9 @@ class CyLPConstraint:
                             if self.nRows == 0:
                                 self.nRows = 1
                                 coef = CyLPArray(np.ones(right.dim))
+                            elif self.nRows == 1:
+                                coef = CyLPArray(np.ones(1))
                             else:
-                                print '&&&&&&&&&&&&&&&&&&&&&', right.name
                                 coef = np.matrix(np.eye(self.nRows)) 
                             if opr == '-':
                                 coef *= -1
@@ -404,6 +407,14 @@ class CyLPVar(CyLPExpr):
             newObj.toInd = newObj_toInd
             newObj.indices = np.arange(newObj.fromInd, newObj.toInd)
             # Save parentDim for future use
+            newObj.dim = len(newObj.indices)
+        elif isinstance(key, (np.ndarray, list)):
+            newObj = CyLPVar(self.name, len(key))
+            newObj.parentDim = self.dim
+            newObj.parent = self
+            newObj.fromInd = None
+            newObj.toInd = None
+            newObj.indices = np.array(key)
             newObj.dim = len(newObj.indices)
 
         return newObj
@@ -634,7 +645,7 @@ class CyLPModel(object):
 
         c = cons.evaluate()
         if not c.isRange:
-            self.constraints.append(cons.evaluate())
+            self.constraints.append(c)
         self.makeMatrices()
 
     def generateVarObjCoef(self, varName):
@@ -661,13 +672,6 @@ class CyLPModel(object):
             elif c.nRows == 1:
                 coef = np.zeros(dim)
                 for var in keys:
-                    print 'modeling ...................................'
-                    print var.name
-                    print c
-                    print coef
-                    print coef[var.indices]
-                    print c.varCoefs[var]
-                    print '---------------------------------------'
                     coef[var.indices] += c.varCoefs[var]
 
             else:  # Constraint has matrix coefficients
@@ -712,6 +716,9 @@ class CyLPModel(object):
             v_lower = np.concatenate((v_lower, v.lower), axis=0)
             v_upper = np.concatenate((v_upper, v.upper), axis=0)
 
+        #import pdb; pdb.set_trace()
+        #if masterCoefMat != None:
+        #    print '->', masterCoefMat.todense()
         return masterCoefMat, c_lower, c_upper, v_lower, v_upper
 
 
