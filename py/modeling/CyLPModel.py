@@ -51,7 +51,7 @@
 
 '''
 
-
+from itertools import izip
 import hashlib
 import numpy as np
 from scipy import sparse
@@ -571,7 +571,7 @@ class IndexFactory:
         return s
 
 
-from CyLP.py.utils.sparseUtil import sparseConcat
+from CyLP.py.utils.sparseUtil import sparseConcat, csr_matrixPlus, csc_matrixPlus
 
 class CyLPModel(object):
     '''
@@ -671,8 +671,26 @@ class CyLPModel(object):
                 coef = sparse.coo_matrix((c.nRows, dim))
             elif c.nRows == 1:
                 coef = np.zeros(dim)
+                #coef = sparse.coo_matrix((1, dim))
+                #print keys
                 for var in keys:
-                    coef[var.indices] += c.varCoefs[var]
+                    #print '---------'
+                    #print var.name
+                    #print var.indices
+                    tempMat = c.varCoefs[var]
+                    if isinstance(tempMat, 
+                            (csr_matrixPlus, csc_matrixPlus)):
+                        coo = tempMat.tocoo()
+                        #print coef
+                        for i, j, v in izip(coo.row, coo.col, coo.data):
+                            coef[j] = v
+                    
+                        #print coef[var.indices]
+                        #print c.varCoefs[var]
+                        #print coef[var.indices] + c.varCoefs[var].todense()
+                        #print type(coef[var.indices]), type(c.varCoefs[var])
+                    else:
+                        coef[var.indices] += c.varCoefs[var]
 
             else:  # Constraint has matrix coefficients
                 # Initial coef with the coef of the first occurance
