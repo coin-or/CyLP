@@ -204,6 +204,8 @@ class CyLPConstraint:
 
     def perform(self, opr, left=None, right=None):
         if isinstance(right, CyLPVar):
+            if right.dim == 0:
+                return
             if right.name not in self.varNames:
                 self.varNames.append(right.name)
                 self.parentVarDims[right.name] = right.parentDim
@@ -220,6 +222,7 @@ class CyLPConstraint:
                 dim = right.dim
 
                 if opr == "*":  # Setting the coefficients
+                    # Ignore a term if its coef is None
                     if isinstance(left, (float, long, int)):
                         if self.nRows and self.nRows != 1:
                             raise Exception("Expected 1-dimensional" \
@@ -227,6 +230,8 @@ class CyLPConstraint:
                         self.nRows = 1
                         coef = CyLPArray(left * np.ones(dim))
                     else:
+                        if left == None:
+                            return
                         if right.dim != left.shape[-1]:
                             raise Exception("Coefficient:\n%s\n has %d" \
                                             " columns expected %d"
@@ -255,7 +260,10 @@ class CyLPConstraint:
                         if left.name not in self.varNames:
                             self.varNames.append(left.name)
                             self.parentVarDims[left.name] = left.parentDim
-                    # No coefs for right op
+                    
+                    #if right == None:
+                    #    return
+                    # No coefs for right op 
                     if isinstance(right, CyLPVar):
                         if right in self.varCoefs.keys():
                             self.varCoefs[right] *= -1
@@ -277,6 +285,8 @@ class CyLPConstraint:
 
         # check if no coef for left
         if left.__class__ == CyLPVar and (opr == '-' or opr == '+'):
+            if left.dim == 0 :
+                return
             self.isRange = False
             ones = CyLPArray(np.ones(left.dim))
             self.varCoefs[left] = ones
@@ -290,6 +300,8 @@ class CyLPConstraint:
             # The expression on the right is in the form (left opr right)
             # so the key to the coef in self.varCoefs is right.right i.e.
             # the CyLPVar on the right
+            if right.right.dim == 0:
+                return
             self.isRange = False
             self.varCoefs[right.right] *= -1
 
@@ -563,7 +575,7 @@ class IndexFactory:
 
         s = "variables : \n"
         for vname, rg in varind.items():
-            s = '%s : %s\n' % (vname.rjust(15), str(rg))
+            s += '%s : %s\n' % (vname.rjust(15), str(rg))
         s += '\n'
         s += "constraints : \n"
         for cname, rg in cind.items():
@@ -631,7 +643,7 @@ class CyLPModel(object):
             obj = np.concatenate((obj, v_coef), axis=0)
         self.objective_ = obj
 
-    def addConstraint(self, cons):
+    def addConstraint(self, cons, consName=''):
         '''
         Add constraint ``cons`` to the ``CyLPModel``. Argument ``cons`` must
         be an expresion made using instances of :py:class:`CyLPVar`,
@@ -646,6 +658,8 @@ class CyLPModel(object):
         c = cons.evaluate()
         if not c.isRange:
             self.constraints.append(c)
+            if consName:
+                self.inds.addConst(consName, c.nRows)
         self.makeMatrices()
 
     def generateVarObjCoef(self, varName):

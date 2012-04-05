@@ -80,7 +80,7 @@ class TestModeling(unittest.TestCase):
         model = self.model
         x = self.x
 
-        model.addConstraint(-x[1] + 3 * x[1:3]  >= 4.5)
+        model.addConstraint(-x[1] + 3 * x[1:3] + None * x >= 4.5)
         cons = model.constraints[0]
         m, cl, cu, vl, vu = model.makeMatrices()
         self.assertTrue((m.todense() == np.array(
