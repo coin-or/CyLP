@@ -10,12 +10,20 @@ from CyLP.py.pivots.WolfePivot import WolfePivot
 from CyLP.py.pivots.PositiveEdgeWolfePivot import PositiveEdgeWolfePivot
 from CyLP.cy import CyCoinModel
 from CyLP.py.utils.sparseUtil import csc_matrixPlus
-
+from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray, CyLPVar
 
 def getSolution(s, varGroupname):
     sol = s.getPrimalVariableSolution()
     return np.array([sol[i] for i in IndexFactory.varIndex[varGroupname]])
 
+
+def I(n):
+    '''
+    Return a sparse identity matrix of size *n*
+    '''
+    if n <= 0:
+        return None
+    return csc_matrixPlus(sparse.eye(n, n))
 
 ## A generic QP class
 class QP:
@@ -135,14 +143,20 @@ class QP:
         iVarsWithUpperBound = \
                 [i for i in xrange(len(x_up)) if x_up[i] < infinity]
         nVarsWithUpperBound = len(iVarsWithUpperBound)
+        
         iVarsWithLowerBound = \
                 [i for i in xrange(len(x_low)) if x_low[i] > -infinity]
         nVarsWithLowerBound = len(iVarsWithLowerBound)
+        
+        iVarsWithBothBounds = \
+                [i for i in xrange(len(x_low)) if 
+                 x_low[i] > -infinity and x_low[i] < infinity]
+        nVarsWithBothBounds = len(iVarsWithBothBounds)
 
-        iConstraintsWithUpperLowerBound = \
+        iConstraintsWithBothBounds = \
                 [i for i in xrange(nInEquality)
                         if c_up[i] < infinity and c_low[i] > -infinity]
-        nConstraintsWithUpperLowerBound = len(iConstraintsWithUpperLowerBound)
+        nConstraintsWithBothBounds = len(iConstraintsWithBothBounds)
 
         iConstraintsWithJustUpperBound = \
                 [i for i in xrange(nInEquality)
@@ -159,6 +173,9 @@ class QP:
 
         iVarsWithLowerBound = [i for i in inds if x_low[i] > -infinity]
         nVarsWithLowerBound = len(iVarsWithLowerBound)
+
+        return
+
 
         # AA for Augmented A
         # number of elements of x, g1, g2, g3, x_u, x_l, g_u, s^+, s^-
@@ -411,11 +428,11 @@ class QP:
         '''
         A = self.A
         G = self.G
-        b = self.b
+        b = CyLPArray(self.b)
         c = self.c
         C = self.C
-        c_low = self.c_low
-        c_up = self. c_up
+        c_low = CyLPArray(self.c_low)
+        c_up = CyLPArray(self.c_up)
         x_low = self.x_low
         x_up = self.x_up
         infinity = self.infinity
@@ -424,19 +441,308 @@ class QP:
         nEquality = self.nEquality
         nInEquality = self.nInEquality
 
-        print 'A'
-        print A
-        print b
+#        print 'A'
+#        print A
+#        print b
+#
+#        print 'C'
+#        print C
+#        print c_low
+#        print c_up
+#        print 'Hessian'
+#        print G
+#    
+#        print 'c'
+#        print c
+       
+        iVarsWithJustUpperBound = [i for i in xrange(nVar) 
+                            if x_up[i] < infinity and x_low[i] <= -infinity]
+        nVarsWithJustUpperBound = len(iVarsWithJustUpperBound)
 
-        print 'C'
-        print C
-        print c_low
-        print c_up
-        print 'Hessian'
-        print G
+        iVarsWithJustLowerBound = [i for i in xrange(nVar) 
+                            if x_low[i] > -infinity and x_up[i] >= infinity]
+        nVarsWithJustLowerBound = len(iVarsWithJustLowerBound)
+        
+        iVarsWithBothBounds = \
+                [i for i in xrange(nVar) 
+                        if x_low[i] > -infinity and x_up[i] < infinity]
+        nVarsWithBothBounds = len(iVarsWithBothBounds)
+
+        iConstraintsWithBothBounds = \
+                [i for i in xrange(nInEquality)
+                        if c_up[i] < infinity and c_low[i] > -infinity]
+        nConstraintsWithBothBounds = len(iConstraintsWithBothBounds)
+
+        iConstraintsWithJustUpperBound = \
+                [i for i in xrange(nInEquality)
+                        if c_up[i] < infinity and c_low[i] <= -infinity]
+        nConstraintsWithJustUpperBound = len(iConstraintsWithJustUpperBound)
+
+        iConstraintsWithJustLowerBound = \
+                [i for i in xrange(nInEquality)
+                        if c_up[i] >= infinity and c_low[i] > -infinity]
+        nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
+
+        print '____________________________________________'
+        print x_up
+        print x_low
+
+        print iConstraintsWithBothBounds
+        print iConstraintsWithJustLowerBound
+        print iConstraintsWithJustUpperBound
+        
+        print 'vars'
+        print iVarsWithBothBounds
+        print iVarsWithJustLowerBound
+        print iVarsWithJustUpperBound
+        print '____________________________________________'
+        
+        
+        
+        m = CyLPModel()
+        x = m.addVariable('x', nVar)
+
+        yx1 = CyLPVar('yx1', dim=0)
+        yxu = CyLPVar('yxu', dim=0)
+        yx2 = CyLPVar('yx2', dim=0)
+        yx3 = CyLPVar('yx3', dim=0)
+        if nVarsWithBothBounds:
+            k1 = m.addVariable('k1', nVarsWithBothBounds)
+            zk1 = m.addVariable('zk1', nVarsWithBothBounds)
+            yx1 = m.addVariable('yx1', nVarsWithBothBounds)
+            m.addConstraint(k1 >= 0)
+            ku = m.addVariable('ku', nVarsWithBothBounds)
+            zku = m.addVariable('zku', nVarsWithBothBounds)
+            yxu = m.addVariable('yxu', nVarsWithBothBounds)
+            m.addConstraint(ku >= 0)
+            m.addConstraint(x[iVarsWithBothBounds] + 
+                            k1 == x_up[iVarsWithBothBounds], 'x1+k1')
+            m.addConstraint(k1 + ku == (x_up[iVarsWithBothBounds] - 
+                                        x_low[iVarsWithBothBounds]), 'k1+ku')
+
+        if nVarsWithJustUpperBound:
+            k2 = m.addVariable('k2', nVarsWithJustUpperBound)
+            zk2 = m.addVariable('zk2', nVarsWithJustUpperBound)
+            yx2 = m.addVariable('yx2', nVarsWithJustUpperBound)
+            m.addConstraint(k2 >= 0)
+            m.addConstraint(x[iVarsWithJustUpperBound] + 
+                            k2 == x_up[iVarsWithJustUpperBound], 'x2+k2')
+        
+        if nVarsWithJustLowerBound:
+            k3 = m.addVariable('k3', nVarsWithJustLowerBound)
+            zk3 = m.addVariable('zk3', nVarsWithJustLowerBound)
+            yx3 = m.addVariable('yx3', nVarsWithJustLowerBound)
+            m.addConstraint(k3 >= 0)
+            m.addConstraint(x[iVarsWithJustLowerBound] - 
+                            k3 == x_low[iVarsWithJustLowerBound], 'x3-k3')
+        
+        if nEquality > 0 :
+            m.addConstraint(A * x == b, 'Ax=b')
+            yb = m.addVariable('yb', nEquality)
+
+        C1T = C2T = C3T = None
+        yc1 = CyLPVar('yc1', dim=0)
+        ycu = CyLPVar('ycu', dim=0)
+        yc2 = CyLPVar('yc2', dim=0)
+        yc3 = CyLPVar('yc3', dim=0)
+        if nConstraintsWithBothBounds:
+            C1 = C[iConstraintsWithBothBounds, :]
+            C1T = C1.T
+            # g1: slack for ineq. const. with both bounds
+            g1 = m.addVariable('g1', nConstraintsWithBothBounds)
+            zg1 = m.addVariable('zg1', nConstraintsWithBothBounds)
+            yc1 = m.addVariable('yc1', nConstraintsWithBothBounds)
+            m.addConstraint(g1 >= 0)
+            # gu: slack of g1 from c_up - c_low
+            gu = m.addVariable('gu', nConstraintsWithBothBounds)
+            zgu = m.addVariable('zgu', nConstraintsWithBothBounds)
+            ycu = m.addVariable('ycu', nConstraintsWithBothBounds)
+            m.addConstraint(gu >= 0)
+            print 'C1 = ', C1.todense()
+            m.addConstraint(C1 * x + 
+                            g1 == c_up[iConstraintsWithBothBounds], 
+                            'C1x+g1')
+            m.addConstraints(g1 + gu == (c_up[iConstraintsWithBothBounds] - 
+                             c_low[iConstraintsWithBothBounds]),
+                             'g1+gu')
+
+            
+        if nConstraintsWithJustUpperBound:
+            C2 = C[iConstraintsWithJustUpperBound, :]
+            C2T = C2.T
+            g2 = m.addVariable('g2', nConstraintsWithJustUpperBound)
+            zg2 = m.addVariable('zg2', nConstraintsWithJustUpperBound)
+            yc2 = m.addVariable('yc2', nConstraintsWithJustUpperBound)
+            m.addConstraint(g2 >= 0)
+            m.addConstraint(C2 * x + 
+                                g2 == c_up[iConstraintsWithJustUpperBound], 
+                                'C2x+g2')
+        if nConstraintsWithJustLowerBound:
+            C3 = C[iConstraintsWithJustLowerBound, :]
+            C3T = C3.T
+            g3 = m.addVariable('g3', nConstraintsWithJustLowerBound)
+            zg3 = m.addVariable('zg3', nConstraintsWithJustLowerBound)
+            yc3 = m.addVariable('yc3', nConstraintsWithJustLowerBound)
+            m.addConstraint(g3 >= 0)
+            m.addConstraint(C3 * x - 
+                                g3 == c_low[iConstraintsWithJustLowerBound], 
+                                'C3x-g3')
+        
+       
+        In = I(nVar)
+       
+        x1CoefT = x2CoefT = x3CoefT = xuCoefT = None
+        if nVarsWithBothBounds:
+            x1CoefT = In[iVarsWithBothBounds, :].T
+            xuCoefT = In[iVarsWithBothBounds, :].T
+        
+        if nVarsWithJustUpperBound:
+            x2CoefT = In[iVarsWithJustUpperBound, :].T
+        
+        if nVarsWithJustLowerBound:
+            x3CoefT = In[iVarsWithJustLowerBound, :].T
+        
+        # Dual-feasibility constraints:
+        if nEquality:
+            m.addConstraint(G * x - A.T * yb - C1T * yc1 - C2T * yc2 - C3T * yc3 -
+                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 == -c, 
+                        'Gx-ATy-CTu-z')
+        else:
+            m.addConstraint(G * x - C1T * yc1 - C2T * yc2 - C3T * yc3 -
+                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 == -c ,
+                        'Gx-CTu-z')
+        
+        if nInEquality:
+            Im = I(nInEquality)
+            
+            if nConstraintsWithBothBounds:
+                g1Coef = Im[iConstraintsWithBothBounds, :]
+                guCoef = Im[iConstraintsWithBothBounds, :]
+                m.addConstraint(g1Coef.T * yc1 + g1Coef.T * ycu - zg1 == 0, 
+                                'dualfeas_g1')
+                m.addConstraint(guCoef.T * ycu - zgu == 0, 
+                                'dualfeas_gu')
+            
+            if nConstraintsWithJustUpperBound:
+                g2Coef = Im[iConstraintsWithJustUpperBound, :]
+                m.addConstraint(g2Coef.T * yc2 - zg2 == 0, 'dualfeas_g2')
+
+            if nConstraintsWithJustLowerBound:
+                g3Coef = Im[iConstraintsWithJustLowerBound, :]
+                m.addConstraint(-g3Coef.T * yc3 - zg3 == 0, 'dualfeas_g3')
+        
+        
     
-        print 'c'
-        print c
+    
+        if nVarsWithBothBounds:
+            m.addConstraint(x1CoefT * yx1 + x1CoefT * yxu - zk1 == 0, 
+                            'dualfeas_k1')
+            m.addConstraint(xuCoefT * yxu - zku == 0, 'dualfeas_ku')
+        
+        if nVarsWithJustUpperBound:
+            m.addConstraint(x2CoefT * yx2 - zk2 == 0, 'dualfeas_k2')
+
+        if nVarsWithJustLowerBound:
+            m.addConstraint(-x3CoefT * yx3 - zk3 == 0, 'dualfeas_k3')
+
+
+        #z = m.addVariable('z', nVar)
+        
+        s = CyClpSimplex(m)
+        ###s.setComplement(x, z)
+        #s.useCustomPrimal(True)
+        print m.inds
+        p = WolfePivot(s)
+
+        if nConstraintsWithBothBounds:
+            p.setComplement(m, g1, zg1)
+            p.setComplement(m, gu, zgu)
+            
+        if nConstraintsWithJustUpperBound:
+            p.setComplement(m, g2, zg2)
+            
+        if nConstraintsWithJustLowerBound:
+            p.setComplement(m, g3, zg3)
+            
+        if nVarsWithBothBounds:
+            p.setComplement(m, k1, zk1)
+            p.setComplement(m, ku, zku)
+            
+        if nVarsWithJustUpperBound:
+            p.setComplement(m, k2, zk2)
+            
+        if nVarsWithJustLowerBound:
+            p.setComplement(m, k3, zk3)
+            
+        print p.complementarityList
+        s.setPivotMethod(p)
+        
+        s.writeMps('/Users/mehdi/Desktop/test.mps') 
+        s.primal()
+        #s.initialPrimalSolve()
+        print s.primalVariableSolution 
+        print s.objectiveValue 
+
+
+        return
+        m.addConstraint(z >= 0)
+
+        C = C.todense()
+        G = G.todense()
+        if nEquality > 0 :
+            m.addConstraint(A * x == b)
+            y = m.addVariable('y', nEquality)
+
+        if nInEquality > 0 :
+            c_low = CyLPArray(c_low)
+            c_up = CyLPArray(c_up)
+            print C
+            #c_low *= -1
+            #m.addConstraint(c_low <= C * x <= c_up)
+            ss = m.addVariable('ss', 1)
+            m.addConstraint(-C * x + ss == -c_low)
+            #m.addConstraint(-C * x <= -c_low)
+            
+            u = m.addVariable('u', nInEquality)
+            sp = m.addVariable('sp', nVar)
+            sm = m.addVariable('sm', nVar)
+            #s = m.addVariable('s', 1)
+            m.addConstraint(ss >= 0)
+            m.addConstraint(sp >= 0)
+            m.addConstraint(sm >= 0)
+            m.addConstraint(u >= 0)
+            #m.addConstraint(s >= 0)
+            #m.addConstraint(C * x  - s == c_low)
+             
+
+        if nEquality > 0:
+            if nInEquality == 0: 
+                m.addConstraint(G * x - A.T * y - z == -c)
+            else:
+                m.addConstraint(G * x - A.T * y - C.T * u - z == -c)
+        elif nInEquality > 0:
+#            print G.shape
+#            print x.dim
+#            print C.T
+#            print u.dim
+#            print c.shape
+#            print z.dim
+            m.addConstraint(G * x - z - C.T * u + sp - sm == -c)  #- C.T * u - z 
+        
+        m.objective = sm + sp
+
+        s = CyClpSimplex(m)
+        return
+        #s.setComplement(x, z)
+        s.useCustomPrimal(True)
+
+        p = WolfePivot(s)
+        s.setPivotMethod(p)
+        
+        s.primal()
+        #s.initialPrimalSolve()
+        print s.primalVariableSolution 
+        print s.objectiveValue 
         return
 
         varIndexDic = {}

@@ -103,7 +103,17 @@ class csc_matrixPlus(sparse.csc_matrix):
         a = np.array(nCol * [nElement], dtype=np.int32)
         self.indptr = np.concatenate((self.indptr, a), axis=0)
         self._shape = (self._shape[0], self.shape[1] + nCol)
-
+    
+    def __getitem__(self, key):
+        ret = sparse.csc_matrix.__getitem__(self, key)
+        if isinstance(ret, (int, long, float)):
+            return ret
+        return csc_matrixPlus(ret)
+    
+    @property 
+    def T(self):
+        return csr_matrixPlus(sparse.csc_matrix.transpose(self))
+    
     def __le__(self, other):
         if isinstance(other, self.CyLPExpr):
             return NotImplemented
@@ -245,6 +255,16 @@ class csr_matrixPlus(sparse.csr_matrix):
         self.indptr = np.concatenate((self.indptr, a), axis=0)
         self._shape = (self._shape[0] + nRow, self.shape[1])
 
+    def __getitem__(self, key):
+        ret = sparse.csr_matrix.__getitem__(self, key)
+        if isinstance(ret, (int, long, float)):
+            return ret
+        return csr_matrixPlus(ret)
+
+    @property 
+    def T(self):
+        return csc_matrixPlus(sparse.csr_matrix.transpose(self))
+    
     def __le__(self, other):
         if isinstance(other, self.CyLPExpr):
             return NotImplemented
