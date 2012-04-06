@@ -487,6 +487,10 @@ class QP:
         print x_up
         print x_low
 
+        print c_low
+        print c_up
+
+        print C.todense()
         print iConstraintsWithBothBounds
         print iConstraintsWithJustLowerBound
         print iConstraintsWithJustUpperBound
@@ -511,10 +515,12 @@ class QP:
             zk1 = m.addVariable('zk1', nVarsWithBothBounds)
             yx1 = m.addVariable('yx1', nVarsWithBothBounds)
             m.addConstraint(k1 >= 0)
+            m.addConstraint(zk1 >= 0)
             ku = m.addVariable('ku', nVarsWithBothBounds)
             zku = m.addVariable('zku', nVarsWithBothBounds)
             yxu = m.addVariable('yxu', nVarsWithBothBounds)
             m.addConstraint(ku >= 0)
+            m.addConstraint(zku >= 0)
             m.addConstraint(x[iVarsWithBothBounds] + 
                             k1 == x_up[iVarsWithBothBounds], 'x1+k1')
             m.addConstraint(k1 + ku == (x_up[iVarsWithBothBounds] - 
@@ -525,6 +531,7 @@ class QP:
             zk2 = m.addVariable('zk2', nVarsWithJustUpperBound)
             yx2 = m.addVariable('yx2', nVarsWithJustUpperBound)
             m.addConstraint(k2 >= 0)
+            m.addConstraint(zk2 >= 0)
             m.addConstraint(x[iVarsWithJustUpperBound] + 
                             k2 == x_up[iVarsWithJustUpperBound], 'x2+k2')
         
@@ -533,8 +540,11 @@ class QP:
             zk3 = m.addVariable('zk3', nVarsWithJustLowerBound)
             yx3 = m.addVariable('yx3', nVarsWithJustLowerBound)
             m.addConstraint(k3 >= 0)
-            m.addConstraint(x[iVarsWithJustLowerBound] - 
-                            k3 == x_low[iVarsWithJustLowerBound], 'x3-k3')
+            m.addConstraint(zk3 >= 0)
+            m.addConstraint(I(nVarsWithJustLowerBound) * 
+                                    x[iVarsWithJustLowerBound] - 
+                            I(nVarsWithJustLowerBound) * k3 == 
+                            x_low[iVarsWithJustLowerBound], 'x3-k3')
         
         if nEquality > 0 :
             m.addConstraint(A * x == b, 'Ax=b')
@@ -553,11 +563,13 @@ class QP:
             zg1 = m.addVariable('zg1', nConstraintsWithBothBounds)
             yc1 = m.addVariable('yc1', nConstraintsWithBothBounds)
             m.addConstraint(g1 >= 0)
+            m.addConstraint(zg1 >= 0)
             # gu: slack of g1 from c_up - c_low
             gu = m.addVariable('gu', nConstraintsWithBothBounds)
             zgu = m.addVariable('zgu', nConstraintsWithBothBounds)
             ycu = m.addVariable('ycu', nConstraintsWithBothBounds)
             m.addConstraint(gu >= 0)
+            m.addConstraint(zgu >= 0)
             print 'C1 = ', C1.todense()
             m.addConstraint(C1 * x + 
                             g1 == c_up[iConstraintsWithBothBounds], 
@@ -574,6 +586,7 @@ class QP:
             zg2 = m.addVariable('zg2', nConstraintsWithJustUpperBound)
             yc2 = m.addVariable('yc2', nConstraintsWithJustUpperBound)
             m.addConstraint(g2 >= 0)
+            m.addConstraint(zg2 >= 0)
             m.addConstraint(C2 * x + 
                                 g2 == c_up[iConstraintsWithJustUpperBound], 
                                 'C2x+g2')
@@ -584,11 +597,11 @@ class QP:
             zg3 = m.addVariable('zg3', nConstraintsWithJustLowerBound)
             yc3 = m.addVariable('yc3', nConstraintsWithJustLowerBound)
             m.addConstraint(g3 >= 0)
+            m.addConstraint(zg3 >= 0)
             m.addConstraint(C3 * x - 
-                                g3 == c_low[iConstraintsWithJustLowerBound], 
+                                g3  == c_low[iConstraintsWithJustLowerBound], 
                                 'C3x-g3')
         
-       
         In = I(nVar)
        
         x1CoefT = x2CoefT = x3CoefT = xuCoefT = None
@@ -602,55 +615,67 @@ class QP:
         if nVarsWithJustLowerBound:
             x3CoefT = In[iVarsWithJustLowerBound, :].T
         
+
+        sp = m.addVariable('sp', nVar)
+        m.addConstraint(sp >= 0)
+        sm = m.addVariable('sm', nVar)
+        m.addConstraint(sm >= 0)
+        
+        z = m.addVariable('z', nVar)
+
+        
         # Dual-feasibility constraints:
         if nEquality:
             m.addConstraint(G * x - A.T * yb - C1T * yc1 - C2T * yc2 - C3T * yc3 -
                         x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 == -c, 
                         'Gx-ATy-CTu-z')
         else:
-            m.addConstraint(G * x - C1T * yc1 - C2T * yc2 - C3T * yc3 -
-                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 == -c ,
+            m.addConstraint(G * x - C1T * yc1 - C2T * yc2 + C3T * yc3 -
+                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3  == -c ,
                         'Gx-CTu-z')
-        
+       
+
         if nInEquality:
             Im = I(nInEquality)
             
             if nConstraintsWithBothBounds:
                 g1Coef = Im[iConstraintsWithBothBounds, :]
                 guCoef = Im[iConstraintsWithBothBounds, :]
-                m.addConstraint(g1Coef.T * yc1 + g1Coef.T * ycu - zg1 == 0, 
+                m.addConstraint(-g1Coef.T * yc1 - g1Coef.T * ycu - zg1 == 0, 
                                 'dualfeas_g1')
-                m.addConstraint(guCoef.T * ycu - zgu == 0, 
+                m.addConstraint(-guCoef.T * ycu - zgu == 0, 
                                 'dualfeas_gu')
             
             if nConstraintsWithJustUpperBound:
                 g2Coef = Im[iConstraintsWithJustUpperBound, :]
-                m.addConstraint(g2Coef.T * yc2 - zg2 == 0, 'dualfeas_g2')
+                m.addConstraint(-g2Coef.T * yc2 - zg2 == 0, 'dualfeas_g2')
 
             if nConstraintsWithJustLowerBound:
                 g3Coef = Im[iConstraintsWithJustLowerBound, :]
-                m.addConstraint(-g3Coef.T * yc3 - zg3 == 0, 'dualfeas_g3')
+                m.addConstraint(g3Coef.T * yc3 - zg3 == 0, 'dualfeas_g3')
         
         
     
     
         if nVarsWithBothBounds:
-            m.addConstraint(x1CoefT * yx1 + x1CoefT * yxu - zk1 == 0, 
+            m.addConstraint(-x1CoefT * yx1 - x1CoefT * yxu - zk1 == 0, 
                             'dualfeas_k1')
-            m.addConstraint(xuCoefT * yxu - zku == 0, 'dualfeas_ku')
+            m.addConstraint(-xuCoefT * yxu - zku == 0, 'dualfeas_ku')
         
         if nVarsWithJustUpperBound:
-            m.addConstraint(x2CoefT * yx2 - zk2 == 0, 'dualfeas_k2')
+            m.addConstraint(-x2CoefT * yx2 - zk2 == 0, 'dualfeas_k2')
 
         if nVarsWithJustLowerBound:
-            m.addConstraint(-x3CoefT * yx3 - zk3 == 0, 'dualfeas_k3')
+            m.addConstraint(x3CoefT * yx3 - zk3 == 0, 'dualfeas_k3')
 
 
+
+        #m.objective = sp + sm
         #z = m.addVariable('z', nVar)
         
         s = CyClpSimplex(m)
         ###s.setComplement(x, z)
-        #s.useCustomPrimal(True)
+        s.useCustomPrimal(True)
         print m.inds
         p = WolfePivot(s)
 
@@ -663,6 +688,8 @@ class QP:
             
         if nConstraintsWithJustLowerBound:
             p.setComplement(m, g3, zg3)
+            #p.setComplement(m, sc3, yc3)
+
             
         if nVarsWithBothBounds:
             p.setComplement(m, k1, zk1)
@@ -682,6 +709,24 @@ class QP:
         #s.initialPrimalSolve()
         print s.primalVariableSolution 
         print s.objectiveValue 
+        
+        x = np.matrix(s.primalVariableSolution['x']).T
+        print 'objective:'
+        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+        
+        print 'Cx'
+        print C * x
+        print 'Cx - g3'
+        print C * x - np.matrix(s.primalVariableSolution['g3']).T 
+        print 'optimality:'
+        print -c
+        y =  s.primalVariableSolution['yc3']
+        #print G*x
+        #print C.T * y
+        print (G * x).T - C.T * y
+        return
+        x = np.matrix([[1, 2, -1, 3, -4]]).T
+        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
 
 
         return
