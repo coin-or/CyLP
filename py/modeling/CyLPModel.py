@@ -52,6 +52,7 @@
 '''
 
 from itertools import izip
+from copy import deepcopy
 import hashlib
 import numpy as np
 from scipy import sparse
@@ -247,7 +248,7 @@ class CyLPConstraint:
                                         % (left, left.shape[0], self.nRows))
                         self.nRows = nr
                         coef = left
-                    self.varCoefs[right] = coef
+                    self.varCoefs[right] = deepcopy(coef)
                     self.isRange = False
 
                 if opr == '+' or opr == '-':
@@ -320,6 +321,7 @@ class CyLPConstraint:
                 var = self.variables[0]
                 self.nRows = var.parentDim
                 dim = var.parentDim
+                print var.name
             #if not self.nRows:
                 #self.nRows = left.parentDim
                 #dim = left.parentDim
@@ -341,6 +343,7 @@ class CyLPConstraint:
                     if var.parent:
                         var.parent.lower[var.indices] = bound
                     else:
+                        print 'bound', bound
                         var.lower[var.indices] = bound
 
                 if ((opr in ('<=', '==') and isinstance(left, CyLPExpr)) or
@@ -599,6 +602,8 @@ class CyLPModel(object):
         self.constraints = []
         self.objective_ = None
         self.inds = IndexFactory()
+        self.nVars = 0
+        self.pvdims = {}
 
     def addVariable(self, name, dim, isInt=False):
         '''
@@ -607,6 +612,15 @@ class CyLPModel(object):
         '''
         var = CyLPVar(name, dim, isInt)
         self.variables.append(var)
+        print '######################'
+        print var
+        if not self.inds.hasVar(var.name):
+            self.inds.addVar(var.name, dim)
+            self.nVars += dim
+            self.pvdims[var.name] = dim
+        else:
+            raise Exception('Varaible %s already exists.' % var.name)
+        
         return var
 
     def makeIndexFactory(self):
@@ -623,9 +637,11 @@ class CyLPModel(object):
             self.allParentVarDims.update(c.parentVarDims)
             self.nRows += c.nRows
 
-        for varName in self.allVarNames:
-            if not self.inds.hasVar(varName):
-                self.inds.addVar(varName, self.allParentVarDims[varName])
+        print '============================'
+        print self.variables
+        #for varName in self.allVarNames:
+        #    if not self.inds.hasVar(varName):
+        #        self.inds.addVar(varName, self.allParentVarDims[varName])
 
     #def getConstraintVars(self, cons):
     #    return cons.variables
@@ -638,9 +654,11 @@ class CyLPModel(object):
     def objective(self, obj):
         self.objective_ = obj.evaluate()
         obj = np.array([])
-        for varName in self.allVarNames:
+        #for varName in self.allVarNames:
+        for varName in [v.name for v in self.variables]:
             v_coef = self.generateVarObjCoef(varName)
             obj = np.concatenate((obj, v_coef), axis=0)
+        print obj
         self.objective_ = obj
 
     def addConstraint(self, cons, consName=''):
@@ -663,7 +681,8 @@ class CyLPModel(object):
         self.makeMatrices()
 
     def generateVarObjCoef(self, varName):
-        dim = self.allParentVarDims[varName]
+        #dim = self.allParentVarDims[varName]
+        dim = self.pvdims[varName]
         coef = np.zeros(dim)
         obj = self.objective_
         keys = [k for k in obj.varCoefs.keys() if k.name == varName]
@@ -677,7 +696,8 @@ class CyLPModel(object):
         Create the coefficient matrix for a variable named
         varName. Return a csr_matrixPlus.
         '''
-        dim = self.allParentVarDims[varName]
+        #dim = self.allParentVarDims[varName]
+        dim = self.pvdims[varName]
         mainCoef = None
         for c in self.constraints:
             keys = [k for k in c.varCoefs.keys() if k.name == varName]
@@ -741,13 +761,29 @@ class CyLPModel(object):
                 c_lower = np.concatenate((c_lower, c.lower), axis=0)
                 c_upper = np.concatenate((c_upper, c.upper), axis=0)
 
+        print '**************************************'
+        
         # Create variables bound vectors
         v_lower = np.array([])
         v_upper = np.array([])
-        for v in self.variables:
-            v_lower = np.concatenate((v_lower, v.lower), axis=0)
-            v_upper = np.concatenate((v_upper, v.upper), axis=0)
+        if self.nVars:
+            v_lower = -getCoinInfinity() * np.ones(self.nVars)
+            v_upper = getCoinInfinity() * np.ones(self.nVars)
+            for v in self.variables:
+                print '********'
+                print v.name
+                print v.lower
+                print v.upper
+                print self.inds.varIndex
+                varinds = self.inds.varIndex[v.name]
+                v_lower[varinds] = v.lower
+                v_upper[varinds] = v.upper
 
+                #v_lower = np.concatenate((v_lower, v.lower), axis=0)
+                #v_upper = np.concatenate((v_upper, v.upper), axis=0)
+            print v_lower
+            print v_upper
+            print '*************************************'
         #import pdb; pdb.set_trace()
         #if masterCoefMat != None:
         #    print '->', masterCoefMat.todense()
