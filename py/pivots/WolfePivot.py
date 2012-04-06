@@ -28,11 +28,11 @@ class WolfePivot(PivotPythonBase):
         tol = 0
         #print 'Basis:'
         #print s.getPivotVariable()
-#        iii = np.where(s.varNotFlagged & s.varNotFixed &
-#                                     s.varNotBasic &
-#                                     (((rc > tol) & s.varIsAtUpperBound) |
-#                                     ((rc < -tol) & s.varIsAtLowerBound) |
-#                                     s.varIsFree))[0] 
+        iii = np.where(s.varNotFlagged & s.varNotFixed &
+                                     s.varNotBasic &
+                                     (((rc > tol) & s.varIsAtUpperBound) |
+                                     ((rc < -tol) & s.varIsAtLowerBound) |
+                                     s.varIsFree))[0] 
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &
                                      (((rc > tol) & s.varIsAtUpperBound) |
@@ -40,6 +40,8 @@ class WolfePivot(PivotPythonBase):
                                      s.varIsFree) & 
                                      self.notBanned)[0]
 
+        #print iii
+        #print 'rc = ', rc[iii]
         #for ii in range(s.nVariables, s.nVariables + s.nConstraints):
         #    if rc[ii] < -tol:
         #        indicesToConsider = np.concatenate((indicesToConsider, [ii]))
@@ -79,6 +81,8 @@ class WolfePivot(PivotPythonBase):
         cl = self.complementarityList
         pivotRow = s.pivotRow()
         if pivotRow < 0:
+            colInd = s.sequenceIn()
+            print 'entering: ', colInd, ' comp: ', cl[colInd]
             print 'pivotRow < 0'
             return 1
 
@@ -86,8 +90,10 @@ class WolfePivot(PivotPythonBase):
         leavingVarIndex = pivotVariable[pivotRow]
         colInd = s.sequenceIn()
 
-        #print 'leave: ', leavingVarIndex
-        #print 'entering: ', colInd, ' comp: ', cl[colInd]
+        print 'Basis:'
+        print s.getPivotVariable()
+        print 'leave: ', leavingVarIndex
+        print 'entering: ', colInd, ' comp: ', cl[colInd]
          
         if s.getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:
@@ -103,7 +109,7 @@ class WolfePivot(PivotPythonBase):
 
         
         #self.banList = np.zeros(self.dim, np.int)
-        #print "reseting>>>>>>>>>>>>>>>>>>>>>>>"
+        print "reseting>>>>>>>>>>>>>>>>>>>>>>>"
         self.notBanned = np.array(self.dim * [True])
 
         return 1

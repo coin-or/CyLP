@@ -28,17 +28,19 @@ class TestModel(unittest.TestCase):
         # Solve it a first time
         s = CyClpSimplex(model)
         s.primal()
-        sol = s.primalVariableSolution
+        sol = s.primalVariableSolution['x']
         self.assertTrue((abs(sol - np.array([1,2,0]) ) <= 10**-6).all())
         # Add a cut
         s.addConstraint(x[0] >= 1.1)
         s.primal()
+        sol = s.primalVariableSolution['x']
         self.assertTrue((abs(sol - np.array([1.1, 1.8, 0.1]) ) <= 10**-6).all())
         
         # Change the objective function
         c = CyLPArray([1, 10, 1.1])
         s.objective = c * x
         s.primal()
+        sol = s.primalVariableSolution['x']
         self.assertTrue((abs(sol - np.array([2, 0, 1]) ) <= 10**-6).all())
 
 
@@ -67,14 +69,16 @@ class TestModel(unittest.TestCase):
         s = CyClpSimplex(model)
         
         s.primal()
-        sol = s.primalVariableSolution
+        sol = np.concatenate((s.primalVariableSolution['x'],
+                              s.primalVariableSolution['y']))
         self.assertTrue((abs(sol - 
                         np.array([0.2, 2, 1.1, 0, 0.9]) ) <= 10**-6).all())
 
 
         s.addConstraint(x[2] + y[1] >= 2.1)
         s.primal()
-        sol = s.primalVariableSolution
+        sol = np.concatenate((s.primalVariableSolution['x'],
+                              s.primalVariableSolution['y']))
         self.assertTrue((abs(sol - 
                         np.array([0, 2, 1.1, 0, 1]) ) <= 10**-6).all())
         
@@ -105,7 +109,8 @@ class TestModel(unittest.TestCase):
         s = CyClpSimplex(model)
         
         s.primal()
-        sol = s.primalVariableSolution
+        sol = np.concatenate((s.primalVariableSolution['x'],
+                              s.primalVariableSolution['y']))
         self.assertTrue((abs(sol - 
                         np.array([0.2, 2, 1.1, 0, 0.9]) ) <= 10**-6).all())
 
