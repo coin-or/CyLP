@@ -636,7 +636,7 @@ class QP:
             m.addConstraint(spg3 >= 0)
             m.addConstraint(smg3 >= 0)
             m.addConstraint(C3 * x - 
-                                g3  == c_low[iConstraintsWithJustLowerBound], 
+                                g3 + spg3 - smg3  == c_low[iConstraintsWithJustLowerBound], 
                                 'C3x-g3')
         
         In = I(nVar)
@@ -653,10 +653,10 @@ class QP:
             x3CoefT = In[iVarsWithJustLowerBound, :].T
         
 
-        #sp = m.addVariable('sp', nVar)
-        #m.addConstraint(sp >= 0)
-        #sm = m.addVariable('sm', nVar)
-        #m.addConstraint(sm >= 0)
+        sp = m.addVariable('sp', nVar)
+        m.addConstraint(sp >= 0)
+        sm = m.addVariable('sm', nVar)
+        m.addConstraint(sm >= 0)
         
         #z = m.addVariable('z', nVar)
 
@@ -664,11 +664,11 @@ class QP:
         # Dual-feasibility constraints:
         if nEquality:
             m.addConstraint(G * x - A.T * yb - C1T * yc1 - C2T * yc2 - C3T * yc3 -
-                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 == -c, 
+                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 + sp - sm  == -c, 
                         'Gx-ATy-CTu-z')
         else:
             m.addConstraint(G * x - C1T * yc1 - C2T * yc2 - C3T * yc3 -
-                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3  == -c ,
+                        x1CoefT * yx1 - x2CoefT * yx2 - x3CoefT * yx3 + sp - sm  == -c ,
                         'Gx-CTu-z')
        
 
@@ -704,16 +704,17 @@ class QP:
 
         if nVarsWithJustLowerBound:
             m.addConstraint(x3CoefT * yx3 - zk3 + spk3 - smk3 == 0, 'dualfeas_k3')
+            #m.addConstraint(x3CoefT * yx3 - zk3 == 0, 'dualfeas_k3')
 
 
 
-        m.objective = spg3 + smg3# + spk3 + smk3
+        m.objective =  sp + sm + spg3 + smg3# + spk3 + smk3
         #z = m.addVariable('z', nVar)
         
         s = CyClpSimplex(m)
         ###s.setComplement(x, z)
-        s.useCustomPrimal(True)
         print m.inds
+        s.useCustomPrimal(True)
         p = WolfePivot(s)
 
         if nConstraintsWithBothBounds:
@@ -789,17 +790,17 @@ class QP:
             print C
             #c_low *= -1
             #m.addConstraint(c_low <= C * x <= c_up)
-            ss = m.addVariable('ss', 1)
-            m.addConstraint(-C * x + ss == -c_low)
+            #ss = m.addVariable('ss', 1)
+            m.addConstraint(-C * x  == -c_low)
             #m.addConstraint(-C * x <= -c_low)
             
             u = m.addVariable('u', nInEquality)
-            sp = m.addVariable('sp', nVar)
-            sm = m.addVariable('sm', nVar)
+            #sp = m.addVariable('sp', nVar)
+            #sm = m.addVariable('sm', nVar)
             #s = m.addVariable('s', 1)
-            m.addConstraint(ss >= 0)
-            m.addConstraint(sp >= 0)
-            m.addConstraint(sm >= 0)
+            #m.addConstraint(ss >= 0)
+            #m.addConstraint(sp >= 0)
+            #m.addConstraint(sm >= 0)
             m.addConstraint(u >= 0)
             #m.addConstraint(s >= 0)
             #m.addConstraint(C * x  - s == c_low)
