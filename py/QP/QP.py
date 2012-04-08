@@ -529,10 +529,10 @@ class QP:
             m.addConstraint(zku >= 0)
             #m.addConstraint(spku >= 0)
             #m.addConstraint(smku >= 0)
-            m.addConstraint(x[iVarsWithBothBounds] + 
+            m.addConstraint(I(nVarsWithBothBounds) * x[iVarsWithBothBounds] + 
                             k1 == 
                             x_up[iVarsWithBothBounds], 'x1+k1')
-            m.addConstraint(k1 + ku == 
+            m.addConstraint(I(nVarsWithBothBounds) * k1 + ku == 
                     (x_up[iVarsWithBothBounds] - 
                                         x_low[iVarsWithBothBounds]), 'k1+ku')
 
@@ -546,7 +546,7 @@ class QP:
             m.addConstraint(zk2 >= 0)
             #m.addConstraint(spk2 >= 0)
             #m.addConstraint(smk2 >= 0)
-            m.addConstraint(x[iVarsWithJustUpperBound] + 
+            m.addConstraint(I(iVarsWithJustUpperBound) * x[iVarsWithJustUpperBound] + 
                             k2 ==
                             x_up[iVarsWithJustUpperBound], 'x2+k2')
         
@@ -715,8 +715,6 @@ class QP:
                 m.addConstraint(g3Coef.T * yc3 - zg3 == 0, 'dualfeas_g3')
         
         
-    
-    
         if nVarsWithBothBounds:
             m.addConstraint(-k1CoefT * yx1 - k1CoefT * yxu - zk1 == 0, 
                             'dualfeas_k1')
