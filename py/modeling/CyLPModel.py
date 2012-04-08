@@ -283,7 +283,6 @@ class CyLPConstraint:
                                 self.varNames.append(right.name)
                                 self.parentVarDims[right.name] = \
                                                             right.parentDim
-
         # check if no coef for left
         if left.__class__ == CyLPVar and (opr == '-' or opr == '+'):
             if left.dim == 0 :
@@ -612,8 +611,6 @@ class CyLPModel(object):
         '''
         var = CyLPVar(name, dim, isInt)
         self.variables.append(var)
-        #print '######################'
-        #print var
         if not self.inds.hasVar(var.name):
             self.inds.addVar(var.name, dim)
             self.nVars += dim
@@ -639,8 +636,6 @@ class CyLPModel(object):
             self.allParentVarDims.update(c.parentVarDims)
             self.nRows += c.nRows
 
-        #print '============================'
-        #print self.variables
         #for varName in self.allVarNames:
         #    if not self.inds.hasVar(varName):
         #        self.inds.addVar(varName, self.allParentVarDims[varName])
@@ -661,7 +656,6 @@ class CyLPModel(object):
             v_coef = self.generateVarObjCoef(varName)
             obj = np.concatenate((obj, v_coef), axis=0)
         
-        print 'CyLPModel objective setter:', obj
         self.objective_ = obj
 
     def addConstraint(self, cons, consName=''):
@@ -710,23 +704,14 @@ class CyLPModel(object):
             elif c.nRows == 1:
                 coef = np.zeros(dim)
                 #coef = sparse.coo_matrix((1, dim))
-                #print keys
                 for var in keys:
-                    #print '---------'
-                    #print var.name
-                    #print var.indices
                     tempMat = c.varCoefs[var]
                     if isinstance(tempMat, 
                             (csr_matrixPlus, csc_matrixPlus)):
                         coo = tempMat.tocoo()
-                        #print coef
                         for i, j, v in izip(coo.row, coo.col, coo.data):
                             coef[j] = v
                     
-                        #print coef[var.indices]
-                        #print c.varCoefs[var]
-                        #print coef[var.indices] + c.varCoefs[var].todense()
-                        #print type(coef[var.indices]), type(c.varCoefs[var])
                     else:
                         coef[var.indices] += c.varCoefs[var]
 
@@ -739,9 +724,6 @@ class CyLPModel(object):
 
             mainCoef = sparseConcat(mainCoef, coef, 'v')
 
-        print 'var@@@@@@@@@@@@@@@@@@@@@'
-        print varName
-        print mainCoef
         return mainCoef
 
     def makeMatrices(self):
@@ -766,6 +748,7 @@ class CyLPModel(object):
         if self.nCons > 0:
             for varName in self.varNames:# self.pvdims.keys():#self.allVarNames:
                 vmat = self.generateVarMatrix(varName)
+                
                 if vmat == None:
                     vmat = csc_matrixPlus((self.nCons, self.pvdims[varName]))
                 masterCoefMat = sparseConcat(masterCoefMat, vmat, 'h')
@@ -778,7 +761,6 @@ class CyLPModel(object):
                 c_lower = np.concatenate((c_lower, c.lower), axis=0)
                 c_upper = np.concatenate((c_upper, c.upper), axis=0)
 
-        #print '**************************************'
         
         # Create variables bound vectors
         v_lower = np.array([])
@@ -787,23 +769,13 @@ class CyLPModel(object):
             v_lower = -getCoinInfinity() * np.ones(self.nVars)
             v_upper = getCoinInfinity() * np.ones(self.nVars)
             for v in self.variables:
-#                print '********'
-#                print v.name
-#                print v.lower
-#                print v.upper
-#                print self.inds.varIndex
                 varinds = self.inds.varIndex[v.name]
                 v_lower[varinds] = v.lower
                 v_upper[varinds] = v.upper
 
                 #v_lower = np.concatenate((v_lower, v.lower), axis=0)
                 #v_upper = np.concatenate((v_upper, v.upper), axis=0)
-#            print v_lower
-#            print v_upper
-#            print '*************************************'
-        #import pdb; pdb.set_trace()
         #if masterCoefMat != None:
-        #    print '->', masterCoefMat.todense()
         return masterCoefMat, c_lower, c_upper, v_lower, v_upper
 
 
