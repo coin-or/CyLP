@@ -5,8 +5,10 @@
 from exceptions import TypeError
 import inspect
 import os.path
+from itertools import izip
 import numpy as np
 cimport numpy as np
+from scipy import sparse
 cimport cpython.ref as cpy_ref
 from CyWolfePivot cimport CyWolfePivot
 from CyPEPivot cimport CyPEPivot
@@ -83,8 +85,20 @@ cdef class CyClpSimplex:
         def __set__(self, obj):
             if self.cyLPModel:
                 self.cyLPModel.objective = obj
-                self.setObjectiveArray(
-                        self.cyLPModel.objective.astype(np.double))
+                o = self.cyLPModel.objective
+                
+                if isinstance(o, np.ndarray): 
+                    self.setObjectiveArray(o.astype(np.double))
+                if isinstance(o, (sparse.coo_matrix,
+                                                sparse.csc_matrix, 
+                                                sparse.csr_matrix, 
+                                                sparse.lil_matrix)):
+                    if not isinstance(o, sparse.coo_matrix):
+                        o = o.too_coo()
+                    for i, j, v in izip(o.row, o.col, o.data):
+                        self.setObjectiveCoefficient(j, v)
+                #self.setObjectiveArray(
+                #       self.cyLPModel.objective.astype(np.double))
             else:
                 raise Exception('To set the objective function of ' \
                                 'CyClpSimplex set CyLPSimplex.cyLPModel ' \
@@ -150,7 +164,15 @@ cdef class CyClpSimplex:
         def __get__(self):
             #if self.cbcModelExists:
             #    return <object>self.cbcModel.getPrimalVariableSolution()
-            return <object>self.CppSelf.getPrimalColumnSolution()
+            ret = <object>self.CppSelf.getPrimalColumnSolution()
+            if self.cyLPModel:
+                m = self.cyLPModel
+                inds = m.inds
+                d = {}
+                for v in inds.varIndex.keys():
+                    d[v] = ret[inds.varIndex[v]] 
+                ret = d
+            return ret
 
     property primalVariableSolutionAll:
         '''
@@ -562,7 +584,7 @@ cdef class CyClpSimplex:
 
     def setObjectiveArray(self, np.ndarray[np.double_t, ndim=1] objective):
         self.CppSelf.setObjectiveArray(<double*>objective.data, len(objective))
-
+    
     cdef double* primalColumnSolution(self):
         return self.CppSelf.primalColumnSolution()
 
@@ -888,6 +910,7 @@ cdef class CyClpSimplex:
             else:
                 for i in xrange(var.dim):
                     self.CppSelf.setInteger(x[i])
+    
 
     def copyInIntegerInformation(self, np.ndarray[np.uint8_t, ndim=1] colType):
         '''
@@ -950,6 +973,30 @@ cdef class CyClpSimplex:
 
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
+        
+        print 'm'
+        mmm = mat.todense()
+        from math import ceil
+        secSize = 20
+        cols = mmm.shape[1]
+        divs = int(ceil(cols / float(secSize)))
+
+        for sec in xrange(divs):
+            for i in xrange(mmm.shape[0]):
+                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
+                    print str(int(round(mmm[i, j], 1))).rjust(7),
+                print
+            print '...'
+ 
+        
+#        for i in range(mmm.shape[0]):
+#            for j in range(mmm.shape[1]):
+#                print str(int(round(mmm[i, j], 1))).rjust(7),
+#            print
+        print 'cl\n', constraintLower
+        print 'cu\n', constraintUpper
+        print 'vl\n', variableLower
+        print 'vu\n', variableUpper
 
 #        coinMat = CyCoinPackedMatrix()
 #        coinMat.makeMatrixFromCoo(True, np.array(mat.row, np.int32),
@@ -982,7 +1029,22 @@ cdef class CyClpSimplex:
             curVarInd += var.dim
 
         if cyLPModel.objective != None:
-            self.setObjectiveArray(cyLPModel.objective.astype(np.double))
+            self.objective = cyLPModel.objective    
+#            if isinstance(cyLPModel.objective, np.ndarray): 
+#                self.setObjectiveArray(cyLPModel.objective.astype(np.double))
+#            if isinstance(cyLPModel.objective, (sparse.coo_matrix,
+#                                                sparse.csc_matrix, 
+#                                                sparse.csr_matrix, 
+#                                                sparse.lil_matrix)):
+#                print 'OK, sparse'
+#                obj = cyLPModel.objective
+#                if not isinstance(obj, sparse.coo_matrix):
+#                    obj = cyLPModel.objective.too_coo()
+#                for i, j, v in izip(obj.row, obj.col, obj.data):
+#                    print 'set coef: ', i, j, v
+#                    self.setObjectiveCoefficient(j, v)
+              
+
         self.replaceMatrix(coinMat, True)
 
     #############################################
@@ -1102,13 +1164,53 @@ cdef class CyClpSimplex:
         return <object>self.CppSelf.getComplementarityList()
 
     def setComplement(self, var1, var2):
-        'sets var1 and var2 to be complements'
-        #When you create LP using CoinModel getComplementarityList
-        #cannot return with the right size
-        #cl = self.getComplementarityList()
-        #print var1, var2, len(cl)
-        #cl[var1], cl[var2] = var2, var1
-        self.CppSelf.setComplement(var1, var2)
+        '''
+        if ``arg`` is an integer: mark variable index ``arg`` as integer.
+        if ``arg`` is a :class:`CyLPVar` object: mark variable
+        ``arg`` as integer. Here is an example of the latter:
+
+        '''
+
+        if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
+           self.CppSelf.setComplement(var1, var2) 
+        elif True:  # isinstance(arg, CyLPVar):
+            if self.cyLPModel == None:
+                raise Exception('The argument of setInteger can be ' \
+                                'a CyLPVar only if the object is built ' \
+                                'using a CyLPModel.')
+            if var1.dim != var2.dim:
+                raise Exception('Variables should have the same  ' \
+                                'dimensions to be complements.' \
+                                ' Got %s: %g and %s: %g' % 
+                                (var1.name, var1.dim, var2.name, var2.dim))
+
+            model = self.cyLPModel
+            inds = model.inds
+            vn1 = var1.name
+            vn2 = var2.name
+
+            if not inds.hasVar(vn1):
+                raise Exception('No such variable: %s' % vn1)
+            x1 = inds.varIndex[vn1]
+            if not inds.hasVar(vn2):
+                raise Exception('No such variable: %s' % vn2)
+            x2 = inds.varIndex[vn2]
+            
+            print '######################'
+            print x1
+            print x2
+            for i in xrange(var1.dim):
+                print 'comp : ', x1[i], x2[i]
+                self.CppSelf.setComplement(x1[i], x2[i])
+    
+#    def setComplement(self, var1, var2):
+#        'sets var1 and var2 to be complements'
+#        #When you create LP using CoinModel getComplementarityList
+#        #cannot return with the right size
+#        #cl = self.getComplementarityList()
+#        #print var1, var2, len(cl)
+#        #cl[var1], cl[var2] = var2, var1
+#        self.CppSelf.setComplement(var1, var2)
 
     def loadProblemFromCyCoinModel(self, CyCoinModel modelObject, int
                                         tryPlusMinusOne=False):
