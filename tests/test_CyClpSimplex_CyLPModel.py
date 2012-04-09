@@ -7,6 +7,7 @@ import numpy as np
 from CyLP.cy import CyClpSimplex
 
 from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
+from CyLP.py.utils.sparseUtil import csr_matrixPlus
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
@@ -37,8 +38,8 @@ class TestModel(unittest.TestCase):
         self.assertTrue((abs(sol - np.array([1.1, 1.8, 0.1]) ) <= 10**-6).all())
         
         # Change the objective function
-        c = CyLPArray([1, 10, 1.1])
-        s.objective = c * x
+        c = csr_matrixPlus([[1, 10, 1.1]]).T
+        s.objective = c.T * x
         s.primal()
         sol = s.primalVariableSolution['x']
         self.assertTrue((abs(sol - np.array([2, 0, 1]) ) <= 10**-6).all())

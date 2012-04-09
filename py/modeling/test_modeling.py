@@ -1,5 +1,6 @@
 import unittest
 import numpy as np
+from CyLP.py.utils.sparseUtil import csr_matrixPlus
 from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray, getCoinInfinity
 
 inf = getCoinInfinity()
@@ -11,15 +12,32 @@ class TestModeling(unittest.TestCase):
         model = self.model
         
         self.x = model.addVariable('x', 5)
-        self.y = model.addVariable('y', 4)
-        self.z = model.addVariable('z', 5)
         
         
-        self.b = CyLPArray([3.1, 4.2])
+        self.b = np.array([3.1, 4.2])
         
         self.A = np.matrix([[1, 2, 3, 3, 4], [3, 2, 1, 2, 5]])
         self.B = np.matrix([[0, 0, 0, -1.5, -1.5], [-3, 0, 0, -2,0 ]])
         self.D = np.matrix([[1, 3, 1, 4], [2, 1,3, 5]])
+    
+    def test_Obj1(self):
+        m = self.model
+        x = self.x
+        y = m.addVariable('y', 4)
+        z = m.addVariable('z', 5)
+        A = self.A
+        b = self.b
+
+        k = m.addVariable('k', 2)
+
+
+        m.addConstraint(x >= 0)
+
+        m.addConstraint(A * x <= b)
+        
+        m.addConstraint(z >= 0)
+
+        m.objective = x.sum() + z.sum() + k.sum()
 
 
     def test_bound1(self):
@@ -70,7 +88,7 @@ class TestModeling(unittest.TestCase):
         model = self.model
         x = self.x
 
-        model.addConstraint(1.1 <= x[0] - 3 * x[1:3] + 2 * x[2:5] <= 4.5)
+        model.addConstraint(1.1 <= x[0] - 3 * x[1:3].sum() + 2 * x[2:5].sum() <= 4.5)
         cons = model.constraints[0]
         m, cl, cu, vl, vu = model.makeMatrices()
         self.assertTrue((m.todense() == np.array(
@@ -80,11 +98,11 @@ class TestModeling(unittest.TestCase):
         model = self.model
         x = self.x
 
-        model.addConstraint(-x[1] + 3 * x[1:3] + None * x >= 4.5)
+        model.addConstraint(-x[1] + 3 * x[1:4].sum() + None * x >= 4.5)
         cons = model.constraints[0]
         m, cl, cu, vl, vu = model.makeMatrices()
         self.assertTrue((m.todense() == np.array(
-                            [0, 2, 3, 0, 0])).all())
+                            [0, 2, 3, 3, 0])).all())
         self.assertTrue((cons.lower == np.array(
                             [4.5])).all())
         self.assertTrue((cons.upper == np.array(
@@ -94,13 +112,14 @@ class TestModeling(unittest.TestCase):
     def test_constraint_single3(self):
         model = self.model
         x = self.x
-        b = self.b
-
-        model.addConstraint(-3 * x[1] + b * x[1:3]  >= 4.5)
+       
+        
+        k = csr_matrixPlus([[3.1], [4.2]])
+        model.addConstraint(-x[0] + -3 * x[1] + k.T * x[1:3]  >= 4.5)
         cons = model.constraints[0]
         m, cl, cu, vl, vu  = model.makeMatrices()
         self.assertTrue((abs(m.todense()-np.array(
-                            [0, 0.1, 4.2, 0, 0])) < 0.000001).all())
+                            [-1, 0.1, 4.2, 0, 0])) < 0.000001).all())
 
     def test_constraint_1(self):
         model = self.model
@@ -110,9 +129,10 @@ class TestModeling(unittest.TestCase):
         model.addConstraint(2 <= -x <= 4.5)
         
         cons = model.constraints[0]
+       
         m, cl, cu, vl, vu = model.makeMatrices()
-        self.assertTrue((abs(m.todense()-np.array(
-                            5 * [-1])) < 0.000001).all())
+        self.assertTrue((abs(m.todense() +
+                        np.eye(5, 5)) < 0.000001).all())
 
         #self.assertEqual(self.c[4], 3.3)
     

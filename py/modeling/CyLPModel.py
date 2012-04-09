@@ -58,7 +58,23 @@ import numpy as np
 from scipy import sparse
 
 #from CyLP.py.utils.sparseUtil import sparseConcat
+def I(n):
+    '''
+    Return a sparse identity matrix of size *n*
+    '''
+    if n <= 0:
+        return None
+    return csc_matrixPlus(sparse.eye(n, n))
 
+def identitySub(var):
+    '''
+    Return a sparse row sub-matrix of the identity matrix 
+    of size *n* indexed in *l*
+    '''
+    n = var.dim
+    if var.parent != None:
+        n = var.parent.dim
+    return I(n)[var.indices, :]
 
 class CyLPExpr:
     operators = ('>=', '<=', '==', '+', '-', '*', 'u-', 'sum')
@@ -90,6 +106,8 @@ class CyLPExpr:
     def __eq__(self, other):
         # Check if both sides are CyLPVar, in which case a pythonic
         # comparison is meant (for dictionary keys,...)
+        if (other == None):
+            return False
         if isinstance(self, CyLPVar) and isinstance(other, CyLPVar):
             return (str(self) == str(other))
         v = CyLPExpr(opr="==", right=other, left=self.expr)
@@ -169,7 +187,7 @@ class CyLPExpr:
         # add a 1 vector as its coefficient
         if len(operands) == 1 and isinstance(operands[0], CyLPVar):
             var = operands[0]
-            cons.varCoefs[var] = np.ones(var.dim)
+            cons.varCoefs[var] = identitySub(var) #np.ones(var.dim)
 
         # Reset variables for future constraints
         for var in cons.varCoefs.keys():
@@ -202,6 +220,18 @@ class CyLPConstraint:
         else:
             s += 'normal Constarint\n'
         return s
+    
+    def mul(self, expr, coef):
+        '''
+        Recursively multiplies all variable coefficients in *expr* by *coef*
+        '''
+        if isinstance(expr, CyLPVar):
+            self.varCoefs[expr] *= coef
+            return
+        if isinstance(expr, CyLPExpr):
+            self.mul(expr.right, coef)
+            self.mul(expr.left, coef)
+
 
     def perform(self, opr, left=None, right=None):
         if isinstance(right, CyLPVar):
@@ -211,12 +241,19 @@ class CyLPConstraint:
                 self.varNames.append(right.name)
                 self.parentVarDims[right.name] = right.parentDim
             if opr == 'u-':
-                ones = -CyLPArray(np.ones(right.dim))
-                self.varCoefs[right] = ones
+                #ones = -CyLPArray(np.ones(right.dim))
+                #self.nRows = right.dim
+                #self.varCoefs[right] = ones
+                self.varCoefs[right] = -identitySub(right)
+                self.nRows = len(right.indices)
                 self.isRange = False
-                self.nRows = right.dim
             elif opr == 'sum':
-                pass
+                n = right.dim
+                if right.parent != None:
+                    n = right.parent.dim
+                self.varCoefs[right] = sparse.lil_matrix((1, n))
+                self.varCoefs[right][0, right.indices] = np.ones(len(right.indices))
+                self.nRows = 1
             else:
                 #self.varNames.append(right.name)
                 #self.parentVarDims[right.name] = right.parentDim
@@ -228,8 +265,10 @@ class CyLPConstraint:
                         if self.nRows and self.nRows != 1:
                             raise Exception("Expected 1-dimensional" \
                                             " coefficient")
-                        self.nRows = 1
-                        coef = CyLPArray(left * np.ones(dim))
+                        #self.nRows = 1
+                        #coef = CyLPArray(left * np.ones(dim))
+                        coef = left * identitySub(right)
+                        self.nRows = len(right.indices)
                     else:
                         if left == None:
                             return
@@ -247,17 +286,35 @@ class CyLPConstraint:
                                             " expected %d"
                                         % (left, left.shape[0], self.nRows))
                         self.nRows = nr
-                        coef = left
-                    self.varCoefs[right] = deepcopy(coef)
+                        #print '---->',  left.shape
+                        #print right.name
+                        #print right.indices
+                        #print right.parent
+                        if right.parent == None:
+                            coef = deepcopy(left)
+                            #print 'noparent'
+                        else:
+                            coef = sparse.lil_matrix((nr, right.parent.dim))
+                            #print 'coef shape', coef.shape
+                            #print 'right indices', right.indices
+                            #print 'left', left
+                            #print 'left.shape', left.shape
+                            #print 'coef[]'
+                            #print coef[:, right.indices].todense() 
+                            coef[:, right.indices] = left 
+                    
+                    self.varCoefs[right] = coef
                     self.isRange = False
 
                 if opr == '+' or opr == '-':
                     # No coefs for left op
                     self.isRange = False
                     if isinstance(left, CyLPVar):
-                        ones = CyLPArray(np.ones(left.dim))
-                        self.varCoefs[left] = ones
-                        self.nRows = 1
+                        #ones = CyLPArray(np.ones(left.dim))
+                        #self.varCoefs[left] = ones
+                        #self.nRows = 1
+                        self.varCoefs[left] = identitySub(left)
+                        self.nRows = len(left.indices)
                         if left.name not in self.varNames:
                             self.varNames.append(left.name)
                             self.parentVarDims[left.name] = left.parentDim
@@ -269,16 +326,18 @@ class CyLPConstraint:
                         if right in self.varCoefs.keys():
                             self.varCoefs[right] *= -1
                         else:
-                            if self.nRows == 0:
-                                self.nRows = 1
-                                coef = CyLPArray(np.ones(right.dim))
-                            elif self.nRows == 1:
-                                coef = CyLPArray(np.ones(1))
-                            else:
-                                coef = np.matrix(np.eye(self.nRows)) 
+                            self.varCoefs[right] = identitySub(right)
+                            self.nRows = len(right.indices)
+                            #if self.nRows == 0:
+                            #    self.nRows = 1
+                            #    coef = CyLPArray(np.ones(right.dim))
+                            #elif self.nRows == 1:
+                            #    coef = CyLPArray(np.ones(1))
+                            #else:
+                            #    coef = np.matrix(np.eye(self.nRows)) 
                             if opr == '-':
                                 coef *= -1
-                            self.varCoefs[right] = coef
+                            #self.varCoefs[right] = coef
                             if right.name not in self.varNames:
                                 self.varNames.append(right.name)
                                 self.parentVarDims[right.name] = \
@@ -288,22 +347,29 @@ class CyLPConstraint:
             if left.dim == 0 :
                 return
             self.isRange = False
-            ones = CyLPArray(np.ones(left.dim))
-            self.varCoefs[left] = ones
-            self.nRows = 1
+            #ones = CyLPArray(np.ones(left.dim))
+            #self.varCoefs[left] = ones
+            #self.nRows = 1
+            self.varCoefs[left] = identitySub(left)
+            self.nRows = len(left.indices)
             if left.name not in self.varNames:
                 self.varNames.append(left.name)
                 self.parentVarDims[left.name] = left.parentDim
 
         # Coef already set for the right operand
-        if right.__class__ == CyLPExpr and opr == '-':
-            # The expression on the right is in the form (left opr right)
-            # so the key to the coef in self.varCoefs is right.right i.e.
-            # the CyLPVar on the right
-            if right.right.dim == 0:
-                return
-            self.isRange = False
-            self.varCoefs[right.right] *= -1
+        if right.__class__ == CyLPExpr:
+            if opr == '-':
+                # The expression on the right is in the form (left opr right)
+                # so the key to the coef in self.varCoefs is right.right i.e.
+                # the CyLPVar on the right
+                #if right.right.dim == 0:
+                #    return
+                self.isRange = False
+                self.mul(right, -1)
+                #self.varCoefs[right.right] *= -1
+            if opr == '*' and isinstance(left, (int, long, float)):
+                self.mul(right, left)
+                
 
         if opr in ('<=', '>=', '=='):
             if isinstance(left, CyLPExpr) and not isinstance(right,
@@ -384,7 +450,8 @@ class CyLPVar(CyLPExpr):
         self.lower = -getCoinInfinity() * np.ones(dim)
         self.upper = getCoinInfinity() * np.ones(dim)
 
-        self.indices = self.fromInd = self.toInd = None
+        self.indices = range(dim) 
+        self.fromInd = self.toInd = None
         if fromInd and toInd:
             self.indices = range(fromInd, toInd)
             self.formInd = fromInd
@@ -394,7 +461,7 @@ class CyLPVar(CyLPExpr):
         s = self.name
         if self.fromInd and self.toInd:
             s += '[%d:%d]' % (self.fromInd, self.toInd)
-        elif self.indices != None and len(self.indices) == 1:
+        elif self.parent != None and len(self.indices) == 1:
             s += '[%d]' % self.indices
         return s
 
@@ -649,12 +716,13 @@ class CyLPModel(object):
 
     @objective.setter
     def objective(self, obj):
-        self.objective_ = obj.evaluate()
-        obj = np.array([])
-        #for varName in self.allVarNames:
-        for varName in self.varNames:
-            v_coef = self.generateVarObjCoef(varName)
-            obj = np.concatenate((obj, v_coef), axis=0)
+        if isinstance(obj, CyLPExpr):
+            self.objective_ = obj.evaluate()
+            obj = None
+            #for varName in self.allVarNames:
+            for varName in self.varNames:
+                v_coef = self.generateVarObjCoef(varName)
+                obj = sparseConcat(obj, v_coef, how='h')
         
         self.objective_ = obj
 
@@ -681,12 +749,12 @@ class CyLPModel(object):
     def generateVarObjCoef(self, varName):
         #dim = self.allParentVarDims[varName]
         dim = self.pvdims[varName]
-        coef = np.zeros(dim)
+        coef = csr_matrixPlus((1, dim))
         obj = self.objective_
         keys = [k for k in obj.varCoefs.keys() if k.name == varName]
 
         for var in keys:
-            coef[var.indices] = obj.varCoefs[var]
+            coef = coef + obj.varCoefs[var]
         return coef
 
     def generateVarMatrix(self, varName):
@@ -698,29 +766,38 @@ class CyLPModel(object):
         dim = self.pvdims[varName]
         mainCoef = None
         for c in self.constraints:
+            coef = sparse.coo_matrix((c.nRows, dim))
             keys = [k for k in c.varCoefs.keys() if k.name == varName]
-            if not keys:
-                coef = sparse.coo_matrix((c.nRows, dim))
-            elif c.nRows == 1:
-                coef = np.zeros(dim)
-                #coef = sparse.coo_matrix((1, dim))
-                for var in keys:
-                    tempMat = c.varCoefs[var]
-                    if isinstance(tempMat, 
-                            (csr_matrixPlus, csc_matrixPlus)):
-                        coo = tempMat.tocoo()
-                        for i, j, v in izip(coo.row, coo.col, coo.data):
-                            coef[j] = v
-                    
-                    else:
-                        coef[var.indices] += c.varCoefs[var]
-
-            else:  # Constraint has matrix coefficients
-                # Initial coef with the coef of the first occurance
-                coef = c.varCoefs[keys[0]]
-                #TODO: accept multiple occurance of a variable in a constraint
-                #for var in keys[1:]:
-                #    coef = sparseConcat(coef, c.varCoefs[var], 'v')
+            for var in keys:
+                #import pdb; pdb.set_trace()
+#                print '@@'
+#                print coef.shape
+#                print c.varCoefs[var].shape
+#                print coef.todense()
+#                print c.varCoefs[var].todense()
+                coef = coef + c.varCoefs[var]
+#            if not keys:
+#                coef = sparse.coo_matrix((c.nRows, dim))
+#            elif c.nRows == 1:
+#                coef = np.zeros(dim)
+#                #coef = sparse.coo_matrix((1, dim))
+#                for var in keys:
+#                    tempMat = c.varCoefs[var]
+#                    if isinstance(tempMat, 
+#                            (csr_matrixPlus, csc_matrixPlus)):
+#                        coo = tempMat.tocoo()
+#                        for i, j, v in izip(coo.row, coo.col, coo.data):
+#                            coef[j] = v
+#                    
+#                    else:
+#                        coef[var.indices] += c.varCoefs[var]
+#
+#            else:  # Constraint has matrix coefficients
+#                # Initial coef with the coef of the first occurance
+#                coef = c.varCoefs[keys[0]]
+#                #TODO: accept multiple occurance of a variable in a constraint
+#                #for var in keys[1:]:
+#                #    coef = sparseConcat(coef, c.varCoefs[var], 'v')
 
             mainCoef = sparseConcat(mainCoef, coef, 'v')
 
