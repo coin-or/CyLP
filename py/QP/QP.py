@@ -483,29 +483,30 @@ class QP:
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
 
-        print '____________________________________________'
-        print x_up
-        print x_low
-
-        print c_low
-        print c_up
-
-        print C.todense()
-        print iConstraintsWithBothBounds
-        print iConstraintsWithJustLowerBound
-        print iConstraintsWithJustUpperBound
+#        print '____________________________________________'
+#        print x_up
+#        print x_low
+#
+#        print c_low
+#        print c_up
+#
+#        print C.todense()
+#        print iConstraintsWithBothBounds
+#        print iConstraintsWithJustLowerBound
+#        print iConstraintsWithJustUpperBound
+#        
+#        print 'vars'
+#        print iVarsWithBothBounds
+#        print iVarsWithJustLowerBound
+#        print iVarsWithJustUpperBound
+#        print '____________________________________________'
         
-        print 'vars'
-        print iVarsWithBothBounds
-        print iVarsWithJustLowerBound
-        print iVarsWithJustUpperBound
-        print '____________________________________________'
         
-        
+        In = I(nVar)
         
         m = CyLPModel()
         x = m.addVariable('x', nVar)
-
+        
         yx1 = CyLPVar('yx1', dim=0)
         yxu = CyLPVar('yxu', dim=0)
         yx2 = CyLPVar('yx2', dim=0)
@@ -529,10 +530,9 @@ class QP:
             m.addConstraint(zku >= 0)
             #m.addConstraint(spku >= 0)
             #m.addConstraint(smku >= 0)
-            m.addConstraint(I(nVarsWithBothBounds) * x[iVarsWithBothBounds] + 
-                            k1 == 
+            m.addConstraint(x[iVarsWithBothBounds] + k1 == 
                             x_up[iVarsWithBothBounds], 'x1+k1')
-            m.addConstraint(I(nVarsWithBothBounds) * k1 + ku == 
+            m.addConstraint(k1 + ku == 
                     (x_up[iVarsWithBothBounds] - 
                                         x_low[iVarsWithBothBounds]), 'k1+ku')
 
@@ -546,8 +546,7 @@ class QP:
             m.addConstraint(zk2 >= 0)
             #m.addConstraint(spk2 >= 0)
             #m.addConstraint(smk2 >= 0)
-            m.addConstraint(I(iVarsWithJustUpperBound) * x[iVarsWithJustUpperBound] + 
-                            k2 ==
+            m.addConstraint(x[iVarsWithJustUpperBound] + k2 ==
                             x_up[iVarsWithJustUpperBound], 'x2+k2')
         
         if nVarsWithJustLowerBound:
@@ -560,10 +559,12 @@ class QP:
             m.addConstraint(zk3 >= 0)
             #m.addConstraint(spk3 >= 0)
             #m.addConstraint(smk3 >= 0)
-            m.addConstraint(I(nVarsWithJustLowerBound) * 
-                                    x[iVarsWithJustLowerBound] - 
-                            I(nVarsWithJustLowerBound) * k3 ==  
+            m.addConstraint(x[iVarsWithJustLowerBound] -  k3 ==  
                             x_low[iVarsWithJustLowerBound], 'x3-k3')
+#            m.addConstraint(I(nVarsWithJustLowerBound) * 
+#                                    x[iVarsWithJustLowerBound] - 
+#                            I(nVarsWithJustLowerBound) * k3 ==  
+#                            x_low[iVarsWithJustLowerBound], 'x3-k3')
         
         if nEquality > 0 :
             m.addConstraint(A * x == b, 'Ax=b')
@@ -639,7 +640,6 @@ class QP:
                                 c_low[iConstraintsWithJustLowerBound], 
                                 'C3x-g3')
         
-        In = I(nVar)
        
         x1CoefT = x2CoefT = x3CoefT = xuCoefT = None
         if nVarsWithBothBounds:
@@ -728,7 +728,7 @@ class QP:
             m.addConstraint(k3CoefT * yx3 - zk3 == 0, 'dualfeas_k3')
 
 
-        m.objective =  sp + sm #+ spg3 + smg3 #+ spk3 + smk3
+        m.objective =  sp.sum() + sm.sum() #+ spg3 + smg3 #+ spk3 + smk3
         #z = m.addVariable('z', nVar)
         
         s = CyClpSimplex(m)
@@ -787,12 +787,12 @@ class QP:
         print (G * x).T - C.T * y + c
         
         print '-------------------------------------------------------'
-        x = np.matrix([[1, 2, -1, 3, -4]]).T
-        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
-        print 'Cx'
-        print C * x
-        print 'Cx - c_low'
-        print C * x - np.matrix(c_low).T
+#        x = np.matrix([[1, 2, -1, 3, -4]]).T
+#        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+#        print 'Cx'
+#        print C * x
+#        print 'Cx - c_low'
+#        print C * x - np.matrix(c_low).T
         
 
         return

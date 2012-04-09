@@ -229,6 +229,8 @@ class CyLPConstraint:
             self.varCoefs[expr] *= coef
             return
         if isinstance(expr, CyLPExpr):
+            if expr.left == None:
+                return
             self.mul(expr.right, coef)
             self.mul(expr.left, coef)
 
@@ -326,7 +328,10 @@ class CyLPConstraint:
                         if right in self.varCoefs.keys():
                             self.varCoefs[right] *= -1
                         else:
-                            self.varCoefs[right] = identitySub(right)
+                            coef = identitySub(right)
+                            if opr == '-':
+                                coef *= -1
+                            self.varCoefs[right] = coef 
                             self.nRows = len(right.indices)
                             #if self.nRows == 0:
                             #    self.nRows = 1
@@ -335,8 +340,9 @@ class CyLPConstraint:
                             #    coef = CyLPArray(np.ones(1))
                             #else:
                             #    coef = np.matrix(np.eye(self.nRows)) 
-                            if opr == '-':
-                                coef *= -1
+                            
+                            #if opr == '-':
+                            #    coef *= -1
                             #self.varCoefs[right] = coef
                             if right.name not in self.varNames:
                                 self.varNames.append(right.name)
