@@ -45,6 +45,9 @@ class csc_matrixPlus(sparse.csc_matrix):
                 [ 2,  3,  6,  0,  0, 11]])
 
         '''
+        if not isinstance(val, (int, long, float)):
+            return sparse.csc_matrix.__setitem__(self, (iRow, iCol), val)
+            
         nCols = self.shape[1]
 
         #update shape if nec.
@@ -135,10 +138,8 @@ class csc_matrixPlus(sparse.csc_matrix):
         return sparse.csc_matrix.__rmul__(self, other)
 
     def __add__(self, other):
-        print '1'
         if isinstance(other, self.CyLPExpr):
             return NotImplemented
-        print '2'
         return sparse.csc_matrix.__add__(self, other)
 
     def __radd__(self, other):
@@ -199,6 +200,9 @@ class csr_matrixPlus(sparse.csr_matrix):
          [ 0  0 11]]
 
         '''
+        if not isinstance(val, (int, long, float)):
+            return sparse.csr_matrix.__setitem__(self, (iRow, iCol), val)
+        
         nRows = self.shape[0]
 
         if iCol >= self.shape[1]:
