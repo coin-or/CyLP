@@ -84,12 +84,14 @@ cdef class CyCoinMpsIO:
             #print Hessian.todense()
 
             Hessian = csr_matrixPlus((el, col, start), shape=(n, n))
-
+            
             m = self.nConstraints
-            for i in xrange(m):
+            
+            for i in xrange(n):
                 for j in xrange(Hessian.indptr[i], Hessian.indptr[i + 1]):
                     jCol = Hessian.indices[j]
                     Hessian[jCol, i] = Hessian[i, jCol]
+            
 
             self.Hessian = Hessian
 
