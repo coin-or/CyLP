@@ -25,6 +25,12 @@ def I(n):
         return None
     return csc_matrixPlus(sparse.eye(n, n))
 
+def checkComp(x, y):
+    for i in xrange(len(x)):
+        if x[i] != 0 and y[i] != 0:
+            return i
+    return -1
+
 ## A generic QP class
 class QP:
 
@@ -767,26 +773,55 @@ class QP:
         #s.initialPrimalSolve()
         print s.primalVariableSolution 
         print 'OBJ:', s.objectiveValue 
-        
         x = np.matrix(s.primalVariableSolution['x']).T
         print 'objective:'
         print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+       
+#        print checkComp(s.primalVariableSolution['k1'], 
+#                        s.primalVariableSolution['zk1'])
+#
+#        print checkComp(s.primalVariableSolution['ku'], 
+#                        s.primalVariableSolution['zku'])
+
+#        print 'A:'
+#        print A
+#        print 'x'
+#        print x
+#        print 'Ax:'
+#        print A * x
+#        print 'b'
+#        print b
+#        y = np.matrix(s.primalVariableSolution['yb']).T
+#        #yx1 = s.primalVariableSolution['yx1']
+#
+#        print A.shape
+#        print ((A * x).T - b < 10 ** -5).all() 
+#      
+#        print 'opt'
+#        print G.todense()
+#        print np.linalg.eigvals(G.todense())
+#        print G * x - A.T * y + np.matrix(c).T 
+#        x = s.primalVariableSolution['x']
+#         
+#        for i in xrange(nVar):
+#            if x[i] > x_up[i] + 10**-10 or x[i] < x_low[i] - 10**-10:
+#                print i, 'INFEASIBLE', x_low[i] , x[i], x_up[i], x[i] > x_up[i], x[i] < x_low[i]
         
-        print 'Cx'
-        print C * x
-        print 'g3'
-        print s.primalVariableSolution['g3']
-        print 'Cx - g3'
-        print C * x - np.matrix(s.primalVariableSolution['g3']).T 
-        print 'optimality:'
-        print -c
-        y =  s.primalVariableSolution['yc3']
+        #print 'Cx'
+        #print C * x
+        #print 'g3'
+        #print s.primalVariableSolution['g3']
+        #print 'Cx - g3'
+        #print C * x - np.matrix(s.primalVariableSolution['g3']).T 
+        #print 'optimality:'
+        #print -c
+        #y =  s.primalVariableSolution['yc3']
         #print G*x
         #print C.T * y
-        print 'opt:'
-        print (G * x).T - C.T * y + c
+        #print 'opt:'
+        #print (G * x).T - C.T * y + c
         
-        print '-------------------------------------------------------'
+#        print '-------------------------------------------------------'
 #        x = np.matrix([[1, 2, -1, 3, -4]]).T
 #        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
 #        print 'Cx'

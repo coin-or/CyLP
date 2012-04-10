@@ -28,11 +28,11 @@ class WolfePivot(PivotPythonBase):
         tol = 0
         #print 'Basis:'
         #print s.getPivotVariable()
-        iii = np.where(s.varNotFlagged & s.varNotFixed &
-                                     s.varNotBasic &
-                                     (((rc > tol) & s.varIsAtUpperBound) |
-                                     ((rc < -tol) & s.varIsAtLowerBound) |
-                                     s.varIsFree))[0] 
+#        iii = np.where(s.varNotFlagged & s.varNotFixed &
+#                                     s.varNotBasic &
+#                                     (((rc > tol) & s.varIsAtUpperBound) |
+#                                     ((rc < -tol) & s.varIsAtLowerBound) |
+#                                     s.varIsFree))[0] 
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &
                                      (((rc > tol) & s.varIsAtUpperBound) |
@@ -82,24 +82,24 @@ class WolfePivot(PivotPythonBase):
         pivotRow = s.pivotRow()
         if pivotRow < 0:
             colInd = s.sequenceIn()
-            print 'entering: ', colInd, ' comp: ', cl[colInd]
-            print 'pivotRow < 0'
+            #print 'entering: ', colInd, ' comp: ', cl[colInd]
+            #print 'pivotRow < 0'
             return 1
 
         pivotVariable = s.getPivotVariable()
         leavingVarIndex = pivotVariable[pivotRow]
         colInd = s.sequenceIn()
 
-        print 'Basis:'
-        print s.getPivotVariable()
-        print 'leave: ', leavingVarIndex
-        print 'entering: ', colInd, ' comp: ', cl[colInd]
+#        print 'Basis:'
+#        print s.getPivotVariable()
+#        print 'leave: ', leavingVarIndex
+#        print 'entering: ', colInd, ' comp: ', cl[colInd]
          
         if s.getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:
             #print colInd , ' flagged'
             #self.banList[colInd] = 1
-            print 'banning %d' % colInd
+            #print 'banning %d' % colInd
             #print self.notBanned
             #self.banList = np.concatenate((self.banList, [colInd]))
             self.notBanned[colInd] = False
@@ -109,7 +109,7 @@ class WolfePivot(PivotPythonBase):
 
         
         #self.banList = np.zeros(self.dim, np.int)
-        print "reseting>>>>>>>>>>>>>>>>>>>>>>>"
+        #print "reseting>>>>>>>>>>>>>>>>>>>>>>>"
         self.notBanned = np.array(self.dim * [True])
 
         return 1
