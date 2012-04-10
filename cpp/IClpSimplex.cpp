@@ -515,7 +515,6 @@ void IClpSimplex::dualExpanded(ClpSimplex * model,CoinIndexedVector * array,
 
 int IClpSimplex::isPivotAcceptable()
 {
-    std::cout << "isPivotAcceptable called\n";
     if (this->obj && this->runIsPivotAcceptable) {
         return this->runIsPivotAcceptable(this->obj);
     }
