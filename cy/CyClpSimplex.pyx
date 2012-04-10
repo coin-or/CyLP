@@ -974,29 +974,29 @@ cdef class CyClpSimplex:
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
         
-        print 'm'
-        mmm = mat.todense()
-        from math import ceil
-        secSize = 20
-        cols = mmm.shape[1]
-        divs = int(ceil(cols / float(secSize)))
-
-        for sec in xrange(divs):
-            for i in xrange(mmm.shape[0]):
-                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
-                    print str(int(round(mmm[i, j], 1))).rjust(7),
-                print
-            print '...'
- 
+#        print 'm'
+#        mmm = mat.todense()
+#        from math import ceil
+#        secSize = 20
+#        cols = mmm.shape[1]
+#        divs = int(ceil(cols / float(secSize)))
+#
+#        for sec in xrange(divs):
+#            for i in xrange(mmm.shape[0]):
+#                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
+#                    print str(int(round(mmm[i, j], 1))).rjust(7),
+#                print
+#            print '...'
+# 
         
-#        for i in range(mmm.shape[0]):
-#            for j in range(mmm.shape[1]):
-#                print str(int(round(mmm[i, j], 1))).rjust(7),
-#            print
-        print 'cl\n', constraintLower
-        print 'cu\n', constraintUpper
-        print 'vl\n', variableLower
-        print 'vu\n', variableUpper
+##        for i in range(mmm.shape[0]):
+##            for j in range(mmm.shape[1]):
+##                print str(int(round(mmm[i, j], 1))).rjust(7),
+##            print
+#        print 'cl\n', constraintLower
+#        print 'cu\n', constraintUpper
+#        print 'vl\n', variableLower
+#        print 'vu\n', variableUpper
 
 #        coinMat = CyCoinPackedMatrix()
 #        coinMat.makeMatrixFromCoo(True, np.array(mat.row, np.int32),
@@ -1196,11 +1196,7 @@ cdef class CyClpSimplex:
                 raise Exception('No such variable: %s' % vn2)
             x2 = inds.varIndex[vn2]
             
-            print '######################'
-            print x1
-            print x2
             for i in xrange(var1.dim):
-                print 'comp : ', x1[i], x2[i]
                 self.CppSelf.setComplement(x1[i], x2[i])
     
 #    def setComplement(self, var1, var2):
