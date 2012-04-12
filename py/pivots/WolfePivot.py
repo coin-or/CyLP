@@ -9,7 +9,8 @@ class WolfePivot(PivotPythonBase):
         self.dim = clpModel.nConstraints + clpModel.nVariables
         self.clpModel = clpModel
         #self.banList = np.array([])
-        self.notBanned = np.array(self.dim * [True])
+        self.orgBan = np.array(self.dim * [True], np.bool)
+        self.notBanned = self.orgBan.copy()
         self.complementarityList = np.arange(self.dim)
 
     def pivotColumn(self):
@@ -53,10 +54,11 @@ class WolfePivot(PivotPythonBase):
         #print '~~~~~~~~~~~~~self.banList:', self.banList 
         #np.delete(indicesToConsider, self.banList)
         #print 'after  ', indicesToConsider
+        #import pdb; pdb.set_trace() 
         
         rc2 = abs(rc[indicesToConsider])
         
-        checkFree = True
+        checkFree = False
         #rc2[np.where((status & 7 == 4) | (status & 7 == 0))] *= 10
         if rc2.shape[0] > 0:
             if checkFree:
@@ -68,12 +70,16 @@ class WolfePivot(PivotPythonBase):
             else:
                     ind = np.argmax(rc2)
             #print 'incomming var: %d' % indicesToConsider[ind]
-            return  indicesToConsider[ind]
+            ret = indicesToConsider[ind] 
+            del indicesToConsider  # not sure if this is necessary
+            del rc2  # HUGE memory leak otherwise
+            return ret 
         return -1
         return self.pivotColumnFirst()
 
 
     def isPivotAcceptable(self):
+        #import pdb; pdb.set_trace() 
 #        return True
 #        #TODO ComplementarityList can be defined in the current class
         s = self.clpModel
@@ -110,7 +116,9 @@ class WolfePivot(PivotPythonBase):
         
         #self.banList = np.zeros(self.dim, np.int)
         #print "reseting>>>>>>>>>>>>>>>>>>>>>>>"
-        self.notBanned = np.array(self.dim * [True])
+        del self.notBanned
+        self.notBanned = self.orgBan.copy()
+        #self.notBanned = np.array(self.dim * [True])
 
         return 1
     
