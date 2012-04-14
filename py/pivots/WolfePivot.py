@@ -8,11 +8,15 @@ class WolfePivot(PivotPythonBase):
     def __init__(self, clpModel, bucketSize=1):
         self.dim = clpModel.nConstraints + clpModel.nVariables
         self.clpModel = clpModel
+        # Tell IClpSimplex that this pivot rules needs 
+        #an extra check after the leaving varible is chosen.
+        clpModel.useCustomPrimal(True)
         #self.banList = np.array([])
         self.orgBan = np.array(self.dim * [True], np.bool)
         self.notBanned = self.orgBan.copy()
         self.complementarityList = np.arange(self.dim)
-
+    
+    
     def pivotColumn(self):
         s = self.clpModel
         
