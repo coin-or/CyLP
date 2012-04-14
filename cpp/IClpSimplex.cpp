@@ -1081,6 +1081,11 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
     onStopped(); // set secondary status if stopped
     //if (problemStatus_==1&&lastAlgorithm==1)
     //returnCode=10; // so will do primal after postsolve
+    
+    delete tempRow;
+    delete tempRow_vector;
+    delete QP_BanList;
+    
     return returnCode;
 }
 

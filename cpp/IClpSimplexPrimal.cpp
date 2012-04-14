@@ -473,7 +473,8 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 					// Sort to make consistent ?
 					std::sort(whichColumns,whichColumns+numberSort);
 					// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					saveModel = new IClpSimplex(this,numberSort,whichColumns);
+					// FIXME: uncomment
+                    saveModel = new IClpSimplex(this,numberSort,whichColumns);
 					// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 					
 					delete [] whichColumns;

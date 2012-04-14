@@ -179,22 +179,14 @@ int IClpSimplexPrimal_Wolfe::primal (int ifValuesPass , int startFinishOptions)
 	 */
 	 
 	 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	 int listSize = numberRows() + numberColumns();
-	  
-	 //QP_ComplementarityList = new int[listSize];
-			
-	//for (int i = 0 ; i < listSize ; i++)
-	//	QP_ComplementarityList[i] = i;
-	
-	//QP_ComplementarityList[0] = 2;
-	//QP_ComplementarityList[2] = 0;
-	
-	
-	QP_BanList = new int[listSize];
-	for (int i = 0; i < listSize ; i++)
-		QP_BanList[i] = 0;
-		
-	QP_ExistsBannedVariable = 0;
+//	 int listSize = numberRows() + numberColumns();
+//	  
+//	
+//	QP_BanList = new int[listSize];
+//	for (int i = 0; i < listSize ; i++)
+//		QP_BanList[i] = 0;
+//		
+//	QP_ExistsBannedVariable = 0;
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	
 	
