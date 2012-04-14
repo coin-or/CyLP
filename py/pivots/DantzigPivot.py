@@ -75,6 +75,7 @@ class DantzigPivot(PivotPythonBase):
                     ind = np.argmax(rc2)
             else:
                     ind = np.argmax(rc2)
+            del rc2
             return  indicesToConsider[ind]
         return -1
 

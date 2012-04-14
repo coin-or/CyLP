@@ -35,7 +35,7 @@ class PositiveEdgePivot(PivotPythonBase):
 
     '''
 
-    def __init__(self, clpModel, bucketSize=1, EPSILON=10 ** (-7)):
+    def __init__(self, clpModel, EPSILON=10 ** (-7)):
         self.clpModel = clpModel
         self.dim = self.clpModel.nRows + self.clpModel.nCols
 
@@ -138,6 +138,7 @@ class PositiveEdgePivot(PivotPythonBase):
             maxInd = indicesToConsider[np.argmax(rc2)]
             maxRc = rc[maxInd]
 
+        del rc2
         if maxCompInd != -1 and abs(maxCompRc) > 0.1 * abs(maxRc):
             return maxCompInd
         self.updateW()
