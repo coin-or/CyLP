@@ -98,6 +98,7 @@ class QP:
             self.x_low, self.x_up,
             self.n, self.nEquality, self.nInEquality,
             self.objectiveOffset) = readQPS(filename)
+        self.filename = filename
 
     def Wolfe_2(self):
         '''
@@ -434,6 +435,7 @@ class QP:
         Solves a QP using Wolfe's method (``method = 'w'``) or Wolfe's method using
         positive edge as pivot rule (``method = 'wp'``).
         '''
+        start = clock()
         A = self.A
         G = self.G
         b = CyLPArray(self.b)
@@ -742,7 +744,7 @@ class QP:
         s = CyClpSimplex(m)
         ###s.setComplement(x, z)
         #print m.inds
-        s.writeMps('/Users/mehdi/Desktop/test.mps') 
+        #s.writeMps('/Users/mehdi/Desktop/test.mps') 
         #s.useCustomPrimal(True)
         
         p = WolfePivot(s)
@@ -774,8 +776,10 @@ class QP:
             
         #print p.complementarityList
         s.setPivotMethod(p)
-        
+        timeToMake = clock() - start
+        start = clock()
         s.primal()
+        timeToSolve = clock() - start
         #s.initialPrimalSolve()
         if method == 'wp':
             total = p.compCount + p.nonCompCount
@@ -785,8 +789,18 @@ class QP:
         print 'OBJ:', s.objectiveValue 
         x = np.matrix(s.primalVariableSolution['x']).T
         print 'objective:'
-        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+        qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
        
+        f = open('qpout', 'a')
+        st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
+                str(round(s.objectiveValue, 5)).ljust(8), 
+                str(round(qobj, 5)).ljust(8),
+                str(timeToMake),
+                str(timeToSolve),
+                str(timeToMake + timeToSolve)) 
+        f.write(st)
+        f.close()
+
 #        print checkComp(s.primalVariableSolution['k1'], 
 #                        s.primalVariableSolution['zk1'])
 #
