@@ -7,6 +7,7 @@ from scipy import sparse
 from CyLP.cy import CyClpSimplex
 from CyLP.py.QP.QPSReader import readQPS
 from CyLP.py.pivots.WolfePivot import WolfePivot
+from CyLP.py.pivots.WolfePivotPE import WolfePivotPE
 from CyLP.py.pivots.PositiveEdgeWolfePivot import PositiveEdgeWolfePivot
 from CyLP.cy import CyCoinModel
 from CyLP.py.utils.sparseUtil import csc_matrixPlus
@@ -428,9 +429,10 @@ class QP:
 
         return
 
-    def Wolfe(self):
+    def Wolfe(self, method='w'):
         '''
-        Solves a QP using Wolfe's method
+        Solves a QP using Wolfe's method (``method = 'w'``) or Wolfe's method using
+        positive edge as pivot rule (``method = 'wp'``).
         '''
         A = self.A
         G = self.G
@@ -739,10 +741,14 @@ class QP:
         
         s = CyClpSimplex(m)
         ###s.setComplement(x, z)
-        print m.inds
+        #print m.inds
         s.writeMps('/Users/mehdi/Desktop/test.mps') 
-        s.useCustomPrimal(True)
+        #s.useCustomPrimal(True)
+        
         p = WolfePivot(s)
+
+        if method == 'wp':
+            p = WolfePivotPE(s)
 
         if nConstraintsWithBothBounds:
             p.setComplement(m, g1, zg1)
@@ -771,7 +777,11 @@ class QP:
         
         s.primal()
         #s.initialPrimalSolve()
-        print s.primalVariableSolution 
+        if method == 'wp':
+            total = p.compCount + p.nonCompCount
+            print 'comp : %g ' % (p.compCount / float(total))
+            print 'comp rejection : %g' % (p.compRej / float(total))
+        #print s.primalVariableSolution 
         print 'OBJ:', s.objectiveValue 
         x = np.matrix(s.primalVariableSolution['x']).T
         print 'objective:'
@@ -1152,7 +1162,10 @@ def QPTest():
     start = clock()
     qp.fromQps(sys.argv[1])
     r = clock() - start
-    qp.Wolfe()
+    if len(sys.argv) > 2:
+        qp.Wolfe(sys.argv[2])
+    else:
+        qp.Wolfe()
     print 'took %g seconds to read the problem' % r
     print 'took %g seconds to solve the problem' % (clock() - start)
     print "done"

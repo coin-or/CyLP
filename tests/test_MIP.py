@@ -34,7 +34,7 @@ class TestMIP(unittest.TestCase):
         model.addConstraint(1.1 <= x[1:3] <= x_u)
 
         c = CyLPArray([1., -2., 3.])
-        model.objective = c * x + 2 * y
+        model.objective = c * x + 2 * y.sum()
 
 
         self.s = CyClpSimplex(model)
@@ -69,7 +69,7 @@ class TestMIP(unittest.TestCase):
         model.addConstraint(1.1 <= x[1:3] <= x_u)
 
         c = CyLPArray([1., -2., 3.])
-        model.objective = c * x + 2 * y
+        model.objective = c * x + 2 * y.sum()
 
 
         self.s = CyClpSimplex(model)

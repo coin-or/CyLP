@@ -184,7 +184,6 @@ class WolfePivotPE(PivotPythonBase):
                 self.compRej += 1
             return 0
 
-        print  self.CompIter
         
         #self.banList = np.zeros(self.dim, np.int)
         del self.notBanned
