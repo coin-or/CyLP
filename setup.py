@@ -1,3 +1,4 @@
+import sys
 from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
@@ -5,6 +6,13 @@ import numpy
 
 import Cython.Compiler.Options
 Cython.Compiler.Options.annotate = True
+
+operatingSystem = sys.platform
+if 'linux' in operatingSystem:
+    operatingSystem = 'linux'
+elif 'darwin' in operatingSystem:
+    operatingSystem = 'mac'
+#WINDOWS??
 
 from os.path import join
 
@@ -34,7 +42,14 @@ includeDirs = ['./cpp/', join('.', cythonFilesDir),
                 join(CoinDir, 'BuildTools/headers/'),
                 join(CoinDir, 'Clp/src/'), numpy.get_include(), '.']
 
-extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
+if operatingSystem == 'mac':
+    extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
+elif operatingSystem == 'linux':
+    extra_link_args = ['-llapack', '-lblas']
+else:
+    #WINDOWS?
+    extra_link_args = ['-llapack', '-lblas']
+
 extra_compile_args = []
 ext_modules = []
 
@@ -145,7 +160,9 @@ ext_modules += [Extension('CyLP.cy.CyClpSimplex',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyPEPivot',
-                          sources=[join(cythonFilesDir, 'CyPEPivot' + fileext)],
+                           sources=[join(cppFilesDir, 
+                                         'IClpPrimalColumnPivotBase.cpp'),
+                                    join(cythonFilesDir, 'CyPEPivot' + fileext)],
                           language='c++',
                           include_dirs=includeDirs,
                           library_dirs=libDirs,
@@ -154,7 +171,9 @@ ext_modules += [Extension('CyLP.cy.CyPEPivot',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyWolfePivot',
-                          sources=[join(cythonFilesDir, 'CyWolfePivot' + fileext)],
+                           sources=[join(cppFilesDir, 
+                                         'IClpPrimalColumnPivotBase.cpp'),
+                                    join(cythonFilesDir, 'CyWolfePivot' + fileext)],
                           language='c++',
                           include_dirs=includeDirs,
                           library_dirs=libDirs,
@@ -163,7 +182,9 @@ ext_modules += [Extension('CyLP.cy.CyWolfePivot',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyDantzigPivot',
-                          sources=[join(cythonFilesDir, 'CyDantzigPivot' +
+                          sources=[join(cppFilesDir, 
+                                         'IClpPrimalColumnPivotBase.cpp'),
+                                   join(cythonFilesDir, 'CyDantzigPivot' +
                                         fileext)],
                           language='c++',
                           include_dirs=includeDirs,
@@ -182,7 +203,9 @@ ext_modules += [Extension('CyLP.cy.CyTest',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyPivotPythonBase',
-                          sources=[join(cythonFilesDir, 'CyPivotPythonBase' +
+                          sources=[join(cppFilesDir, 
+                                         'IClpPrimalColumnPivotBase.cpp'),
+                                   join(cythonFilesDir, 'CyPivotPythonBase' +
                                         fileext)],
                           language='c++',
                           include_dirs=includeDirs,
