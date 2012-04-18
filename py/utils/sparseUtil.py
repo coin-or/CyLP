@@ -319,11 +319,12 @@ class csr_matrixPlus(sparse.csr_matrix):
         return csr_matrixPlus((data, indices, indptr), shape=(3, 3))
 
 
-def sparseConcat(a, b, how):
+def sparseConcat(a, b, how, offset=0):
     '''
     Concatenate two sparse matrices, ``a`` and ``b``, horizontally if
     ``how = 'h'``, and vertically if ``how = 'v'``.
     Add zero rows and columns if dimensions don't align.
+    ``offset`` specifies how to align ``b`` along side ``a``. 
 
     **Usage**
 
@@ -354,26 +355,46 @@ def sparseConcat(a, b, how):
     '''
     if a == None:
         return sparse.coo_matrix(b.copy())
+    assert(offset >= -1)
 
     a = sparse.coo_matrix(a)
     b = sparse.coo_matrix(b)
 
     if how == 'h':
-        nRows = max(a.shape[0], b.shape[0])
 
-        row = np.concatenate((a.row, b.row), axis=0)
+        if offset == -1:
+            assert(a.shape[0] > b.shape[0])
+            offset = a.shape[0] - b.shape[0]
+        
+        
+        row = np.concatenate((a.row, b.row + offset), axis=0)
         col = np.concatenate((a.col, b.col + a.shape[1]), axis=0)
         data = np.concatenate((a.data, b.data), axis=0)
 
+        nRows = max(a.shape[0], b.shape[0] + offset)
         a = sparse.coo_matrix((data, (row, col)),
                               shape=(nRows, a.shape[1] + b.shape[1]))
 
     elif how == 'v':
-        nCols = max(a.shape[1], b.shape[1])
         row = np.concatenate((a.row, b.row + a.shape[0]), axis=0)
-        col = np.concatenate((a.col, b.col), axis=0)
+        if offset == -1:
+            assert(a.shape[1] > b.shape[1])
+            offset = a.shape[1] - b.shape[1]
+        col = np.concatenate((a.col, b.col + offset), axis=0)
         data = np.concatenate((a.data, b.data), axis=0)
 
+        nCols = max(a.shape[1], b.shape[1] + offset)
         a = sparse.coo_matrix((data, (row, col)),
                               shape=(a.shape[0] + b.shape[0], nCols))
     return a
+
+
+def I(n):
+    '''
+    Return a sparse identity matrix of size *n*
+    '''
+    if n <= 0:
+        return None
+    return csc_matrixPlus(sparse.eye(n, n))
+
+
