@@ -26,8 +26,7 @@ if USECYTHON:
 else:
     fileext = '.cpp'
 
-CoinDir = '/Users/mehdi/Downloads/CoinMP-1.4.0/'
-#CoinDir = '/Users/mehdi/Downloads/CoinMP-1.6.0/'
+CoinDir = '/usr/local/Cellar/coinmp/1.6.0/'
 
 cythonFilesDir = 'cy/'
 cppFilesDir = 'cpp/'

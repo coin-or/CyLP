@@ -106,12 +106,12 @@ CbcCompareUser::test (CbcNode * x, CbcNode * y)
 }
 // This allows method to change behavior as it is called
 // after each solution
-void 
+bool 
 CbcCompareUser::newSolution(CbcModel * model,
 			       double objectiveAtContinuous,
 			       int numberInfeasibilitiesAtContinuous) 
 {
-    this->runNewSolution(this->obj, (ICbcModel*)model, 
+    return this->runNewSolution(this->obj, (ICbcModel*)model, 
                              objectiveAtContinuous,
                              numberInfeasibilitiesAtContinuous);
 }

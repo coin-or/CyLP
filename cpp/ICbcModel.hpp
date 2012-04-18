@@ -18,7 +18,7 @@
 
 class ICbcModel;
 typedef int (*runTest_t)(void *instance, ICbcNode * x, ICbcNode * y);
-typedef void (*runNewSolution_t)(void *instance,ICbcModel * model,
+typedef bool (*runNewSolution_t)(void *instance,ICbcModel * model,
                        double objectiveAtContinuous,
                        int numberInfeasibilitiesAtContinuous);
 typedef int (*runEvery1000Nodes_t)(void *instance,

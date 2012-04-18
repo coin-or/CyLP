@@ -9,7 +9,7 @@ cdef extern from "CbcCompareUser.hpp":
         pass
     ctypedef int (*runTest_t)(void* instance, CppICbcNode* x,
                               CppICbcNode* y)
-    ctypedef void (*runNewSolution_t)(void*instance, CppICbcModel* model,
+    ctypedef bint (*runNewSolution_t)(void*instance, CppICbcModel* model,
                        double objectiveAtContinuous,
                        int numberInfeasibilitiesAtContinuous)
     ctypedef int (*runEvery1000Nodes_t)(void* instance,

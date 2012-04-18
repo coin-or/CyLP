@@ -1,17 +1,19 @@
 # cython: embedsignature=True
 
 from CyLP.py.mip import NodeCompareBase
+from libcpp cimport bool
+
 
 cdef int RunTest(void* ptr, CppICbcNode*x, CppICbcNode*y):
     obj = <object> ptr
     return obj.compare(CyCbcNode().setCppSelf(x),
                        CyCbcNode().setCppSelf(y))
 
-cdef void RunNewSolution(void* ptr, CppICbcModel* model,
+cdef bool RunNewSolution(void* ptr, CppICbcModel* model,
         double objectiveAtContinuous,
         int numberInfeasibilitiesAtContinuous):
     obj = <object> ptr
-    obj.newSolution(CyCbcModel().setCppSelf(model),
+    return obj.newSolution(CyCbcModel().setCppSelf(model),
                                 objectiveAtContinuous,
                                 numberInfeasibilitiesAtContinuous)
 
