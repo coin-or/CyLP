@@ -325,6 +325,8 @@ def sparseConcat(a, b, how, offset=0):
     ``how = 'h'``, and vertically if ``how = 'v'``.
     Add zero rows and columns if dimensions don't align.
     ``offset`` specifies how to align ``b`` along side ``a``. 
+    ``offset=-1`` means the greatest possible offset without 
+    changeing the dimension.
 
     **Usage**
 
