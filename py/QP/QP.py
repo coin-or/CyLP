@@ -10,7 +10,7 @@ from CyLP.py.pivots.WolfePivot import WolfePivot
 from CyLP.py.pivots.WolfePivotPE import WolfePivotPE
 from CyLP.py.pivots.PositiveEdgeWolfePivot import PositiveEdgeWolfePivot
 from CyLP.cy import CyCoinModel
-from CyLP.py.utils.sparseUtil import csc_matrixPlus
+from CyLP.py.utils.sparseUtil import I, sparseConcat
 from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray, CyLPVar
 
 def getSolution(s, varGroupname):
@@ -18,13 +18,13 @@ def getSolution(s, varGroupname):
     return np.array([sol[i] for i in IndexFactory.varIndex[varGroupname]])
 
 
-def I(n):
-    '''
-    Return a sparse identity matrix of size *n*
-    '''
-    if n <= 0:
-        return None
-    return csc_matrixPlus(sparse.eye(n, n))
+#def I(n):
+#    '''
+#    Return a sparse identity matrix of size *n*
+#    '''
+#    if n <= 0:
+#        return None
+#    return csc_matrixPlus(sparse.eye(n, n))
 
 def checkComp(x, y):
     for i in xrange(len(x)):
@@ -99,6 +99,169 @@ class QP:
             self.n, self.nEquality, self.nInEquality,
             self.objectiveOffset) = readQPS(filename)
         self.filename = filename
+
+    def convertToEqualityOnly(self, varsToo=True):
+        '''
+        Add necessary slack and surplus variables and return the 
+        Augmented ``A`` and ``b``.
+        '''
+        A = self.A
+        G = self.G
+        b = CyLPArray(self.b)
+        c = self.c
+        C = self.C
+        c_low = CyLPArray(self.c_low)
+        c_up = CyLPArray(self.c_up)
+        x_low = self.x_low
+        x_up = self.x_up
+        infinity = self.infinity
+
+        nVar = self.n
+        nEquality = self.nEquality
+        nInEquality = self.nInEquality
+
+        if nEquality:
+            print 'A'
+            print A.todense()
+            print b
+
+        if nInEquality:
+            print 'C'
+            print C.todense()
+            print c_low
+            print c_up
+        
+        print 'Hessian'
+        print G.todense()
+    
+        print 'c'
+        print c
+       
+        iVarsWithJustUpperBound = [i for i in xrange(nVar) 
+                            if x_up[i] < infinity and x_low[i] <= -infinity]
+        nVarsWithJustUpperBound = len(iVarsWithJustUpperBound)
+
+        iVarsWithJustLowerBound = [i for i in xrange(nVar) 
+                            if x_low[i] > -infinity and x_up[i] >= infinity]
+        nVarsWithJustLowerBound = len(iVarsWithJustLowerBound)
+        
+        iVarsWithBothBounds = \
+                [i for i in xrange(nVar) 
+                        if x_low[i] > -infinity and x_up[i] < infinity]
+        nVarsWithBothBounds = len(iVarsWithBothBounds)
+
+        iFreeVars = \
+                [i for i in xrange(nVar) 
+                        if x_low[i] <= -infinity and x_up[i] >= infinity]
+        nFreeVars = len(iFreeVars)
+
+        iConstraintsWithBothBounds = \
+                [i for i in xrange(nInEquality)
+                        if c_up[i] < infinity and c_low[i] > -infinity]
+        nConstraintsWithBothBounds = len(iConstraintsWithBothBounds)
+
+        iConstraintsWithJustUpperBound = \
+                [i for i in xrange(nInEquality)
+                        if c_up[i] < infinity and c_low[i] <= -infinity]
+        nConstraintsWithJustUpperBound = len(iConstraintsWithJustUpperBound)
+
+        iConstraintsWithJustLowerBound = \
+                [i for i in xrange(nInEquality)
+                        if c_up[i] >= infinity and c_low[i] > -infinity]
+        nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
+        
+        print '<=C<=', iConstraintsWithBothBounds
+        print 'C<=', iConstraintsWithJustUpperBound
+        print '<=C', iConstraintsWithJustLowerBound
+        print '<=x<=', iVarsWithBothBounds
+        print 'x<=', iVarsWithJustUpperBound
+        print '<=x', iVarsWithJustLowerBound
+        print 'free x', iFreeVars
+
+        iden = I(nInEquality)
+        c_rhs = np.zeros(nInEquality)
+        c_rhs[iConstraintsWithBothBounds] = \
+                                c_up[iConstraintsWithBothBounds]
+        c_rhs[iConstraintsWithJustUpperBound] = \
+                                c_up[iConstraintsWithJustUpperBound]
+        c_rhs[iConstraintsWithJustLowerBound] = \
+                                c_low[iConstraintsWithJustLowerBound]
+       
+        print iConstraintsWithBothBounds
+        print iConstraintsWithBothBounds + \
+                          np.ones(nConstraintsWithBothBounds) * nInEquality
+        
+        c_rhs = np.concatenate((c_rhs, c_up[iConstraintsWithBothBounds] - 
+                                c_low[iConstraintsWithBothBounds]), axis=0)
+        
+        for i in iConstraintsWithJustLowerBound:
+            iden[i, i] = -1
+        
+        C = sparseConcat(C, iden, 'h') 
+        C = sparseConcat(C, iden[iConstraintsWithBothBounds, :], 'v', h_offset=-1)
+        
+        C = sparseConcat(C, I(nConstraintsWithBothBounds), 'h', v_offset=-1)
+        
+
+        if varsToo:
+            V = None
+            iNonFree = np.sort(np.concatenate((iVarsWithBothBounds, 
+                                       iVarsWithJustUpperBound,
+                                       iVarsWithJustLowerBound), axis=0))
+
+            iden = I(nVar)
+            
+            for i in iVarsWithJustLowerBound:
+                iden[i, i] = -1
+
+            V = sparseConcat(V, I(nVar)[iNonFree, :], 'h')
+            V = sparseConcat(V, iden[iNonFree, :][:, iNonFree], 
+                             'h', h_offset=nInEquality + 
+                                                nConstraintsWithBothBounds)
+
+            V = sparseConcat(V, iden[iVarsWithBothBounds, :][:, iNonFree], 
+                             'v', h_offset=-1)
+        
+            V = sparseConcat(V, I(nVarsWithBothBounds), 'h', v_offset=-1)
+            print V.todense()
+            
+            v_rhs = np.zeros(nVar)
+            v_rhs[iVarsWithBothBounds] = \
+                                    x_up[iVarsWithBothBounds]
+            v_rhs[iVarsWithJustUpperBound] = \
+                                    x_up[iVarsWithJustUpperBound]
+            v_rhs[iVarsWithJustLowerBound] = \
+                                    x_low[iVarsWithJustLowerBound]
+           
+            v_rhs = np.concatenate((v_rhs, x_up[iVarsWithBothBounds] - 
+                                    x_low[iVarsWithBothBounds]), axis=0)
+    
+            v_rhs = np.delete(v_rhs, iFreeVars, 0)
+
+            c_rhs = np.concatenate((c_rhs, v_rhs), axis=0)
+            C = sparseConcat(C, V, 'v')
+
+        
+        if nEquality:
+            C = sparseConcat(A, C, 'v')
+            c_rhs = np.concatenate((b, c_rhs), axis=0)
+            
+       
+        mmm = C.todense()
+        from math import ceil
+        secSize = 20
+        cols = mmm.shape[1]
+        divs = int(ceil(cols / float(secSize)))
+
+        for sec in xrange(divs):
+            for i in xrange(mmm.shape[0]):
+                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
+                    print str(int(round(mmm[i, j], 1))).rjust(7),
+                print
+            print '...'
+        
+        print c_rhs
+
 
     def Wolfe_2(self):
         '''
@@ -1184,6 +1347,8 @@ def QPTest():
     qp = QP()
     start = clock()
     qp.fromQps(sys.argv[1])
+    qp.convertToEqualityOnly()
+    return
     r = clock() - start
     if len(sys.argv) > 2:
         qp.Wolfe(sys.argv[2])
