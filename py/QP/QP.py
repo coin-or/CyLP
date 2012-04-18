@@ -524,22 +524,22 @@ class QP:
         if nVarsWithBothBounds:
             k1 = m.addVariable('k1', nVarsWithBothBounds)
             zk1 = m.addVariable('zk1', nVarsWithBothBounds)
-            #spk1 = m.addVariable('spk1', nVarsWithBothBounds)
-            #smk1 = m.addVariable('smk1', nVarsWithBothBounds)
+            spk1 = m.addVariable('spk1', nVarsWithBothBounds)
+            smk1 = m.addVariable('smk1', nVarsWithBothBounds)
             yx1 = m.addVariable('yx1', nVarsWithBothBounds)
             m.addConstraint(k1 >= 0)
-            #m.addConstraint(spk1 >= 0)
-            #m.addConstraint(smk1 >= 0)
+            m.addConstraint(spk1 >= 0)
+            m.addConstraint(smk1 >= 0)
             m.addConstraint(zk1 >= 0)
             ku = m.addVariable('ku', nVarsWithBothBounds)
             zku = m.addVariable('zku', nVarsWithBothBounds)
-            #spku = m.addVariable('spku', nVarsWithBothBounds)
-            #smku = m.addVariable('smku', nVarsWithBothBounds)
+            spku = m.addVariable('spku', nVarsWithBothBounds)
+            smku = m.addVariable('smku', nVarsWithBothBounds)
             yxu = m.addVariable('yxu', nVarsWithBothBounds)
             m.addConstraint(ku >= 0)
             m.addConstraint(zku >= 0)
-            #m.addConstraint(spku >= 0)
-            #m.addConstraint(smku >= 0)
+            m.addConstraint(spku >= 0)
+            m.addConstraint(smku >= 0)
             m.addConstraint(x[iVarsWithBothBounds] + k1 == 
                             x_up[iVarsWithBothBounds], 'x1+k1')
             m.addConstraint(k1 + ku == 
@@ -591,28 +591,28 @@ class QP:
             # g1: slack for ineq. const. with both bounds
             g1 = m.addVariable('g1', nConstraintsWithBothBounds)
             zg1 = m.addVariable('zg1', nConstraintsWithBothBounds)
-            #spg1 = m.addVariable('spg1', nConstraintsWithBothBounds)
-            #smg1 = m.addVariable('smg1', nConstraintsWithBothBounds)
+            spg1 = m.addVariable('spg1', nConstraintsWithBothBounds)
+            smg1 = m.addVariable('smg1', nConstraintsWithBothBounds)
             yc1 = m.addVariable('yc1', nConstraintsWithBothBounds)
             m.addConstraint(g1 >= 0)
-            #m.addConstraint(spg1 >= 0)
-            #m.addConstraint(smg1 >= 0)
+            m.addConstraint(spg1 >= 0)
+            m.addConstraint(smg1 >= 0)
             m.addConstraint(zg1 >= 0)
             # gu: slack of g1 from c_up - c_low
             gu = m.addVariable('gu', nConstraintsWithBothBounds)
             zgu = m.addVariable('zgu', nConstraintsWithBothBounds)
-            #spgu = m.addVariable('spgu', nConstraintsWithBothBounds)
-            #smgu = m.addVariable('smgu', nConstraintsWithBothBounds)
+            spgu = m.addVariable('spgu', nConstraintsWithBothBounds)
+            smgu = m.addVariable('smgu', nConstraintsWithBothBounds)
             ycu = m.addVariable('ycu', nConstraintsWithBothBounds)
             m.addConstraint(gu >= 0)
             m.addConstraint(zgu >= 0)
-            #m.addConstraint(spgu >= 0)
-            #m.addConstraint(smgu >= 0)
+            m.addConstraint(spgu >= 0)
+            m.addConstraint(smgu >= 0)
             m.addConstraint(C1 * x + 
                             g1 == #+ spg1 - smg1 == 
                             c_up[iConstraintsWithBothBounds], 
                             'C1x+g1')
-            m.addConstraints(g1 + gu == #+ spgu - smgu == 
+            m.addConstraint(g1 + gu == #+ spgu - smgu == 
                             (c_up[iConstraintsWithBothBounds] - 
                              c_low[iConstraintsWithBothBounds]),
                              'g1+gu')
@@ -638,13 +638,13 @@ class QP:
             C3T = C3.T
             g3 = m.addVariable('g3', nConstraintsWithJustLowerBound)
             zg3 = m.addVariable('zg3', nConstraintsWithJustLowerBound)
-            #spg3 = m.addVariable('spg3', nConstraintsWithJustLowerBound)
-            #smg3 = m.addVariable('smg3', nConstraintsWithJustLowerBound)
+            spg3 = m.addVariable('spg3', nConstraintsWithJustLowerBound)
+            smg3 = m.addVariable('smg3', nConstraintsWithJustLowerBound)
             yc3 = m.addVariable('yc3', nConstraintsWithJustLowerBound)
             m.addConstraint(g3 >= 0)
             m.addConstraint(zg3 >= 0)
-            #m.addConstraint(spg3 >= 0)
-            #m.addConstraint(smg3 >= 0)
+            m.addConstraint(spg3 >= 0)
+            m.addConstraint(smg3 >= 0)
             m.addConstraint(C3 * x - 
                                 g3 == #+ spg3 - smg3  == 
                                 c_low[iConstraintsWithJustLowerBound], 
@@ -702,9 +702,11 @@ class QP:
                 #guCoef = Im[iConstraintsWithBothBounds, :]
                 #g1Coef = I(nConstraintsWithBothBounds)
                 #guCoef = I(nConstraintsWithBothBounds)
-                m.addConstraint(-g1Coef.T * yc1 - g1Coef.T * ycu - zg1 == 0, 
+                m.addConstraint(-g1Coef.T * yc1 - g1Coef.T * ycu - zg1 +
+                                spg1 - smg1 == 0, 
                                 'dualfeas_g1')
-                m.addConstraint(-guCoef.T * ycu - zgu == 0, 
+                m.addConstraint(-guCoef.T * ycu - zgu + 
+                                 spgu - smgu == 0, 
                                 'dualfeas_gu')
             
             if nConstraintsWithJustUpperBound:
@@ -722,13 +724,14 @@ class QP:
                 #             nConstraintsWithJustUpperBound):, :]
                 #g3Coef = Im[iConstraintsWithJustLowerBound, :]
                 #g3Coef = I(nConstraintsWithJustLowerBound)
-                m.addConstraint(g3Coef.T * yc3 - zg3 == 0, 'dualfeas_g3')
+                m.addConstraint(g3Coef.T * yc3 - zg3 + spg3 - smg3 == 0, 'dualfeas_g3')
         
         
         if nVarsWithBothBounds:
-            m.addConstraint(-k1CoefT * yx1 - k1CoefT * yxu - zk1 == 0, 
+            m.addConstraint(-k1CoefT * yx1 - k1CoefT * yxu - zk1 + \
+                            spk1 - smk1 == 0, 
                             'dualfeas_k1')
-            m.addConstraint(-kuCoefT * yxu - zku == 0, 'dualfeas_ku')
+            m.addConstraint(-kuCoefT * yxu - zku + spku - smku == 0, 'dualfeas_ku')
         
         if nVarsWithJustUpperBound:
             m.addConstraint(-k2CoefT * yx2 - zk2 == 0, 'dualfeas_k2')
@@ -738,7 +741,11 @@ class QP:
             m.addConstraint(k3CoefT * yx3 - zk3 == 0, 'dualfeas_k3')
 
 
-        m.objective =  sp.sum() + sm.sum() #+ spg3 + smg3 #+ spk3 + smk3
+#        m.objective =  sp.sum() + sm.sum() + spg1.sum() + smg1.sum() + \
+#                        spgu.sum() + smgu.sum() + spg3.sum() + smg3.sum() + \
+#                        spk1.sum() + smk1.sum() + spku.sum() + smku.sum()
+        m.objective =  sp.sum() + sm.sum() + spg1.sum() + smg1.sum() + \
+                        spgu.sum() + smgu.sum()
         #z = m.addVariable('z', nVar)
         
         s = CyClpSimplex(m)
@@ -746,7 +753,8 @@ class QP:
         #print m.inds
         #s.writeMps('/Users/mehdi/Desktop/test.mps') 
         #s.useCustomPrimal(True)
-        
+       
+
         p = WolfePivot(s)
 
         if method == 'wp':
@@ -791,6 +799,7 @@ class QP:
         print 'objective:'
         qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
        
+        print s.iteration
         f = open('qpout', 'a')
         st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
                 str(round(s.objectiveValue, 5)).ljust(8), 
