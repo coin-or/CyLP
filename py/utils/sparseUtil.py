@@ -319,14 +319,16 @@ class csr_matrixPlus(sparse.csr_matrix):
         return csr_matrixPlus((data, indices, indptr), shape=(3, 3))
 
 
-def sparseConcat(a, b, how, offset=0):
+def sparseConcat(a, b, how, v_offset=0, h_offset=0):
     '''
     Concatenate two sparse matrices, ``a`` and ``b``, horizontally if
     ``how = 'h'``, and vertically if ``how = 'v'``.
     Add zero rows and columns if dimensions don't align.
-    ``offset`` specifies how to align ``b`` along side ``a``. 
-    ``offset=-1`` means the greatest possible offset without 
-    changeing the dimension.
+    ``v_offset`` specifies how to align ``b`` along side ``a``. The 
+    value of ``v_offset`` will be added to each row index of ``b``.
+    ``v_offset=-1`` means that we want the greatest possible offset without 
+    changeing the dimensions.
+    ``h_offset`` is a similar argument but to specify horizontal offset.
 
     **Usage**
 
@@ -357,37 +359,42 @@ def sparseConcat(a, b, how, offset=0):
     '''
     if a == None:
         return sparse.coo_matrix(b.copy())
-    assert(offset >= -1)
+    assert(h_offset >= -1 and v_offset >= -1)
 
     a = sparse.coo_matrix(a)
     b = sparse.coo_matrix(b)
 
     if how == 'h':
 
-        if offset == -1:
+        if v_offset == -1:
             assert(a.shape[0] > b.shape[0])
-            offset = a.shape[0] - b.shape[0]
-        
-        
-        row = np.concatenate((a.row, b.row + offset), axis=0)
-        col = np.concatenate((a.col, b.col + a.shape[1]), axis=0)
+            v_offset = a.shape[0] - b.shape[0]
+        assert(h_offset >= 0)
+
+        row = np.concatenate((a.row, b.row + v_offset), axis=0)
+        col = np.concatenate((a.col, b.col + (a.shape[1] + h_offset)), axis=0)
         data = np.concatenate((a.data, b.data), axis=0)
 
-        nRows = max(a.shape[0], b.shape[0] + offset)
+        nRows = max(a.shape[0], b.shape[0] + v_offset)
+        nCols = a.shape[1] + b.shape[1] + h_offset
         a = sparse.coo_matrix((data, (row, col)),
-                              shape=(nRows, a.shape[1] + b.shape[1]))
+                              shape=(nRows, nCols))
 
     elif how == 'v':
-        row = np.concatenate((a.row, b.row + a.shape[0]), axis=0)
-        if offset == -1:
+        if h_offset == -1:
             assert(a.shape[1] > b.shape[1])
-            offset = a.shape[1] - b.shape[1]
-        col = np.concatenate((a.col, b.col + offset), axis=0)
+            h_offset = a.shape[1] - b.shape[1]
+        
+        assert(v_offset >= 0)
+
+        row = np.concatenate((a.row, b.row + (a.shape[0] + v_offset)), axis=0)
+        col = np.concatenate((a.col, b.col + h_offset), axis=0)
         data = np.concatenate((a.data, b.data), axis=0)
 
-        nCols = max(a.shape[1], b.shape[1] + offset)
+        nCols = max(a.shape[1], b.shape[1] + h_offset)
+        nRows = a.shape[0] + b.shape[0] + v_offset
         a = sparse.coo_matrix((data, (row, col)),
-                              shape=(a.shape[0] + b.shape[0], nCols))
+                              shape=(nRows, nCols))
     return a
 
 
