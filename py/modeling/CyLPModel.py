@@ -757,7 +757,7 @@ class CyLPModel(object):
             if consName:
                 self.inds.addConst(consName, c.nRows)
             self.nCons += c.nRows
-        self.makeMatrices()
+        #self.makeMatrices()
 
     def generateVarObjCoef(self, varName):
         #dim = self.allParentVarDims[varName]
