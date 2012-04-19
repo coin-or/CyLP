@@ -195,8 +195,8 @@ class WolfePivotPE(PivotPythonBase):
     def setComplement(self, model, v1, v2):
         v1n = v1.name
         v2n = v2.name
-        listv1 = model.inds.varIndex[v1n]
-        listv2 = model.inds.varIndex[v2n]
+        listv1 = np.array(model.inds.varIndex[v1n])[v1.indices]
+        listv2 = np.array(model.inds.varIndex[v2n])[v2.indices]
         for i, j in izip(listv1, listv2):
             (self.complementarityList[i], self.complementarityList[j]) = \
              (self.complementarityList[j], self.complementarityList[i])

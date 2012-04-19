@@ -99,6 +99,8 @@ class QP:
             self.n, self.nEquality, self.nInEquality,
             self.objectiveOffset) = readQPS(filename)
         self.filename = filename
+        # Use this later if slack variable are added
+        self.nOriginalVar = self.n
 
     def convertToEqualityOnly(self, varsToo=True):
         '''
@@ -120,22 +122,22 @@ class QP:
         nEquality = self.nEquality
         nInEquality = self.nInEquality
 
-        if nEquality:
-            print 'A'
-            print A.todense()
-            print b
-
-        if nInEquality:
-            print 'C'
-            print C.todense()
-            print c_low
-            print c_up
-        
-        print 'Hessian'
-        print G.todense()
-    
-        print 'c'
-        print c
+#        if nEquality:
+#            print 'A'
+#            print A.todense()
+#            print b
+#
+#        if nInEquality:
+#            print 'C'
+#            print C.todense()
+#            print c_low
+#            print c_up
+#        
+#        print 'Hessian'
+#        print G.todense()
+#    
+#        print 'c'
+#        print c
        
         iVarsWithJustUpperBound = [i for i in xrange(nVar) 
                             if x_up[i] < infinity and x_low[i] <= -infinity]
@@ -177,32 +179,35 @@ class QP:
         print 'x<=', iVarsWithJustUpperBound
         print '<=x', iVarsWithJustLowerBound
         print 'free x', iFreeVars
-
-        iden = I(nInEquality)
-        for i in iConstraintsWithJustLowerBound:
-            iden[i, i] = -1
-        C = sparseConcat(C, iden, 'h') 
         
-        c_rhs = np.zeros(nInEquality)
-        
-        if nConstraintsWithBothBounds:
-            c_rhs[iConstraintsWithBothBounds] = \
-                                c_up[iConstraintsWithBothBounds]
-            c_rhs = np.concatenate((c_rhs, c_up[iConstraintsWithBothBounds] - 
-                                c_low[iConstraintsWithBothBounds]), axis=0)
+        if nInEquality:
+            iden = I(nInEquality)
+            for i in iConstraintsWithJustLowerBound:
+                iden[i, i] = -1
+            C = sparseConcat(C, iden, 'h') 
             
-            C = sparseConcat(C, iden[iConstraintsWithBothBounds, :], 'v', h_offset=-1)
-        
-            C = sparseConcat(C, I(nConstraintsWithBothBounds), 'h', v_offset=-1)
-       
-        if nConstraintsWithJustUpperBound:
-            c_rhs[iConstraintsWithJustUpperBound] = \
-                                c_up[iConstraintsWithJustUpperBound]
-        
-        if nConstraintsWithJustLowerBound:
-            c_rhs[iConstraintsWithJustLowerBound] = \
-                                c_low[iConstraintsWithJustLowerBound]
-       
+            c_rhs = np.zeros(nInEquality)
+            
+            if nConstraintsWithBothBounds:
+                c_rhs[iConstraintsWithBothBounds] = \
+                                    c_up[iConstraintsWithBothBounds]
+                c_rhs = np.concatenate((c_rhs, c_up[iConstraintsWithBothBounds] - 
+                                    c_low[iConstraintsWithBothBounds]), axis=0)
+                
+                C = sparseConcat(C, iden[iConstraintsWithBothBounds, :], 'v', h_offset=-1)
+            
+                C = sparseConcat(C, I(nConstraintsWithBothBounds), 'h', v_offset=-1)
+           
+            if nConstraintsWithJustUpperBound:
+                c_rhs[iConstraintsWithJustUpperBound] = \
+                                    c_up[iConstraintsWithJustUpperBound]
+            
+            if nConstraintsWithJustLowerBound:
+                c_rhs[iConstraintsWithJustLowerBound] = \
+                                    c_low[iConstraintsWithJustLowerBound]
+        else:
+            C = None
+            c_rhs = np.array([])
         
         if varsToo:
             V = None
@@ -254,21 +259,115 @@ class QP:
             C = sparseConcat(A, C, 'v')
             c_rhs = np.concatenate((b, c_rhs), axis=0)
             
-       
-        mmm = C.todense()
-        from math import ceil
-        secSize = 25
-        cols = mmm.shape[1]
-        divs = int(ceil(cols / float(secSize)))
 
-        for sec in xrange(divs):
-            for i in xrange(mmm.shape[0]):
-                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
-                    print str(int(round(mmm[i, j], 1))).rjust(4),
-                print
-            print '...'
+#        mmm = C.todense()
+#        from math import ceil
+#        secSize = 25
+#        cols = mmm.shape[1]
+#        divs = int(ceil(cols / float(secSize)))
+#
+#        for sec in xrange(divs):
+#            for i in xrange(mmm.shape[0]):
+#                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
+#                    print str(int(round(mmm[i, j], 1))).rjust(4),
+#                print
+#            print '...'
+#        
+#        print c_rhs
         
-        print c_rhs
+        assert(C.shape[0] == len(c_rhs))
+        self.A = C
+        self.b = c_rhs
+
+       
+
+        self.C = None
+        self.c_low = None
+        self.c_up = None
+        self.n = self.A.shape[1]
+        # Resize the Hessian to match the new self.n 
+        self.G[self.n - 1, self.n - 1] = 0
+        self.nEquality = self.A.shape[0]
+        self.nInEquality = 0
+        
+        self.x_low = -infinity * np.ones(self.n)
+        self.x_low[nVar:] = 0
+        self.x_up = infinity * np.ones(self.n)
+
+
+    def WolfeEquality(self, method='w'):
+        assert(self.nInEquality == 0)
+        A = self.A
+        b = CyLPArray(self.b)
+        c = CyLPArray(self.c)
+        G = self.G
+        
+        nVar = self.n
+        nx = self.nOriginalVar
+        nSlacks = nVar - nx
+
+        m = CyLPModel()
+        x = m.addVariable('x', nVar)
+        sp = m.addVariable('sp', nVar)
+        sm = m.addVariable('sm', nVar)
+        z = m.addVariable('z', nSlacks)
+        y = m.addVariable('y', self.nEquality)
+        
+        m += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
+        m += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
+        
+        m += A * x == b
+
+        m += x[nx:] >= 0
+        m += z >= 0
+        m += sp >= 0
+        m += sm >= 0
+        m += z >= 0
+
+        m.objective = sp.sum() + sm.sum()
+       
+        s = CyClpSimplex(m)
+
+
+        #s.writeMps('/Users/mehdi/Desktop/test.mps') 
+        
+        p = WolfePivot(s)
+
+        if method == 'wp':
+            p = WolfePivotPE(s)
+        
+        p.setComplement(m, x[nx:], z)
+        #print 'comp list:\n', p.complementarityList
+        
+        s.setPivotMethod(p)
+#        timeToMake = clock() - start
+#        start = clock()
+        s.primal()
+#        timeToSolve = clock() - start
+        #s.initialPrimalSolve()
+        if method == 'wp':
+            total = p.compCount + p.nonCompCount
+            print 'comp : %g ' % (p.compCount / float(total))
+            print 'comp rejection : %g' % (p.compRej / float(total))
+        #print s.primalVariableSolution 
+        print 'OBJ:', s.objectiveValue 
+        x = np.matrix(s.primalVariableSolution['x']).T
+        print 'objective:'
+        x = x[:nx]
+        G = G[:nx, :nx]
+        qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+        #print qobj 
+        print s.primalVariableSolution
+#        print s.iteration
+#        f = open('qpout', 'a')
+#        st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
+#                str(round(s.objectiveValue, 5)).ljust(8), 
+#                str(round(qobj, 5)).ljust(8),
+#                str(timeToMake),
+#                str(timeToSolve),
+#                str(timeToMake + timeToSolve)) 
+#        f.write(st)
+#        f.close()
 
 
     def Wolfe_2(self):
@@ -1356,6 +1455,7 @@ def QPTest():
     start = clock()
     qp.fromQps(sys.argv[1])
     qp.convertToEqualityOnly()
+    qp.WolfeEquality()
     return
     r = clock() - start
     if len(sys.argv) > 2:
