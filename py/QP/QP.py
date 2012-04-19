@@ -179,64 +179,72 @@ class QP:
         print 'free x', iFreeVars
 
         iden = I(nInEquality)
-        c_rhs = np.zeros(nInEquality)
-        c_rhs[iConstraintsWithBothBounds] = \
-                                c_up[iConstraintsWithBothBounds]
-        c_rhs[iConstraintsWithJustUpperBound] = \
-                                c_up[iConstraintsWithJustUpperBound]
-        c_rhs[iConstraintsWithJustLowerBound] = \
-                                c_low[iConstraintsWithJustLowerBound]
-       
-        print iConstraintsWithBothBounds
-        print iConstraintsWithBothBounds + \
-                          np.ones(nConstraintsWithBothBounds) * nInEquality
-        
-        c_rhs = np.concatenate((c_rhs, c_up[iConstraintsWithBothBounds] - 
-                                c_low[iConstraintsWithBothBounds]), axis=0)
-        
         for i in iConstraintsWithJustLowerBound:
             iden[i, i] = -1
-        
         C = sparseConcat(C, iden, 'h') 
-        C = sparseConcat(C, iden[iConstraintsWithBothBounds, :], 'v', h_offset=-1)
         
-        C = sparseConcat(C, I(nConstraintsWithBothBounds), 'h', v_offset=-1)
+        c_rhs = np.zeros(nInEquality)
         
-
+        if nConstraintsWithBothBounds:
+            c_rhs[iConstraintsWithBothBounds] = \
+                                c_up[iConstraintsWithBothBounds]
+            c_rhs = np.concatenate((c_rhs, c_up[iConstraintsWithBothBounds] - 
+                                c_low[iConstraintsWithBothBounds]), axis=0)
+            
+            C = sparseConcat(C, iden[iConstraintsWithBothBounds, :], 'v', h_offset=-1)
+        
+            C = sparseConcat(C, I(nConstraintsWithBothBounds), 'h', v_offset=-1)
+       
+        if nConstraintsWithJustUpperBound:
+            c_rhs[iConstraintsWithJustUpperBound] = \
+                                c_up[iConstraintsWithJustUpperBound]
+        
+        if nConstraintsWithJustLowerBound:
+            c_rhs[iConstraintsWithJustLowerBound] = \
+                                c_low[iConstraintsWithJustLowerBound]
+       
+        
         if varsToo:
             V = None
             iNonFree = np.sort(np.concatenate((iVarsWithBothBounds, 
                                        iVarsWithJustUpperBound,
                                        iVarsWithJustLowerBound), axis=0))
-
+            nNonFree = len(iNonFree)
             iden = I(nVar)
             
             for i in iVarsWithJustLowerBound:
                 iden[i, i] = -1
 
-            V = sparseConcat(V, I(nVar)[iNonFree, :], 'h')
-            V = sparseConcat(V, iden[iNonFree, :][:, iNonFree], 
+            if nNonFree:
+                V = sparseConcat(V, I(nVar)[iNonFree, :], 'h')
+                V = sparseConcat(V, iden[iNonFree, :][:, iNonFree], 
                              'h', h_offset=nInEquality + 
                                                 nConstraintsWithBothBounds)
 
-            V = sparseConcat(V, iden[iVarsWithBothBounds, :][:, iNonFree], 
-                             'v', h_offset=-1)
-        
-            V = sparseConcat(V, I(nVarsWithBothBounds), 'h', v_offset=-1)
-            print V.todense()
             
             v_rhs = np.zeros(nVar)
-            v_rhs[iVarsWithBothBounds] = \
+            
+            if nVarsWithBothBounds:
+                v_rhs[iVarsWithBothBounds] = \
                                     x_up[iVarsWithBothBounds]
-            v_rhs[iVarsWithJustUpperBound] = \
+                v_rhs = np.concatenate((v_rhs, x_up[iVarsWithBothBounds] - 
+                                    x_low[iVarsWithBothBounds]), axis=0)
+                
+                V = sparseConcat(V, iden[iVarsWithBothBounds, :][:, iNonFree], 
+                             'v', h_offset=-1)
+        
+                V = sparseConcat(V, I(nVarsWithBothBounds), 'h', v_offset=-1)
+            
+            if nVarsWithJustUpperBound:
+                v_rhs[iVarsWithJustUpperBound] = \
                                     x_up[iVarsWithJustUpperBound]
-            v_rhs[iVarsWithJustLowerBound] = \
+            
+            if nVarsWithJustLowerBound:
+                v_rhs[iVarsWithJustLowerBound] = \
                                     x_low[iVarsWithJustLowerBound]
            
-            v_rhs = np.concatenate((v_rhs, x_up[iVarsWithBothBounds] - 
-                                    x_low[iVarsWithBothBounds]), axis=0)
-    
-            v_rhs = np.delete(v_rhs, iFreeVars, 0)
+            if nFreeVars:
+                v_rhs = np.delete(v_rhs, iFreeVars, 0)
 
             c_rhs = np.concatenate((c_rhs, v_rhs), axis=0)
             C = sparseConcat(C, V, 'v')
@@ -249,14 +257,14 @@ class QP:
        
         mmm = C.todense()
         from math import ceil
-        secSize = 20
+        secSize = 25
         cols = mmm.shape[1]
         divs = int(ceil(cols / float(secSize)))
 
         for sec in xrange(divs):
             for i in xrange(mmm.shape[0]):
                 for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
-                    print str(int(round(mmm[i, j], 1))).rjust(7),
+                    print str(int(round(mmm[i, j], 1))).rjust(4),
                 print
             print '...'
         
