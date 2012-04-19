@@ -76,7 +76,7 @@ class TestModel(unittest.TestCase):
                         np.array([0.2, 2, 1.1, 0, 0.9]) ) <= 10**-6).all())
 
 
-        s.addConstraint(x[2] + y[1] >= 2.1)
+        s += x[2] + y[1] >= 2.1
         s.primal()
         sol = np.concatenate((s.primalVariableSolution['x'],
                               s.primalVariableSolution['y']))

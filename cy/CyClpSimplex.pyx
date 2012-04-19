@@ -86,12 +86,12 @@ cdef class CyClpSimplex:
             if self.cyLPModel:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
-                 
-                if isinstance(o, np.ndarray): 
+
+                if isinstance(o, np.ndarray):
                     self.setObjectiveArray(o.astype(np.double))
                 if isinstance(o, (sparse.coo_matrix,
-                                                sparse.csc_matrix, 
-                                                sparse.csr_matrix, 
+                                                sparse.csc_matrix,
+                                                sparse.csr_matrix,
                                                 sparse.lil_matrix)):
                     if not isinstance(o, sparse.coo_matrix):
                         o = o.tocoo()
@@ -170,7 +170,7 @@ cdef class CyClpSimplex:
                 inds = m.inds
                 d = {}
                 for v in inds.varIndex.keys():
-                    d[v] = ret[inds.varIndex[v]] 
+                    d[v] = ret[inds.varIndex[v]]
                 ret = d
             return ret
 
@@ -584,7 +584,7 @@ cdef class CyClpSimplex:
 
     def setObjectiveArray(self, np.ndarray[np.double_t, ndim=1] objective):
         self.CppSelf.setObjectiveArray(<double*>objective.data, len(objective))
-    
+
     cdef double* primalColumnSolution(self):
         return self.CppSelf.primalColumnSolution()
 
@@ -661,6 +661,10 @@ cdef class CyClpSimplex:
         '''
         return problemStatus[self.CppSelf.initialDualSolve()]
 
+    def __iadd__(self, cons):
+        self.addConstraint(cons)
+        return self
+
     def addConstraint(self, cons):
         '''
         Adds constraints ``cons``  to the problem. Example for the value
@@ -674,7 +678,19 @@ cdef class CyClpSimplex:
             raise Exception('To add a constraint you must set ' \
                             'CyLPSimplex.cyLPModel first.')
 
-    def addConstraint(self, numberInRow,
+    def addVariable(self, varname, dim, isInt=False):
+        '''
+        Add variable ``var`` to the problem.
+        '''
+        if self.cyLPModel:
+            var = self.cyLPModel.addVariable(varname, dim, isInt)
+            self.loadFromCyLPModel(self.cyLPModel)
+            return var
+        else:
+            raise Exception('To add a variable you must set ' \
+                            'CyLPSimplex.cyLPModel first.')
+
+    def CLP_addConstraint(self, numberInRow,
                     np.ndarray[np.int32_t, ndim=1] columns,
                     np.ndarray[np.double_t, ndim=1] elements,
                     rowLower,
@@ -694,7 +710,7 @@ cdef class CyClpSimplex:
         self.CppSelf.addRow(numberInRow, <int*>columns.data,
                             <double*>elements.data, rowLower, rowUpper)
 
-    def addVariable(self, numberInColumn,
+    def CLP_addVariable(self, numberInColumn,
                         np.ndarray[np.int32_t, ndim=1] rows,
                         np.ndarray[np.double_t, ndim=1] elements,
                         columnLower,
@@ -910,7 +926,7 @@ cdef class CyClpSimplex:
             else:
                 for i in xrange(var.dim):
                     self.CppSelf.setInteger(x[i])
-    
+
 
     def copyInIntegerInformation(self, np.ndarray[np.uint8_t, ndim=1] colType):
         '''
@@ -973,7 +989,7 @@ cdef class CyClpSimplex:
 
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
-        
+
 #        print 'm'
 #        mmm = mat.todense()
 #        from math import ceil
@@ -987,8 +1003,8 @@ cdef class CyClpSimplex:
 #                    print str(int(round(mmm[i, j], 1))).rjust(7),
 #                print
 #            print '...'
-# 
-        
+#
+
 ##        for i in range(mmm.shape[0]):
 ##            for j in range(mmm.shape[1]):
 ##                print str(int(round(mmm[i, j], 1))).rjust(7),
@@ -1031,12 +1047,12 @@ cdef class CyClpSimplex:
             curVarInd += var.dim
 
         if cyLPModel.objective != None:
-            self.objective = cyLPModel.objective    
-#            if isinstance(cyLPModel.objective, np.ndarray): 
+            self.objective = cyLPModel.objective
+#            if isinstance(cyLPModel.objective, np.ndarray):
 #                self.setObjectiveArray(cyLPModel.objective.astype(np.double))
 #            if isinstance(cyLPModel.objective, (sparse.coo_matrix,
-#                                                sparse.csc_matrix, 
-#                                                sparse.csr_matrix, 
+#                                                sparse.csc_matrix,
+#                                                sparse.csr_matrix,
 #                                                sparse.lil_matrix)):
 #                print 'OK, sparse'
 #                obj = cyLPModel.objective
@@ -1045,7 +1061,7 @@ cdef class CyClpSimplex:
 #                for i, j, v in izip(obj.row, obj.col, obj.data):
 #                    print 'set coef: ', i, j, v
 #                    self.setObjectiveCoefficient(j, v)
-              
+
 
         self.replaceMatrix(coinMat, True)
 
@@ -1174,7 +1190,7 @@ cdef class CyClpSimplex:
         '''
 
         if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
-           self.CppSelf.setComplement(var1, var2) 
+           self.CppSelf.setComplement(var1, var2)
         elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setInteger can be ' \
@@ -1183,7 +1199,7 @@ cdef class CyClpSimplex:
             if var1.dim != var2.dim:
                 raise Exception('Variables should have the same  ' \
                                 'dimensions to be complements.' \
-                                ' Got %s: %g and %s: %g' % 
+                                ' Got %s: %g and %s: %g' %
                                 (var1.name, var1.dim, var2.name, var2.dim))
 
             model = self.cyLPModel
@@ -1197,10 +1213,10 @@ cdef class CyClpSimplex:
             if not inds.hasVar(vn2):
                 raise Exception('No such variable: %s' % vn2)
             x2 = inds.varIndex[vn2]
-            
+
             for i in xrange(var1.dim):
                 self.CppSelf.setComplement(x1[i], x2[i])
-    
+
 #    def setComplement(self, var1, var2):
 #        'sets var1 and var2 to be complements'
 #        #When you create LP using CoinModel getComplementarityList
