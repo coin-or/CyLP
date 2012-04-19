@@ -358,9 +358,9 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
 
     '''
     if a == None:
-        return sparse.coo_matrix(b)
+        return csr_matrixPlus(b)
     if b == None:
-        return sparse.coo_matrix(a)
+        return csr_matrixPlus(a)
     assert(h_offset >= -1 and v_offset >= -1)
 
     a = sparse.coo_matrix(a)
@@ -395,7 +395,7 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
 
         nCols = max(a.shape[1], b.shape[1] + h_offset)
         nRows = a.shape[0] + b.shape[0] + v_offset
-        a = sparse.coo_matrix((data, (row, col)),
+        a = csr_matrixPlus((data, (row, col)),
                               shape=(nRows, nCols))
     return a
 
