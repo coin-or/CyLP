@@ -306,27 +306,38 @@ class QP:
         nx = self.nOriginalVar
         nSlacks = nVar - nx
 
+
+
+
         m = CyLPModel()
         x = m.addVariable('x', nVar)
-        sp = m.addVariable('sp', nVar)
-        sm = m.addVariable('sm', nVar)
-        z = m.addVariable('z', nSlacks)
-        y = m.addVariable('y', self.nEquality)
-        
-        m += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
-        m += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
-        
         m += A * x == b
-
-        m += x[nx:] >= 0
-        m += z >= 0
-        m += sp >= 0
-        m += sm >= 0
-        m += z >= 0
-
-        m.objective = sp.sum() + sm.sum()
-       
+        
         s = CyClpSimplex(m)
+        
+        if s.primal() != 'optimal':
+            return
+        
+        
+        
+        sp = s.addVariable('sp', nVar)
+        sm = s.addVariable('sm', nVar)
+        z = s.addVariable('z', nSlacks)
+        y = s.addVariable('y', self.nEquality)
+        
+        s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
+        s += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
+        
+        s += A * x == b
+
+        s += x[nx:] >= 0
+        s += z >= 0
+        s += sp >= 0
+        s += sm >= 0
+        s += z >= 0
+
+        s.objective = sp.sum() + sm.sum()
+       
 
 
         #s.writeMps('/Users/mehdi/Desktop/test.mps') 
@@ -343,6 +354,51 @@ class QP:
 #        timeToMake = clock() - start
 #        start = clock()
         s.primal()
+
+
+
+
+
+#        m = CyLPModel()
+#        x = m.addVariable('x', nVar)
+#        sp = m.addVariable('sp', nVar)
+#        sm = m.addVariable('sm', nVar)
+#        z = m.addVariable('z', nSlacks)
+#        y = m.addVariable('y', self.nEquality)
+#        
+#        m += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
+#        m += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
+#        
+#        m += A * x == b
+#
+#        m += x[nx:] >= 0
+#        m += z >= 0
+#        m += sp >= 0
+#        m += sm >= 0
+#        m += z >= 0
+#
+#        m.objective = sp.sum() + sm.sum()
+#       
+#        s = CyClpSimplex(m)
+#
+#
+#        #s.writeMps('/Users/mehdi/Desktop/test.mps') 
+#        
+#        p = WolfePivot(s)
+#
+#        if method == 'wp':
+#            p = WolfePivotPE(s)
+#        
+#        p.setComplement(m, x[nx:], z)
+#        #print 'comp list:\n', p.complementarityList
+#        
+#        s.setPivotMethod(p)
+##        timeToMake = clock() - start
+##        start = clock()
+#        s.primal()
+
+
+
 #        timeToSolve = clock() - start
         #s.initialPrimalSolve()
         if method == 'wp':
@@ -352,12 +408,14 @@ class QP:
         #print s.primalVariableSolution 
         print 'OBJ:', s.objectiveValue 
         x = np.matrix(s.primalVariableSolution['x']).T
+        #print A * x - np.matrix(b).T
         print 'objective:'
         x = x[:nx]
         G = G[:nx, :nx]
         qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
         #print qobj 
         print s.primalVariableSolution
+
 #        print s.iteration
 #        f = open('qpout', 'a')
 #        st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),

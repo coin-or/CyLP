@@ -62,7 +62,7 @@ class DantzigPivot(PivotPythonBase):
         #freeVarInds = np.where(s.varIsFree)
         #rc[freeVarInds] *= 10
 
-        rc2 = abs(rc[indicesToConsider])
+        rc2 = np.abs(rc[indicesToConsider])
 
         checkFree = True
         #rc2[np.where((status & 7 == 4) | (status & 7 == 0))] *= 10
@@ -75,7 +75,7 @@ class DantzigPivot(PivotPythonBase):
                     ind = np.argmax(rc2)
             else:
                     ind = np.argmax(rc2)
-            del rc2
+            #del rc2
             return  indicesToConsider[ind]
         return -1
 
