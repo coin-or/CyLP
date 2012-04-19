@@ -729,8 +729,15 @@ class CyLPModel(object):
             for varName in self.varNames:
                 v_coef = self.generateVarObjCoef(varName)
                 obj = sparseConcat(obj, v_coef, how='h')
-        
         self.objective_ = obj
+
+    def __iadd__(self, cons):
+        '''
+        Call :meth:`addConstraint`. The only difference is that 
+        you cannot specify a name for your constraint.
+        '''
+        self.addConstraint(cons)
+        return self
 
     def addConstraint(self, cons, consName=''):
         '''

@@ -77,7 +77,7 @@ class TestModeling(unittest.TestCase):
         x = self.x
         b = self.b
 
-        model.addConstraint(x[2:4] == b)
+        model += x[2:4] == b
         m, cl, cu, vl, vu = model.makeMatrices()
         self.assertTrue((vu[:5] == np.array(
                                     [inf, inf, b[0], b[1], inf])).all())
@@ -88,7 +88,7 @@ class TestModeling(unittest.TestCase):
         model = self.model
         x = self.x
 
-        model.addConstraint(1.1 <= x[0] - 3 * x[1:3].sum() + 2 * x[2:5].sum() <= 4.5)
+        model += 1.1 <= x[0] - 3 * x[1:3].sum() + 2 * x[2:5].sum() <= 4.5
         cons = model.constraints[0]
         m, cl, cu, vl, vu = model.makeMatrices()
         self.assertTrue((m.todense() == np.array(
