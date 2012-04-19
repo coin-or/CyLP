@@ -86,7 +86,7 @@ cdef class CyClpSimplex:
             if self.cyLPModel:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
-                
+                 
                 if isinstance(o, np.ndarray): 
                     self.setObjectiveArray(o.astype(np.double))
                 if isinstance(o, (sparse.coo_matrix,
@@ -94,7 +94,7 @@ cdef class CyClpSimplex:
                                                 sparse.csr_matrix, 
                                                 sparse.lil_matrix)):
                     if not isinstance(o, sparse.coo_matrix):
-                        o = o.too_coo()
+                        o = o.tocoo()
                     for i, j, v in izip(o.row, o.col, o.data):
                         self.setObjectiveCoefficient(j, v)
                 #self.setObjectiveArray(
@@ -1002,6 +1002,8 @@ cdef class CyClpSimplex:
 #        coinMat.makeMatrixFromCoo(True, np.array(mat.row, np.int32),
 #                                        np.array(mat.col, np.int32),
 #                                        np.array(mat.data, np.double))
+        if not isinstance(mat, sparse.coo_matrix):
+            mat = mat.tocoo()
         coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
                                         np.array(mat.col, np.int32),
                                         np.array(mat.data, np.double))
