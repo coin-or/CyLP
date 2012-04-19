@@ -358,7 +358,9 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
 
     '''
     if a == None:
-        return sparse.coo_matrix(b.copy())
+        return sparse.coo_matrix(b)
+    if b == None:
+        return sparse.coo_matrix(a)
     assert(h_offset >= -1 and v_offset >= -1)
 
     a = sparse.coo_matrix(a)
