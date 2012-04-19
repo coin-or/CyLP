@@ -379,7 +379,7 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
 
         nRows = max(a.shape[0], b.shape[0] + v_offset)
         nCols = a.shape[1] + b.shape[1] + h_offset
-        a = sparse.coo_matrix((data, (row, col)),
+        a = csr_matrixPlus((data, (row, col)),
                               shape=(nRows, nCols))
 
     elif how == 'v':
