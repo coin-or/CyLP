@@ -778,13 +778,14 @@ cdef class CyClpSimplex:
         if ext == '.mps':
             return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
         else:
-            m = CyCoinMpsIO.CyCoinMpsIO()
-            ret = m.readMps(filename)
-            self.Hessian = m.Hessian
-            self.loadProblem(m.matrixByCol, m.variableLower, m.variableUpper,
-                             m.objCoefficients,
-                             m.constraintLower, m.constraintUpper)
-            return ret
+            return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+            #m = CyCoinMpsIO.CyCoinMpsIO()
+            #ret = m.readMps(filename)
+            #self.Hessian = m.Hessian
+            #self.loadProblem(m.matrixByCol, m.variableLower, m.variableUpper,
+            #                 m.objCoefficients,
+            #                 m.constraintLower, m.constraintUpper)
+            #return ret
 
     def primal(self, ifValuesPass=0, startFinishOptions=0):
         '''
