@@ -938,6 +938,9 @@ cdef class CyClpSimplex:
 
     def replaceMatrix(self, CyCoinPackedMatrix matrix, deleteCurrent=False):
         self.CppSelf.replaceMatrix(matrix.CppSelf, deleteCurrent)
+    
+    def loadQuadraticObjective(self, CyCoinPackedMatrix matrix):
+        self.CppSelf.loadQuadraticObjective(matrix.CppSelf)
 
     def preSolve(self, feasibilityTolerance=0.0,
                  keepIntegers=0, numberPasses=5,

@@ -46,6 +46,7 @@ cdef extern from "IClpSimplex.hpp":
         void setCriteria(varSelCriteria_t vsc)
         void setPrimalColumnPivotAlgorithm(CppClpPrimalColumnPivot* choice)
         int readMps(char*, int keepNames, int ignoreErrors)
+        void loadQuadraticObjective(CppCoinPackedMatrix* matrix) 
         int primal(int ifValuesPass, int startFinishOptions)
         int dual(int ifValuesPass, int startFinishOptions)
         int initialSolve()

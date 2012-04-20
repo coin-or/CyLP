@@ -78,6 +78,8 @@ public:
 	
 	
 	void setPrimalColumnPivotAlgorithm(ClpPrimalColumnPivot *choice){ClpSimplex::setPrimalColumnPivotAlgorithm(*choice);}
+    
+    void loadQuadraticObjective(const CoinPackedMatrix* matrix){ClpModel::loadQuadraticObjective(*matrix);}
 	
 	
 	int loadProblem (CoinModel * modelObject,bool tryPlusMinusOne=false){return ClpSimplex::loadProblem(*modelObject, tryPlusMinusOne);}
