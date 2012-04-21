@@ -16,7 +16,7 @@ class TestQP(unittest.TestCase):
         s.readMps(join(currentFilePath, '../input/hs35.qps'))
         #self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
         
-        print s.Hessian.todense()
+        #print s.Hessian.todense()
 
         p = WolfePivot(s)
         s.setPivotMethod(p)
