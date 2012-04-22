@@ -425,6 +425,41 @@ PyObject* IClpSimplex::getDualColumnSolution(){
     return Arr;
 }
 
+PyObject* IClpSimplex::getObjective(){
+
+    npy_intp dims = getNumCols();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->objective() );
+    return Arr;
+}
+
+PyObject* IClpSimplex::getRowLower(){
+
+    npy_intp dims = getNumRows();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->rowLower() );
+    return Arr;
+}
+
+PyObject* IClpSimplex::getRowUpper(){
+
+    npy_intp dims = getNumRows();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->rowUpper() );
+    return Arr;
+}
+
+PyObject* IClpSimplex::getColLower(){
+
+    npy_intp dims = getNumCols();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnLower() );
+    return Arr;
+}
+
+PyObject* IClpSimplex::getColUpper(){
+
+    npy_intp dims = getNumCols();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnUpper() );
+    return Arr;
+}
+
 void IClpSimplex::setVariableName(int varInd,  char* name){
     columnNames_.resize(getNumCols()); 
     columnNames_[varInd] = name;

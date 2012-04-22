@@ -15,8 +15,8 @@ from CyPEPivot cimport CyPEPivot
 from CyPivotPythonBase cimport CyPivotPythonBase
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy cimport CyCoinModel
-from CyLP.py.utils.sparseUtil import sparseConcat
-from CyLP.py.modeling.CyLPModel import CyLPVar
+from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
+from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
 from CyLP.cy cimport CyCoinMpsIO
@@ -86,6 +86,7 @@ cdef class CyClpSimplex:
             if self.cyLPModel:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
+                
 
                 if isinstance(o, np.ndarray):
                     self.setObjectiveArray(o.astype(np.double))
@@ -95,6 +96,11 @@ cdef class CyClpSimplex:
                                                 sparse.lil_matrix)):
                     if not isinstance(o, sparse.coo_matrix):
                         o = o.tocoo()
+                    #if self.nVariables > 0:
+                        #o = np.concatenate((np.matrix(self.objective), o.todense()), axis=1)
+                    #    o = np.squeeze(np.asarray(o.todense()))
+                    #    self.setObjectiveArray(o.astype(np.double)) 
+                    #else:
                     for i, j, v in izip(o.row, o.col, o.data):
                         self.setObjectiveCoefficient(j, v)
                 #self.setObjectiveArray(
@@ -103,6 +109,8 @@ cdef class CyClpSimplex:
                 raise Exception('To set the objective function of ' \
                                 'CyClpSimplex set CyLPSimplex.cyLPModel ' \
                                 'first.')
+        def __get__(self):
+            return <object>self.CppSelf.getObjective()
 
     property iteration:
         '''
@@ -138,6 +146,16 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             return self.CppSelf.getNumCols()
+
+    property matrix:
+        '''
+        The coefficient matrix.
+        '''
+        def __get__(self):
+            cdef CppCoinPackedMatrix* cppMat = self.CppSelf.getMatrix()
+            mat = CyCoinPackedMatrix()
+            mat.CppSelf = cppMat
+            return mat
 
 #    def getNumRows(self):
 #        '''
@@ -237,6 +255,42 @@ cdef class CyClpSimplex:
 
     cpdef getReducedCosts(self):
         return <object>self.CppSelf.getReducedCosts()
+
+    property variablesUpper:
+        '''
+        Variables upper bounds
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getColUpper()
+
+    property variablesLower:
+        '''
+        Variables lower bounds
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getColLower()
+
+    property constraintsUpper:
+        '''
+        Constraints upper bounds
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getRowUpper()
+
+    property constraintsLower:
+        '''
+        Constraints lower bounds
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getRowLower()
 
     property status:
         '''
@@ -770,15 +824,15 @@ cdef class CyClpSimplex:
         '''
         Read an mps file. See this :ref:`modeling example <modeling-usage>`.
         '''
-        name, ext = os.path.splitext(filename)
-        if ext not in ['.mps', '.qps']:
-            print 'unrecognised extension %s' % ext
-            return -1
+        #name, ext = os.path.splitext(filename)
+        #if ext not in ['.mps', '.qps']:
+        #    print 'unrecognised extension %s' % ext
+        #    return -1
 
-        if ext == '.mps':
-            return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
-        else:
-            return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+        #if ext == '.mps':
+        return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+        #else:
+        #    return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
             #m = CyCoinMpsIO.CyCoinMpsIO()
             #ret = m.readMps(filename)
             #self.Hessian = m.Hessian
@@ -786,7 +840,32 @@ cdef class CyClpSimplex:
             #                 m.objCoefficients,
             #                 m.constraintLower, m.constraintUpper)
             #return ret
+    
+    def extractCyLPModel(self, fileName, keepNames=False, ignoreErrors=False):
+        if self.readMps(fileName, keepNames, ignoreErrors) != 0:
+            return None
+        m = CyLPModel()
 
+        x = m.addVariable('x', self.nVariables)
+
+        c_up = CyLPArray(self.constraintsUpper)
+        c_low = CyLPArray(self.constraintsLower)
+        
+        mat = self.matrix
+        C = csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
+                             shape=(self.nConstraints, self.nVariables))
+
+        m += c_low <= C * x <= c_up
+
+        x_up = CyLPArray(self.variablesUpper)
+        x_low = CyLPArray(self.variablesLower)
+        
+        m += x_low <= x <= x_up
+
+        m.objective = self.objective
+
+        return m
+         
     def primal(self, ifValuesPass=0, startFinishOptions=0):
         '''
         Solve the problem using the primal simplex algorithm.
@@ -994,6 +1073,8 @@ cdef class CyClpSimplex:
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
 
+        n = len(variableLower)
+        m = len(constraintLower)
 #        print 'm'
 #        mmm = mat.todense()
 #        from math import ceil
@@ -1018,26 +1099,31 @@ cdef class CyClpSimplex:
 #        print 'vl\n', variableLower
 #        print 'vu\n', variableUpper
 
-#        coinMat = CyCoinPackedMatrix()
-#        coinMat.makeMatrixFromCoo(True, np.array(mat.row, np.int32),
-#                                        np.array(mat.col, np.int32),
-#                                        np.array(mat.data, np.double))
         if not isinstance(mat, sparse.coo_matrix):
             mat = mat.tocoo()
+        
         coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
                                         np.array(mat.col, np.int32),
                                         np.array(mat.data, np.double))
 
-        constraints = cyLPModel.constraints
+        #row = np.array(mat.row, np.int32) + m * np.ones(len(mat.row), dtype=np.int32)
+        #col = np.array(mat.col, np.int32) 
+        #row = np.array(mat.row, np.int32) + m * np.ones(len(mat.row), dtype=np.int32)
+        #col = np.array(mat.col, np.int32) + n * np.ones(len(mat.col), dtype=np.int32)
+        
+        #coinMat = CyCoinPackedMatrix(True, row, col,
+        #                                np.array(mat.data, np.double))
+
+        #constraints = cyLPModel.constraints
 
         #start adding the arrays and the matrix to the problem
-        self.resize(len(constraintLower), len(variableLower))
+        self.resize(m, n)
 
-        for i in xrange(len(variableLower)):
+        for i in xrange(n):
             self.setColumnLower(i, variableLower[i])
             self.setColumnUpper(i, variableUpper[i])
 
-        for i in xrange(len(constraintLower)):
+        for i in xrange(m):
             self.setRowLower(i, constraintLower[i])
             self.setRowUpper(i, constraintUpper[i])
 
@@ -1050,6 +1136,7 @@ cdef class CyClpSimplex:
                     self.setInteger(i)
             curVarInd += var.dim
 
+        
         if cyLPModel.objective != None:
             self.objective = cyLPModel.objective
 #            if isinstance(cyLPModel.objective, np.ndarray):

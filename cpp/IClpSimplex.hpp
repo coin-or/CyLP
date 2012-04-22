@@ -13,6 +13,10 @@
 #include <numpy/arrayobject.h>
 #include "ICbcModel.hpp"
 
+
+#include "ICoinPackedMatrix.hpp"
+
+
 //#include "ClpSimplexPrimal.hpp"
 
 typedef int (*runIsPivotAcceptable_t)(void *instance);
@@ -68,6 +72,11 @@ public:
     PyObject * getSolutionRegion();
 	PyObject * getDualRowSolution();
 	PyObject * getDualColumnSolution();
+	PyObject * getObjective();
+	PyObject * getRowLower();
+	PyObject * getRowUpper();
+	PyObject * getColLower();
+	PyObject * getColUpper();
 	
 	void getBInvACol(int col, double* vec);
 	void getACol(int ncol, CoinIndexedVector * colArray);
@@ -80,7 +89,7 @@ public:
 	void setPrimalColumnPivotAlgorithm(ClpPrimalColumnPivot *choice){ClpSimplex::setPrimalColumnPivotAlgorithm(*choice);}
     
     void loadQuadraticObjective(const CoinPackedMatrix* matrix){ClpModel::loadQuadraticObjective(*matrix);}
-	
+    ICoinPackedMatrix* getMatrix(){return static_cast<ICoinPackedMatrix*>(ClpModel::matrix());}	
 	
 	int loadProblem (CoinModel * modelObject,bool tryPlusMinusOne=false){return ClpSimplex::loadProblem(*modelObject, tryPlusMinusOne);}
 	//double* infeasibilityRay();

@@ -695,6 +695,15 @@ class CyLPModel(object):
         
         return var
 
+    def getVarByName(self, varName):
+        '''
+        Return a variable with name ``varName``.
+        '''
+        for var in self.variables:
+            if var.name == varName:
+                return var
+        return None
+
     def makeIndexFactory(self):
         self.allVarNames = []
         self.allParentVarDims = {}

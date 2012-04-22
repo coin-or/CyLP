@@ -47,6 +47,7 @@ cdef extern from "IClpSimplex.hpp":
         void setPrimalColumnPivotAlgorithm(CppClpPrimalColumnPivot* choice)
         int readMps(char*, int keepNames, int ignoreErrors)
         void loadQuadraticObjective(CppCoinPackedMatrix* matrix) 
+        CppCoinPackedMatrix* getMatrix()
         int primal(int ifValuesPass, int startFinishOptions)
         int dual(int ifValuesPass, int startFinishOptions)
         int initialSolve()
@@ -183,7 +184,11 @@ cdef extern from "IClpSimplex.hpp":
         void setRowUpperArray(double* rowUpper)
         void setRowLowerArray(double* rowLower)
         void setObjectiveArray(double* objective, int numberColumns)
-
+        PyObject* getRowLower()
+        PyObject* getRowUpper()
+        PyObject* getColLower()
+        PyObject* getColUpper()
+        PyObject* getObjective()
         int writeMps(char* filename, int formatType, int numberAcross,
                      double objSense)
 
