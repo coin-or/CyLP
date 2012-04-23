@@ -297,6 +297,7 @@ class QP:
 
     def WolfeEquality(self, method='w'):
         assert(self.nInEquality == 0)
+        start = clock()
         A = self.A
         b = CyLPArray(self.b)
         c = CyLPArray(self.c)
@@ -305,8 +306,6 @@ class QP:
         nVar = self.n
         nx = self.nOriginalVar
         nSlacks = nVar - nx
-
-
 
 
         m = CyLPModel()
@@ -324,6 +323,13 @@ class QP:
         sm = s.addVariable('sm', nVar)
         z = s.addVariable('z', nSlacks)
         y = s.addVariable('y', self.nEquality)
+       
+        from numpy import linalg as LA
+        print 'cond:', LA.cond(G[:nx, :nx].todense())
+        
+        #print G.todense()
+        G = G + 10**-6 * I(nVar)
+        #print G.todense()
         
         s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
         s += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
@@ -351,13 +357,14 @@ class QP:
         #print 'comp list:\n', p.complementarityList
         
         s.setPivotMethod(p)
-#        timeToMake = clock() - start
-#        start = clock()
+        timeToMake = clock() - start
+        start = clock()
         s.primal()
+        timeToSolve = clock() - start
 
+        self.writeReport('qpout', s, timeToMake, timeToSolve, method, p)
 
-
-
+        return
 
 #        m = CyLPModel()
 #        x = m.addVariable('x', nVar)
@@ -404,7 +411,7 @@ class QP:
         if method == 'wp':
             total = p.compCount + p.nonCompCount
             print 'comp : %g ' % (p.compCount / float(total))
-            print 'comp rejection : %g' % (p.compRej / float(total))
+            print 'comp rejection : %g' % (p.compRej / float(p.compCount))
         #print s.primalVariableSolution 
         print 'OBJ:', s.objectiveValue 
         x = np.matrix(s.primalVariableSolution['x']).T
@@ -413,7 +420,7 @@ class QP:
         x = x[:nx]
         G = G[:nx, :nx]
         qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
-        #print qobj 
+        print qobj 
         print s.primalVariableSolution
 
 #        print s.iteration
@@ -427,6 +434,43 @@ class QP:
 #        f.write(st)
 #        f.close()
 
+    def writeReport(self, filename, s, timeToMake, timeToSolve, method, p):
+        
+        def getcell(s, r, j):
+            return str(round(s, r)).ljust(j)        
+        
+        nx = self.nOriginalVar
+        x = np.matrix(s.primalVariableSolution['x']).T
+        x = x[:nx]
+        G = self.G[:nx, :nx]
+        c = self.c
+
+        qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+
+        if method == 'wp':
+            total = p.compCount + p.nonCompCount
+            compPer = 'comp : %g ' % (p.compCount / float(total))
+            compRejPer = 'comp rejection : %g' % (p.compRej / float(p.compCount))
+        
+            st = '%s %s %s %s %s %s %d %s %s\n' % (self.filename.ljust(30), 
+                method.ljust(2),
+                getcell(s.objectiveValue, 5, 8), 
+                getcell(qobj, 5, 8),
+                getcell(timeToMake, 3, 8),
+                getcell(timeToSolve, 3, 8),
+                s.iteration,
+                getcell(compPer, 2, 5),
+                getcell(compRejPer, 2, 5))
+        else:
+            st = '%s %s %s %s %s %s %d\n' % (self.filename.ljust(30), method.ljust(2),
+                getcell(s.objectiveValue, 5, 8), 
+                getcell(qobj, 5, 8),
+                getcell(timeToMake, 3, 8),
+                getcell(timeToSolve, 3, 8),
+                s.iteration) 
+
+        with open('qpout', 'a') as f:
+            f.write(st)
 
     def Wolfe_2(self):
         '''
