@@ -94,15 +94,13 @@ cdef class CyClpSimplex:
                                                 sparse.csc_matrix,
                                                 sparse.csr_matrix,
                                                 sparse.lil_matrix)):
-                    if not isinstance(o, sparse.coo_matrix):
-                        o = o.tocoo()
-                    #if self.nVariables > 0:
-                        #o = np.concatenate((np.matrix(self.objective), o.todense()), axis=1)
-                    #    o = np.squeeze(np.asarray(o.todense()))
-                    #    self.setObjectiveArray(o.astype(np.double)) 
-                    #else:
-                    for i, j, v in izip(o.row, o.col, o.data):
-                        self.setObjectiveCoefficient(j, v)
+                    for i in xrange(self.nVariables):
+                        self.setObjectiveCoefficient(i, o[0, i])
+
+                    #if not isinstance(o, sparse.coo_matrix):
+                    #    o = o.tocoo()
+                    #for i, j, v in izip(o.row, o.col, o.data):
+                    #    self.setObjectiveCoefficient(j, v)
                 #self.setObjectiveArray(
                 #       self.cyLPModel.objective.astype(np.double))
             else:
@@ -719,17 +717,28 @@ cdef class CyClpSimplex:
         self.addConstraint(cons)
         return self
 
-    def addConstraint(self, cons):
+    def addConstraint(self, cons, name=''):
         '''
         Adds constraints ``cons``  to the problem. Example for the value
         of ``cons`` is ``0 <= A * x <= b`` where ``A`` is a Numpy matrix and
         b is a :py:class:`CyLPArray`.
         '''
         if self.cyLPModel:
-            self.cyLPModel.addConstraint(cons)
+            self.cyLPModel.addConstraint(cons, name)
             self.loadFromCyLPModel(self.cyLPModel)
         else:
             raise Exception('To add a constraint you must set ' \
+                            'CyLPSimplex.cyLPModel first.')
+
+    def removeConstraint(self, name):
+        '''
+        Removes constraint named ``name`` from the problem.
+        '''
+        if self.cyLPModel:
+            self.cyLPModel.removeConstraint(name)
+            self.loadFromCyLPModel(self.cyLPModel)
+        else:
+            raise Exception('To remove a constraint you must set ' \
                             'CyLPSimplex.cyLPModel first.')
 
     def addVariable(self, varname, dim, isInt=False):
@@ -744,6 +753,22 @@ cdef class CyClpSimplex:
             raise Exception('To add a variable you must set ' \
                             'CyLPSimplex.cyLPModel first.')
 
+    def removeVariable(self, name):
+        '''
+        Removes variable named ``name`` from the problem.
+        '''
+        if self.cyLPModel:
+            self.cyLPModel.removeVariable(name)
+            self.loadFromCyLPModel(self.cyLPModel)
+        else:
+            raise Exception('To remove a variable you must set ' \
+                            'CyLPSimplex.cyLPModel first.')
+
+    def getVarByName(self, name):
+        if not self.cyLPModel:    
+            raise Exception('No CyLPSimplex.cyLPModel is set.')
+        return self.cyLPModel.getVarByName(name)       
+    
     def CLP_addConstraint(self, numberInRow,
                     np.ndarray[np.int32_t, ndim=1] columns,
                     np.ndarray[np.double_t, ndim=1] elements,
@@ -848,8 +873,10 @@ cdef class CyClpSimplex:
 
         x = m.addVariable('x', self.nVariables)
 
-        c_up = CyLPArray(self.constraintsUpper)
-        c_low = CyLPArray(self.constraintsLower)
+        # Copy is crucial. Memory space should be different than 
+        # that of Clp. Else, a resize will ruin these.
+        c_up = CyLPArray(self.constraintsUpper).copy()
+        c_low = CyLPArray(self.constraintsLower).copy()
         
         mat = self.matrix
         C = csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
@@ -857,15 +884,18 @@ cdef class CyClpSimplex:
 
         m += c_low <= C * x <= c_up
 
-        x_up = CyLPArray(self.variablesUpper)
-        x_low = CyLPArray(self.variablesLower)
+        x_up = CyLPArray(self.variablesUpper).copy()
+        x_low = CyLPArray(self.variablesLower).copy()
         
         m += x_low <= x <= x_up
 
         m.objective = self.objective
 
+        self.cyLPModel = m
         return m
-         
+    
+
+
     def primal(self, ifValuesPass=0, startFinishOptions=0):
         '''
         Solve the problem using the primal simplex algorithm.
@@ -1072,7 +1102,7 @@ cdef class CyClpSimplex:
 
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
-
+        
         n = len(variableLower)
         m = len(constraintLower)
 #        print 'm'
@@ -1099,6 +1129,7 @@ cdef class CyClpSimplex:
 #        print 'vl\n', variableLower
 #        print 'vu\n', variableUpper
 
+        
         if not isinstance(mat, sparse.coo_matrix):
             mat = mat.tocoo()
         

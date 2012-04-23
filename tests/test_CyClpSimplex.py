@@ -21,21 +21,25 @@ class TestCyClpSimplex(unittest.TestCase):
 
     def test_PE(self):
         pivot = PositiveEdgePivot(self.s)
+        self.s.setPivotMethod(pivot)
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
     def test_Dantzig(self):
         pivot = DantzigPivot(self.s)
+        self.s.setPivotMethod(pivot)
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
     def test_LIFO(self):
         pivot = LIFOPivot(self.s)
+        self.s.setPivotMethod(pivot)
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
     def test_MostFrequent(self):
         pivot = MostFrequentPivot(self.s)
+        self.s.setPivotMethod(pivot)
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
     

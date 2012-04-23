@@ -150,7 +150,7 @@ class CyLPExpr:
 
         return left + right + [self.opr]
 
-    def evaluate(self):
+    def evaluate(self, name=''):
         '''
         Evaluates an expression in the postfix form
         '''
@@ -158,7 +158,7 @@ class CyLPExpr:
         tokens = self.getPostfix()
         operands = []
 
-        cons = CyLPConstraint()
+        cons = CyLPConstraint(name)
 
         for token in tokens:
             # If an operand found
@@ -197,7 +197,8 @@ class CyLPExpr:
 
 
 class CyLPConstraint:
-    def __init__(self):
+    gid = 0
+    def __init__(self, name=''):
         self.varNames = []
         self.parentVarDims = {}
         self.varCoefs = {}
@@ -206,6 +207,10 @@ class CyLPConstraint:
         self.nRows = None
         self.isRange = True
         self.variables = []
+        if not name:
+            CyLPConstraint.gid += 1
+            name = 'C_Aut_%d' % CyLPConstraint.gid
+        self.name = name
 
     def __repr__(self):
         s = ''
@@ -256,6 +261,7 @@ class CyLPConstraint:
                 self.varCoefs[right] = sparse.lil_matrix((1, n))
                 self.varCoefs[right][0, right.indices] = np.ones(len(right.indices))
                 self.nRows = 1
+                self.isRange = False
             else:
                 #self.varNames.append(right.name)
                 #self.parentVarDims[right.name] = right.parentDim
@@ -288,21 +294,10 @@ class CyLPConstraint:
                                             " expected %d"
                                         % (left, left.shape[0], self.nRows))
                         self.nRows = nr
-                        #print '---->',  left.shape
-                        #print right.name
-                        #print right.indices
-                        #print right.parent
                         if right.parent == None:
                             coef = deepcopy(left)
-                            #print 'noparent'
                         else:
                             coef = sparse.lil_matrix((nr, right.parent.dim))
-                            #print 'coef shape', coef.shape
-                            #print 'right indices', right.indices
-                            #print 'left', left
-                            #print 'left.shape', left.shape
-                            #print 'coef[]'
-                            #print coef[:, right.indices].todense() 
                             coef[:, right.indices] = left 
                     
                     self.varCoefs[right] = coef
@@ -312,17 +307,12 @@ class CyLPConstraint:
                     # No coefs for left op
                     self.isRange = False
                     if isinstance(left, CyLPVar):
-                        #ones = CyLPArray(np.ones(left.dim))
-                        #self.varCoefs[left] = ones
-                        #self.nRows = 1
                         self.varCoefs[left] = identitySub(left)
                         self.nRows = len(left.indices)
                         if left.name not in self.varNames:
                             self.varNames.append(left.name)
                             self.parentVarDims[left.name] = left.parentDim
                     
-                    #if right == None:
-                    #    return
                     # No coefs for right op 
                     if isinstance(right, CyLPVar):
                         if right in self.varCoefs.keys():
@@ -387,7 +377,8 @@ class CyLPConstraint:
             else:
                 raise Exception('At least one side of a comparison sign' \
                                 'should be constant.')
-
+            
+            # FIXME: check this: I suppose never runs
             if self.isRange:
                 var = self.variables[0]
                 self.nRows = var.parentDim
@@ -608,15 +599,30 @@ class IndexFactory:
     def addVar(self, varName, numberOfVars):
         if numberOfVars == 0:
             return
+        if not varName:
+            raise Exception('You must specify a name for a variable.')
         if varName in self.varIndex.keys():
-            self.varIndex[varName] += range(self.currentVarIndex,
-                                            self.currentVarIndex +
-                                            numberOfVars)
+            print 'Variable already exists.'
+            #self.varIndex[varName] += range(self.currentVarIndex,
+            #                                self.currentVarIndex +
+            #                                numberOfVars)
         else:
-            self.varIndex[varName] = range(self.currentVarIndex,
+            self.varIndex[varName] = np.arange(self.currentVarIndex,
                                             self.currentVarIndex +
                                             numberOfVars)
         self.currentVarIndex += numberOfVars
+
+    def removeVar(self, name):
+        if not self.hasVar(name):
+            raise Exception('Variable "%s" does not exist.' % name)
+        nVars = len(self.varIndex[name])
+        start = self.varIndex[name][0]
+        del self.varIndex[name]
+        for varName in self.varIndex.keys():
+            inds = self.varIndex[varName]
+            if inds[0] > start:
+                self.varIndex[varName] = inds - nVars * np.ones(len(inds),
+                                                                np.int32)
 
     def hasVar(self, varName):
         return varName in self.varIndex.keys()
@@ -630,14 +636,30 @@ class IndexFactory:
     def addConst(self, constName, numberOfConsts):
         if numberOfConsts == 0:
             return
-        if constName in self.constIndex.keys():
-            self.constIndex[constName] += range(self.currentConstIndex,
-                    self.currentConstIndex + numberOfConsts)
+        if not constName:
+            raise Exception('You must specify a name for a constraint.')
+        if self.hasConst(constName):
+            print 'Constraint already exists.'
+            #self.constIndex[constName] += range(self.currentConstIndex,
+            #        self.currentConstIndex + numberOfConsts)
         else:
-            self.constIndex[constName] = range(self.currentConstIndex,
+            self.constIndex[constName] = np.arange(self.currentConstIndex,
                                             self.currentConstIndex +
                                             numberOfConsts)
         self.currentConstIndex += numberOfConsts
+
+    def removeConst(self, name):
+        if not self.hasConst(name):
+            raise Exception('Constraint "%s" does not exist.' % name)
+        nCons = len(self.constIndex[name])
+        start = self.constIndex[name][0]
+        del self.constIndex[name]
+        for constName in self.constIndex.keys():
+            inds = self.constIndex[constName]
+            if inds[0] > start:
+                self.constIndex[constName] = inds - nCons * np.ones(len(inds),
+                                                                    np.int32)
+
 
     def getLastConstIndex(self):
         return self.currentConstIndex - 1
@@ -689,11 +711,81 @@ class CyLPModel(object):
             self.nVars += dim
             self.varNames.append(var.name)
             self.pvdims[var.name] = dim
+            
+            o = self.objective_
+            if isinstance(o, np.ndarray):
+                #print 'before array:', o
+                o = np.concatenate((o, np.zeros(dim)), axis=0)
+                #print 'after array:', o
+            else:
+                #if o:
+                #    print 'before mat:\n' , o.todense()
+                o = sparseConcat(o, csr_matrixPlus(np.zeros(dim)), 'h')
+                #print 'after mat:\n' , o.todense()
+            
+            self.objective_ = csr_matrixPlus(o)
 
         else:
             raise Exception('Varaible %s already exists.' % var.name)
         
         return var
+
+    def removeVariable(self, name):
+        '''
+        Remove a variable named ``name`` from the model
+        '''
+        if not self.inds.hasVar(name):
+            raise Exception('Variable "%s" does not exist.' % name)
+
+        self.nVars -= self.pvdims[name]
+        start = self.inds.varIndex[name][0]
+        end = start + self.pvdims[name]
+        o = self.objective_
+        
+        if isinstance(o, np.ndarray):
+            #print 'before array:', o
+            o = np.concatenate((o[:start], o[end:]), axis=0)
+            #print 'after array:', o
+        else:
+            #print 'before mat:\n' , o.todense()
+            #print o.shape
+            #print 's, e', start, end
+            if end == o.shape[1]:
+                if start == 0:
+                    print 'Problem empty.'
+                else:
+                    o = o[0, :start]
+            elif start == 0:
+                o = o[0, end:]
+            else:
+                o = sparseConcat(o[0, :start], o[0, end:], how='h')
+            #print 'after mat:\n' , o.todense()
+        
+        self.objective_ = csr_matrixPlus(o)
+
+        del self.pvdims[name]
+        self.varNames.remove(name)
+        self.inds.removeVar(name)
+        for i in range(len(self.variables)):
+            var = self.variables[i]
+            if var.name == name:
+                del self.variables[i]
+                break
+        
+        #Removing the variable from the constraints
+        cons = self.constraints
+        for c in cons:
+            if name in c.varNames:
+                c.varNames.remove(name)
+                del c.parentVarDims[name]
+                for v in c.varCoefs.keys():
+                    if v.name == name:
+                        del c.varCoefs[v]
+
+        for c in cons[:]:
+            self.inds
+            if not c.varCoefs:
+                self.removeConstraint(c.name)
 
     def getVarByName(self, varName):
         '''
@@ -760,13 +852,26 @@ class CyLPModel(object):
 
         '''
 
-        c = cons.evaluate()
+        c = cons.evaluate(consName)
         if not c.isRange:
             self.constraints.append(c)
-            if consName:
-                self.inds.addConst(consName, c.nRows)
+            if c.name:
+                self.inds.addConst(c.name, c.nRows)
             self.nCons += c.nRows
         #self.makeMatrices()
+
+    def removeConstraint(self, name):
+        if not self.inds.hasConst(name):
+            raise Exception('Constraint "%s" does not exist.' % name)
+
+        for i in range(len(self.constraints)):
+            if self.constraints[i].name == name:
+                con = self.constraints[i]
+                break 
+        self.nCons -= con.nRows
+        del self.constraints[i]
+        self.inds.removeConst(name)
+
 
     def generateVarObjCoef(self, varName):
         #dim = self.allParentVarDims[varName]
@@ -791,12 +896,6 @@ class CyLPModel(object):
             coef = sparse.coo_matrix((c.nRows, dim))
             keys = [k for k in c.varCoefs.keys() if k.name == varName]
             for var in keys:
-                #import pdb; pdb.set_trace()
-#                print '@@'
-#                print coef.shape
-#                print c.varCoefs[var].shape
-#                print coef.todense()
-#                print c.varCoefs[var].todense()
                 coef = coef + c.varCoefs[var]
 #            if not keys:
 #                coef = sparse.coo_matrix((c.nRows, dim))
@@ -832,9 +931,9 @@ class CyLPModel(object):
         '''
         #if len(self.constraints) == 0:
         #    return
-
         self.makeIndexFactory()
         #self.getVarBounds()
+        
 
         # Create the aggregated coef matrix
         masterCoefMat = None
@@ -859,8 +958,6 @@ class CyLPModel(object):
             if not c.isRange:
                 c_lower = np.concatenate((c_lower, c.lower), axis=0)
                 c_upper = np.concatenate((c_upper, c.upper), axis=0)
-
-        
         # Create variables bound vectors
         v_lower = np.array([])
         v_upper = np.array([])

@@ -1,9 +1,13 @@
+import inspect
+import os
 import unittest
 import numpy as np
+from CyLP.cy import CyClpSimplex
 from CyLP.py.utils.sparseUtil import csr_matrixPlus
 from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray, getCoinInfinity
 
 inf = getCoinInfinity()
+currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
 class TestModeling(unittest.TestCase):
 
@@ -136,6 +140,74 @@ class TestModeling(unittest.TestCase):
 
         #self.assertEqual(self.c[4], 3.3)
     
+    def test_removeConst(self):
+        
+        m = self.model
+        x = self.x
+        A = self.A
+        b = self.b
+
+
+        m.addConstraint(x >= 0)
+
+        m.addConstraint(A * x == b)
+        
+        m.addConstraint(x[1:3].sum() >= 1, 'rr')
+
+        m.objective = x.sum()
+        s = CyClpSimplex(m)
+        s.primal()
+        self.assertAlmostEqual(s.primalVariableSolution['x'][1], 1, 7)  
+
+        m.removeConstraint('rr')
+        s = CyClpSimplex(m)
+        s.primal()
+        self.assertAlmostEqual(s.primalVariableSolution['x'][1], 0, 7)  
+    
+    def test_removeVar(self):
+        m = self.model
+        x = self.x
+        A = self.A
+        B = self.B
+        D = self.D
+        b = self.b
+
+        y = m.addVariable('y', 4)
+        z = m.addVariable('z', 5)
+
+        m.addConstraint(x >= 0)
+        m.addConstraint(y >= -10)
+        m.addConstraint(z >= -10)
+
+        m.addConstraint(A * x + D * y + B * z <= b)
+        m += x[0] + y[0] + z[0] >= 1.12 
+
+        m.objective = x.sum() + y.sum() + z.sum()
+        s = CyClpSimplex(m)
+        s.primal()
+        
+        self.assertTrue('y' in s.primalVariableSolution.keys())
+    
+        m.removeVariable('y')
+        s = CyClpSimplex(m)
+        s.primal()
+        self.assertTrue('y' not in s.primalVariableSolution.keys())
+
+    def test_removeVar2(self):
+        s = CyClpSimplex()
+        fp = os.path.join(currentFilePath, '../../input/p0033.mps')
+        s.extractCyLPModel(fp)
+        y = s.addVariable('y', 3)
+        s.primal()
+        
+        x = s.getVarByName('x')
+        s.addConstraint(x[1] +  y[1] >= 1.2)
+        #s.primal()
+        s.removeVariable('x')
+        s.primal()
+        s = s.primalVariableSolution
+        self.assertTrue((s['y'] - np.array([0, 1.2, 0]) <= 10**-6).all())
+
 
 if __name__ == '__main__':
     unittest.main()
