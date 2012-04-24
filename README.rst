@@ -30,7 +30,12 @@ STEP 4:
  
         $ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"
 
+STEP 5 (LINUX): 
+     In linux you might also need to add COIN's lib directory to 
+     LD_LIBRARY_PATH as follows::
 
+        $ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"
+        
 Now you can use CyLP in your python code. For example:
     
     >>> from CyLP.cy import CyClpSimplex
