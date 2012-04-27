@@ -155,6 +155,26 @@ cdef class CyClpSimplex:
             mat.CppSelf = cppMat
             return mat
 
+    property constraints:
+        '''
+        Constraints.
+        '''
+        def __get__(self):
+            if not self.cyLPModel:
+                raise Exception('No CyClpSimplex cyLPModel.')
+            else:
+                return self.cyLPModel.constraints
+
+    property constraints:
+        '''
+        Variables.
+        '''
+        def __get__(self):
+            if not self.cyLPModel:
+                raise Exception('No CyClpSimplex cyLPModel.')
+            else:
+                return self.cyLPModel.variables
+
 #    def getNumRows(self):
 #        '''
 #        Return number of constraints

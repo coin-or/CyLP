@@ -213,7 +213,8 @@ class CyLPConstraint:
         self.name = name
 
     def __repr__(self):
-        s = ''
+        s = '\n'
+        s += 'constraint %s:\n' % self.name
         s += 'variable names:\n'
         s += str(self.varNames) + '\n'
         s += 'coefficients:\n'

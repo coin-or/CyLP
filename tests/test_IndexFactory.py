@@ -50,14 +50,12 @@ class TestIndexFactory(unittest.TestCase):
     def test_v2(self):
         inds = self.inds
         
-        print inds.varIndex 
         self.assertTrue((inds.varIndex['b'] == np.arange(15, 30)).all())
         inds.removeVar('a')
         self.assertTrue(not inds.hasVar('a'))
         self.assertTrue((inds.varIndex['x'] == np.arange(0, 5)).all())
         self.assertTrue((inds.varIndex['b'] == np.arange(5, 20)).all())
         self.assertTrue((inds.varIndex['c'] == np.arange(20, 40)).all())
-        print inds.varIndex 
 
 
 if __name__ == '__main__':
