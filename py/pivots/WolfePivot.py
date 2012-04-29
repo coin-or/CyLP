@@ -100,10 +100,10 @@ class WolfePivot(PivotPythonBase):
         leavingVarIndex = pivotVariable[pivotRow]
         colInd = s.sequenceIn()
 
-#        print 'Basis:'
-#        print s.getPivotVariable()
-#        print 'leave: ', leavingVarIndex
-#        print 'entering: ', colInd, ' comp: ', cl[colInd]
+        #print 'Basis:'
+        #print s.getPivotVariable()
+        #print 'leave: ', leavingVarIndex
+        #print 'entering: ', colInd, ' comp: ', cl[colInd]
          
         if s.getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:

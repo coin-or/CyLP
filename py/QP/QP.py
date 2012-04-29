@@ -452,8 +452,8 @@ class QP:
 
         if method == 'wp':
             total = p.compCount + p.nonCompCount
-            compPer = 'comp : %g ' % (p.compCount / float(total))
-            compRejPer = 'comp rejection : %g' % (p.compRej / float(p.compCount))
+            compPer = (p.compCount / float(total))
+            compRejPer = (p.compRej / float(p.compCount))
         
             st = '%s %s %s %s %s %s %d %s %s\n' % (self.filename.ljust(30), 
                 method.ljust(2),
@@ -1560,7 +1560,10 @@ def QPTest():
     start = clock()
     qp.fromQps(sys.argv[1])
     qp.convertToEqualityOnly()
-    qp.WolfeEquality()
+    if len(sys.argv) > 2:
+        qp.WolfeEquality(sys.argv[2])
+    else:
+        qp.WolfeEquality()
     return
     r = clock() - start
     if len(sys.argv) > 2:
