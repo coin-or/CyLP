@@ -328,7 +328,9 @@ class QP:
         print 'cond:', LA.cond(G[:nx, :nx].todense())
         
         #print G.todense()
-        G = G + 10**-6 * I(nVar)
+        minDiag = min(G[i, i] for i in xrange(nx))    
+        delta =  max(10**-8, 0.1 * max(1.0**-4, minDiag))
+        G = G + delta * I(nVar)
         #print G.todense()
         
         s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
