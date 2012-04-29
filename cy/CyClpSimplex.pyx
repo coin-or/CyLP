@@ -165,7 +165,7 @@ cdef class CyClpSimplex:
             else:
                 return self.cyLPModel.constraints
 
-    property constraints:
+    property variables:
         '''
         Variables.
         '''
