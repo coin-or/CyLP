@@ -358,6 +358,8 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
 
     '''
     if a == None:
+        if b == None:
+            return None
         return csr_matrixPlus(b)
     if b == None:
         return csr_matrixPlus(a)

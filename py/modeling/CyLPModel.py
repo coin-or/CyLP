@@ -705,6 +705,8 @@ class CyLPModel(object):
         Create a new instance of :py:class:`CyLPVar` using the given
         arguments and add it to current model's variable list.
         '''
+        if dim == 0:
+            return
         var = CyLPVar(name, dim, isInt)
         self.variables.append(var)
         if not self.inds.hasVar(var.name):

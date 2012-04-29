@@ -324,8 +324,8 @@ class QP:
         z = s.addVariable('z', nSlacks)
         y = s.addVariable('y', self.nEquality)
        
-        from numpy import linalg as LA
-        print 'cond:', LA.cond(G[:nx, :nx].todense())
+        #from numpy import linalg as LA
+        #print 'cond:', LA.cond(G[:nx, :nx].todense())
         
         #print G.todense()
         minDiag = min(G[i, i] for i in xrange(nx))    
@@ -334,15 +334,15 @@ class QP:
         #print G.todense()
         
         s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
-        s += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
+        if nSlacks:
+            s += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
+            s += z >= 0
         
         s += A * x == b
 
         s += x[nx:] >= 0
-        s += z >= 0
         s += sp >= 0
         s += sm >= 0
-        s += z >= 0
 
         s.objective = sp.sum() + sm.sum()
        
@@ -355,7 +355,8 @@ class QP:
         if method == 'wp':
             p = WolfePivotPE(s)
         
-        p.setComplement(m, x[nx:], z)
+        if nSlacks:
+            p.setComplement(m, x[nx:], z)
         #print 'comp list:\n', p.complementarityList
         
         s.setPivotMethod(p)
