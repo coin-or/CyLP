@@ -1014,13 +1014,13 @@ cdef class CyClpSimplex:
         >>> b = CyLPArray([4.2, 3])
         >>> x_u= CyLPArray([2., 3.5])
         >>>
-        >>> model.addConstraint(A*x <= a)
-        >>> model.addConstraint(2 <= B * x + D * y <= b)
-        >>> model.addConstraint(y >= 0)
-        >>> model.addConstraint(1.1 <= x[1:3] <= x_u)
+        >>> model += A*x <= a
+        >>> model += 2 <= B * x + D * y <= b
+        >>> model += y >= 0
+        >>> model += 1.1 <= x[1:3] <= x_u
         >>>
         >>> c = CyLPArray([1., -2., 3.])
-        >>> model.objective = c * x + 2 * y
+        >>> model.objective = c * x + 2 * y.sum()
         >>>
         >>>
         >>> s = CyClpSimplex(model)
@@ -1029,9 +1029,13 @@ cdef class CyClpSimplex:
         >>> cbcModel = s.getCbcModel()
         >>> cbcModel.branchAndBound()
         >>>
-        >>> sol = cbcModel.primalVariableSolution
-        >>> (abs(sol -
-        ...     np.array([0.5, 2, 2, 0, 0.75]) ) <= 10**-6).all()
+        >>> sol_x = cbcModel.primalVariableSolution['x']
+        >>> (abs(sol_x -
+        ...     np.array([0.5, 2, 2]) ) <= 10**-6).all()
+        True
+        >>> sol_y = cbcModel.primalVariableSolution['y']
+        >>> (abs(sol_y -
+        ...     np.array([0, 0.75]) ) <= 10**-6).all()
         True
 
         '''
@@ -1107,6 +1111,7 @@ cdef class CyClpSimplex:
         we have the CyLPModel we use this method to load the LP,
         for example:
 
+        >>> import numpy as np
         >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getModelExample
         >>>
         >>> s = CyClpSimplex()
@@ -1115,11 +1120,13 @@ cdef class CyClpSimplex:
         >>>
         >>> s.primal()
         'optimal'
-        >>> s.primalVariableSolution
-        array([ 0.2,  2. ,  1.1,  0. ,  0.9])
+        >>> sol_x = s.primalVariableSolution['x']
+        >>> (abs(sol_x -
+        ...     np.array([0.2, 2, 1.1]) ) <= 10**-6).all()
+        True
 
         '''
-
+        self.cyLPModel = cyLPModel
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
         
@@ -1217,7 +1224,11 @@ cdef class CyClpSimplex:
         used to add cuts, run B&B and ...
         '''
         cdef CppICbcModel* model = self.CppSelf.getICbcModel()
-        return CyCbcModel().setCppSelf(model)
+        cm =  CyCbcModel()
+        cm.setCppSelf(model)
+        if self.cyLPModel:
+            cm.cyLPModel = self.cyLPModel
+        return cm
 
     #############################################
     # CyLP and Pivoting
@@ -1464,14 +1475,14 @@ def getModelExample():
     b = CyLPArray([4.2, 3])
     x_u= CyLPArray([2., 3.5])
 
-    model.addConstraint(A * x <= a)
-    model.addConstraint(2 <= B * x + D * y <= b)
-    model.addConstraint(y >= 0)
-    model.addConstraint(1.1 <= x[1:3] <= x_u)
+    model += A * x <= a
+    model += 2 <= B * x + D * y <= b
+    model += y >= 0
+    model += 1.1 <= x[1:3] <= x_u
 
     c = CyLPArray([1., -2., 3.])
-    model.objective = c * x + 2 * y
-
+    model.objective = c * x + 2 * y.sum()
+    
     return model
 
 

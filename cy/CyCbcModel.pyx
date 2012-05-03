@@ -55,7 +55,7 @@ cdef class CyCbcModel:
     >>> model.addConstraint(1.1 <= x[1:3] <= x_u)
     >>>
     >>> c = CyLPArray([1., -2., 3.])
-    >>> model.objective = c * x + 2 * y
+    >>> model.objective = c * x + 2 * y.sum()
     >>>
     >>> s = CyClpSimplex(model)
     >>>
@@ -63,13 +63,16 @@ cdef class CyCbcModel:
     >>>
     >>> cbcModel.branchAndBound()
     >>>
-    >>> sol = cbcModel.primalVariableSolution
+    >>> sol_x = cbcModel.primalVariableSolution['x']
     >>>
-    >>> (abs(sol - np.array([0, 2, 2, 0, 1])) <= 10**-6).all()
+    >>> (abs(sol_x - np.array([0, 2, 2])) <= 10**-6).all()
     True
 
     '''
     
+    def __cinit__(self, cyLPModel=None):
+        self.cyLPModel = cyLPModel
+
     cdef setCppSelf(self, CppICbcModel* cppmodel):
         self.CppSelf = cppmodel
         return self
@@ -97,7 +100,15 @@ cdef class CyCbcModel:
 
     property primalVariableSolution:
         def __get__(self):
-            return <object>self.CppSelf.getPrimalVariableSolution()
+            ret = <object>self.CppSelf.getPrimalVariableSolution()
+            if self.cyLPModel:
+                m = self.cyLPModel
+                inds = m.inds
+                d = {}
+                for v in inds.varIndex.keys():
+                    d[v] = ret[inds.varIndex[v]]
+                ret = d
+            return ret
 
     property solutionCount:
         def __get__(self):

@@ -1,3 +1,5 @@
+#UNDER DEVELOPMENT AND TEST
+
 import sys
 import cProfile
 import inspect
@@ -172,13 +174,32 @@ class QP:
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
         
-        print '<=C<=', iConstraintsWithBothBounds
-        print 'C<=', iConstraintsWithJustUpperBound
-        print '<=C', iConstraintsWithJustLowerBound
-        print '<=x<=', iVarsWithBothBounds
-        print 'x<=', iVarsWithJustUpperBound
-        print '<=x', iVarsWithJustLowerBound
-        print 'free x', iFreeVars
+#        print '<=C<=', len(iConstraintsWithBothBounds)
+#        print 'C<=', len(iConstraintsWithJustUpperBound)
+#        print '<=C', len(iConstraintsWithJustLowerBound)
+#        print '<=x<=', len(iVarsWithBothBounds)
+#        print 'x<=', len(iVarsWithJustUpperBound)
+#        print '<=x', len(iVarsWithJustLowerBound)
+#        print 'free x', len(iFreeVars)
+        #st = 'n, m, =, <c<, c<, <c, <x<, x<, <x, freeVar\n'
+
+
+#        st = ''
+#        ind = self.filename.rindex('/') + 1
+#        st += self.filename[ind:] + ', '
+#        st +=  '%g, ' % nVar
+#        st +=  '%g, ' % (nEquality + nInEquality) 
+#        st +=  '%g, '% nEquality
+#        st +=  '%g, '% len(iConstraintsWithBothBounds)
+#        st +=  '%g, '% len(iConstraintsWithJustUpperBound)
+#        st += '%g, '% len(iConstraintsWithJustLowerBound)
+#        st += '%g, '% len(iVarsWithBothBounds)
+#        st += '%g, '% len(iVarsWithJustUpperBound)
+#        st += '%g, '% len(iVarsWithJustLowerBound)
+#        st += '%g, '% len(iFreeVars)
+#        
+#        st += '%g, ' % (G.nnz / float(nVar*nVar))
+#        st += '%g, ' % (A.nnz / float(A.shape[0] * A.shape[1]))
         
         if nInEquality:
             iden = I(nInEquality)
@@ -294,6 +315,13 @@ class QP:
         self.x_low[nVar:] = 0
         self.x_up = infinity * np.ones(self.n)
 
+#        st += '%g, ' % (self.G.nnz / float(self.G.shape[0]*self.G.shape[0]))
+#        st += '%g ' % (self.A.nnz / 
+#                            float(self.A.shape[0] * self.A.shape[1]))
+#        st += '\n'
+#        with open('qpstat', 'a') as f:
+#            f.write(st)
+        
 
     def WolfeEquality(self, method='w'):
         assert(self.nInEquality == 0)
@@ -326,13 +354,15 @@ class QP:
        
         #from numpy import linalg as LA
         #print 'cond:', LA.cond(G[:nx, :nx].todense())
-        
+        #print 'G nnz:', G.nnz, G.nnz / float(nx*nx)
+        #print 'A nnz:', A.nnz, A.nnz / float(A.shape[0] * A.shape[1])
+
         #print G.todense()
         minDiag = min(G[i, i] for i in xrange(nx))    
         delta =  max(10**-8, 0.1 * max(1.0**-4, minDiag))
         G = G + delta * I(nVar)
         #print G.todense()
-        
+         
         s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
         if nSlacks:
             s += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
@@ -1553,6 +1583,16 @@ class QP:
         print c
         print x
         print 0.5 * x * (x * G).T + np.dot(c, x)
+
+
+def getStat():
+    import os
+    d = '/Users/mehdi/Documents/work/benchmarks/qp/'
+    for f in os.listdir(d):
+        if f[-3:] == 'SIF':
+            qp = QP()
+            qp.fromQps(d + f)
+            qp.convertToEqualityOnly()
 
 
 def QPTest():

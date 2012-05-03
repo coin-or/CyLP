@@ -26,14 +26,14 @@
     >>> x_u= CyLPArray([2., 3.5])
     >>>
     >>> # Add constraints
-    >>> model.addConstraint(A * x <= a)
-    >>> model.addConstraint(2 <= B * x + D * y <= b)
-    >>> model.addConstraint(y >= 0)
-    >>> model.addConstraint(1.1 <= x[1:3] <= x_u)
+    >>> model += A * x <= a
+    >>> model += 2 <= B * x + D * y <= b
+    >>> model += y >= 0
+    >>> model += 1.1 <= x[1:3] <= x_u
     >>>
     >>> # Set the objective function
     >>> c = CyLPArray([1., -2., 3.])
-    >>> model.objective = c * x + 2 * y
+    >>> model.objective = c * x + 2 * y.sum()
     >>>
     >>> # Create a CyClpSimplex instance from the model
     >>> s = CyClpSimplex(model)
@@ -41,13 +41,17 @@
     >>> # Solve using primal Simplex
     >>> s.primal()
     'optimal'
-    >>> s.primalVariableSolution
-    array([ 0.2,  2. ,  1.1,  0. ,  0.9])
-    >>> s.addConstraint(x[2] + y[1] >= 2.1)
+    >>> s.primalVariableSolution['x']
+    array([ 0.2,  2. ,  1.1])
+    >>> s.primalVariableSolution['y']
+    array([ 0. ,  0.9])
+    >>> s += x[2] + y[1] >= 2.1
     >>> s.primal()
     'optimal'
-    >>> s.primalVariableSolution
-    array([ 0. ,  2. ,  1.1,  0. ,  1. ])
+    >>> s.primalVariableSolution['x']
+    array([ 0. ,  2. ,  1.1])
+    >>> s.primalVariableSolution['y']
+    array([ 0.,  1.])
 
 '''
 
@@ -574,19 +578,20 @@ class IndexFactory:
 
     **Usage**
 
+    >>> import numpy as np
     >>> from CyLP.py.modeling.CyLPModel import IndexFactory
     >>> i = IndexFactory()
     >>> i.addVar('x', 10)
     >>> i.addVar('y', 5)
     >>> i.hasVar('x')
     True
-    >>> i.varIndex['y'] == range(10, 15)
+    >>> (i.varIndex['y'] == np.arange(10, 15)).all()
     True
     >>> i.addConst('Manpower', 4)
     >>> i.addConst('Gold', 10)
-    >>> i.constIndex['Manpower'] == range(4)
+    >>> (i.constIndex['Manpower'] == np.arange(4)).all()
     True
-    >>> i.constIndex['Gold'] == range(4, 14)
+    >>> (i.constIndex['Gold'] == np.arange(4, 14)).all()
     True
 
     '''

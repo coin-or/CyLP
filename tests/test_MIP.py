@@ -44,10 +44,12 @@ class TestMIP(unittest.TestCase):
 
         cbcModel.branchAndBound()
 
-        sol = cbcModel.primalVariableSolution
-
-        self.assertTrue((abs(sol -
-                        np.array([0, 2, 2, 0, 1]) ) <= 10**-6).all())
+        sol_x = cbcModel.primalVariableSolution['x']
+        self.assertTrue((abs(sol_x -
+                        np.array([0, 2, 2]) ) <= 10**-6).all())
+        sol_y = cbcModel.primalVariableSolution['y']
+        self.assertTrue((abs(sol_y -
+                        np.array([0, 1]) ) <= 10**-6).all())
 
     def test_SetInt_CopyIn(self):
         self.model = CyLPModel()
@@ -79,9 +81,13 @@ class TestMIP(unittest.TestCase):
         cbcModel = s.getCbcModel()
         cbcModel.branchAndBound()
 
-        sol = cbcModel.primalVariableSolution
-        self.assertTrue((abs(sol -
-                        np.array([0.5, 2, 2, 0, 0.75]) ) <= 10**-6).all())
+        sol_x = cbcModel.primalVariableSolution['x']
+        print '~~~', sol_x
+        self.assertTrue((abs(sol_x -
+                        np.array([0.5, 2, 2]) ) <= 10**-6).all())
+        sol_y = cbcModel.primalVariableSolution['y']
+        self.assertTrue((abs(sol_y -
+                        np.array([0, 0.75]) ) <= 10**-6).all())
 
 
         s.copyInIntegerInformation(np.array(
@@ -89,9 +95,12 @@ class TestMIP(unittest.TestCase):
         cbcModel = s.getCbcModel()
         cbcModel.branchAndBound()
 
-        sol = cbcModel.primalVariableSolution
-        self.assertTrue((abs(sol -
-                        np.array([0, 2, 1.1, 0, 1]) ) <= 10**-6).all())
+        sol_x = cbcModel.primalVariableSolution['x']
+        self.assertTrue((abs(sol_x -
+                        np.array([0, 2, 1.1]) ) <= 10**-6).all())
+        sol_y = cbcModel.primalVariableSolution['y']
+        self.assertTrue((abs(sol_y -
+                        np.array([0, 1]) ) <= 10**-6).all())
 
     def test_NodeCompare(self):
         s = CyClpSimplex()
