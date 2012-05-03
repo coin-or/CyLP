@@ -160,10 +160,15 @@ Increases matrix&#8217;s <tt class="docutils literal"><span class="pre">shape[1]
 <h2>Sparse Matrix Concatenation<a class="headerlink" href="#sparse-matrix-concatenation" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="CyLP.py.utils.sparseUtil.sparseConcat">
-<tt class="descclassname">CyLP.py.utils.sparseUtil.</tt><tt class="descname">sparseConcat</tt><big>(</big><em>a</em>, <em>b</em>, <em>how</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#sparseConcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.sparseConcat" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">CyLP.py.utils.sparseUtil.</tt><tt class="descname">sparseConcat</tt><big>(</big><em>a</em>, <em>b</em>, <em>how</em>, <em>v_offset=0</em>, <em>h_offset=0</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#sparseConcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.sparseConcat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Concatenate two sparse matrices, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>, horizontally if
 <tt class="docutils literal"><span class="pre">how</span> <span class="pre">=</span> <span class="pre">'h'</span></tt>, and vertically if <tt class="docutils literal"><span class="pre">how</span> <span class="pre">=</span> <span class="pre">'v'</span></tt>.
-Add zero rows and columns if dimensions don&#8217;t align.</p>
+Add zero rows and columns if dimensions don&#8217;t align.
+<tt class="docutils literal"><span class="pre">v_offset</span></tt> specifies how to align <tt class="docutils literal"><span class="pre">b</span></tt> along side <tt class="docutils literal"><span class="pre">a</span></tt>. The 
+value of <tt class="docutils literal"><span class="pre">v_offset</span></tt> will be added to each row index of <tt class="docutils literal"><span class="pre">b</span></tt>.
+<tt class="docutils literal"><span class="pre">v_offset=-1</span></tt> means that we want the greatest possible offset without 
+changeing the dimensions.
+<tt class="docutils literal"><span class="pre">h_offset</span></tt> is a similar argument but to specify horizontal offset.</p>
 <p><strong>Usage</strong></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">sparseConcat</span><span class="p">,</span> <span class="n">csc_matrixPlus</span>

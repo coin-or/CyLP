@@ -82,14 +82,14 @@ to solve it is independant of the solver.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># Add constraints</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># Set the objective function</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># Create a CyClpSimplex instance from the model</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -97,13 +97,17 @@ to solve it is independant of the solver.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c"># Solve using primal Simplex</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
 <span class="go">&#39;optimal&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
-<span class="go">array([ 0.2,  2. ,  1.1,  0. ,  0.9])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">2.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+<span class="go">array([ 0.2,  2. ,  1.1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span>
+<span class="go">array([ 0. ,  0.9])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">+=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mf">2.1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
 <span class="go">&#39;optimal&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
-<span class="go">array([ 0. ,  2. ,  1.1,  0. ,  1. ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+<span class="go">array([ 0. ,  2. ,  1.1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span>
+<span class="go">array([ 0.,  1.])</span>
 </pre></div>
 </div>
 <div class="section" id="cylpvar">
@@ -136,7 +140,7 @@ arguments and add it to current model&#8217;s variable list.</p>
 
 <dl class="method">
 <dt id="CyLP.py.modeling.CyLPModel.CyLPModel.addConstraint">
-<tt class="descname">addConstraint</tt><big>(</big><em>cons</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPModel.addConstraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPModel.addConstraint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">addConstraint</tt><big>(</big><em>cons</em>, <em>consName=''</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/modeling/CyLPModel.html#CyLPModel.addConstraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.modeling.CyLPModel.CyLPModel.addConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add constraint <tt class="docutils literal"><span class="pre">cons</span></tt> to the <tt class="docutils literal"><span class="pre">CyLPModel</span></tt>. Argument <tt class="docutils literal"><span class="pre">cons</span></tt> must
 be an expresion made using instances of <a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPVar" title="CyLP.py.modeling.CyLPModel.CyLPVar"><tt class="xref py py-class docutils literal"><span class="pre">CyLPVar</span></tt></a>,
 <a class="reference internal" href="#CyLP.py.modeling.CyLPModel.CyLPArray" title="CyLP.py.modeling.CyLPModel.CyLPArray"><tt class="xref py py-class docutils literal"><span class="pre">CyLPArray</span></tt></a>, Numpy matrices, or sparse matrices. It can
@@ -172,19 +176,20 @@ helpful when we define LP constraints.</p>
 <dd><p>A small class that keeps track of the indices of variables and constraints
 that you are adding to a problem gradually.</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">IndexFactory</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">IndexFactory</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">IndexFactory</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">hasVar</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">varIndex</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">varIndex</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addConst</span><span class="p">(</span><span class="s">&#39;Manpower&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addConst</span><span class="p">(</span><span class="s">&#39;Gold&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="s">&#39;Manpower&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="s">&#39;Manpower&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="s">&#39;Gold&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="s">&#39;Gold&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>
 </div>

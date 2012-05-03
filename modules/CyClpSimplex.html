@@ -80,8 +80,23 @@ For an example of the latter case see
 </pre></div>
 </div>
 <dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.CLP_addConstraint">
+<tt class="descname">CLP_addConstraint</tt><big>(</big><em>self</em>, <em>numberInRow</em>, <em>ndarray columns</em>, <em>ndarray elements</em>, <em>rowLower</em>, <em>rowUpper</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.CLP_addConstraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a constraint to the problem, CLP style. See CLP documentation.
+Not commonly used in CyLP.
+For CyLP modeling tool see <tt class="xref py py-mod docutils literal"><span class="pre">CyLP.python.modeling.CyLPModel</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.CLP_addVariable">
+<tt class="descname">CLP_addVariable</tt><big>(</big><em>self</em>, <em>numberInColumn</em>, <em>ndarray rows</em>, <em>ndarray elements</em>, <em>columnLower</em>, <em>columnUpper</em>, <em>objective</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.CLP_addVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a variable to the problem, CLP style. See CLP documentation.
+For CyLP modeling tool see <tt class="xref py py-mod docutils literal"><span class="pre">CyLP.python.modeling.CyLPModel</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.addConstraint">
-<tt class="descname">addConstraint</tt><big>(</big><em>self</em>, <em>cons</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.addConstraint" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">addConstraint</tt><big>(</big><em>self</em>, <em>cons</em>, <em>name=''</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.addConstraint" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds constraints <tt class="docutils literal"><span class="pre">cons</span></tt>  to the problem. Example for the value
 of <tt class="docutils literal"><span class="pre">cons</span></tt> is <tt class="docutils literal"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">A</span> <span class="pre">*</span> <span class="pre">x</span> <span class="pre">&lt;=</span> <span class="pre">b</span></tt> where <tt class="docutils literal"><span class="pre">A</span></tt> is a Numpy matrix and
 b is a <tt class="xref py py-class docutils literal"><span class="pre">CyLPArray</span></tt>.</p>
@@ -96,9 +111,8 @@ For CyLP modeling tool see <tt class="xref py py-mod docutils literal"><span cla
 
 <dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.addVariable">
-<tt class="descname">addVariable</tt><big>(</big><em>self</em>, <em>numberInColumn</em>, <em>ndarray rows</em>, <em>ndarray elements</em>, <em>columnLower</em>, <em>columnUpper</em>, <em>objective</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.addVariable" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add a variable to the problem, CLP style. See CLP documentation.
-For CyLP modeling tool see <tt class="xref py py-mod docutils literal"><span class="pre">CyLP.python.modeling.CyLPModel</span></tt>.</p>
+<tt class="descname">addVariable</tt><big>(</big><em>self</em>, <em>varname</em>, <em>dim</em>, <em>isInt=False</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.addVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add variable <tt class="docutils literal"><span class="pre">var</span></tt> to the problem.</p>
 </dd></dl>
 
 <dl class="method">
@@ -117,6 +131,40 @@ For CyLP modeling tool see <tt class="xref py py-mod docutils literal"><span cla
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.checkVar">
 <tt class="descname">checkVar</tt><big>(</big><em>self</em>, <em>i</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.checkVar" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.constraints">
+<tt class="descname">constraints</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.constraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constraints.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.constraintsLower">
+<tt class="descname">constraintsLower</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.constraintsLower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constraints lower bounds</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.constraintsUpper">
+<tt class="descname">constraintsUpper</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.constraintsUpper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constraints upper bounds</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.copyInIntegerInformation">
@@ -187,6 +235,11 @@ a variable is integer</p>
 </tbody>
 </table>
 </dd></dl>
+
+<dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.extractCyLPModel">
+<tt class="descname">extractCyLPModel</tt><big>(</big><em>self</em>, <em>fileName</em>, <em>keepNames=False</em>, <em>ignoreErrors=False</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.extractCyLPModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.filterVars">
@@ -310,6 +363,11 @@ in it.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.getVarByName">
+<tt class="descname">getVarByName</tt><big>(</big><em>self</em>, <em>name</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.getVarByName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.getVarStatus">
 <tt class="descname">getVarStatus</tt><big>(</big><em>self</em>, <em>int sequence</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.getVarStatus" title="Permalink to this definition">¶</a></dt>
 <dd><p>gets the status of a variable</p>
@@ -414,7 +472,8 @@ of <em>CyLPModel</em> class.</p>
 But in a case that the CyClpSimplex instance is created before
 we have the CyLPModel we use this method to load the LP,
 for example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy.CyClpSimplex</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span><span class="p">,</span> <span class="n">getModelExample</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy.CyClpSimplex</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span><span class="p">,</span> <span class="n">getModelExample</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">getModelExample</span><span class="p">()</span>
@@ -422,16 +481,34 @@ for example:</p>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
 <span class="go">&#39;optimal&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
-<span class="go">array([ 0.2,  2. ,  1.1,  0. ,  0.9])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol_x</span> <span class="o">-</span>
+<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">])</span> <span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.loadProblem">
-<tt class="descname">loadProblem</tt><big>(</big><em>self</em>, <em>CyCoinModel modelObject</em>, <em>int tryPlusMinusOne=False</em><big>)</big> &rarr; int<a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.loadProblem" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">loadProblem</tt><big>(</big><em>self</em>, <em>CyCoinPackedMatrix matrix</em>, <em>ndarray collb</em>, <em>ndarray colub</em>, <em>ndarray obj</em>, <em>ndarray rowlb</em>, <em>ndarray rowub</em>, <em>ndarray rowObjective=&lt;???&gt;</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.loadProblem" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.loadProblemFromCyCoinModel">
+<tt class="descname">loadProblemFromCyCoinModel</tt><big>(</big><em>self</em>, <em>CyCoinModel modelObject</em>, <em>int tryPlusMinusOne=False</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.loadProblemFromCyCoinModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.loadQuadraticObjective">
+<tt class="descname">loadQuadraticObjective</tt><big>(</big><em>self</em>, <em>CyCoinPackedMatrix matrix</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.loadQuadraticObjective" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.matrix">
+<tt class="descname">matrix</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The coefficient matrix.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.nCols">
@@ -538,6 +615,20 @@ See this <a class="reference internal" href="#simple-run"><em>usage example</em>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.primalVariableSolutionAll">
+<tt class="descname">primalVariableSolutionAll</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.primalVariableSolutionAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solution to the primal variables. Including the slacks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.readMps">
 <tt class="descname">readMps</tt><big>(</big><em>self</em>, <em>char *filename</em>, <em>int keepNames=False</em>, <em>int ignoreErrors=False</em><big>)</big> &rarr; int<a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.readMps" title="Permalink to this definition">¶</a></dt>
@@ -556,6 +647,18 @@ See this <a class="reference internal" href="#simple-run"><em>usage example</em>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.removeConstraint">
+<tt class="descname">removeConstraint</tt><big>(</big><em>self</em>, <em>name</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.removeConstraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes constraint named <tt class="docutils literal"><span class="pre">name</span></tt> from the problem.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.removeVariable">
+<tt class="descname">removeVariable</tt><big>(</big><em>self</em>, <em>name</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.removeVariable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes variable named <tt class="docutils literal"><span class="pre">name</span></tt> from the problem.</p>
 </dd></dl>
 
 <dl class="method">
@@ -609,7 +712,9 @@ See this <a class="reference internal" href="#simple-run"><em>usage example</em>
 <dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.setComplement">
 <tt class="descname">setComplement</tt><big>(</big><em>self</em>, <em>var1</em>, <em>var2</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.setComplement" title="Permalink to this definition">¶</a></dt>
-<dd><p>sets var1 and var2 to be complements</p>
+<dd><p>if <tt class="docutils literal"><span class="pre">arg</span></tt> is an integer: mark variable index <tt class="docutils literal"><span class="pre">arg</span></tt> as integer.
+if <tt class="docutils literal"><span class="pre">arg</span></tt> is a <tt class="xref py py-class docutils literal"><span class="pre">CyLPVar</span></tt> object: mark variable
+<tt class="docutils literal"><span class="pre">arg</span></tt> as integer. Here is an example of the latter:</p>
 </dd></dl>
 
 <dl class="method">
@@ -644,13 +749,13 @@ if <tt class="docutils literal"><span class="pre">arg</span></tt> is a <tt class
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">4.2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">A</span><span class="o">*</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">A</span><span class="o">*</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -659,9 +764,13 @@ if <tt class="docutils literal"><span class="pre">arg</span></tt> is a <tt class
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getCbcModel</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span><span class="o">.</span><span class="n">branchAndBound</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sol</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol</span> <span class="o">-</span>
-<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">])</span> <span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol_x</span> <span class="o">-</span>
+<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span> <span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_y</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol_y</span> <span class="o">-</span>
+<span class="gp">... </span>    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">])</span> <span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -756,6 +865,20 @@ Wolfe&#8217;s rule used to solve QPs.</p>
 <li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/library/string.html#string" title="(in Python v2.7)"><em>string</em></a>) &#8211; desired name for the variable</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.solution">
+<tt class="descname">solution</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
 </tr>
 </tbody>
 </table>
@@ -872,6 +995,40 @@ entering and leaving variables are obtained.</p>
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.varNotSuperBasic">
 <tt class="descname">varNotSuperBasic</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.varNotSuperBasic" title="Permalink to this definition">¶</a></dt>
 <dd><p>The index set of variables that are NOT <em>superbasic</em>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.variables">
+<tt class="descname">variables</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variables.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.variablesLower">
+<tt class="descname">variablesLower</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.variablesLower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variables lower bounds</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.variablesUpper">
+<tt class="descname">variablesUpper</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.variablesUpper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variables upper bounds</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">

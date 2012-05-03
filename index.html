@@ -117,16 +117,24 @@ be in your PYTHONPATH. To this end, you may run:</p>
 <div class="last highlight-python"><pre>$ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"</pre>
 </div>
 </dd>
-<dt>Now you can use CyLP in your python code. For example:</dt>
-<dd><div class="first last highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="s">&#39;path/to/CyLP/input/netlib/adlittle.mps&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">initialSolve</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
-</pre></div>
+<dt>STEP 5 (LINUX):</dt>
+<dd><p class="first">In linux you might also need to add COIN&#8217;s lib directory to
+LD_LIBRARY_PATH as follows:</p>
+<div class="last highlight-python"><pre>$ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"</pre>
 </div>
 </dd>
 </dl>
+<p>Now you can use CyLP in your python code. For example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="s">&#39;../input/netlib/adlittle.mps&#39;</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">initialSolve</span><span class="p">()</span>
+<span class="go">&#39;optimal&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">objectiveValue</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">225494.963</span>
+</pre></div>
+</div>
 <p>Or simply go to CyLP and run:</p>
 <div class="highlight-python"><pre>$ python -m unittest discover</pre>
 </div>
