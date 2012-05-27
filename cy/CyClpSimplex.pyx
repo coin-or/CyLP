@@ -454,6 +454,18 @@ cdef class CyClpSimplex:
         def __get__(self):
             return self.Hessian
 
+        def __set__(self, mat):
+            m = None
+            try:
+                m = mat.tocoo()
+            except:
+                raise Exception('Hessian can be set to a matrix that ' \
+                                            'implements *tocoo* method')
+            if m:
+                coinMat = CyCoinPackedMatrix(True, m.row, m.col, m.data)
+                self.loadQuadraticObjective(coinMat)
+                
+
     #############################################
     # get set
     #############################################
