@@ -777,13 +777,14 @@ cdef class CyClpSimplex:
         '''
         Add variable ``var`` to the problem.
         '''
-        if self.cyLPModel:
-            var = self.cyLPModel.addVariable(varname, dim, isInt)
-            self.loadFromCyLPModel(self.cyLPModel)
-            return var
-        else:
-            raise Exception('To add a variable you must set ' \
-                            'CyLPSimplex.cyLPModel first.')
+        if not self.cyLPModel:
+            self.cyLPModel = CyLPModel()
+        var = self.cyLPModel.addVariable(varname, dim, isInt)
+        self.loadFromCyLPModel(self.cyLPModel)
+        return var
+        #else:
+        #    raise Exception('To add a variable you must set ' \
+        #                    'CyLPSimplex.cyLPModel first.')
 
     def removeVariable(self, name):
         '''
@@ -800,6 +801,11 @@ cdef class CyClpSimplex:
         if not self.cyLPModel:    
             raise Exception('No CyLPSimplex.cyLPModel is set.')
         return self.cyLPModel.getVarByName(name)       
+    
+    def getVarNameByIndex(self, ind):
+        if not self.cyLPModel:    
+            raise Exception('No CyLPSimplex.cyLPModel is set.')
+        return self.cyLPModel.inds.reverseVarSearch(ind)       
     
     def CLP_addConstraint(self, numberInRow,
                     np.ndarray[np.int32_t, ndim=1] columns,
@@ -1144,6 +1150,8 @@ cdef class CyClpSimplex:
         
         n = len(variableLower)
         m = len(constraintLower)
+        if n == 0 or m == 0:
+            return
 #        print 'm'
 #        mmm = mat.todense()
 #        from math import ceil

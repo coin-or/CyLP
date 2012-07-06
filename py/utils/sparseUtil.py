@@ -204,6 +204,33 @@ class csr_matrixPlus(sparse.csr_matrix):
             return sparse.csr_matrix.__setitem__(self, (iRow, iCol), val)
         
         nRows = self.shape[0]
+        nCols = self.shape[1]
+        
+        l = self.tolil()
+        
+        if iCol >= nCols:
+            l._shape = (nRows, iCol + 1)
+            nCols = iCol + 1
+        
+        if iRow >= nRows:
+            l._shape = (iRow + 1, nCols)
+            nRowsToAdd = iRow + 1 - nRows
+            l_temp = sparse.lil_matrix((nRowsToAdd, 1))
+            l.data = np.concatenate((l.data, l_temp.data))
+            l.rows = np.concatenate((l.rows, l_temp.rows))
+
+        l[iRow, iCol] = val
+        s = csr_matrixPlus(l)
+        
+        self._nnz = s.nnz
+        self._shape = s._shape
+        self.indices = s.indices
+        self.indptr = s.indptr
+        self.data = s.data
+        self.has_sorted_indices = s.has_sorted_indices
+        return
+
+        nRows = self.shape[0]
 
         if iCol >= self.shape[1]:
             self._shape = (self.shape[0], iCol + 1)

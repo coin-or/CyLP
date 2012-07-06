@@ -57,6 +57,13 @@ class TestIndexFactory(unittest.TestCase):
         self.assertTrue((inds.varIndex['b'] == np.arange(5, 20)).all())
         self.assertTrue((inds.varIndex['c'] == np.arange(20, 40)).all())
 
+    def test_reverse(self):
+        inds = self.inds
+        
+        self.assertTrue(inds.reverseVarSearch(14) == ('a', 9))
+        self.assertTrue(inds.reverseVarSearch(15) == ('b', 0))
+        self.assertTrue(inds.reverseVarSearch(34) == ('c', 4))
+
 
 if __name__ == '__main__':
     unittest.main()

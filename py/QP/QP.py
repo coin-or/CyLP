@@ -328,8 +328,15 @@ class QP:
         start = clock()
         A = self.A
         b = CyLPArray(self.b)
-        c = CyLPArray(self.c)
+        c = CyLPArray(self.c) 
         G = self.G
+        
+#        print 'A\n', A.todense()
+#        print 'b\n', b
+#        print 'c\n', c
+#        print 'G\n', G.todense()
+#
+
         
         nVar = self.n
         nx = self.nOriginalVar
@@ -359,16 +366,33 @@ class QP:
 
         #print G.todense()
         minDiag = min(G[i, i] for i in xrange(nx))    
-        delta =  max(10**-8, 0.1 * max(1.0**-4, minDiag))
+        delta =  max(10**-8, 0.01 * max(1.0**-4, minDiag))
         G = G + delta * I(nVar)
         #print G.todense()
-         
+        
+#        print 'G'
+#        print G.todense()
+#
+#        print 'A'
+#        print A.todense()
+#
+#        print 'A.T'
+#        print A.T.todense()
+#
+#        print 'A.T[:nx, :]'
+#        print A.T[:nx, :].todense()
+#
+#        print 'A.T[nx:, :]'
+#        print A.T[nx:, :].todense()
+#   
+#        print nx
+
         s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
         if nSlacks:
             s += -A.T[nx:, :] * y - z + sp[nx:] - sm[nx:] == 0
             s += z >= 0
         
-        s += A * x == b
+        #s += A * x == b
 
         s += x[nx:] >= 0
         s += sp >= 0
@@ -396,7 +420,36 @@ class QP:
         timeToSolve = clock() - start
 
         self.writeReport('qpout', s, timeToMake, timeToSolve, method, p)
-
+        
+#        print 'x'
+#        print s.primalVariableSolution['x']
+#        print 'z'
+#        print s.primalVariableSolution['z']
+#        print 'y'
+#        print s.primalVariableSolution['y']
+#        
+#        nx = self.nOriginalVar
+#        x = np.matrix(s.primalVariableSolution['x']).T
+#        y = np.matrix(s.primalVariableSolution['y']).T
+#        z = np.matrix(s.primalVariableSolution['z']).T
+#        #x = x[:nx]
+#        #G = self.G[:nx, :nx]
+#        c = np.matrix(self.c).T
+#        print c
+#        print np.zeros((3, 1))
+#        c = np.concatenate((c, np.zeros((5, 1))), axis=0)
+#        print c
+#
+#        print 'A*x = '
+#        print A * x
+#        print 'G * x + c'
+#        print G * x + c
+#        print 'A.T * y'
+#        print A.T * y
+#
+#        print G[:nx, :] * x - A.T[:nx, :] * y
+#        print -A.T[nx:, :] * y - z
+#        #print G * x + c - A.T * y - z  
         return
 
 #        m = CyLPModel()

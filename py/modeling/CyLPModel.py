@@ -682,7 +682,18 @@ class IndexFactory:
         for cname, rg in cind.items():
             s += '%s : %s\n' % (cname.rjust(15), str(rg))
         return s
-
+    
+    def reverseVarSearch(self, ind):
+        '''
+        Take an index and return the corresponding variable name. 
+        '''
+        inds = self.varIndex
+        for key in inds.keys():
+            if ind in inds[key]:
+                i = np.where(inds[key]==ind)[0][0]
+                return key, i
+        return -1, -1
+            
 
 from CyLP.py.utils.sparseUtil import sparseConcat, csr_matrixPlus, csc_matrixPlus
 

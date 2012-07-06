@@ -36,7 +36,7 @@ class WolfePivotPE(PivotPythonBase):
         self.compCount = 0
         self.nonCompCount = 0
         self.compRej = 0
-
+        self.numberOfIncompSinceLastUpdate = 0
     # Begining of Positive-Edge-related attributes
     
     def updateP(self):
@@ -117,20 +117,53 @@ class WolfePivotPE(PivotPythonBase):
 
             comp_rc = abs(rc[comp_varInds])
             if len(comp_rc) > 0:
-                maxCompInd = comp_varInds[np.argmax(comp_rc)]
-                maxCompRc = rc[maxCompInd]
+                if False:
+                    s = self.clpModel
+                    cl = self.complementarityList
+                    maxCompRc = 0
+                    count = 0
+                    #randinds = np.random.randint(len(comp_varInds), size=10)
+                    nn = 5
+#                    for i in xrange(random.randint(0, 
+#                                    len(comp_varInds)), 
+#                                    min(nn, len(comp_varInds))):
+                    for i in xrange(min(nn, len(comp_varInds))):
+                    #for i in randinds:
+                        ind = comp_varInds[i]
+                        if (s.getVarStatus(cl[ind]) != 1 and 
+                                   comp_rc[i] > maxCompRc):
+                            maxCompInd = ind
+                            maxCompRc = rc[maxCompInd]
+                else:
+                    maxCompInd = comp_varInds[np.argmax(comp_rc)]
+                    maxCompRc = rc[maxCompInd]
+            del compatibility
+            del comp_rc
+            del comp_varInds
 
         if len(rc2) > 0:
             maxInd = indicesToConsider[np.argmax(rc2)]
             maxRc = rc[maxInd]
-
+        
         del rc2
         if maxCompInd != -1 and abs(maxCompRc) > 0.1 * abs(maxRc):
             self.compCount += 1
+            #print s.getVarNameByIndex(maxCompInd)
             return maxCompInd
+        
         self.nonCompCount += 1
         self.CompIter = False
-        self.updateW()
+        if self.numberOfIncompSinceLastUpdate > 5:
+            self.updateW()
+            self.numberOfIncompSinceLastUpdate = 0
+        else:
+            self.numberOfIncompSinceLastUpdate += 1
+
+#        
+#        for i in xrange(s.nConstraints):
+#            print s.getVarNameByIndex(s.getPivotVariable()[i]),
+#        print
+        
         return maxInd
         
 #        

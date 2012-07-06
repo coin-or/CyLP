@@ -87,12 +87,13 @@ cdef class CyCoinMpsIO:
             
             m = self.nConstraints
             
+#            for i in xrange(n):
+#                for j in xrange(Hessian.indptr[i], Hessian.indptr[i + 1]):
+#                    jCol = Hessian.indices[j]
+#                    Hessian[jCol, i] = Hessian[i, jCol]
+            Hessian = Hessian + Hessian.T
             for i in xrange(n):
-                for j in xrange(Hessian.indptr[i], Hessian.indptr[i + 1]):
-                    jCol = Hessian.indices[j]
-                    Hessian[jCol, i] = Hessian[i, jCol]
-            
-
+                Hessian[i, i] /= 2
             self.Hessian = Hessian
 
         return ret
