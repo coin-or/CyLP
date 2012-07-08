@@ -37,6 +37,9 @@ class WolfePivotPE(PivotPythonBase):
         self.nonCompCount = 0
         self.compRej = 0
         self.numberOfIncompSinceLastUpdate = 0
+        self.last_p_count = 0
+        self.iCounter = 0
+        self.iInterval = 100
     # Begining of Positive-Edge-related attributes
     
     def updateP(self):
@@ -51,7 +54,6 @@ class WolfePivotPE(PivotPythonBase):
 
         #self.p = np.where(np.abs(rhs) > self.EPSILON)[0]
         self.z = np.where(np.abs(rhs) <= self.EPSILON)[0]
-
         #print 'degeneracy level : ', (len(self.z)) / float(nRows)
         #self.isDegenerate = (len(self.p) != nRows)
         self.isDegenerate = (len(self.z) > 0)
@@ -146,18 +148,34 @@ class WolfePivotPE(PivotPythonBase):
             maxRc = rc[maxInd]
         
         del rc2
+        
         if maxCompInd != -1 and abs(maxCompRc) > 0.1 * abs(maxRc):
             self.compCount += 1
             #print s.getVarNameByIndex(maxCompInd)
             return maxCompInd
-        
+       
+        if self.iCounter % self.iInterval == 0:
+            rhs = self.rhs
+            s.getRightHandSide(rhs)
+            p_count = len(np.where(np.abs(rhs) > self.EPSILON)[0])
+            if abs(p_count - self.last_p_count) > 10:
+                #print s.iteration
+                self.iCounter = 0
+                self.updateW()
+                self.last_p_count = p_count
+                self.iInterval = max(50, self.iInterval - 50)
+            else:
+                self.iInterval = min(300, self.iInterval + 50)
+                self.iCounter += 1
+        else:
+            self.iCounter += 1
         self.nonCompCount += 1
         self.CompIter = False
-        if self.numberOfIncompSinceLastUpdate > 5:
-            self.updateW()
-            self.numberOfIncompSinceLastUpdate = 0
-        else:
-            self.numberOfIncompSinceLastUpdate += 1
+        #if self.numberOfIncompSinceLastUpdate > 5:
+        #    self.updateW()
+        #    self.numberOfIncompSinceLastUpdate = 0
+        #else:
+        #    self.numberOfIncompSinceLastUpdate += 1
 
 #        
 #        for i in xrange(s.nConstraints):
