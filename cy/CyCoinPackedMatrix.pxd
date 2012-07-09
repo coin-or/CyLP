@@ -8,7 +8,7 @@ cdef extern from "ICoinPackedMatrix.hpp":
         PyObject* np_getVectorStarts()
         int getMajorDim()
         int getMinorDim()
-
+        void reserve(int newMaxMajorDim, int newMaxSize, bint create)
         CppCoinPackedMatrix(bint colordered, int* rowIndices,
                                     int* colIndices, double* elements,
                                     int numels)

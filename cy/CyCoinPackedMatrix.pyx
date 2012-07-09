@@ -62,6 +62,9 @@ cdef class CyCoinPackedMatrix:
     property minorDim:
         def __get__(self):
             return self.CppSelf.getMinorDim()
+    
+    def reserve(self,  newMaxMajorDim,  newMaxSize,  create=0):
+        self.CppSelf.reserve(newMaxMajorDim, newMaxSize, create)
 
     #def __getitem__(self, n):
     #   return self.CppSelf.getItem(n)

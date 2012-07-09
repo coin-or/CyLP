@@ -120,21 +120,24 @@ class setCover:
     def G(self):
         n = self.nCols
         G = sparse.lil_matrix((n, n))
-        for i in xrange(n/2): #xrange(n-1):
+        for i in xrange(n/2, n): #xrange(n-1):
             G[i, i] = 1
             #G[i+1, i] = -0.2
             #G[i, i+1] = -0.2
-        G[n - 1, n - 1] = 1
-        return G
+        #G[n - 1, n - 1] = 123456
+        return csr_matrixPlus(G)
 
 
+import sys
 
 s = setCover()
-s.readWedelin('/Users/mehdi/Downloads/b727.dat')
-#s.readBalas('/Users/mehdi/Downloads/bus1.inp')
+#s.readWedelin(sys.argv[1])
+s.readBalas(sys.argv[1])
 
+filename = sys.argv[1]
+filename = filename[(filename.rindex('/') + 1): (filename.rindex('.'))] + '_I05.mps'
 m = s.QPModel
-m.writeMps('/Users/mehdi/Desktop/b727_I05.mps')
+m.writeMps('/Users/mehdi/Desktop/' + filename)
 
 #m.primal()
 #sol = m.primalVariableSolution['x']
