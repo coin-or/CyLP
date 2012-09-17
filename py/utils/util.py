@@ -1,6 +1,6 @@
 import numpy as np
 from math import atan2 
-import Constants
+from CyLP.py import Constants
 
 def sign(x): 
     if x > 0 or (x == 0 and atan2(x, -1.) > 0.): 
@@ -108,5 +108,51 @@ class FunctionWrapper(object):
         return result
       
 
+class Ind:
+    def __init__(self, sl, dim):
+        if  not sl.stop or sl.stop > dim:
+            self.stop = dim
+        else:
+            self.stop = sl.stop
+        if  not sl.start:
+            self.start = 0
+        else:
+            self.start = sl.start
+        self.sl = sl
+        self.dim = dim
+    
+    def __repr__(self):
+        return '(%d, %d / %d)' % (self.start, self.stop, self.dim)
+
+def getIndS(inds):
+    n = len(inds)
+    if n == 1:
+        return inds[0].start
+    prod = inds[0].stop
+    for i in range(1, n):
+        prod *= inds[i].dim
+    return prod + getIndS(inds[1:])
+
+def getMultiDimMatrixIndex(inds, res=[]):
+    n = len(inds)
+    r = range(inds[0].start, inds[0].stop)
+    if n == 1:
+        return res + r
+    l = []
+    for i in r:
+        prod = i
+        for k in range(1, n):
+            prod *= inds[k].dim
+        rest = getMultiDimMatrixIndex(inds[1:], res)
+        l += res + [prod + rs for rs in rest]
+    return l
+
+
+if __name__ == '__main__':
+    i1 = Ind(slice(1, 4), 5)
+    i2 = Ind(slice(2, 4), 6)
+    i3 = Ind(slice(2, 5), 7)
+    
+    print getMultiDimMatrixIndex([i1, i2, i3])
 
                 

@@ -60,6 +60,7 @@ from copy import deepcopy
 import hashlib
 import numpy as np
 from scipy import sparse
+from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex
 
 #from CyLP.py.utils.sparseUtil import sparseConcat
 def I(n):
@@ -467,6 +468,9 @@ class CyLPVar(CyLPExpr):
             s += '[%d]' % self.indices
         return s
 
+    def setDims(self, ds):
+        self.dims = ds
+
     def __getitem__(self, key):
         if type(key) == int:
             newObj = CyLPVar(self.name, 1)
@@ -498,6 +502,16 @@ class CyLPVar(CyLPExpr):
             newObj.indices = np.array(key)
             newObj.dim = len(newObj.indices)
 
+        elif isinstance(key, tuple):
+            inds = []
+            n = range(len(key))
+            for i in n:
+                k = key[i]
+                if isinstance(k, int):
+                    inds.append(Ind(slice(k, k+1), self.dims[i]))
+                else:
+                    inds.append(Ind(k, self.dims[i]))
+            newObj = self.__getitem__(getMultiDimMatrixIndex(inds))
         return newObj
 
     def sum(self):
@@ -733,14 +747,9 @@ class CyLPModel(object):
             
             o = self.objective_
             if isinstance(o, np.ndarray):
-                #print 'before array:', o
                 o = np.concatenate((o, np.zeros(dim)), axis=0)
-                #print 'after array:', o
             else:
-                #if o:
-                #    print 'before mat:\n' , o.todense()
                 o = sparseConcat(o, csr_matrixPlus(np.zeros(dim)), 'h')
-                #print 'after mat:\n' , o.todense()
             
             self.objective_ = csr_matrixPlus(o)
 
@@ -762,13 +771,8 @@ class CyLPModel(object):
         o = self.objective_
         
         if isinstance(o, np.ndarray):
-            #print 'before array:', o
             o = np.concatenate((o[:start], o[end:]), axis=0)
-            #print 'after array:', o
         else:
-            #print 'before mat:\n' , o.todense()
-            #print o.shape
-            #print 's, e', start, end
             if end == o.shape[1]:
                 if start == 0:
                     print 'Problem empty.'
@@ -778,7 +782,6 @@ class CyLPModel(object):
                 o = o[0, end:]
             else:
                 o = sparseConcat(o[0, :start], o[0, end:], how='h')
-            #print 'after mat:\n' , o.todense()
         
         self.objective_ = csr_matrixPlus(o)
 
@@ -997,6 +1000,13 @@ class CyLPModel(object):
 def getCoinInfinity():
     return 1.79769313486e+308
 
+
+if __name__ == '__main__':
+    from CyLP.cy import CyClpSimplex
+    s = CyClpSimplex()
+    x = s.addVariable('x', 90)
+    x.setDims((5, 3, 6))
+    print x[1, 1, 1].indices
 
 #model = CyLPModel()
 #
