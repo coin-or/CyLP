@@ -5,7 +5,7 @@
 from exceptions import TypeError
 import inspect
 import os.path
-from itertools import izip
+from itertools import izip, product
 import numpy as np
 cimport numpy as np
 from scipy import sparse
@@ -16,7 +16,7 @@ from CyPivotPythonBase cimport CyPivotPythonBase
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy cimport CyCoinModel
 from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
-from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray
+from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
 from CyLP.cy cimport CyCoinMpsIO
@@ -86,9 +86,8 @@ cdef class CyClpSimplex:
             if self.cyLPModel:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
-                
-
-                if isinstance(o, np.ndarray):
+               
+                if isinstance(o, (np.ndarray)):
                     self.setObjectiveArray(o.astype(np.double))
                 if isinstance(o, (sparse.coo_matrix,
                                                 sparse.csc_matrix,
@@ -96,7 +95,6 @@ cdef class CyClpSimplex:
                                                 sparse.lil_matrix)):
                     for i in xrange(self.nVariables):
                         self.setObjectiveCoefficient(i, o[0, i])
-
                     #if not isinstance(o, sparse.coo_matrix):
                     #    o = o.tocoo()
                     #for i, j, v in izip(o.row, o.col, o.data):
@@ -207,6 +205,12 @@ cdef class CyClpSimplex:
                 d = {}
                 for v in inds.varIndex.keys():
                     d[v] = ret[inds.varIndex[v]]
+                    var = self.getVarByName(v)
+                    if var.dims:
+                        d[v] = CyLPSolution()
+                        dimRanges = [range(i) for i in var.dims]
+                        for element in product(*dimRanges):
+                            d[v][element] = ret[var.__getitem__(element).indices[0]] 
                 ret = d
             return ret
 

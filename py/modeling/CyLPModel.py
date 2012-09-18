@@ -448,6 +448,7 @@ class CyLPVar(CyLPExpr):
         self.dim = dim
         self.parentDim = dim
         self.parent = None
+        self.dims = None
         self.isInt = isInt
         self.expr = self
         self.lower = -getCoinInfinity() * np.ones(dim)
@@ -997,17 +998,62 @@ class CyLPModel(object):
         return masterCoefMat, c_lower, c_upper, v_lower, v_upper
 
 
+class CyLPSolution:
+    
+    def __init__(self):
+        self.sol = {}
+    
+    def add(self, key, val):
+        'Add (key, val) to self.dic. Ignore if val is zero'
+        if val == 0: # See if necessary to use a tolerance
+            return
+        self.sol[key] = val
+    
+    def getVal(self, key):
+        'Return the value corresponing key'
+        if key not in self.sol.keys:
+            return 0
+        return self.sol[key]
+    
+    def __getitem__(self, key):
+        #if isinstance(key, tuple):
+        if key in self.sol.keys():
+            return self.sol[key] 
+        else:
+            return 0
+
+    def __setitem__(self, key, val):
+        #if isinstance(key, tuple):
+        if val == 0: # See if necessary to use a tolerance
+            return
+        self.sol[key] = val
+    def __repr__(self):
+        return repr(self.sol)
+
 def getCoinInfinity():
     return 1.79769313486e+308
 
 
 if __name__ == '__main__':
     from CyLP.cy import CyClpSimplex
+    from CyLP.py.modeling.CyLPModel import CyLPArray
     s = CyClpSimplex()
     x = s.addVariable('x', 90)
     x.setDims((5, 3, 6))
-    print x[1, 1, 1].indices
-
+    s += 2 * x[2, :, 3].sum() + x[0, 1, :].sum() >= 5
+    
+    s += 0 <= x <= 1
+    c = CyLPArray(np.arange(18))
+    #c = CyLPArray(90 * [1.])
+    #c = csr_matrixPlus([range(90)]).T
+    #s.objective = c.T * x
+    
+    s.objective = c * x[2, :, :] + c * x[0, :, :]
+    s.writeMps('/Users/mehdi/Desktop/test.mps')
+    s.primal()
+    sol = s.primalVariableSolution
+    print sol
+    
 #model = CyLPModel()
 #
 #x = model.addVariable('x', 5)
