@@ -82,7 +82,6 @@ class TestMIP(unittest.TestCase):
         cbcModel.branchAndBound()
 
         sol_x = cbcModel.primalVariableSolution['x']
-        print '~~~', sol_x
         self.assertTrue((abs(sol_x -
                         np.array([0.5, 2, 2]) ) <= 10**-6).all())
         sol_y = cbcModel.primalVariableSolution['y']
@@ -127,6 +126,25 @@ class TestMIP(unittest.TestCase):
         cbcModel.branchAndBound()
         self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
 
+    def test_multiDim(self):
+        from CyLP.cy import CyClpSimplex
+        from CyLP.py.modeling.CyLPModel import CyLPArray
+        s = CyClpSimplex()
+        x = s.addVariable('x', (5, 3, 6))
+        s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5.5
+        s += 0 <= x <= 2.2
+        c = CyLPArray(range(18))
+        s.objective = c * x[2, :, :] + c * x[0, :, :]
+        
+        s.setInteger(x)
+        
+        s.writeMps('/Users/mehdi/Desktop/test.mps')
+        cbcModel = s.getCbcModel()
+        cbcModel.branchAndBound()
+
+        sol_x = cbcModel.primalVariableSolution['x']
+        self.assertTrue(abs(sol_x[0, 1, 0] - 1) <= 10**-6)
+        self.assertTrue(abs(sol_x[2, 0, 3] - 2) <= 10**-6)
 
 if __name__ == '__main__':
     unittest.main()

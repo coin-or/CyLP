@@ -115,6 +115,23 @@ class TestModel(unittest.TestCase):
         self.assertTrue((abs(sol - 
                         np.array([0.2, 2, 1.1, 0, 0.9]) ) <= 10**-6).all())
 
+    def test_multiDim(self):
+        from CyLP.cy import CyClpSimplex
+        from CyLP.py.modeling.CyLPModel import CyLPArray
+        s = CyClpSimplex()
+        x = s.addVariable('x', (5, 3, 6))
+        s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5
+        
+        s += 0 <= x <= 1
+        c = CyLPArray(range(18))
+        
+        s.objective = c * x[2, :, :] + c * x[0, :, :]
+        s.writeMps('/Users/mehdi/Desktop/test.mps')
+        s.primal()
+        sol = s.primalVariableSolution['x']
+        self.assertTrue(abs(sol[0, 1, 0] - 1) <= 10**-6)
+        self.assertTrue(abs(sol[2, 0, 3] - 1) <= 10**-6)
+         
 
 if __name__ == '__main__':
     unittest.main()

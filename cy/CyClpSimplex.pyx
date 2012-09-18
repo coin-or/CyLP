@@ -205,7 +205,7 @@ cdef class CyClpSimplex:
                 d = {}
                 for v in inds.varIndex.keys():
                     d[v] = ret[inds.varIndex[v]]
-                    var = self.getVarByName(v)
+                    var = m.getVarByName(v)
                     if var.dims:
                         d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]

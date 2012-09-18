@@ -1,6 +1,8 @@
 # cython: embedsignature=True
 
+from itertools import izip, product
 from CyLP.py.mip import NodeCompareBase
+from CyLP.py.modeling.CyLPModel import CyLPSolution
 from libcpp cimport bool
 
 
@@ -107,6 +109,12 @@ cdef class CyCbcModel:
                 d = {}
                 for v in inds.varIndex.keys():
                     d[v] = ret[inds.varIndex[v]]
+                    var = m.getVarByName(v)
+                    if var.dims:
+                        d[v] = CyLPSolution()
+                        dimRanges = [range(i) for i in var.dims]
+                        for element in product(*dimRanges):
+                            d[v][element] = ret[var.__getitem__(element).indices[0]] 
                 ret = d
             return ret
 

@@ -58,6 +58,7 @@
 from itertools import izip
 from copy import deepcopy
 import hashlib
+from operator import mul
 import numpy as np
 from scipy import sparse
 from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex
@@ -445,10 +446,15 @@ class CyLPVar(CyLPExpr):
 
     def __init__(self, name, dim, isInt=False, fromInd=None, toInd=None):
         self.name = name
-        self.dim = dim
-        self.parentDim = dim
-        self.parent = None
         self.dims = None
+        if isinstance(dim, tuple):
+            self.setDims(dim)
+            self.dim = dim = reduce(mul, dim)
+            self.parentDim = dim
+        else:
+            self.dim = dim
+            self.parentDim = dim
+        self.parent = None
         self.isInt = isInt
         self.expr = self
         self.lower = -getCoinInfinity() * np.ones(dim)
@@ -736,10 +742,16 @@ class CyLPModel(object):
         Create a new instance of :py:class:`CyLPVar` using the given
         arguments and add it to current model's variable list.
         '''
+        
         if dim == 0:
             return
         var = CyLPVar(name, dim, isInt)
         self.variables.append(var)
+        
+        #If mulidim, correct dim
+        if isinstance(dim, tuple):
+            dim = reduce(mul, dim)
+        
         if not self.inds.hasVar(var.name):
             self.inds.addVar(var.name, dim)
             self.nVars += dim
@@ -1038,15 +1050,11 @@ if __name__ == '__main__':
     from CyLP.cy import CyClpSimplex
     from CyLP.py.modeling.CyLPModel import CyLPArray
     s = CyClpSimplex()
-    x = s.addVariable('x', 90)
-    x.setDims((5, 3, 6))
-    s += 2 * x[2, :, 3].sum() + x[0, 1, :].sum() >= 5
+    x = s.addVariable('x', (5, 3, 6))
+    s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5
     
     s += 0 <= x <= 1
-    c = CyLPArray(np.arange(18))
-    #c = CyLPArray(90 * [1.])
-    #c = csr_matrixPlus([range(90)]).T
-    #s.objective = c.T * x
+    c = CyLPArray(range(18))
     
     s.objective = c * x[2, :, :] + c * x[0, :, :]
     s.writeMps('/Users/mehdi/Desktop/test.mps')
