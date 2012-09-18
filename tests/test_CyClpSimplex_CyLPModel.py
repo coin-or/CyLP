@@ -44,6 +44,37 @@ class TestModel(unittest.TestCase):
         sol = s.primalVariableSolution['x']
         self.assertTrue((abs(sol - np.array([2, 0, 1]) ) <= 10**-6).all())
 
+    def test2(self):
+        'Same as test1, but use CyLP INDirectly.'
+        s = CyClpSimplex()
+
+        x = s.addVariable('x', 3)
+
+        A = np.matrix([[1,2,3], [1,1,1]])
+        b = CyLPArray([5, 3])
+
+        s += A * x == b
+        s += x >= 0
+        
+        s.objective = 1*x[0]  + 1*x[1] + 1.1 * x[2]
+
+        # Solve it a first time
+        s.primal()
+        sol = s.primalVariableSolution['x']
+        self.assertTrue((abs(sol - np.array([1,2,0]) ) <= 10**-6).all())
+        # Add a cut
+        s.addConstraint(x[0] >= 1.1)
+        s.primal()
+        sol = s.primalVariableSolution['x']
+        self.assertTrue((abs(sol - np.array([1.1, 1.8, 0.1]) ) <= 10**-6).all())
+        
+        # Change the objective function
+        c = csr_matrixPlus([[1, 10, 1.1]]).T
+        s.objective = c.T * x
+        s.primal()
+        sol = s.primalVariableSolution['x']
+        self.assertTrue((abs(sol - np.array([2, 0, 1]) ) <= 10**-6).all())
+
 
     def test_multiVar(self):
         model = CyLPModel()
@@ -126,7 +157,6 @@ class TestModel(unittest.TestCase):
         c = CyLPArray(range(18))
         
         s.objective = c * x[2, :, :] + c * x[0, :, :]
-        s.writeMps('/Users/mehdi/Desktop/test.mps')
         s.primal()
         sol = s.primalVariableSolution['x']
         self.assertTrue(abs(sol[0, 1, 0] - 1) <= 10**-6)

@@ -138,7 +138,6 @@ class TestMIP(unittest.TestCase):
         
         s.setInteger(x)
         
-        s.writeMps('/Users/mehdi/Desktop/test.mps')
         cbcModel = s.getCbcModel()
         cbcModel.branchAndBound()
 

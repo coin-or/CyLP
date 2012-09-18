@@ -5,7 +5,52 @@
 
     .. _modeling-usage:
 
-    **Usage**
+    **Usage (single dimension, using CyLPModel indirectly)**
+
+    >>> import numpy as np
+    >>> from CyLP.cy import CyClpSimplex
+    >>> from CyLP.py.modeling.CyLPModel import CyLPArray
+    >>>
+    >>> s = CyClpSimplex()
+    >>>
+    >>> # Add variables
+    >>> x = s.addVariable('x', 3)
+    >>> y = s.addVariable('y', 2)
+    >>>
+    >>> # Create coefficients and bounds
+    >>> A = np.matrix([[1., 2., 0],[1., 0, 1.]])
+    >>> B = np.matrix([[1., 0, 0], [0, 0, 1.]])
+    >>> D = np.matrix([[1., 2.],[0, 1]])
+    >>> a = CyLPArray([5, 2.5])
+    >>> b = CyLPArray([4.2, 3])
+    >>> x_u= CyLPArray([2., 3.5])
+    >>>
+    >>> # Add constraints
+    >>> s += A * x <= a
+    >>> s += 2 <= B * x + D * y <= b
+    >>> s += y >= 0
+    >>> s += 1.1 <= x[1:3] <= x_u
+    >>>
+    >>> # Set the objective function
+    >>> c = CyLPArray([1., -2., 3.])
+    >>> s.objective = c * x + 2 * y.sum()
+    >>>
+    >>> # Solve using primal Simplex
+    >>> s.primal()
+    'optimal'
+    >>> s.primalVariableSolution['x']
+    array([ 0.2,  2. ,  1.1])
+    >>> s.primalVariableSolution['y']
+    array([ 0. ,  0.9])
+    >>> s += x[2] + y[1] >= 2.1
+    >>> s.primal()
+    'optimal'
+    >>> s.primalVariableSolution['x']
+    array([ 0. ,  2. ,  1.1])
+    >>> s.primalVariableSolution['y']
+    array([ 0.,  1.])
+
+    **Usage (single dimension, using CyLPModel directly, depending on size could be faster than the indirect approach)**
 
     >>> import numpy as np
     >>> from CyLP.cy import CyClpSimplex
@@ -52,6 +97,24 @@
     array([ 0. ,  2. ,  1.1])
     >>> s.primalVariableSolution['y']
     array([ 0.,  1.])
+
+    **Usage (multi-dimensions, using CyLPModel indirectly)**
+    
+    >>> from CyLP.cy import CyClpSimplex
+    >>> from CyLP.py.modeling.CyLPModel import CyLPArray
+    >>> s = CyClpSimplex()
+    >>> x = s.addVariable('x', (5, 3, 6))
+    >>> s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5
+    >>> s += 0 <= x <= 1
+    >>> c = CyLPArray(range(18))
+    >>> s.objective = c * x[2, :, :] + c * x[0, :, :]
+    >>> s.primal()
+    'optimal'
+    >>> sol = s.primalVariableSolution['x']
+    >>> abs(sol[0, 1, 0] - 1) <= 10**-6
+    True
+    >>> abs(sol[2, 0, 3] - 1) <= 10**-6
+    True
 
 '''
 
