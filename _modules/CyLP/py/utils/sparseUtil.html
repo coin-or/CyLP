@@ -256,6 +256,33 @@
             <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="n">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span>
         
         <span class="n">nRows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nCols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+        
+        <span class="k">if</span> <span class="n">iCol</span> <span class="o">&gt;=</span> <span class="n">nCols</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">nRows</span><span class="p">,</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">nCols</span> <span class="o">=</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span>
+        
+        <span class="k">if</span> <span class="n">iRow</span> <span class="o">&gt;=</span> <span class="n">nRows</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nCols</span><span class="p">)</span>
+            <span class="n">nRowsToAdd</span> <span class="o">=</span> <span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">nRows</span>
+            <span class="n">l_temp</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">nRowsToAdd</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">l</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">l_temp</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">l</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">l_temp</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
+
+        <span class="n">l</span><span class="p">[</span><span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nnz</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">nnz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">_shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">indptr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_sorted_indices</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">has_sorted_indices</span>
+        <span class="k">return</span>
+
+        <span class="n">nRows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">iCol</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
