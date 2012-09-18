@@ -1,11 +1,8 @@
 import sys
+from os.path import join
 from distutils.core import setup
 from distutils.extension import Extension
-from Cython.Distutils import build_ext
 import numpy
-
-import Cython.Compiler.Options
-Cython.Compiler.Options.annotate = True
 
 operatingSystem = sys.platform
 if 'linux' in operatingSystem:
@@ -14,13 +11,15 @@ elif 'darwin' in operatingSystem:
     operatingSystem = 'mac'
 #WINDOWS??
 
-from os.path import join
 
 #Specify whether to use Cython for installation
 USECYTHON = True
 
 cmdclass = {}
 if USECYTHON:
+    from Cython.Distutils import build_ext
+    import Cython.Compiler.Options
+    Cython.Compiler.Options.annotate = True
     cmdclass.update({'build_ext': build_ext})
     fileext = '.pyx'
 else:
@@ -33,7 +32,7 @@ cythonFilesDir = 'cy/'
 cppFilesDir = 'cpp/'
 
 libs = ['Clp', 'Cbc', 'Cgl', 'CoinMP', 'Osi',
-        'CoinUtils', 'OsiCbc', 'OsiClp', 'CbcSolver', 'bz2']
+        'CoinUtils', 'OsiCbc', 'OsiClp', 'CbcSolver', 'bz2', 'z']
 
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib')]
 
