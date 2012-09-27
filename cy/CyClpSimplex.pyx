@@ -467,8 +467,14 @@ cdef class CyClpSimplex:
                                             'implements *tocoo* method')
             if m:
                 coinMat = CyCoinPackedMatrix(True, m.row, m.col, m.data)
-                coinMat.reserve(self.nVariables, self.nVariables)
-                self.loadQuadraticObjective(coinMat)
+                n = self.nVariables
+                if coinMat.majorDim < n:
+                    for i in xrange(n - coinMat.majorDim):
+                        coinMat.appendCol()
+                if coinMat.minorDim < n:
+                    for i in xrange(n - coinMat.majorDim):
+                        coinMat.appendRow()
+            self.loadQuadraticObjective(coinMat)
                 
 
     #############################################
