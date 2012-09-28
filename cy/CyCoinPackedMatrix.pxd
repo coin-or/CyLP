@@ -12,8 +12,8 @@ cdef extern from "ICoinPackedMatrix.hpp":
         CppCoinPackedMatrix(bint colordered, int* rowIndices,
                                     int* colIndices, double* elements,
                                     int numels)
-        #double & operator[](int)
-        #double getItem(int n)
+        void appendRow(int vecsize, int *vecind, double *vecelem)
+        void appendCol(int vecsize, int *vecind, double *vecelem)
         #void setItem(int n, double value)
         #void reserve(int n)
     CppCoinPackedMatrix *new_CppCoinPackedMatrix "new ICoinPackedMatrix" ()

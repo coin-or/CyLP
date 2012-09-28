@@ -126,6 +126,11 @@ import numpy as np
 from scipy import sparse
 from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex
 
+NUMBERS = (int, float, long, np.int64, np.int32, np.double)
+def isNumber(n):
+    return (isinstance(n, NUMBERS) or 
+            (isinstance(n, CyLPArray) and n.shape == ())) 
+
 #from CyLP.py.utils.sparseUtil import sparseConcat
 def I(n):
     '''
@@ -178,7 +183,8 @@ class CyLPExpr:
         if (other == None):
             return False
         if isinstance(self, CyLPVar) and isinstance(other, CyLPVar):
-            return (str(self) == str(other))
+            return id(self) == id(other)
+            #return (str(self) == str(other))
         v = CyLPExpr(opr="==", right=other, left=self.expr)
         self.expr = v
         return v
@@ -339,7 +345,7 @@ class CyLPConstraint:
 
                 if opr == "*":  # Setting the coefficients
                     # Ignore a term if its coef is None
-                    if isinstance(left, (float, long, int)):
+                    if isNumber(left):
                         if self.nRows and self.nRows != 1:
                             raise Exception("Expected 1-dimensional" \
                                             " coefficient")
@@ -433,7 +439,7 @@ class CyLPConstraint:
                 self.isRange = False
                 self.mul(right, -1)
                 #self.varCoefs[right.right] *= -1
-            if opr == '*' and isinstance(left, (int, long, float)):
+            if opr == '*' and isNumber(left):
                 self.mul(right, left)
                 
 
@@ -465,7 +471,7 @@ class CyLPConstraint:
 #                    pass
                 dim = self.nRows
 #
-            if isinstance(right, (float, long, int)):
+            if isNumber(right):
                 bound = CyLPArray(right * np.ones(dim))
 
             if self.isRange:

@@ -421,8 +421,8 @@ class QP:
 
         self.writeReport('qpout', s, timeToMake, timeToSolve, method, p)
         
-#        print 'x'
-#        print s.primalVariableSolution['x']
+        print 'x'
+        print s.primalVariableSolution['x']
 #        print 'z'
 #        print s.primalVariableSolution['z']
 #        print 'y'

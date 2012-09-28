@@ -66,6 +66,27 @@ cdef class CyCoinPackedMatrix:
     def reserve(self,  newMaxMajorDim,  newMaxSize,  create=0):
         self.CppSelf.reserve(newMaxMajorDim, newMaxSize, create)
 
+    def appendRow(self, np.ndarray[np.int32_t, ndim=1] vecInd=None,
+                  np.ndarray[np.double_t, ndim=1] elements=None):
+       
+        cdef int* i
+        cdef double* d
+        if vecInd:
+            self.CppSelf.appendRow(len(elements), <int*>vecInd.data, 
+                                            <double*>elements.data)
+        else:
+            self.CppSelf.appendRow(0, i, d) 
+
+    def appendCol(self, np.ndarray[np.int32_t, ndim=1] vecInd=None,
+                  np.ndarray[np.double_t, ndim=1] elements=None):
+       
+        cdef int* i
+        cdef double* d
+        if vecInd:
+            self.CppSelf.appendCol(len(elements), <int*>vecInd.data, 
+                                            <double*>elements.data)
+        else:
+            self.CppSelf.appendCol(0, i, d) 
     #def __getitem__(self, n):
     #   return self.CppSelf.getItem(n)
 
