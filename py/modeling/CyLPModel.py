@@ -536,12 +536,6 @@ class CyLPVar(CyLPExpr):
             self.formInd = fromInd
             self.toInd = toInd
         
-        self.mpsNames = []
-        d = self.dims if self.dims else self.dim
-        for i in xrange(self.dim):
-            indices = '-'.join(map(str, getTupleIndex(i, d))) 
-            self.mpsNames.append('%s-%s' % (self.name, indices))
-        
     def __repr__(self):
         s = self.name
         if self.fromInd and self.toInd:
@@ -833,6 +827,11 @@ class CyLPModel(object):
             self.varNames.append(var.name)
             self.pvdims[var.name] = dim
 
+            var.mpsNames = []
+            d = var.dims if var.dims else var.dim
+            for i in xrange(var.dim):
+                indices = '-'.join(map(str, getTupleIndex(i, d))) 
+                var.mpsNames.append('%s-%s' % (var.name, indices))
 
             o = self.objective_
             if isinstance(o, np.ndarray):
