@@ -40,6 +40,11 @@ cdef extern from "ICbcModel.hpp":
                         int whatDepth,
                         int whatDepthInSub)
         void branchAndBound(int doStatistics)
+        int status()
+        bint isInitialSolveProvenPrimalInfeasible()
+        bint isInitialSolveProvenDualInfeasible()
+        bint isInitialSolveProvenOptimal()
+        bint isInitialSolveAbandoned()
 
 cdef class CyCbcModel:
     cdef CppICbcModel* CppSelf

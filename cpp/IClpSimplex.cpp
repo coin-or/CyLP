@@ -5,6 +5,7 @@
 #include "IClpSimplexPrimal.hpp"
 #include "ClpSimplexPrimal.hpp"
 #include "IClpPackedMatrix.hpp"
+#include <sstream>
 
 
 int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, PyObject* w_ind){
@@ -461,8 +462,88 @@ PyObject* IClpSimplex::getColUpper(){
 }
 
 void IClpSimplex::setVariableName(int varInd,  char* name){
-    columnNames_.resize(getNumCols()); 
-    columnNames_[varInd] = name;
+    if (varInd >= getNumCols())
+        return;
+    if (lengthNames_ == 0){
+        unsigned int maxLength=0;
+        int iRow;
+        
+        rowNames_ = std::vector<std::string> ();
+        columnNames_ = std::vector<std::string> ();
+        rowNames_.reserve(numberRows_);
+        for (iRow=0;iRow<numberRows_;iRow++) {
+            std::stringstream ss;
+            ss << "r-";
+            ss << iRow;
+            std::string rowName = ss.str();
+            if (rowName.length() > maxLength)
+                maxLength = rowName.length();
+            rowNames_.push_back(rowName);
+        }
+        
+        columnNames_.reserve(numberColumns_);
+        int iColumn;
+        for (iColumn=0;iColumn<numberColumns_;iColumn++) {
+            std::stringstream ss;
+            ss << "c-";
+            ss << iColumn;
+            std::string colName = ss.str();
+            if (colName.length() > maxLength)
+                maxLength = colName.length();
+            columnNames_.push_back(colName);
+        }
+//
+//        int iColumn;
+//        columnNames_.reserve(numberColumns_);
+//        for (iColumn=0;iColumn<numberColumns_;iColumn++) {
+//            const char * name = m.columnName(iColumn);
+//            maxLength = CoinMax(maxLength,static_cast<unsigned int> (strlen(name)));
+//            columnNames_.push_back(name);
+//        }
+        lengthNames_=static_cast<int> (maxLength);
+//    columnNames_.resize(getNumCols()); 
+    
+    //std::cout << columnNamesAsChar()[10] << "<$$$$$$$$$$$$$\n";
+    }
+    std::string st(name);
+    columnNames_[varInd] = st;
+}
+
+void IClpSimplex::setConstraintName(int constInd,  char* name){
+    if (constInd >= getNumRows())
+        return;
+    if (lengthNames_ == 0){
+        unsigned int maxLength=0;
+        int iRow;
+        
+        rowNames_ = std::vector<std::string> ();
+        columnNames_ = std::vector<std::string> ();
+        rowNames_.reserve(numberRows_);
+        for (iRow=0;iRow<numberRows_;iRow++) {
+            std::stringstream ss;
+            ss << "r-";
+            ss << iRow;
+            std::string rowName = ss.str();
+            if (rowName.length() > maxLength)
+                maxLength = rowName.length();
+            rowNames_.push_back(rowName);
+        }
+        
+        columnNames_.reserve(numberColumns_);
+        int iColumn;
+        for (iColumn=0;iColumn<numberColumns_;iColumn++) {
+            std::stringstream ss;
+            ss << "c-";
+            ss << iColumn;
+            std::string colName = ss.str();
+            if (colName.length() > maxLength)
+                maxLength = colName.length();
+            columnNames_.push_back(colName);
+        }
+        lengthNames_=static_cast<int> (maxLength);
+    }
+    std::string st(name);
+    rowNames_[constInd] = st;
 }
 
 void IClpSimplex::createTempArray(){

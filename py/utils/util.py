@@ -1,6 +1,7 @@
 import numpy as np
 from math import atan2 
 from CyLP.py import Constants
+from operator import mul
 
 def sign(x): 
     if x > 0 or (x == 0 and atan2(x, -1.) > 0.): 
@@ -147,6 +148,16 @@ def getMultiDimMatrixIndex(inds, res=[]):
         l += res + [prod + rs for rs in rest]
     return l
 
+def getTupleIndex(ind, dims):
+    if isinstance(dims, int):
+        return [ind] if ind < dims else -1
+    n = len(dims)
+    if ind > reduce(mul, dims):
+        return -1
+    if n == 1:
+        return [ind]
+    return getTupleIndex(ind / dims[-1], dims[:-1]) + [ind % dims[-1]]
+    
 
 if __name__ == '__main__':
     i1 = Ind(slice(1, 4), 5)
@@ -155,4 +166,7 @@ if __name__ == '__main__':
     
     print getMultiDimMatrixIndex([i1, i2, i3])
 
-                
+    for i in range(10):
+        print getTupleIndex(i, (5, 6, 7))
+    
+    print getTupleIndex(8, 8)

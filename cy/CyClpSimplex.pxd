@@ -193,6 +193,7 @@ cdef extern from "IClpSimplex.hpp":
                      double objSense)
 
         void setVariableName(int varInd, char* name)
+        void setConstraintName(int constInd, char* name)
 
         int partialPrice(int start, int end, int* numberWanted)
 
@@ -279,6 +280,7 @@ cdef class CyClpSimplex:
     #cpdef createComplementarityList(self)
 
     cpdef setVariableName(self, varInd, name)
+    cpdef setConstraintName(self, constInd, name)
 
 cdef class VarStatus:
     pass

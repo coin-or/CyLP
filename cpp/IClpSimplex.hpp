@@ -148,6 +148,7 @@ public:
     }
     
 	void setVariableName(int varInd,  char* name);
+    void setConstraintName(int constInd,  char* name);
     		
     /// Partial pricing 
     int partialPrice(int start, int end, int* numberWanted)

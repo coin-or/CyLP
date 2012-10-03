@@ -633,6 +633,18 @@ cdef class CyClpSimplex:
 
         '''
         self.CppSelf.setVariableName(varInd, name)
+    
+    cpdef setConstraintName(self, constInd, name):
+        '''
+        Set the name of constraint index ``constInd`` to ``name``.
+
+        :arg constInd: constraint index
+        :type constInd: integer
+        :arg name: desired name for the constraint
+        :type name: string
+
+        '''
+        self.CppSelf.setConstraintName(constInd, name)
 
     cdef int* pivotVariable(self):
         '''
@@ -1123,6 +1135,20 @@ cdef class CyClpSimplex:
         except:
             raise Exception('No write access for %s or an intermediate \
                             directory does not exist.' % filename)
+        
+        m = self.cyLPModel
+        if m:
+            inds = m.inds
+            for var in m.variables:
+                varinds = inds.varIndex[var.name]
+                for i in xrange(var.dim):
+                    self.setVariableName(varinds[i], var.mpsNames[i])
+            
+            for con in m.constraints:
+                coninds = inds.constIndex[con.name]
+                for i in xrange(con.nRows):
+                    self.setConstraintName(coninds[i], con.mpsNames[i])
+
         return self.CppSelf.writeMps(filename, formatType, numberAcross,
                                      objSense)
     #############################################

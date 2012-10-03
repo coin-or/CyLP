@@ -24,6 +24,12 @@ cdef int RunEvery1000Nodes(void* ptr, CppICbcModel* model, int numberNodes):
     return obj.every1000Nodes(CyCbcModel().setCppSelf(model),
                                  numberNodes)
 
+# Understandable messages to translate what branchAndBound() returns
+problemStatus =  ['solution', 'relaxation infeasible', 
+         'stopped on gap', 'stopped on nodes', 'stopped on time'
+         'stopped on user event', 'stopped on solutions'
+         'linear relaxation unbounded', 'unset']
+
 cdef class CyCbcModel:
     '''
     Interfaces ``CbcModel``. To solve a first you create a 
@@ -99,6 +105,28 @@ cdef class CyCbcModel:
 
     def branchAndBound(self, doStatistics=0):
         self.CppSelf.branchAndBound(doStatistics)
+        return self.status
+
+    property status:
+        def __get__(self):
+            if self.isRelaxationInfeasible():
+                return problemStatus[1]
+            if self.isRelaxationAbondoned():
+                return 'relaxation abondoned'
+
+            return problemStatus[self.CppSelf.status()]
+
+    def isRelaxationInfeasible(self):
+        return self.CppSelf.isInitialSolveProvenPrimalInfeasible()
+
+    def isRelaxationDualInfeasible(self): 
+        return self.CppSelf.isInitialSolveProvenDualInfeasible()
+    
+    def isRelaxationOptimal(self):
+        return self.CppSelf.isInitialSolveProvenOptimal()
+    
+    def isRelaxationAbondoned(self):
+        return self.CppSelf.isInitialSolveAbandoned()
 
     property primalVariableSolution:
         def __get__(self):

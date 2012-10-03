@@ -124,7 +124,7 @@ import hashlib
 from operator import mul
 import numpy as np
 from scipy import sparse
-from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex
+from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
 
 NUMBERS = (int, float, long, np.int64, np.int32, np.double)
 def isNumber(n):
@@ -284,9 +284,9 @@ class CyLPConstraint:
         self.variables = []
         if not name:
             CyLPConstraint.gid += 1
-            name = 'C_Aut_%d' % CyLPConstraint.gid
+            name = 'R-%d' % CyLPConstraint.gid
         self.name = name
-
+        
     def __repr__(self):
         s = '\n'
         s += 'constraint %s:\n' % self.name
@@ -535,7 +535,13 @@ class CyLPVar(CyLPExpr):
             self.indices = range(fromInd, toInd)
             self.formInd = fromInd
             self.toInd = toInd
-
+        
+        self.mpsNames = []
+        d = self.dims if self.dims else self.dim
+        for i in xrange(self.dim):
+            indices = '-'.join(map(str, getTupleIndex(i, d))) 
+            self.mpsNames.append('%s-%s' % (self.name, indices))
+        
     def __repr__(self):
         s = self.name
         if self.fromInd and self.toInd:
@@ -826,7 +832,8 @@ class CyLPModel(object):
             self.nVars += dim
             self.varNames.append(var.name)
             self.pvdims[var.name] = dim
-            
+
+
             o = self.objective_
             if isinstance(o, np.ndarray):
                 o = np.concatenate((o, np.zeros(dim)), axis=0)
@@ -962,6 +969,12 @@ class CyLPModel(object):
             if c.name:
                 self.inds.addConst(c.name, c.nRows)
             self.nCons += c.nRows
+        
+        c.mpsNames = []
+        for i in xrange(c.nRows):
+            c.mpsNames.append('%s-%s' % (c.name, str(i)))
+        
+
         #self.makeMatrices()
 
     def removeConstraint(self, name):
