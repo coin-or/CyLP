@@ -284,7 +284,7 @@ class CyLPConstraint:
         self.variables = []
         if not name:
             CyLPConstraint.gid += 1
-            name = 'R-%d' % CyLPConstraint.gid
+            name = 'R_%d' % CyLPConstraint.gid
         self.name = name
         
     def __repr__(self):
@@ -830,8 +830,8 @@ class CyLPModel(object):
             var.mpsNames = []
             d = var.dims if var.dims else var.dim
             for i in xrange(var.dim):
-                indices = '-'.join(map(str, getTupleIndex(i, d))) 
-                var.mpsNames.append('%s-%s' % (var.name, indices))
+                indices = '_'.join(map(str, getTupleIndex(i, d))) 
+                var.mpsNames.append('%s_%s' % (var.name, indices))
 
             o = self.objective_
             if isinstance(o, np.ndarray):
@@ -971,7 +971,7 @@ class CyLPModel(object):
         
         c.mpsNames = []
         for i in xrange(c.nRows):
-            c.mpsNames.append('%s-%s' % (c.name, str(i)))
+            c.mpsNames.append('%s_%s' % (c.name, str(i)))
         
 
         #self.makeMatrices()
