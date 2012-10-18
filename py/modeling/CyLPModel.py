@@ -124,6 +124,7 @@ import hashlib
 from operator import mul
 import numpy as np
 from scipy import sparse
+from scipy.sparse import identity
 from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
 
 NUMBERS = (int, float, long, np.int64, np.int32, np.double)
@@ -138,7 +139,8 @@ def I(n):
     '''
     if n <= 0:
         return None
-    return csc_matrixPlus(sparse.eye(n, n))
+    #return csc_matrixPlus(sparse.eye(n, n))
+    return identity(n)
 
 def identitySub(var):
     '''
