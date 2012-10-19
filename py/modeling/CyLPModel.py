@@ -490,6 +490,7 @@ class CyLPConstraint:
                 if ((opr in ('<=', '==') and isinstance(left, CyLPExpr)) or
                     (opr in ('>=', '==') and isinstance(right, CyLPExpr))):
                     if var.parent:
+                        print var.indices
                         var.parent.upper[var.indices] = bound
                     else:
                         var.upper[var.indices] = bound
@@ -729,7 +730,7 @@ class IndexFactory:
         return varName in self.varIndex.keys()
 
     def hasConst(self, constName):
-        return constName in self.constIndex.keys()
+        return constName in self.constIndex
 
     def getLastVarIndex(self):
         return self.currentVarIndex - 1
@@ -740,7 +741,7 @@ class IndexFactory:
         if not constName:
             raise Exception('You must specify a name for a constraint.')
         if self.hasConst(constName):
-            print 'Constraint already exists.'
+            print 'Constraint already exists: %s' % constName
             #self.constIndex[constName] += range(self.currentConstIndex,
             #        self.currentConstIndex + numberOfConsts)
         else:

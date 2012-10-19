@@ -111,6 +111,9 @@ class FunctionWrapper(object):
 
 class Ind:
     def __init__(self, sl, dim):
+        if sl.stop and (sl.start > dim or sl.start >= sl.stop):
+            raise Exception('Indexing problem: %s, dim=%d:' % (str(sl), dim))
+
         if  not sl.stop or sl.stop > dim:
             self.stop = dim
         else:
