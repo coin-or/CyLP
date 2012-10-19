@@ -118,9 +118,8 @@
 
 '''
 
-from itertools import izip
+from itertools import product
 from copy import deepcopy
-import hashlib
 from operator import mul
 import numpy as np
 from scipy import sparse
@@ -829,12 +828,12 @@ class CyLPModel(object):
             self.varNames.append(var.name)
             self.pvdims[var.name] = dim
 
-            var.mpsNames = []
-            d = var.dims if var.dims else var.dim
-            for i in xrange(var.dim):
-                indices = '_'.join(map(str, getTupleIndex(i, d))) 
-                var.mpsNames.append('%s_%s' % (var.name, indices))
-
+            if var.dims:
+                var.mpsNames = [var.name + '_' + '_'.join(x) for x in \
+                        product(*[map(str, range(i)) for i in var.dims])]
+            else:
+                var.mpsNames = ['%s_%s' % (var.name, i) for i in xrange(var.dim)]
+            
             o = self.objective_
             if isinstance(o, np.ndarray):
                 o = np.concatenate((o, np.zeros(dim)), axis=0)

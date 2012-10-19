@@ -156,8 +156,14 @@ def getTupleIndex(ind, dims):
         return -1
     if n == 1:
         return [ind]
-    return getTupleIndex(ind / dims[-1], dims[:-1]) + [ind % dims[-1]]
-    
+    #return getTupleIndex(ind / dims[-1], dims[:-1]) + [ind % dims[-1]]
+    ret = []
+    for i in xrange(n):
+        d = dims[n - i - 1]
+        ret.insert(0, ind % d)
+        ind /= d
+        #return getTupleIndex(ind / dims[-1], dims[:-1]) + [ind % dims[-1]]
+    return ret
 
 if __name__ == '__main__':
     i1 = Ind(slice(1, 4), 5)
