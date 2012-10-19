@@ -123,7 +123,7 @@ from copy import deepcopy
 from operator import mul
 import numpy as np
 from scipy import sparse
-from scipy.sparse import identity
+from scipy.sparse import identity, lil_matrix
 from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
 
 NUMBERS = (int, float, long, np.int64, np.int32, np.double)
@@ -149,6 +149,10 @@ def identitySub(var):
     n = var.dim
     if var.parent != None:
         n = var.parent.dim
+    if var.dim == 1:
+        m = lil_matrix((1, n))
+        m[0, var.indices[0]] = 1
+        return m
     return I(n)[var.indices, :]
 
 class CyLPExpr:
