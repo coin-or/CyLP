@@ -110,21 +110,42 @@ class FunctionWrapper(object):
       
 
 class Ind:
-    def __init__(self, sl, dim):
-        if sl.stop and (sl.start > dim or sl.start >= sl.stop):
-            raise Exception('Indexing problem: %s, dim=%d:' % (str(sl), dim))
-
-        if  not sl.stop or sl.stop > dim:
-            self.stop = dim
-        else:
-            self.stop = sl.stop
-        if  not sl.start:
-            self.start = 0
-        else:
-            self.start = sl.start
-        self.sl = sl
-        self.dim = dim
+    def __init__(self, key, dim):
+        '''
+        Create an instance of Ind using *key* that can be 
+        an integer, a slice, a list, or a numpy array.
+        '''
+        if isinstance(key, slice):
+            sl = key
+            if sl.stop and (sl.start > dim or sl.start >= sl.stop):
+                raise Exception('Indexing problem: %s, dim=%d:' % (str(sl), dim))
     
+            if  not sl.stop or sl.stop > dim:
+                stop = dim
+            else:
+                stop = sl.stop
+            if not sl.start:
+                start = 0
+            else:
+                start = sl.start
+            self.indices = range(start, stop)
+            self.dim = dim
+        elif isinstance(key, (int, long)):
+            if key >= dim:
+                raise Exception('Index (%d) out of range (%d)' % (key, dim))
+            self.indices = [key]
+            self.dim = dim
+        elif isinstance(key, (list, np.ndarray)):
+            self.indices = key
+            self.dim = dim
+            # Here to avoid checking all the inds, I suppose that normally
+            # the list of indices is sorted. So just check the last number
+            if key[-1] >= dim:
+                raise Exception('Index (%d) out of range (%d)' % (key[-1], dim))
+        else:
+            raise Exception('Error indexing with unrecognized type %s' % key.__class__)
+
+
     def __repr__(self):
         return '(%d, %d / %d)' % (self.start, self.stop, self.dim)
 
@@ -139,13 +160,14 @@ def getIndS(inds):
 
 def getMultiDimMatrixIndex(inds, res=[]):
     n = len(inds)
-    r = range(inds[0].start, inds[0].stop)
+    r = inds[0].indices
+    #r = range(inds[0].start, inds[0].stop)
     if n == 1:
-        return res + r
+        return r
     l = []
     for i in r:
         prod = i
-        for k in range(1, n):
+        for k in xrange(1, n):
             prod *= inds[k].dim
         rest = getMultiDimMatrixIndex(inds[1:], res)
         l += res + [prod + rs for rs in rest]
@@ -171,11 +193,13 @@ def getTupleIndex(ind, dims):
 if __name__ == '__main__':
     i1 = Ind(slice(1, 4), 5)
     i2 = Ind(slice(2, 4), 6)
-    i3 = Ind(slice(2, 5), 7)
-    
-    print getMultiDimMatrixIndex([i1, i2, i3])
+    #i3 = Ind(slice(2, 5), 7)
+    i3 = Ind(np.array([1, 4, 6]), 7)
 
-    for i in range(10):
-        print getTupleIndex(i, (5, 6, 7))
+    
+    inds = getMultiDimMatrixIndex([i1, i2, i3])
+
+    for i in inds:
+        print getTupleIndex(i, (5, 6, 7)), i
     
     print getTupleIndex(8, 8)

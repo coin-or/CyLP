@@ -162,6 +162,25 @@ class TestModel(unittest.TestCase):
         self.assertTrue(abs(sol[0, 1, 0] - 1) <= 10**-6)
         self.assertTrue(abs(sol[2, 0, 3] - 1) <= 10**-6)
          
+    def test_ArrayIndexing(self):
+        from CyLP.cy import CyClpSimplex
+        from CyLP.py.modeling.CyLPModel import CyLPArray
+        s = CyClpSimplex()
+        x = s.addVariable('x', (5, 3, 6))
+        s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5
+       
+        
+        s += x[1, 2, [0, 3, 5]] - x[2, 1, np.array([1, 2, 4])] == 1
+        s += 0 <= x <= 1
+        c = CyLPArray(range(18))
+        
+        s.objective = c * x[2, :, :] + c * x[0, :, :]
+        s.primal()
+        sol = s.primalVariableSolution['x']
+        self.assertTrue(abs(sol[1, 2, 0] - 1) <= 10**-6)
+        self.assertTrue(abs(sol[1, 2, 3] - 1) <= 10**-6)
+        self.assertTrue(abs(sol[1, 2, 5] - 1) <= 10**-6)
+         
 
 if __name__ == '__main__':
     unittest.main()
