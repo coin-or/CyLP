@@ -34,6 +34,7 @@ cdef extern from "CglMixedIntegerRounding2.hpp":
 cdef extern from "CglRedSplit.hpp":
     cdef cppclass CppCglRedSplit "CglRedSplit":
         pass
+
 cdef extern from "CglCutGenerator.hpp":
     cdef cppclass CppCglCutGenerator "CglCutGenerator":
         pass
@@ -66,6 +67,6 @@ cdef class CyCglMixedIntegerRounding2(CyCglCutGenerator):
     pass
     #cdef CppCglMixedIntegerRounding2* CppSelf
 
-cdef class CglRedSplit(CyCglCutGenerator):
+cdef class CyCglRedSplit(CyCglCutGenerator):
     pass
     #cdef CppCglRedSplit* CppSelf

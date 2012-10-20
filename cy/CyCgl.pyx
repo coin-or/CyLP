@@ -52,6 +52,6 @@ cdef class CyCglMixedIntegerRounding2:
     def __cinit__(self):
         self.CppSelf = <CppCglCutGenerator*>new CppCglMixedIntegerRounding2()
 
-cdef class CglRedSplit:
+cdef class CyCglRedSplit:
     def __cinit__(self):
         self.CppSelf = <CppCglCutGenerator*>new CppCglRedSplit()
