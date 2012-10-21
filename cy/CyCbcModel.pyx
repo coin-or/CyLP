@@ -85,6 +85,10 @@ cdef class CyCbcModel:
         self.CppSelf = cppmodel
         return self
 
+    cdef setClpModel(self, clpmodel):
+        self.clpModel = clpmodel
+        return self
+
     def setNodeCompare(self, nodeCompareObject):
         if not isinstance(nodeCompareObject, NodeCompareBase):
             raise TypeError('setNodeCompare argument should be a ' \
@@ -144,6 +148,13 @@ cdef class CyCbcModel:
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]] 
                 ret = d
+            else:
+                names = self.clpModel.variableNames
+                if names:
+                    d = CyLPSolution()
+                    for i in range(len(names)):
+                        d[names[i]] = ret[i]
+                    ret = d
             return ret
 
     property solutionCount:

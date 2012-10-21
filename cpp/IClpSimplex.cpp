@@ -461,6 +461,12 @@ PyObject* IClpSimplex::getColUpper(){
     return Arr;
 }
 
+std::vector<std::string> IClpSimplex::getVariableNames(){
+    if (lengthNames_)
+        return columnNames_;
+    return std::vector<std::string> ();
+}
+
 void IClpSimplex::setVariableName(int varInd,  char* name){
     if (varInd >= getNumCols())
         return;

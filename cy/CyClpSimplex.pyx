@@ -163,6 +163,13 @@ cdef class CyClpSimplex:
             else:
                 return self.cyLPModel.constraints
 
+    property variableNames:
+        '''
+        variable names
+        '''
+        def __get__(self):
+            return self.getVariableNames()
+
     property variables:
         '''
         Variables.
@@ -212,6 +219,13 @@ cdef class CyClpSimplex:
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]] 
                 ret = d
+            else:
+                names = self.variableNames
+                if names:
+                    d = CyLPSolution()
+                    for i in range(len(names)):
+                        d[names[i]] = ret[i]
+                    ret = d
             return ret
 
     property primalVariableSolutionAll:
@@ -621,6 +635,16 @@ cdef class CyClpSimplex:
         This can be used only in Cython.
         '''
         return self.CppSelf.rowUpper()
+
+    def getVariableNames(self):
+        '''
+        Return the variable name. (e.g. that was set in the mps file)
+        '''
+        cdef vector[string] names = self.CppSelf.getVariableNames()
+        ret = []
+        for i in range(names.size()):
+            ret.append(names[i].c_str())
+        return ret
 
     cpdef setVariableName(self, varInd, name):
         '''
@@ -1283,6 +1307,7 @@ cdef class CyClpSimplex:
         cdef CppICbcModel* model = self.CppSelf.getICbcModel()
         cm =  CyCbcModel()
         cm.setCppSelf(model)
+        cm.setClpModel(self)
         if self.cyLPModel:
             cm.cyLPModel = self.cyLPModel
         return cm

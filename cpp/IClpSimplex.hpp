@@ -149,6 +149,7 @@ public:
     
 	void setVariableName(int varInd,  char* name);
     void setConstraintName(int constInd,  char* name);
+    std::vector<std::string> getVariableNames();
     		
     /// Partial pricing 
     int partialPrice(int start, int end, int* numberWanted)

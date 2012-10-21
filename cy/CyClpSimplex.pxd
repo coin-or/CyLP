@@ -14,6 +14,9 @@ from CyLP.cy.CyCbcModel cimport CyCbcModel, CppICbcModel
 from CyLP.python.modeling.CyLPModel import CyLPModel
 from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
 
+from libcpp.string cimport string
+from libcpp.vector cimport vector
+
 cdef extern from "IClpPrimalColumnPivotBase.h" namespace "IClpSimplex":
     cdef enum Status:
         isFree = 0x00,
@@ -194,6 +197,7 @@ cdef extern from "IClpSimplex.hpp":
 
         void setVariableName(int varInd, char* name)
         void setConstraintName(int constInd, char* name)
+        vector[string] getVariableNames()
 
         int partialPrice(int start, int end, int* numberWanted)
 

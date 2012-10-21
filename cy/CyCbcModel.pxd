@@ -49,7 +49,9 @@ cdef extern from "ICbcModel.hpp":
 cdef class CyCbcModel:
     cdef CppICbcModel* CppSelf
     cdef object cyLPModel
+    cdef object clpModel
     cdef setCppSelf(self, CppICbcModel* cppmodel)
+    cdef setClpModel(self, clpmodel)
     cpdef addCutGenerator(self, CyCglCutGenerator generator,
                         howOften=*, name=*, normal=*, atSolution=*,
                         infeasible=*, howOftenInSub=*, whatDepth=*,
