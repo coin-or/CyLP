@@ -490,7 +490,6 @@ class CyLPConstraint:
                 if ((opr in ('<=', '==') and isinstance(left, CyLPExpr)) or
                     (opr in ('>=', '==') and isinstance(right, CyLPExpr))):
                     if var.parent:
-                        print var.indices
                         var.parent.upper[var.indices] = bound
                     else:
                         var.upper[var.indices] = bound
