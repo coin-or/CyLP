@@ -24,7 +24,7 @@ cdef class CyDantzigPivot(CyClpPrimalColumnPivotBase):
         s = self.cyModel
         rc = s.reducedCosts
 
-        cdef double tol = s.dualTolerance()
+        cdef double tol = s.dualTolerance
 
         #incides of vars not fixed and not flagged
         #indicesToConsider = np.where((status & 7 != 1) & (status & 7 != 5) &

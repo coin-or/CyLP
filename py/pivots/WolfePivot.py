@@ -29,7 +29,7 @@ class WolfePivot(PivotPythonBase):
 #        print 'free:', s.varIsFree
 #        print 'ban:', self.notBanned
 #        print 'bas', s.varIsBasic
-        #tol = s.dualTolerance()
+        #tol = s.dualTolerance
         tol = 0
         #print 'Basis:'
         #print s.getPivotVariable()

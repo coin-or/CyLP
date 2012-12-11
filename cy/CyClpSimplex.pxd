@@ -123,16 +123,20 @@ cdef extern from "IClpSimplex.hpp":
         bint flagged(int sequence)
         void setFlagged(int varInd)
 
-        double currentDualTolerance()
         double largestDualError()
-
+        
         int pivotRow()
         void setPivotRow(int v)
 
         int sequenceIn()
         void setSequenceIn(int v)
 
+        double currentDualTolerance()
         double dualTolerance()
+        void setDualTolerance(double value)
+        double primalTolerance()
+        void setPrimalTolerance(double value)
+        
         double* rowUpper()
         double* rowLower()
         int numberRows()

@@ -108,7 +108,7 @@ class PositiveEdgePivot(PivotPythonBase):
         s = self.clpModel
         rc = s.reducedCosts
 
-        tol = s.dualTolerance()
+        tol = s.dualTolerance
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &
                                      (((rc > tol) & s.varIsAtUpperBound) |

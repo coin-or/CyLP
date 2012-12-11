@@ -54,7 +54,7 @@ class WolfePivotPE(PivotPythonBase):
 
         #self.p = np.where(np.abs(rhs) > self.EPSILON)[0]
         self.z = np.where(np.abs(rhs) <= self.EPSILON)[0]
-        #print 'degeneracy level : ', (len(self.z)) / float(nRows)
+        print 'degeneracy level : ', (len(self.z)) / float(nRows)
         #self.isDegenerate = (len(self.p) != nRows)
         self.isDegenerate = (len(self.z) > 0)
 
@@ -91,7 +91,7 @@ class WolfePivotPE(PivotPythonBase):
         self.CompIter = True
 
         rc = s.reducedCosts
-        #tol = s.dualTolerance()
+        #tol = s.dualTolerance
         tol = 0
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &
@@ -119,13 +119,13 @@ class WolfePivotPE(PivotPythonBase):
 
             comp_rc = abs(rc[comp_varInds])
             if len(comp_rc) > 0:
-                if False:
+                if True:
                     s = self.clpModel
                     cl = self.complementarityList
                     maxCompRc = 0
                     count = 0
                     #randinds = np.random.randint(len(comp_varInds), size=10)
-                    nn = 5
+                    nn = 15
 #                    for i in xrange(random.randint(0, 
 #                                    len(comp_varInds)), 
 #                                    min(nn, len(comp_varInds))):
@@ -149,7 +149,7 @@ class WolfePivotPE(PivotPythonBase):
         
         del rc2
         
-        if maxCompInd != -1 and abs(maxCompRc) > 0.1 * abs(maxRc):
+        if maxCompInd != -1 and abs(maxCompRc) > 0.00001 * abs(maxRc):
             self.compCount += 1
             #print s.getVarNameByIndex(maxCompInd)
             return maxCompInd

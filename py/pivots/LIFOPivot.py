@@ -42,7 +42,7 @@ class LIFOPivot(PivotPythonBase):
         rc = s.reducedCosts
         dim = s.nCols + s.nRows
 
-        tol = s.dualTolerance()
+        tol = s.dualTolerance
 
         for i in self.priorityList:
             #flagged or fixed

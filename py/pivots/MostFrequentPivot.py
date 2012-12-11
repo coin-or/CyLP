@@ -42,7 +42,7 @@ class MostFrequentPivot(PivotPythonBase):
         rc = s.getReducedCosts()
         dim = s.nRows + s.nCols
 
-        tol = s.dualTolerance()
+        tol = s.dualTolerance
 
         for i in self.priorityList:
             if s.flagged(i) or s.getVarStatus(i) == 5:  # flagged or fixed

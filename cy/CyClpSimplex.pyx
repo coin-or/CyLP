@@ -490,6 +490,19 @@ cdef class CyClpSimplex:
                         coinMat.appendRow()
             self.loadQuadraticObjective(coinMat)
                 
+    property dualTolerance:
+        def __get__(self):
+            return self.CppSelf.dualTolerance()
+
+        def __set__(self, value):
+           self.CppSelf.setDualTolerance(value)
+
+    property primalTolerance:
+        def __get__(self):
+            return self.CppSelf.primalTolerance()
+
+        def __set__(self, value):
+           self.CppSelf.setPrimalTolerance(value)
 
     #############################################
     # get set
@@ -579,9 +592,9 @@ cdef class CyClpSimplex:
         '''
         self.CppSelf.setFlagged(varInd)
 
-    def currentDualTolerance(self):
-        return self.CppSelf.currentDualTolerance()
-
+##    def currentDualTolerance(self):
+##        return self.CppSelf.currentDualTolerance()
+##
     def largestDualError(self):
         return self.CppSelf.largestDualError()
 
@@ -614,13 +627,13 @@ cdef class CyClpSimplex:
         '''
         self.CppSelf.setSequenceIn(v)
 
-    def dualTolerance(self):
-        '''
-        Return the dual tolerance.
-
-        :rtype: float
-        '''
-        return self.CppSelf.dualTolerance()
+##    def dualTolerance(self):
+##        '''
+##        Return the dual tolerance.
+##
+##        :rtype: float
+##        '''
+##        return self.CppSelf.dualTolerance()
 
     cdef double* rowLower(self):
         '''

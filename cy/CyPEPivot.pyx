@@ -20,7 +20,7 @@ cdef class CyPEPivot(CyClpPrimalColumnPivotBase):
         s = self.cyModel
         rc = s.reducedCosts
 
-        cdef double tol = s.dualTolerance()
+        cdef double tol = s.dualTolerance
 
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &

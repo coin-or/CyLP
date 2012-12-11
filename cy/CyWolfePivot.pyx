@@ -14,7 +14,7 @@ cdef class CyWolfePivot(CyClpPrimalColumnPivotBase):
         cdef int dim = self.nCols() + self.nRows()
         cdef CyClpSimplex.Status s
 
-        cdef double bestDj = self.model().dualTolerance()
+        cdef double bestDj = self.cyModel.dualTolerance
         cdef int bestSequence = -1
         cdef i = -1
         while i < dim - 1:
