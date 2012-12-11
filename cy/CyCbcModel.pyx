@@ -181,10 +181,11 @@ cdef class CyCbcModel:
         def __get__(self):
             return self.CppSelf.numberObjects()
 
-    def setIntegerTolerance(self, value):
-        self.CppSelf.setIntegerTolerance(value)
+    property integerTolerance:
+        def __get__(self):
+            return self.CppSelf.getIntegerTolerance()
 
-    def getIntegerTolerance(self):
-        return self.CppSelf.getIntegerTolerance()
+        def __set__(self, value):
+           self.CppSelf.setIntegerTolerance(value)
         
     #TODO: add access to solver: getLower, getUpper,...
