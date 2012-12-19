@@ -151,7 +151,7 @@
 <span class="sd">    array([ 0.,  1.])</span>
 
 <span class="sd">    **Usage (multi-dimensions, using CyLPModel indirectly)**</span>
-
+<span class="sd">    </span>
 <span class="sd">    &gt;&gt;&gt; from CyLP.cy import CyClpSimplex</span>
 <span class="sd">    &gt;&gt;&gt; from CyLP.py.modeling.CyLPModel import CyLPArray</span>
 <span class="sd">    &gt;&gt;&gt; s = CyClpSimplex()</span>
@@ -180,8 +180,8 @@
 
 <span class="n">NUMBERS</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">long</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">isNumber</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">NUMBERS</span><span class="p">)</span> <span class="ow">or</span>
-            <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">CyLPArray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">()))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">NUMBERS</span><span class="p">)</span> <span class="ow">or</span> 
+            <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">CyLPArray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">()))</span> 
 
 <span class="c">#from CyLP.py.utils.sparseUtil import sparseConcat</span>
 <span class="k">def</span> <span class="nf">I</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -195,7 +195,7 @@
 
 <span class="k">def</span> <span class="nf">identitySub</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Return a sparse row sub-matrix of the identity matrix</span>
+<span class="sd">    Return a sparse row sub-matrix of the identity matrix </span>
 <span class="sd">    of size *n* indexed in *l*</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">var</span><span class="o">.</span><span class="n">dim</span>
@@ -343,7 +343,7 @@
             <span class="n">CyLPConstraint</span><span class="o">.</span><span class="n">gid</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">name</span> <span class="o">=</span> <span class="s">&#39;R_</span><span class="si">%d</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">CyLPConstraint</span><span class="o">.</span><span class="n">gid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-
+        
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;constraint </span><span class="si">%s</span><span class="s">:</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
@@ -358,7 +358,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;normal Constarint</span><span class="se">\n</span><span class="s">&#39;</span>
         <span class="k">return</span> <span class="n">s</span>
-
+    
     <span class="k">def</span> <span class="nf">mul</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expr</span><span class="p">,</span> <span class="n">coef</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Recursively multiplies all variable coefficients in *expr* by *coef*</span>
@@ -431,8 +431,8 @@
                             <span class="n">coef</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="n">coef</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">nr</span><span class="p">,</span> <span class="n">right</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
-                            <span class="n">coef</span><span class="p">[:,</span> <span class="n">right</span><span class="o">.</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span>
-
+                            <span class="n">coef</span><span class="p">[:,</span> <span class="n">right</span><span class="o">.</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span> 
+                    
                     <span class="bp">self</span><span class="o">.</span><span class="n">varCoefs</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">isRange</span> <span class="o">=</span> <span class="bp">False</span>
 
@@ -445,8 +445,8 @@
                         <span class="k">if</span> <span class="n">left</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">varNames</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">varNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">parentVarDims</span><span class="p">[</span><span class="n">left</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span><span class="o">.</span><span class="n">parentDim</span>
-
-                    <span class="c"># No coefs for right op</span>
+                    
+                    <span class="c"># No coefs for right op </span>
                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">CyLPVar</span><span class="p">):</span>
                         <span class="k">if</span> <span class="n">right</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">varCoefs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">varCoefs</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
@@ -454,7 +454,7 @@
                             <span class="n">coef</span> <span class="o">=</span> <span class="n">identitySub</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
                             <span class="k">if</span> <span class="n">opr</span> <span class="o">==</span> <span class="s">&#39;-&#39;</span><span class="p">:</span>
                                 <span class="n">coef</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">varCoefs</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">varCoefs</span><span class="p">[</span><span class="n">right</span><span class="p">]</span> <span class="o">=</span> <span class="n">coef</span> 
                             <span class="bp">self</span><span class="o">.</span><span class="n">nRows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">right</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
                             <span class="c">#if self.nRows == 0:</span>
                             <span class="c">#    self.nRows = 1</span>
@@ -462,8 +462,8 @@
                             <span class="c">#elif self.nRows == 1:</span>
                             <span class="c">#    coef = CyLPArray(np.ones(1))</span>
                             <span class="c">#else:</span>
-                            <span class="c">#    coef = np.matrix(np.eye(self.nRows))</span>
-
+                            <span class="c">#    coef = np.matrix(np.eye(self.nRows)) </span>
+                            
                             <span class="c">#if opr == &#39;-&#39;:</span>
                             <span class="c">#    coef *= -1</span>
                             <span class="c">#self.varCoefs[right] = coef</span>
@@ -498,7 +498,7 @@
                 <span class="c">#self.varCoefs[right.right] *= -1</span>
             <span class="k">if</span> <span class="n">opr</span> <span class="o">==</span> <span class="s">&#39;*&#39;</span> <span class="ow">and</span> <span class="n">isNumber</span><span class="p">(</span><span class="n">left</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">mul</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span>
-
+                
 
         <span class="k">if</span> <span class="n">opr</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&lt;=&#39;</span><span class="p">,</span> <span class="s">&#39;&gt;=&#39;</span><span class="p">,</span> <span class="s">&#39;==&#39;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">CyLPExpr</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">right</span><span class="p">,</span>
@@ -510,7 +510,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;At least one side of a comparison sign&#39;</span> \
                                 <span class="s">&#39;should be constant.&#39;</span><span class="p">)</span>
-
+            
             <span class="c"># FIXME: check this: I suppose never runs</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRange</span><span class="p">:</span>
                 <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -586,13 +586,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lower</span> <span class="o">=</span> <span class="o">-</span><span class="n">getCoinInfinity</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">upper</span> <span class="o">=</span> <span class="n">getCoinInfinity</span><span class="p">()</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">fromInd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">toInd</span> <span class="o">=</span> <span class="bp">None</span>
         <span class="k">if</span> <span class="n">fromInd</span> <span class="ow">and</span> <span class="n">toInd</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">fromInd</span><span class="p">,</span> <span class="n">toInd</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">formInd</span> <span class="o">=</span> <span class="n">fromInd</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">toInd</span> <span class="o">=</span> <span class="n">toInd</span>
-
+        
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fromInd</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">toInd</span><span class="p">:</span>
@@ -829,10 +829,10 @@
         <span class="k">for</span> <span class="n">cname</span><span class="p">,</span> <span class="n">rg</span> <span class="ow">in</span> <span class="n">cind</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="si">%s</span><span class="s"> : </span><span class="si">%s</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">cname</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">15</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">rg</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">s</span>
-
+    
 <div class="viewcode-block" id="IndexFactory.reverseVarSearch"><a class="viewcode-back" href="../../../../modules/modeling.html#CyLP.py.modeling.CyLPModel.IndexFactory.reverseVarSearch">[docs]</a>    <span class="k">def</span> <span class="nf">reverseVarSearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Take an index and return the corresponding variable name.</span>
+<span class="sd">        Take an index and return the corresponding variable name. </span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="n">inds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">varIndex</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">inds</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -840,7 +840,7 @@
                 <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">inds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">==</span><span class="n">ind</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">i</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span>
-
+            
 </div></div>
 <span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">sparseConcat</span><span class="p">,</span> <span class="n">csr_matrixPlus</span><span class="p">,</span> <span class="n">csc_matrixPlus</span>
 
@@ -852,7 +852,7 @@
 <span class="sd">    See the :ref:`modeling example &lt;modeling-usage&gt;`.</span>
 
 <span class="sd">    &#39;&#39;&#39;</span>
-
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="p">[]</span>
@@ -868,16 +868,16 @@
 <span class="sd">        Create a new instance of :py:class:`CyLPVar` using the given</span>
 <span class="sd">        arguments and add it to current model&#39;s variable list.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-
+        
         <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">var</span> <span class="o">=</span> <span class="n">CyLPVar</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">isInt</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-
+        
         <span class="c">#If mulidim, correct dim</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">dim</span> <span class="o">=</span> <span class="nb">reduce</span><span class="p">(</span><span class="n">mul</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
-
+        
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="o">.</span><span class="n">hasVar</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dim</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nVars</span> <span class="o">+=</span> <span class="n">dim</span>
@@ -889,18 +889,18 @@
                         <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">])]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">var</span><span class="o">.</span><span class="n">mpsNames</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">var</span><span class="o">.</span><span class="n">dim</span><span class="p">)]</span>
-
+            
             <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
                 <span class="n">o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">o</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">o</span> <span class="o">=</span> <span class="n">sparseConcat</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">dim</span><span class="p">)),</span> <span class="s">&#39;h&#39;</span><span class="p">)</span>
-
+            
             <span class="bp">self</span><span class="o">.</span><span class="n">objective_</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&#39;Varaible </span><span class="si">%s</span><span class="s"> already exists.&#39;</span> <span class="o">%</span> <span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
+        
         <span class="k">return</span> <span class="n">var</span>
 </div>
     <span class="k">def</span> <span class="nf">removeVariable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -914,7 +914,7 @@
         <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="o">.</span><span class="n">varIndex</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvdims</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
         <span class="n">o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">objective_</span>
-
+        
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
             <span class="n">o</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">o</span><span class="p">[:</span><span class="n">start</span><span class="p">],</span> <span class="n">o</span><span class="p">[</span><span class="n">end</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -927,7 +927,7 @@
                 <span class="n">o</span> <span class="o">=</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">o</span> <span class="o">=</span> <span class="n">sparseConcat</span><span class="p">(</span><span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="n">start</span><span class="p">],</span> <span class="n">o</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">end</span><span class="p">:],</span> <span class="n">how</span><span class="o">=</span><span class="s">&#39;h&#39;</span><span class="p">)</span>
-
+        
         <span class="bp">self</span><span class="o">.</span><span class="n">objective_</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
 
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvdims</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
@@ -938,7 +938,7 @@
             <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">break</span>
-
+        
         <span class="c">#Removing the variable from the constraints</span>
         <span class="n">cons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cons</span><span class="p">:</span>
@@ -1001,7 +1001,7 @@
 
     <span class="k">def</span> <span class="nf">__iadd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cons</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Call :meth:`addConstraint`. The only difference is that</span>
+<span class="sd">        Call :meth:`addConstraint`. The only difference is that </span>
 <span class="sd">        you cannot specify a name for your constraint.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addConstraint</span><span class="p">(</span><span class="n">cons</span><span class="p">)</span>
@@ -1025,11 +1025,13 @@
             <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="o">.</span><span class="n">addConst</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">nRows</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">nCons</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">nRows</span>
-
+        
         <span class="n">c</span><span class="o">.</span><span class="n">mpsNames</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">nRows</span><span class="p">):</span>
             <span class="n">c</span><span class="o">.</span><span class="n">mpsNames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%s</span><span class="s">_</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
         
+
+        <span class="c">#self.makeMatrices()</span>
         <span class="k">return</span> <span class="n">c</span>
 </div>
     <span class="k">def</span> <span class="nf">removeConstraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
@@ -1039,7 +1041,7 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">con</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-                <span class="k">break</span>
+                <span class="k">break</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">nCons</span> <span class="o">-=</span> <span class="n">con</span><span class="o">.</span><span class="n">nRows</span>
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">inds</span><span class="o">.</span><span class="n">removeConst</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -1076,12 +1078,12 @@
 <span class="c">#                #coef = sparse.coo_matrix((1, dim))</span>
 <span class="c">#                for var in keys:</span>
 <span class="c">#                    tempMat = c.varCoefs[var]</span>
-<span class="c">#                    if isinstance(tempMat,</span>
+<span class="c">#                    if isinstance(tempMat, </span>
 <span class="c">#                            (csr_matrixPlus, csc_matrixPlus)):</span>
 <span class="c">#                        coo = tempMat.tocoo()</span>
 <span class="c">#                        for i, j, v in izip(coo.row, coo.col, coo.data):</span>
 <span class="c">#                            coef[j] = v</span>
-<span class="c">#</span>
+<span class="c">#                    </span>
 <span class="c">#                    else:</span>
 <span class="c">#                        coef[var.indices] += c.varCoefs[var]</span>
 <span class="c">#</span>
@@ -1105,11 +1107,11 @@
         <span class="c">#    return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">makeIndexFactory</span><span class="p">()</span>
         <span class="c">#self.getVarBounds()</span>
-
+        
 
         <span class="c"># Create the aggregated coef matrix</span>
         <span class="n">masterCoefMat</span> <span class="o">=</span> <span class="bp">None</span>
-
+        
 <span class="c">#        for varName in self.allVarNames:</span>
 <span class="c">#            vmat = self.generateVarMatrix(varName)</span>
 <span class="c">#            masterCoefMat = sparseConcat(masterCoefMat, vmat, &#39;h&#39;)</span>
@@ -1118,7 +1120,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nCons</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">varName</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">varNames</span><span class="p">:</span><span class="c"># self.pvdims.keys():#self.allVarNames:</span>
                 <span class="n">vmat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generateVarMatrix</span><span class="p">(</span><span class="n">varName</span><span class="p">)</span>
-
+                
                 <span class="k">if</span> <span class="n">vmat</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
                     <span class="n">vmat</span> <span class="o">=</span> <span class="n">csc_matrixPlus</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nCons</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvdims</span><span class="p">[</span><span class="n">varName</span><span class="p">]))</span>
                 <span class="n">masterCoefMat</span> <span class="o">=</span> <span class="n">sparseConcat</span><span class="p">(</span><span class="n">masterCoefMat</span><span class="p">,</span> <span class="n">vmat</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">)</span>
@@ -1148,26 +1150,26 @@
 
 </div>
 <span class="k">class</span> <span class="nc">CyLPSolution</span><span class="p">:</span>
-
+    
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sol</span> <span class="o">=</span> <span class="p">{}</span>
-
+    
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="s">&#39;Add (key, val) to self.dic. Ignore if val is zero&#39;</span>
         <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c"># See if necessary to use a tolerance</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-
+    
     <span class="k">def</span> <span class="nf">getVal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="s">&#39;Return the value corresponing key&#39;</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-
+    
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
         <span class="c">#if isinstance(key, tuple):</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sol</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
 
@@ -1189,16 +1191,16 @@
     <span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
     <span class="n">s</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">5</span>
-
+    
     <span class="n">s</span> <span class="o">+=</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">1</span>
     <span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">18</span><span class="p">))</span>
-
+    
     <span class="n">s</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
     <span class="n">s</span><span class="o">.</span><span class="n">writeMps</span><span class="p">(</span><span class="s">&#39;/Users/mehdi/Desktop/test.mps&#39;</span><span class="p">)</span>
     <span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
     <span class="n">sol</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span>
     <span class="k">print</span> <span class="n">sol</span>
-
+    
 <span class="c">#model = CyLPModel()</span>
 <span class="c">#</span>
 <span class="c">#x = model.addVariable(&#39;x&#39;, 5)</span>
