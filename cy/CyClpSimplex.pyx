@@ -816,8 +816,43 @@ cdef class CyClpSimplex:
         b is a :py:class:`CyLPArray`.
         '''
         if self.cyLPModel:
-            self.cyLPModel.addConstraint(cons, name)
-            self.loadFromCyLPModel(self.cyLPModel)
+            m = self.cyLPModel
+            nVarsBefore = m.nVars
+            nConsBefore = m.nCons 
+            c = m.addConstraint(cons, name)
+            
+            # If the dimension is changing, load from scartch
+            if nConsBefore == 0 or m.nVars - nVarsBefore != 0:
+                self.loadFromCyLPModel(self.cyLPModel)
+            
+            # If the constraing to be added is just a variable range
+            elif c.isRange:
+                var = c.variables[0]
+                dim = var.parentDim
+                varinds = m.inds.varIndex[var.name]
+                
+                lb = var.parent.lower if var.parent else var.lower
+                ub = var.parent.upper if var.parent else var.upper
+                
+                for i in var.indices:
+                    self.setColumnLower(varinds[i], lb[i])
+                    self.setColumnUpper(varinds[i], ub[i])
+            
+            # If the constraint is a "real" constraint, but no 
+            # dimension changes required
+            else:
+                mainCoef = None
+                for varName in m.varNames:
+                    dim = m.pvdims[varName]
+                    coef = sparse.coo_matrix((c.nRows, dim))
+                    keys = [k for k in c.varCoefs.keys() if k.name == varName]
+                    for var in keys:
+                        coef = coef + c.varCoefs[var]
+                    mainCoef = sparseConcat(mainCoef, coef, 'h')
+                
+                self.addConstraints(c.nRows,
+                        c.lower, c.upper, mainCoef.indptr,
+                        mainCoef.indices, mainCoef.data)
         else:
             raise Exception('To add a constraint you must set ' \
                             'CyLPSimplex.cyLPModel first.')
@@ -1106,6 +1141,7 @@ cdef class CyClpSimplex:
         >>>
         >>> cbcModel = s.getCbcModel()
         >>> cbcModel.branchAndBound()
+        'solution'
         >>>
         >>> sol_x = cbcModel.primalVariableSolution['x']
         >>> (abs(sol_x -
@@ -1226,30 +1262,6 @@ cdef class CyClpSimplex:
         m = len(constraintLower)
         if n == 0 or m == 0:
             return
-#        print 'm'
-#        mmm = mat.todense()
-#        from math import ceil
-#        secSize = 20
-#        cols = mmm.shape[1]
-#        divs = int(ceil(cols / float(secSize)))
-#
-#        for sec in xrange(divs):
-#            for i in xrange(mmm.shape[0]):
-#                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
-#                    print str(int(round(mmm[i, j], 1))).rjust(7),
-#                print
-#            print '...'
-#
-
-##        for i in range(mmm.shape[0]):
-##            for j in range(mmm.shape[1]):
-##                print str(int(round(mmm[i, j], 1))).rjust(7),
-##            print
-#        print 'cl\n', constraintLower
-#        print 'cu\n', constraintUpper
-#        print 'vl\n', variableLower
-#        print 'vu\n', variableUpper
-
         
         if not isinstance(mat, sparse.coo_matrix):
             mat = mat.tocoo()
@@ -1257,16 +1269,6 @@ cdef class CyClpSimplex:
         coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
                                         np.array(mat.col, np.int32),
                                         np.array(mat.data, np.double))
-
-        #row = np.array(mat.row, np.int32) + m * np.ones(len(mat.row), dtype=np.int32)
-        #col = np.array(mat.col, np.int32) 
-        #row = np.array(mat.row, np.int32) + m * np.ones(len(mat.row), dtype=np.int32)
-        #col = np.array(mat.col, np.int32) + n * np.ones(len(mat.col), dtype=np.int32)
-        
-        #coinMat = CyCoinPackedMatrix(True, row, col,
-        #                                np.array(mat.data, np.double))
-
-        #constraints = cyLPModel.constraints
 
         #start adding the arrays and the matrix to the problem
         self.resize(m, n)
@@ -1291,20 +1293,6 @@ cdef class CyClpSimplex:
         
         if cyLPModel.objective != None:
             self.objective = cyLPModel.objective
-#            if isinstance(cyLPModel.objective, np.ndarray):
-#                self.setObjectiveArray(cyLPModel.objective.astype(np.double))
-#            if isinstance(cyLPModel.objective, (sparse.coo_matrix,
-#                                                sparse.csc_matrix,
-#                                                sparse.csr_matrix,
-#                                                sparse.lil_matrix)):
-#                print 'OK, sparse'
-#                obj = cyLPModel.objective
-#                if not isinstance(obj, sparse.coo_matrix):
-#                    obj = cyLPModel.objective.too_coo()
-#                for i, j, v in izip(obj.row, obj.col, obj.data):
-#                    print 'set coef: ', i, j, v
-#                    self.setObjectiveCoefficient(j, v)
-
 
         self.replaceMatrix(coinMat, True)
 

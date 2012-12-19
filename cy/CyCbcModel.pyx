@@ -57,10 +57,10 @@ cdef class CyCbcModel:
     >>> b = CyLPArray([4.2, 3])
     >>> x_u= CyLPArray([2., 3.5])
     >>>
-    >>> model.addConstraint(A*x <= a)
-    >>> model.addConstraint(2 <= B * x + D * y <= b)
-    >>> model.addConstraint(y >= 0)
-    >>> model.addConstraint(1.1 <= x[1:3] <= x_u)
+    >>> model += A*x <= a                   
+    >>> model += 2 <= B * x + D * y <= b    
+    >>> model += y >= 0                     
+    >>> model += 1.1 <= x[1:3] <= x_u       
     >>>
     >>> c = CyLPArray([1., -2., 3.])
     >>> model.objective = c * x + 2 * y.sum()
@@ -70,7 +70,7 @@ cdef class CyCbcModel:
     >>> cbcModel = s.getCbcModel()
     >>>
     >>> cbcModel.branchAndBound()
-    >>>
+    'solution'
     >>> sol_x = cbcModel.primalVariableSolution['x']
     >>>
     >>> (abs(sol_x - np.array([0, 2, 2])) <= 10**-6).all()

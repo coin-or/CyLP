@@ -980,6 +980,7 @@ class CyLPModel(object):
         
 
         #self.makeMatrices()
+        return c
 
     def removeConstraint(self, name):
         if not self.inds.hasConst(name):
@@ -1109,7 +1110,7 @@ class CyLPSolution:
     
     def getVal(self, key):
         'Return the value corresponing key'
-        if key not in self.sol.keys:
+        if key not in self.sol.keys():
             return 0
         return self.sol[key]
     
