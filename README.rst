@@ -20,7 +20,8 @@ STEP 2:
     CoinMP.
 
 STEP 3: 
-    Install CyLP. Go to CyLP's root directory and run 'make'
+    Install CyLP. Go to CyLP's root directory (which MUST be called CyLP) and
+    run 'make'.
 
 STEP 4: 
     Update you PYTHONPATH environment variable to contain the 
