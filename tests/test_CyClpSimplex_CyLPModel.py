@@ -114,6 +114,44 @@ class TestModel(unittest.TestCase):
         self.assertTrue((abs(sol - 
                         np.array([0, 2, 1.1, 0, 1]) ) <= 10**-6).all())
         
+    def test_onlyBounds(self):
+        model = CyLPModel()
+        
+        x = model.addVariable('x', 3)
+        y = model.addVariable('y', 2)
+        
+        model += y >= 1
+        model += 2 <= x <= 4
+        
+        c = CyLPArray([1., -2., 3.])
+        model.objective = c * x + 2 * y[0] + 2 * y[1]
+        
+        s = CyClpSimplex(model)
+        s.primal()
+        
+        sol = np.concatenate((s.primalVariableSolution['x'],
+                              s.primalVariableSolution['y']))
+        self.assertTrue((abs(sol - 
+                        np.array([2, 4, 2, 1, 1]) ) <= 10**-6).all())
+    def test_onlyBounds2(self):
+        s = CyClpSimplex()
+        
+        x = s.addVariable('x', 3)
+        y = s.addVariable('y', 2)
+        
+        s += y >= 1
+        s += 2 <= x <= 4
+        
+        c = CyLPArray([1., -2., 3.])
+        s.objective = c * x + 2 * y[0] + 2 * y[1]
+        
+        s.primal()
+        
+        sol = np.concatenate((s.primalVariableSolution['x'],
+                              s.primalVariableSolution['y']))
+        self.assertTrue((abs(sol - 
+                        np.array([2, 4, 2, 1, 1]) ) <= 10**-6).all())
+    
     def test_Sparse(self):
         from CyLP.py.utils.sparseUtil import csc_matrixPlus
         

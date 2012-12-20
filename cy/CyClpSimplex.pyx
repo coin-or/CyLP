@@ -1258,18 +1258,25 @@ cdef class CyClpSimplex:
         
         n = len(variableLower)
         m = len(constraintLower)
-        if n == 0 or m == 0:
+        if n == 0:# or m == 0:
             return
         
-        if not isinstance(mat, sparse.coo_matrix):
-            mat = mat.tocoo()
+        self.resize(m, n)
+        if mat != None:
+            if not isinstance(mat, sparse.coo_matrix):
+                mat = mat.tocoo()
         
-        coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
+            coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
                                         np.array(mat.col, np.int32),
                                         np.array(mat.data, np.double))
+            self.replaceMatrix(coinMat, True)
+        else:
+            coinMat = CyCoinPackedMatrix(True, np.array([], np.int32),
+                                        np.array([], np.int32),
+                                        np.array([], np.double))
+            self.replaceMatrix(coinMat, True)
 
         #start adding the arrays and the matrix to the problem
-        self.resize(m, n)
 
         for i in xrange(n):
             self.setColumnLower(i, variableLower[i])
@@ -1292,7 +1299,6 @@ cdef class CyClpSimplex:
         if cyLPModel.objective != None:
             self.objective = cyLPModel.objective
 
-        self.replaceMatrix(coinMat, True)
 
     #############################################
     # Integer Programming
