@@ -914,11 +914,10 @@ cdef class CyClpSimplex:
         '''
         # TODO: This makes adding a row real slower,
         # but it is better than a COIN EXCEPTION!
-        for c in columns:
-            if c >= self.getNumCols():
-                raise Exception('CyClpSimplex.pyx:addConstraint: Column ' \
-                                'number %d should be less than column ' \
-                                'size %d' % (c, self.getNumCols()))
+        if (columns >= self.nVariables).any():
+            raise Exception('CyClpSimplex.pyx:addConstraint: Column ' \
+                    'index out of range (number of columns: ' \
+                                '%d)' % (self.nVariables))
         self.CppSelf.addRow(numberInRow, <int*>columns.data,
                             <double*>elements.data, rowLower, rowUpper)
 
@@ -934,11 +933,10 @@ cdef class CyClpSimplex:
         '''
         # TODO: This makes adding a column real slower,
         # but it is better than a COIN EXCEPTION!
-        for r in rows:
-            if r >= self.getNumRows():
-                raise Exception('CyClpSimplex.pyx:addColumn: Row '\
-                        'number %d should be less than row size ' \
-                        '%d' % (r, self.getNumRows()))
+        if (rows >= self.nConstraints).any():
+            raise Exception('CyClpSimplex.pyx:addColumn: Row '\
+                    'index out of range (number of rows:  ' \
+                        '%d)' % (self.nConstraints))
         self.CppSelf.addColumn(numberInColumn, <int*>rows.data,
                 <double*> elements.data, columnLower,
                                columnUpper, objective)
@@ -1419,10 +1417,8 @@ cdef class CyClpSimplex:
 
     def setComplement(self, var1, var2):
         '''
-        if ``arg`` is an integer: mark variable index ``arg`` as integer.
-        if ``arg`` is a :class:`CyLPVar` object: mark variable
-        ``arg`` as integer. Here is an example of the latter:
-
+        Set ``var1`` as the complementary variable of ``var2``. These
+        arguments may be integers signifying indices, or CyLPVars.
         '''
 
         if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
