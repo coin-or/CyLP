@@ -1269,12 +1269,11 @@ cdef class CyClpSimplex:
             coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
                                         np.array(mat.col, np.int32),
                                         np.array(mat.data, np.double))
-            self.replaceMatrix(coinMat, True)
         else:
             coinMat = CyCoinPackedMatrix(True, np.array([], np.int32),
                                         np.array([], np.int32),
                                         np.array([], np.double))
-            self.replaceMatrix(coinMat, True)
+        self.replaceMatrix(coinMat, True)
 
         #start adding the arrays and the matrix to the problem
 
