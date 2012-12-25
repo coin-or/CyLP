@@ -46,14 +46,14 @@ class LIFOPivot(PivotPythonBase):
 
         for i in self.priorityList:
             #flagged or fixed
-            if s.flagged(i) or s.getVarStatus(i) == VarStatus.fixed:
+            if s.flagged(i) or s.CLP_getVarStatus(i) == VarStatus.fixed:
                 continue
 
             #TODO: can we just say dualInfeasibility = rc[i] ** 2
-            if s.getVarStatus(i) == VarStatus.atUpperBound:  # upperbound
+            if s.CLP_getVarStatus(i) == VarStatus.atUpperBound:  # upperbound
                 dualInfeasibility = rc[i]
-            elif (s.getVarStatus(i) == VarStatus.superBasic or
-                    s.getVarStatus(i) == VarStatus.free):  # free or superbasic
+            elif (s.CLP_getVarStatus(i) == VarStatus.superBasic or
+                    s.CLP_getVarStatus(i) == VarStatus.free):  # free or superbasic
                 dualInfeasibility = abs(rc[i])
             else:  # lowerbound
                 dualInfeasibility = -rc[i]

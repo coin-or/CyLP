@@ -144,7 +144,7 @@ def I(n):
 def identitySub(var):
     '''
     Return a sparse row sub-matrix of the identity matrix
-    of size *n* indexed in *l*
+    for ``var``.
     '''
     n = var.dim
     if var.parent != None:
@@ -333,6 +333,7 @@ class CyLPConstraint:
                 #self.nRows = right.dim
                 #self.varCoefs[right] = ones
                 self.varCoefs[right] = -identitySub(right)
+                print 'uuu -> ', self.varCoefs[right]
                 self.nRows = len(right.indices)
                 self.isRange = False
             elif opr == 'sum':
@@ -571,7 +572,8 @@ class CyLPVar(CyLPExpr):
             newObj.parent = self
             newObj.fromInd = newObj_fromInd
             newObj.toInd = newObj_toInd
-            newObj.indices = np.arange(newObj.fromInd, newObj.toInd)
+            newObj.indices = np.arange(newObj.fromInd, newObj.toInd,
+                                       dtype='int32')
             # Save parentDim for future use
             newObj.dim = len(newObj.indices)
         elif isinstance(key, (np.ndarray, list)):
@@ -710,7 +712,7 @@ class IndexFactory:
         else:
             self.varIndex[varName] = np.arange(self.currentVarIndex,
                                             self.currentVarIndex +
-                                            numberOfVars)
+                                            numberOfVars, dtype='int32')
         self.currentVarIndex += numberOfVars
 
     def removeVar(self, name):
@@ -746,7 +748,7 @@ class IndexFactory:
         else:
             self.constIndex[constName] = np.arange(self.currentConstIndex,
                                             self.currentConstIndex +
-                                            numberOfConsts)
+                                            numberOfConsts, dtype='int32')
         self.currentConstIndex += numberOfConsts
 
     def removeConst(self, name):
@@ -987,8 +989,9 @@ class CyLPModel(object):
                 break
         self.nCons -= con.nRows
         del self.constraints[i]
+        indsOfConstriantsToBeRemoved = self.inds.constIndex[name]
         self.inds.removeConst(name)
-
+        return indsOfConstriantsToBeRemoved
 
     def generateVarObjCoef(self, varName):
         #dim = self.allParentVarDims[varName]

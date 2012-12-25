@@ -5,6 +5,7 @@
 #include "IClpSimplexPrimal.hpp"
 #include "ClpSimplexPrimal.hpp"
 #include "IClpPackedMatrix.hpp"
+#include "OsiClpSolverInterface.hpp"
 #include <sstream>
 
 
@@ -14,7 +15,7 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
     npy_intp w_ind_len = PyArray_DIM(w_ind, 0);
     if (w_ind_len == 0)
         return -1; //return PyArray_ArgMax(reinterpret_cast<PyArrayObject*>(arr));
-    
+
     int wIsNum = false;
     int wholeArray = false;
 
@@ -94,8 +95,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
                     maxInd = i;
                 }
 
-                PyArray_ITER_NEXT(arr_it);    
-            }    
+                PyArray_ITER_NEXT(arr_it);
+            }
         }
         else{ //look in whole array, weights array
             npy_intp w_len = PyArray_DIM(w, 0);
@@ -132,8 +133,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
                     maxInd = i;
                 }
 
-                PyArray_ITER_NEXT(arr_it);    
-            }    
+                PyArray_ITER_NEXT(arr_it);
+            }
 
         }
     }
@@ -164,26 +165,26 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
             PyObject* w_ind_it = PyArray_IterNew(w_ind);
             int w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
             while (PyArray_ITER_NOTDONE(w_ind_it) && arr_ind_val > w_ind_val){
-                PyArray_ITER_NEXT(w_ind_it);        
+                PyArray_ITER_NEXT(w_ind_it);
                 w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
-            }        
+            }
             if (arr_ind_val == w_ind_val){
                 maxVal *= w_num_val;
-                PyArray_ITER_NEXT(w_ind_it);        
+                PyArray_ITER_NEXT(w_ind_it);
                 w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
             }
 
             for (int i = 1 ; i < arr_ind_len ; i++){
-                PyArray_ITER_NEXT(arr_ind_it);    
+                PyArray_ITER_NEXT(arr_ind_it);
                 PyArray_ITER_NEXT(arr_it);
 
                 arr_ind_val = *(int*)PyArray_ITER_DATA(arr_ind_it);
                 arr_val = *(double*)PyArray_ITER_DATA(arr_it); //*(double*)PyArray_GETITEM(arr, PyArray_GETPTR1(arr, arr_ind_val));
 
                 while (PyArray_ITER_NOTDONE(w_ind_it) && arr_ind_val > w_ind_val){
-                    PyArray_ITER_NEXT(w_ind_it);        
+                    PyArray_ITER_NEXT(w_ind_it);
                     w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
-                }        
+                }
 
                 if (arr_ind_val == w_ind_val)
                     arr_val *= w_num_val;
@@ -193,7 +194,7 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
                 }
 
 
-            }    
+            }
         }
         else{  //just elements specified in arr_ind, weight's an array
 
@@ -222,39 +223,39 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
 
 
             while (PyArray_ITER_NOTDONE(w_ind_it) && arr_ind_val > w_ind_val){
-                PyArray_ITER_NEXT(w_ind_it);        
-                PyArray_ITER_NEXT(w_it);        
+                PyArray_ITER_NEXT(w_ind_it);
+                PyArray_ITER_NEXT(w_it);
                 w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
                 w_val = *(double*)PyArray_ITER_DATA(w_it);
-            }        
+            }
 
             if (arr_ind_val == w_ind_val){
                 maxVal *= w_val;
-                PyArray_ITER_NEXT(w_ind_it);        
-                PyArray_ITER_NEXT(w_it);        
+                PyArray_ITER_NEXT(w_ind_it);
+                PyArray_ITER_NEXT(w_it);
                 w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
                 w_val = *(double*)PyArray_ITER_DATA(w_it);
 
             }
 
             for (int i = 1 ; i < arr_ind_len ; i++){
-                PyArray_ITER_NEXT(arr_ind_it);    
+                PyArray_ITER_NEXT(arr_ind_it);
                 PyArray_ITER_NEXT(arr_it);
 
                 arr_ind_val = *(int*)PyArray_ITER_DATA(arr_ind_it);
                 arr_val = *(double*)PyArray_ITER_DATA(arr_it); //*(double*)PyArray_GETITEM(arr, PyArray_GETPTR1(arr, arr_ind_val));
 
                 while (PyArray_ITER_NOTDONE(w_ind_it) && arr_ind_val > w_ind_val){
-                    PyArray_ITER_NEXT(w_ind_it);        
-                    PyArray_ITER_NEXT(w_it);        
+                    PyArray_ITER_NEXT(w_ind_it);
+                    PyArray_ITER_NEXT(w_it);
                     w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
                     w_val = *(double*)PyArray_ITER_DATA(w_it);
-                }        
+                }
 
                 if (arr_ind_val == w_ind_val){
                     arr_val *= w_val;
-                    PyArray_ITER_NEXT(w_ind_it);        
-                    PyArray_ITER_NEXT(w_it);        
+                    PyArray_ITER_NEXT(w_ind_it);
+                    PyArray_ITER_NEXT(w_it);
                     w_ind_val = *(int*)PyArray_ITER_DATA(w_ind_it);
                     w_val = *(double*)PyArray_ITER_DATA(w_it);
 
@@ -265,7 +266,7 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
                 }
 
 
-            }    
+            }
         }
     }
     return maxInd;
@@ -311,8 +312,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* whr, double weight){
             maxInd = i;
         }
 
-        PyArray_ITER_NEXT(arr_it);    
-    }    
+        PyArray_ITER_NEXT(arr_it);
+    }
     return maxInd;
 }
 
@@ -363,7 +364,7 @@ void IClpSimplex::setReducedCosts(double* rc){
         dj_[i] = rc[i];
     }
 }
- 
+
 
 PyObject* IClpSimplex::getComplementarityList(){
 
@@ -473,7 +474,7 @@ void IClpSimplex::setVariableName(int varInd,  char* name){
     if (lengthNames_ == 0){
         unsigned int maxLength=0;
         int iRow;
-        
+
         rowNames_ = std::vector<std::string> ();
         columnNames_ = std::vector<std::string> ();
         rowNames_.reserve(numberRows_);
@@ -486,7 +487,7 @@ void IClpSimplex::setVariableName(int varInd,  char* name){
                 maxLength = rowName.length();
             rowNames_.push_back(rowName);
         }
-        
+
         columnNames_.reserve(numberColumns_);
         int iColumn;
         for (iColumn=0;iColumn<numberColumns_;iColumn++) {
@@ -507,8 +508,8 @@ void IClpSimplex::setVariableName(int varInd,  char* name){
 //            columnNames_.push_back(name);
 //        }
         lengthNames_=static_cast<int> (maxLength);
-//    columnNames_.resize(getNumCols()); 
-    
+//    columnNames_.resize(getNumCols());
+
     //std::cout << columnNamesAsChar()[10] << "<$$$$$$$$$$$$$\n";
     }
     std::string st(name);
@@ -521,7 +522,7 @@ void IClpSimplex::setConstraintName(int constInd,  char* name){
     if (lengthNames_ == 0){
         unsigned int maxLength=0;
         int iRow;
-        
+
         rowNames_ = std::vector<std::string> ();
         columnNames_ = std::vector<std::string> ();
         rowNames_.reserve(numberRows_);
@@ -534,7 +535,7 @@ void IClpSimplex::setConstraintName(int constInd,  char* name){
                 maxLength = rowName.length();
             rowNames_.push_back(rowName);
         }
-        
+
         columnNames_.reserve(numberColumns_);
         int iColumn;
         for (iColumn=0;iColumn<numberColumns_;iColumn++) {
@@ -560,13 +561,14 @@ void IClpSimplex::createTempArray(){
 IClpSimplex::IClpSimplex(PyObject *obj_arg, runIsPivotAcceptable_t runIsPivotAcceptable_arg,
                          varSelCriteria_t runVarSelCriteria ):ClpSimplex()
                         {
-    
+
     _import_array();
     tempArrayExists = false;
     obj = obj_arg;
     runIsPivotAcceptable = runIsPivotAcceptable_arg;
     varSelCriteria = runVarSelCriteria;
     customPrimal = 0;
+    createStatus();
 
     tempRow = NULL;
     tempRow_vector = NULL;
@@ -597,6 +599,21 @@ int* IClpSimplex::ComplementarityList()
     return QP_ComplementarityList;
 }
 
+void IClpSimplex::setBasisStatus(const int* cstat, const int* rstat){
+    OsiClpSolverInterface osi(this, false);
+    osi.setBasisStatus(cstat, rstat);
+    return;
+}
+
+void IClpSimplex::setMaxNumIteration(int m){
+    setIntParam(ClpMaxNumIteration, m);
+}
+
+void IClpSimplex::getBasisStatus(int* cstat, int* rstat){
+    OsiClpSolverInterface osi(this, false);
+    osi.getBasisStatus(cstat, rstat);
+    return;
+}
 
 IClpSimplex::IClpSimplex (ClpSimplex * wholeModel,
         int numberColumns, const int * whichColumns):
@@ -656,7 +673,7 @@ int IClpSimplex::checkVar(int varInd){
     std::cerr << "** pivotRow: invalid cy-state: obj [" << this->obj << "] fct: ["
         << this->varSelCriteria << "]\n";
     return -1;
-    
+
 }
 
 
@@ -670,7 +687,7 @@ ICbcModel* IClpSimplex::getICbcModel(){
 
 
 //Get a column of the tableau
-    void 
+    void
 IClpSimplex::getBInvACol(int col, double* vec)
 {
     if (!rowArray_[0]) {
@@ -775,7 +792,7 @@ void IClpSimplex::getACol(int ncol, CoinIndexedVector * colArray){
 }
 
 
-void IClpSimplex::getRightHandSide(double* righthandside) 
+void IClpSimplex::getRightHandSide(double* righthandside)
 {
     int nr=numberRows();
 
@@ -799,10 +816,10 @@ void IClpSimplex::getRightHandSide(double* righthandside)
     for (int i = 0 ; i < nr; i++) {
         if (basis_index[i] < ncol){
             righthandside[i] = solution[basis_index[i]];
-            //std::cout << "sim: rhs " << i << " = " << solution[basis_index[i]] << "\n";  
+            //std::cout << "sim: rhs " << i << " = " << solution[basis_index[i]] << "\n";
         }else {
             righthandside[i] = slack_val[basis_index[i]-ncol];
-            //std::cout << "sim: rhs " << i << " = " << slack_val[basis_index[i]-ncol] << "\n";  
+            //std::cout << "sim: rhs " << i << " = " << slack_val[basis_index[i]-ncol] << "\n";
         }
 
     }
@@ -876,15 +893,15 @@ void IClpSimplex::vectorTimesB_1(CoinIndexedVector* vec){
 }
 
 void IClpSimplex::transposeTimesSubset(int number, int* which, double* pi, double* y){
-    reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimesSubset(number, 
+    reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimesSubset(number,
                              which, pi, y, rowScale(), columnScale(), NULL);
 }
 void IClpSimplex::transposeTimesSubsetAll(int number, long long int* which, double* pi, double* y){
-    reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimesSubsetAll(this, number, 
+    reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimesSubsetAll(this, number,
                              which, pi, y, rowScale(), columnScale(), NULL);
 }
 
-// Copy constructor. 
+// Copy constructor.
 IClpSimplex::IClpSimplex(const ClpSimplex &rhs,PyObject *obj,
                             runIsPivotAcceptable_t runIsPivotAcceptable,
                             varSelCriteria_t varSelCriteria,
@@ -900,7 +917,7 @@ IClpSimplex::IClpSimplex(const ClpSimplex &rhs,PyObject *obj,
     QP_BanList(NULL),
     QP_ComplementarityList(NULL)
 {
-     
+
 }
 
 
@@ -919,10 +936,10 @@ IClpSimplex* IClpSimplex::preSolve(IClpSimplex* si,
     if (s)
         {
         IClpSimplex* ret = new IClpSimplex(*s, si->obj, si->runIsPivotAcceptable, si->varSelCriteria, si->customPrimal);
-        
+
         return ret;
         }
-    
+
     return NULL;
 }
 
@@ -933,18 +950,18 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
     tempRow = new double[numberRows()];
     tempRow_vector = new CoinIndexedVector();
     QP_BanList = new int[numberColumns() + numberRows()];
-    //FIXME: This is a crazy 1000 here. 
+    //FIXME: This is a crazy 1000 here.
     //But whatever you do to fix this try it on adlittle, degen2
     tempRow_vector->reserve(numberRows() + numberColumns() + numberExtraRows() + 1000);
     //tempRow_vector->reserve(numberRows() + +numberColumns() + numberExtraRows());
-    
+
 
     //double savedPivotTolerance = factorization_->pivotTolerance();
 #ifndef SLIM_CLP
     // See if nonlinear
-    if (objective_->type()>1&&objective_->activated()) 
+    if (objective_->type()>1&&objective_->activated())
         return reducedGradient();
-#endif  
+#endif
     CoinAssert ((ifValuesPass>=0&&ifValuesPass<3)||
             (ifValuesPass>=12&&ifValuesPass<100)||
             (ifValuesPass>=112&&ifValuesPass<200));
@@ -963,7 +980,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
             CoinZeroN(ClpModel::rowActivity_,numberRows_);
             const int * row = matrix_->getIndices();
             const CoinBigIndex * columnStart = matrix_->getVectorStarts();
-            const int * columnLength = matrix_->getVectorLengths(); 
+            const int * columnLength = matrix_->getVectorLengths();
             const double * element = matrix_->getElements();
             for (int iColumn=0;iColumn<numberColumns_;iColumn++) {
                 CoinBigIndex j;
@@ -1077,7 +1094,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
                     startColumn=endColumn;
                 }
                 delete [] model;
-                for (int iRow=0;iRow<numberRows_;iRow++) 
+                for (int iRow=0;iRow<numberRows_;iRow++)
                     setRowStatus(iRow,superBasic);
                 CoinZeroN(ClpModel::rowActivity_,numberRows_);
                 for (int iColumn=0;iColumn<numberColumns_;iColumn++) {
@@ -1141,7 +1158,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
         }
     }
     /*  Note use of "down casting".  The only class the user sees is ClpSimplex.
-        Classes ClpSimplexDual, ClpSimplexPrimal, (ClpSimplexNonlinear) 
+        Classes ClpSimplexDual, ClpSimplexPrimal, (ClpSimplexNonlinear)
         and ClpSimplexOther all exist and inherit from ClpSimplex but have no
         additional data and have no destructor or (non-default) constructor.
 
@@ -1157,11 +1174,11 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     int returnCode;
     if (!customPrimal){
-        //std::cout << "IClpSimplex: continue with ClpSimplexPrimal   \n";		
+        //std::cout << "IClpSimplex: continue with ClpSimplexPrimal   \n";
         returnCode = reinterpret_cast<ClpSimplexPrimal *> (this)->primal(ifValuesPass,startFinishOptions);
     }
     else {
-        //std::cout << "IClpSimplex L280: casting to IClpSimplexPrimal\n";		
+        //std::cout << "IClpSimplex L280: casting to IClpSimplexPrimal\n";
         returnCode = reinterpret_cast<IClpSimplexPrimal *> (this)->primal(ifValuesPass,startFinishOptions);
     }
     //int lastAlgorithm=1;
@@ -1185,10 +1202,10 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
             dualBound_=saveBound;
         } else {
             if (!customPrimal){
-                std::cout << "IClpSimplex: continue with ClpSimplexPrimal   \n";		
+                std::cout << "IClpSimplex: continue with ClpSimplexPrimal   \n";
                 returnCode = reinterpret_cast<ClpSimplexPrimal *> (this)->primal(0,startFinishOptions);
             }else {
-                std::cout << "IClpSimplex: casting to IClpSimplexPrimal\n";		
+                std::cout << "IClpSimplex: casting to IClpSimplexPrimal\n";
                 returnCode = reinterpret_cast<IClpSimplexPrimal *> (this)->primal(0,startFinishOptions);
             }
         }
@@ -1196,18 +1213,18 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
         baseIteration_=0;
         setInitialDenseFactorization(denseFactorization);
         perturbation_=savePerturbation;
-        if (problemStatus_==10) 
+        if (problemStatus_==10)
             problemStatus_=0;
     }
     //factorization_->pivotTolerance(savedPivotTolerance);
     onStopped(); // set secondary status if stopped
     //if (problemStatus_==1&&lastAlgorithm==1)
     //returnCode=10; // so will do primal after postsolve
-    
+
     delete tempRow;
     delete tempRow_vector;
     delete QP_BanList;
-    
+
     return returnCode;
 }
 
@@ -1229,7 +1246,7 @@ PyObject* IClpSimplex::filterVars(PyObject* inds){
                 "filterVars: inds should be a numpy array.");
         return NULL;
     }
-    
+
     npy_intp inds_len = PyArray_DIM(inds, 0);
     if (inds_len == 0){
         npy_intp dims = 0;
@@ -1240,7 +1257,7 @@ PyObject* IClpSimplex::filterVars(PyObject* inds){
         createTempArray();
 
     int ind_count = 0;
-    
+
     PyObject* inds_it= PyArray_IterNew(inds);
     int i;
     double bestRc = 0;
@@ -1254,13 +1271,13 @@ PyObject* IClpSimplex::filterVars(PyObject* inds){
         if (checkVar(i)){
             tempIntArray[ind_count++] = i;
             bestRc = fabs(rc[i]);
-        }    
+        }
         PyArray_ITER_NEXT(inds_it);
     }
 
     npy_intp dims = ind_count;
     PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT, tempIntArray );
     return Arr;
-    
+
 }
 

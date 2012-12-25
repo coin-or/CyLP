@@ -27,6 +27,11 @@ problemStatus = ['optimal', 'primal infeasible', 'dual infeasible',
                 'stopped by event handler (virtual int ' \
                                     'ClpEventHandler::event())']
 
+CLP_variableStatusEnum = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05]
+StatusToInt = {'free' : 0, 'basic' : 1, 'atUpperBound' : 2,
+                             'atLowerBound' : 3, 'superBasic' : 4,'fixed' : 5}
+IntToStatus = ['free', 'basic', 'atUpperBound',
+                             'atLowerBound', 'superBasic','fixed']
 
 cdef class CyClpSimplex:
     '''
@@ -86,7 +91,7 @@ cdef class CyClpSimplex:
             if self.cyLPModel:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
-               
+
                 if isinstance(o, (np.ndarray)):
                     self.setObjectiveArray(o.astype(np.double))
                 if isinstance(o, (sparse.coo_matrix,
@@ -217,7 +222,7 @@ cdef class CyClpSimplex:
                         d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
-                            d[v][element] = ret[var.__getitem__(element).indices[0]] 
+                            d[v][element] = ret[var.__getitem__(element).indices[0]]
                 ret = d
             else:
                 names = self.variableNames
@@ -252,30 +257,84 @@ cdef class CyClpSimplex:
 
     property dualVariableSolution:
         '''
-        Solution to the dual variables
+        Variables' reduced costs
 
         :rtype: Numpy array
         '''
         def __get__(self):
-            return <object>self.CppSelf.getDualColumnSolution()
+            ret = <object>self.CppSelf.getDualColumnSolution()
+            if self.cyLPModel:
+                m = self.cyLPModel
+                inds = m.inds
+                d = {}
+                for v in inds.varIndex.keys():
+                    d[v] = ret[inds.varIndex[v]]
+                    var = m.getVarByName(v)
+                    if var.dims:
+                        d[v] = CyLPSolution()
+                        dimRanges = [range(i) for i in var.dims]
+                        for element in product(*dimRanges):
+                            d[v][element] = ret[var.__getitem__(element).indices[0]]
+                ret = d
+            else:
+                names = self.variableNames
+                if names:
+                    d = CyLPSolution()
+                    for i in range(len(names)):
+                        d[names[i]] = ret[i]
+                    ret = d
+            return ret
 
     property primalConstraintSolution:
         '''
-        Solution to the primal slack variables
+        Slack variables' solution
 
         :rtype: Numpy array
         '''
         def __get__(self):
-            return <object>self.CppSelf.getPrimalRowSolution()
+            ret = <object>self.CppSelf.getPrimalRowSolution()
+            if self.cyLPModel:
+                m = self.cyLPModel
+                inds = m.inds
+                d = {}
+                for c in inds.constIndex.keys():
+                    d[c] = ret[inds.constIndex[c]]
+                ret = d
+            else:
+                pass
+                #names = self.variableNames
+                #if names:
+                #    d = CyLPSolution()
+                #    for i in range(len(names)):
+                #        d[names[i]] = ret[i]
+                #    ret = d
+            return ret
+
 
     property dualConstraintSolution:
         '''
-        Solution to the dual slack variables
+        Dual variables' solution
 
         :rtype: Numpy array
         '''
         def __get__(self):
-            return <object>self.CppSelf.getDualRowSolution()
+            ret =  <object>self.CppSelf.getDualRowSolution()
+            if self.cyLPModel:
+                m = self.cyLPModel
+                inds = m.inds
+                d = {}
+                for c in inds.constIndex.keys():
+                    d[c] = ret[inds.constIndex[c]]
+                ret = d
+            else:
+                pass
+                #names = self.variableNames
+                #if names:
+                #    d = CyLPSolution()
+                #    for i in range(len(names)):
+                #        d[names[i]] = ret[i]
+                #    ret = d
+            return ret
 
     property reducedCosts:
         '''
@@ -489,7 +548,7 @@ cdef class CyClpSimplex:
                     for i in xrange(n - coinMat.majorDim):
                         coinMat.appendRow()
             self.loadQuadraticObjective(coinMat)
-                
+
     property dualTolerance:
         def __get__(self):
             return self.CppSelf.dualTolerance()
@@ -503,6 +562,10 @@ cdef class CyClpSimplex:
 
         def __set__(self, value):
            self.CppSelf.setPrimalTolerance(value)
+
+    property maxNumIteration:
+        def __set__(self, value):
+           self.CppSelf.setMaxNumIteration(value)
 
     #############################################
     # get set
@@ -670,7 +733,7 @@ cdef class CyClpSimplex:
 
         '''
         self.CppSelf.setVariableName(varInd, name)
-    
+
     cpdef setConstraintName(self, constInd, name):
         '''
         Set the name of constraint index ``constInd`` to ``name``.
@@ -699,9 +762,9 @@ cdef class CyClpSimplex:
         '''
         return <object>self.CppSelf.getPivotVariable()
 
-    cpdef getVarStatus(self, int sequence):
+    cpdef CLP_getVarStatus(self, int sequence):
         '''
-        gets the status of a variable
+        get the status of a variable
 
         * free : 0
         * basic : 1
@@ -713,6 +776,165 @@ cdef class CyClpSimplex:
         :rtype: int
         '''
         return self.CppSelf.getStatus(sequence)
+
+    cpdef CLP_setVarStatus(self, int sequence, int status):
+        '''
+        set the status of a variable
+
+        * free : 0
+        * basic : 1
+        * atUpperBound : 2
+        * atLowerBound : 3
+        * superBasic : 4
+        * fixed : 5
+
+        '''
+        self.CppSelf.setStatus(sequence, CLP_variableStatusEnum[status])
+
+    def setVariableStatus(self, arg, status):
+        '''
+        Set the status of a variable.
+
+        :arg arg: Specifies the variable to change (a CyLPVar, or an index)
+        :type status: CyLPVar, int
+        :arg status: 'basic', 'atUpperBound', 'atLowerBound', 'superBasic', 'fixed'
+        :type status: string
+
+
+        Example:
+
+        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex
+        >>> s = CyClpSimplex()
+        >>> x = s.addVariable('x', 4)
+        >>> # Using CyLPVars:
+        >>> s.setVariableStatus(x[1:3], 'basic')
+        >>> s.getVariableStatus(x[1])
+        'basic'
+        >>> # Using a variable index directly
+        >>> s.setVariableStatus(1, 'atLowerBound')
+        >>> s.getVariableStatus(x[1])
+        'atLowerBound'
+
+        '''
+        status = CLP_variableStatusEnum[StatusToInt[status]]
+        if isinstance(arg, (int, long)):
+            self.CppSelf.setStatus(arg, status)
+        elif True:  # isinstance(arg, CyLPVar):
+            if self.cyLPModel == None:
+                raise Exception('The argument of setVarStatus can be ' \
+                                'a CyLPVar only if the object is built ' \
+                                'using a CyLPModel.')
+            var = arg
+            model = self.cyLPModel
+            inds = model.inds
+            varName = var.name
+            if not inds.hasVar(varName):
+                raise Exception('No such variable: %s' % varName)
+            x = inds.varIndex[varName]
+            if var.parent:
+                for i in var.indices:
+                    self.CppSelf.setStatus(x[i], status)
+            else:
+                for i in xrange(var.dim):
+                    self.CppSelf.setStatus(x[i], status)
+
+    def getVariableStatus(self, arg):
+        '''
+        Get the status of a variable.
+        '''
+        if isinstance(arg, (int, long)):
+            return IntToStatus[self.CppSelf.getStatus(arg)]
+        elif True:  # isinstance(arg, CyLPVar):
+            if self.cyLPModel == None:
+                raise Exception('The argument of getVarStatus can be ' \
+                                'a CyLPVar only if the object is built ' \
+                                'using a CyLPModel.')
+            var = arg
+            model = self.cyLPModel
+            inds = model.inds
+            varName = var.name
+            if not inds.hasVar(varName):
+                raise Exception('No such variable: %s' % varName)
+            x = inds.varIndex[varName]
+            if var.parent:
+                s = np.array([IntToStatus[
+                            self.CppSelf.getStatus(x[i])]
+                            for i in var.indices])
+            else:
+                s = np.array([IntToStatus[
+                            self.CppSelf.getStatus(x[i])]
+                            for i in xrange(var.dim)])
+            if len(s) == 1:
+                return s[0]
+            return s
+
+    def setConstraintStatus(self, arg, status):
+        '''
+        Set the status of a constraint.
+
+        :arg arg: Specifies the constraint to change (name or index)
+        :type status: string,int
+        :arg status: 'basic', 'atUpperBound', 'atLowerBound', 'superBasic', 'fixed'
+        :type status: string
+
+        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex
+        >>> s = CyClpSimplex()
+        >>> x = s.addVariable('x', 4)
+        >>> s.addConstraint(0 <= x[0] + x[1] <= 1, 'const1')
+        >>> # Using constraint name:
+        >>> s.setConstraintStatus('const1', 'atUpperBound')
+        >>> s.getConstraintStatus('const1')
+        'atUpperBound'
+        >>> # Using constraint index directly
+        >>> s.setConstraintStatus(0, 'atLowerBound')
+        >>> s.getConstraintStatus('const1')
+        'atLowerBound'
+        '''
+        status = CLP_variableStatusEnum[StatusToInt[status]]
+        if isinstance(arg, (int, long)):
+            arg += self.nVariables
+            self.CppSelf.setStatus(arg, status)
+        elif True:  # isinstance(arg, CyLPVar):
+            if self.cyLPModel == None:
+                raise Exception('The argument of setVarStatus can be ' \
+                                'a CyLPVar only if the object is built ' \
+                                'using a CyLPModel.')
+            model = self.cyLPModel
+            inds = model.inds
+            constName = arg
+            if not inds.hasConst(constName):
+                raise Exception('No such constraint: %s' % constName)
+            c = inds.constIndex[constName]
+            cInds = c + self.nVariables
+            for i in xrange(len(cInds)):
+                self.CppSelf.setStatus(cInds[i], status)
+
+    def getConstraintStatus(self, arg):
+        '''
+        Get the status of a constraint.
+        '''
+        if isinstance(arg, (int, long)):
+            arg += self.nVariables
+            return IntToStatus[self.CppSelf.getStatus(arg)]
+        elif True:  # isinstance(arg, CyLPVar):
+            if self.cyLPModel == None:
+                raise Exception('The argument of setVarStatus can be ' \
+                                'a CyLPVar only if the object is built ' \
+                                'using a CyLPModel.')
+            model = self.cyLPModel
+            inds = model.inds
+            constName = arg
+            if not inds.hasConst(constName):
+                raise Exception('No such constraint: %s' % constName)
+            c = inds.constIndex[constName]
+            cInds = c + self.nVariables
+            s = np.array([IntToStatus[
+                            self.CppSelf.getStatus(cInds[i])]
+                            for i in xrange(len(cInds))])
+            if len(s) == 1:
+                return s[0]
+            return s
+
 
     def setColumnUpperArray(self, np.ndarray[np.double_t, ndim=1] columnUpper):
         self.CppSelf.setColumnUpperArray(<double*>columnUpper.data)
@@ -818,27 +1040,27 @@ cdef class CyClpSimplex:
         if self.cyLPModel:
             m = self.cyLPModel
             nVarsBefore = m.nVars
-            nConsBefore = m.nCons 
+            nConsBefore = m.nCons
             c = m.addConstraint(cons, name)
-            
+
             # If the dimension is changing, load from scartch
             if nConsBefore == 0 or m.nVars - nVarsBefore != 0:
                 self.loadFromCyLPModel(self.cyLPModel)
-            
+
             # If the constraing to be added is just a variable range
             elif c.isRange:
                 var = c.variables[0]
                 dim = var.parentDim
                 varinds = m.inds.varIndex[var.name]
-                
+
                 lb = var.parent.lower if var.parent else var.lower
                 ub = var.parent.upper if var.parent else var.upper
-                
+
                 for i in var.indices:
                     self.setColumnLower(varinds[i], lb[i])
                     self.setColumnUpper(varinds[i], ub[i])
-            
-            # If the constraint is a "real" constraint, but no 
+
+            # If the constraint is a "real" constraint, but no
             # dimension changes required
             else:
                 mainCoef = None
@@ -849,7 +1071,7 @@ cdef class CyClpSimplex:
                     for var in keys:
                         coef = coef + c.varCoefs[var]
                     mainCoef = sparseConcat(mainCoef, coef, 'h')
-                
+
                 self.addConstraints(c.nRows,
                         c.lower, c.upper, mainCoef.indptr,
                         mainCoef.indices, mainCoef.data)
@@ -862,8 +1084,9 @@ cdef class CyClpSimplex:
         Removes constraint named ``name`` from the problem.
         '''
         if self.cyLPModel:
-            self.cyLPModel.removeConstraint(name)
-            self.loadFromCyLPModel(self.cyLPModel)
+            indsOfRemovedConstriants = self.cyLPModel.removeConstraint(name)
+            self.CLP_deleteConstraints(indsOfRemovedConstriants)
+            #self.loadFromCyLPModel(self.cyLPModel)
         else:
             raise Exception('To remove a constraint you must set ' \
                             'CyLPSimplex.cyLPModel first.')
@@ -893,15 +1116,15 @@ cdef class CyClpSimplex:
                             'CyLPSimplex.cyLPModel first.')
 
     def getVarByName(self, name):
-        if not self.cyLPModel:    
+        if not self.cyLPModel:
             raise Exception('No CyLPSimplex.cyLPModel is set.')
-        return self.cyLPModel.getVarByName(name)       
-    
+        return self.cyLPModel.getVarByName(name)
+
     def getVarNameByIndex(self, ind):
-        if not self.cyLPModel:    
+        if not self.cyLPModel:
             raise Exception('No CyLPSimplex.cyLPModel is set.')
-        return self.cyLPModel.inds.reverseVarSearch(ind)       
-    
+        return self.cyLPModel.inds.reverseVarSearch(ind)
+
     def CLP_addConstraint(self, numberInRow,
                     np.ndarray[np.int32_t, ndim=1] columns,
                     np.ndarray[np.double_t, ndim=1] elements,
@@ -920,6 +1143,26 @@ cdef class CyClpSimplex:
                                 '%d)' % (self.nVariables))
         self.CppSelf.addRow(numberInRow, <int*>columns.data,
                             <double*>elements.data, rowLower, rowUpper)
+
+    def CLP_deleteConstraints(self, np.ndarray[np.int32_t, ndim=1] which):
+        '''
+        Delete constraints indexed by ``which`` from the LP.
+        '''
+        if (which >= self.nConstraints).any():
+            raise Exception('CyClpSimplex.pyx:deleteConstraints: Constraint ' \
+                    'index out of range (number of constraints: ' \
+                                '%d)' % (self.nConstraints))
+        self.CppSelf.deleteRows(len(which), <int*>which.data)
+
+    def CLP_deleteVariables(self, np.ndarray[np.int32_t, ndim=1] which):
+        '''
+        Delete variables indexed by ``which`` from the LP.
+        '''
+        if (which >= self.nVariables).any():
+            raise Exception('CyClpSimplex.pyx:deleteVariables: variable ' \
+                    'index out of range (number of variables: ' \
+                                '%d)' % (self.nVariables))
+        self.CppSelf.deleteColumns(len(which), <int*>which.data)
 
     def CLP_addVariable(self, numberInColumn,
                         np.ndarray[np.int32_t, ndim=1] rows,
@@ -996,7 +1239,7 @@ cdef class CyClpSimplex:
             #                 m.objCoefficients,
             #                 m.constraintLower, m.constraintUpper)
             #return ret
-    
+
     def extractCyLPModel(self, fileName, keepNames=False, ignoreErrors=False):
         if self.readMps(fileName, keepNames, ignoreErrors) != 0:
             return None
@@ -1004,11 +1247,11 @@ cdef class CyClpSimplex:
 
         x = m.addVariable('x', self.nVariables)
 
-        # Copy is crucial. Memory space should be different than 
+        # Copy is crucial. Memory space should be different than
         # that of Clp. Else, a resize will ruin these.
         c_up = CyLPArray(self.constraintsUpper).copy()
         c_low = CyLPArray(self.constraintsLower).copy()
-        
+
         mat = self.matrix
         C = csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
                              shape=(self.nConstraints, self.nVariables))
@@ -1017,14 +1260,14 @@ cdef class CyClpSimplex:
 
         x_up = CyLPArray(self.variablesUpper).copy()
         x_low = CyLPArray(self.variablesLower).copy()
-        
+
         m += x_low <= x <= x_up
 
         m.objective = self.objective
 
         self.cyLPModel = m
         return m
-    
+
 
 
     def primal(self, ifValuesPass=0, startFinishOptions=0):
@@ -1103,6 +1346,7 @@ cdef class CyClpSimplex:
                                             <long long int*>which.data,
                                             <double*>pi.data,
                                             <double*>y.data)
+
 
     def setInteger(self, arg):
         '''
@@ -1183,7 +1427,7 @@ cdef class CyClpSimplex:
 
     def replaceMatrix(self, CyCoinPackedMatrix matrix, deleteCurrent=False):
         self.CppSelf.replaceMatrix(matrix.CppSelf, deleteCurrent)
-    
+
     def loadQuadraticObjective(self, CyCoinPackedMatrix matrix):
         self.CppSelf.loadQuadraticObjective(matrix.CppSelf)
 
@@ -1206,7 +1450,7 @@ cdef class CyClpSimplex:
         except:
             raise Exception('No write access for %s or an intermediate \
                             directory does not exist.' % filename)
-        
+
         m = self.cyLPModel
         if m:
             inds = m.inds
@@ -1214,7 +1458,7 @@ cdef class CyClpSimplex:
                 varinds = inds.varIndex[var.name]
                 for i in xrange(var.dim):
                     self.setVariableName(varinds[i], var.mpsNames[i])
-            
+
             for con in m.constraints:
                 coninds = inds.constIndex[con.name]
                 for i in xrange(con.nRows):
@@ -1255,17 +1499,17 @@ cdef class CyClpSimplex:
         self.cyLPModel = cyLPModel
         (mat, constraintLower, constraintUpper,
                     variableLower, variableUpper) = cyLPModel.makeMatrices()
-        
+
         n = len(variableLower)
         m = len(constraintLower)
         if n == 0:# or m == 0:
             return
-        
+
         self.resize(m, n)
         if mat != None:
             if not isinstance(mat, sparse.coo_matrix):
                 mat = mat.tocoo()
-        
+
             coinMat = CyCoinPackedMatrix(True, np.array(mat.row, np.int32),
                                         np.array(mat.col, np.int32),
                                         np.array(mat.data, np.double))
@@ -1294,7 +1538,7 @@ cdef class CyClpSimplex:
                     self.setInteger(i)
             curVarInd += var.dim
 
-        
+
         if cyLPModel.objective != None:
             self.objective = cyLPModel.objective
 
@@ -1489,6 +1733,22 @@ cdef class CyClpSimplex:
     def getCoinInfinity(self):
         return self.CppSelf.getCoinInfinity()
 
+    #############################################
+    # Osi
+    #############################################
+
+    def setBasisStatus(self, np.ndarray[np.int32_t, ndim=1] cstat,
+                             np.ndarray[np.int32_t, ndim=1] rstat):
+        self.CppSelf.setBasisStatus(<int*>cstat.data, <int*>rstat.data)
+
+    def getBasisStatus(self):
+        cdef np.ndarray[np.int32_t, ndim=1] cstat = \
+                                np.zeros(self.nVariables, dtype='int32')
+        cdef np.ndarray[np.int32_t, ndim=1] rstat = \
+                                np.zeros(self.nConstraints, dtype='int32')
+        self.CppSelf.getBasisStatus(<int*>cstat.data, <int*>rstat.data)
+        return cstat, rstat
+
 #cdef api void CyPostPrimalRow(CppIClpSimplex* s):
 #    cl = s.ComplementarityList()
 #    pivotRow = s.pivotRow()
@@ -1566,7 +1826,7 @@ def getModelExample():
 
     c = CyLPArray([1., -2., 3.])
     model.objective = c * x + 2 * y.sum()
-    
+
     return model
 
 

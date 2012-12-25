@@ -8,19 +8,19 @@ class WolfePivot(PivotPythonBase):
     def __init__(self, clpModel, bucketSize=1):
         self.dim = clpModel.nConstraints + clpModel.nVariables
         self.clpModel = clpModel
-        # Tell IClpSimplex that this pivot rules needs 
+        # Tell IClpSimplex that this pivot rules needs
         #an extra check after the leaving varible is chosen.
         clpModel.useCustomPrimal(True)
         #self.banList = np.array([])
         self.orgBan = np.array(self.dim * [True], np.bool)
         self.notBanned = self.orgBan.copy()
         self.complementarityList = np.arange(self.dim)
-    
-    
+
+
     def pivotColumn(self):
         s = self.clpModel
-        
-        # If objective function linear proceed as normal 
+
+        # If objective function linear proceed as normal
 #        if s.Hessian == None:
         rc = s.reducedCosts
 #        print 'u:', s.varIsAtUpperBound
@@ -37,12 +37,12 @@ class WolfePivot(PivotPythonBase):
 #                                     s.varNotBasic &
 #                                     (((rc > tol) & s.varIsAtUpperBound) |
 #                                     ((rc < -tol) & s.varIsAtLowerBound) |
-#                                     s.varIsFree))[0] 
+#                                     s.varIsFree))[0]
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &
                                      (((rc > tol) & s.varIsAtUpperBound) |
                                      ((rc < -tol) & s.varIsAtLowerBound) |
-                                     s.varIsFree) & 
+                                     s.varIsFree) &
                                      self.notBanned)[0]
 
         #print iii
@@ -50,18 +50,18 @@ class WolfePivot(PivotPythonBase):
         #for ii in range(s.nVariables, s.nVariables + s.nConstraints):
         #    if rc[ii] < -tol:
         #        indicesToConsider = np.concatenate((indicesToConsider, [ii]))
-        
+
         #freeVarInds = np.where(s.varIsFree)
         #rc[freeVarInds] *= 10
-        
+
         #print 'before ', indicesToConsider
-        #print '~~~~~~~~~~~~~self.banList:', self.banList 
+        #print '~~~~~~~~~~~~~self.banList:', self.banList
         #np.delete(indicesToConsider, self.banList)
         #print 'after  ', indicesToConsider
-        #import pdb; pdb.set_trace() 
-        
+        #import pdb; pdb.set_trace()
+
         rc2 = abs(rc[indicesToConsider])
-        
+
         checkFree = False
         #rc2[np.where((status & 7 == 4) | (status & 7 == 0))] *= 10
         if rc2.shape[0] > 0:
@@ -74,16 +74,16 @@ class WolfePivot(PivotPythonBase):
             else:
                     ind = np.argmax(rc2)
             #print 'incomming var: %d' % indicesToConsider[ind]
-            ret = indicesToConsider[ind] 
+            ret = indicesToConsider[ind]
             del indicesToConsider  # not sure if this is necessary
             del rc2  # HUGE memory leak otherwise
-            return ret 
+            return ret
         return -1
         return self.pivotColumnFirst()
 
 
     def isPivotAcceptable(self):
-        #import pdb; pdb.set_trace() 
+        #import pdb; pdb.set_trace()
 #        return True
 #        #TODO ComplementarityList can be defined in the current class
         s = self.clpModel
@@ -104,8 +104,8 @@ class WolfePivot(PivotPythonBase):
         #print s.getPivotVariable()
         #print 'leave: ', leavingVarIndex
         #print 'entering: ', colInd, ' comp: ', cl[colInd]
-         
-        if s.getVarStatus(cl[colInd]) == 1 and \
+
+        if s.CLP_getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:
             #print colInd , ' flagged'
             #self.banList[colInd] = 1
@@ -117,7 +117,7 @@ class WolfePivot(PivotPythonBase):
             #s.setFlagged(colInd)
             return 0
 
-        
+
         #self.banList = np.zeros(self.dim, np.int)
         #print "reseting>>>>>>>>>>>>>>>>>>>>>>>"
         del self.notBanned
@@ -125,12 +125,12 @@ class WolfePivot(PivotPythonBase):
         #self.notBanned = np.array(self.dim * [True])
 
         return 1
-    
+
 #    def setComplement(self, list1, list2):
 #        for i, j in izip(list1, list2):
 #            (self.complementarityList[i], self.complementarityList[j]) = \
 #             (self.complementarityList[j], self.complementarityList[i])
-    
+
     def setComplement(self, model, v1, v2):
         v1n = v1.name
         v2n = v2.name

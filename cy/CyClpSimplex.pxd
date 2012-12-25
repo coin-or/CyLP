@@ -49,7 +49,7 @@ cdef extern from "IClpSimplex.hpp":
         void setCriteria(varSelCriteria_t vsc)
         void setPrimalColumnPivotAlgorithm(CppClpPrimalColumnPivot* choice)
         int readMps(char*, int keepNames, int ignoreErrors)
-        void loadQuadraticObjective(CppCoinPackedMatrix* matrix) 
+        void loadQuadraticObjective(CppCoinPackedMatrix* matrix)
         CppCoinPackedMatrix* getMatrix()
         int primal(int ifValuesPass, int startFinishOptions)
         int dual(int ifValuesPass, int startFinishOptions)
@@ -61,6 +61,7 @@ cdef extern from "IClpSimplex.hpp":
         int getNumCols()
         int getNumRows()
         Status getStatus(int sequence)
+        void setStatus(int sequence, Status newstatus)
         double objectiveValue()
         int numberIterations()
         int* QP_ComplementarityList
@@ -97,6 +98,9 @@ cdef extern from "IClpSimplex.hpp":
                         int * rows,
                         double * elements)
 
+        void deleteColumns(int number, int * which)
+        void deleteRows(int number, int * which)
+
         #number is the number of rows to be added
         void addRows(int number,
                         double * rowLower,
@@ -124,7 +128,7 @@ cdef extern from "IClpSimplex.hpp":
         void setFlagged(int varInd)
 
         double largestDualError()
-        
+
         int pivotRow()
         void setPivotRow(int v)
 
@@ -136,7 +140,7 @@ cdef extern from "IClpSimplex.hpp":
         void setDualTolerance(double value)
         double primalTolerance()
         void setPrimalTolerance(double value)
-        
+
         double* rowUpper()
         double* rowLower()
         int numberRows()
@@ -175,7 +179,7 @@ cdef extern from "IClpSimplex.hpp":
 
         int loadProblem(CppCoinModel * modelObject, int tryPlusMinusOne)
         void loadProblem(CppCoinPackedMatrix* matrix,
-		                  double* collb,  double* colub,   
+		                  double* collb,  double* colub,
 		                  double* obj,
 		                  double* rowlb,  double* rowub,
 		                  double * rowObjective)
@@ -217,6 +221,12 @@ cdef extern from "IClpSimplex.hpp":
                             PyObject* w_ind)
 
         CppICbcModel* getICbcModel()
+
+        void setMaxNumIteration(int m)
+
+        #Osi
+        void setBasisStatus(int* cstat, int* rstat)
+        void getBasisStatus(int* cstat, int* rstat)
 
 
 cdef class CyClpSimplex:
@@ -260,7 +270,8 @@ cdef class CyClpSimplex:
 
     cpdef filterVars(self, inds)
 
-    cpdef getVarStatus(self, int sequence)
+    cpdef CLP_getVarStatus(self, int sequence)
+    cpdef CLP_setVarStatus(self, int sequence, int status)
 
     cdef primalRow(self, CppCoinIndexedVector*,
                                 CppCoinIndexedVector*,

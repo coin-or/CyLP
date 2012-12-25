@@ -12,7 +12,7 @@ class WolfePivotPE(PivotPythonBase):
         self.dim = clpModel.nConstraints + clpModel.nVariables
         self.clpModel = clpModel
         # Require extra check after leaving variable is chosen
-        clpModel.useCustomPrimal(True)  
+        clpModel.useCustomPrimal(True)
         #self.banList = np.array([])
         self.orgBan = np.array(self.dim * [True], np.bool)
         self.notBanned = self.orgBan.copy()
@@ -32,7 +32,7 @@ class WolfePivotPE(PivotPythonBase):
         self.rhs = np.empty(self.clpModel.nRows, dtype=np.double)
         self.EPSILON = 10**-7
         self.lastUpdateIteration = 0
-        
+
         self.compCount = 0
         self.nonCompCount = 0
         self.compRej = 0
@@ -41,7 +41,7 @@ class WolfePivotPE(PivotPythonBase):
         self.iCounter = 0
         self.iInterval = 100
     # Begining of Positive-Edge-related attributes
-    
+
     def updateP(self):
         '''Finds constraints with abs(rhs) <=  epsilon and put
         their indices in "z"
@@ -87,7 +87,7 @@ class WolfePivotPE(PivotPythonBase):
 
     def pivotColumn(self):
         s = self.clpModel
-        
+
         self.CompIter = True
 
         rc = s.reducedCosts
@@ -97,15 +97,15 @@ class WolfePivotPE(PivotPythonBase):
                                      s.varNotBasic &
                                      (((rc > tol) & s.varIsAtUpperBound) |
                                      ((rc < -tol) & s.varIsAtLowerBound) |
-                                     s.varIsFree) & 
+                                     s.varIsFree) &
                                      self.notBanned)[0]
-        
+
         rc2 = abs(rc[indicesToConsider])
-        
+
         checkFree = False
-        
+
         maxRc = maxCompRc = maxInd = maxCompInd = -1
-        
+
 
         if self.isDegenerate:
             w = self.w.elements
@@ -126,13 +126,13 @@ class WolfePivotPE(PivotPythonBase):
                     count = 0
                     #randinds = np.random.randint(len(comp_varInds), size=10)
                     nn = 15
-#                    for i in xrange(random.randint(0, 
-#                                    len(comp_varInds)), 
+#                    for i in xrange(random.randint(0,
+#                                    len(comp_varInds)),
 #                                    min(nn, len(comp_varInds))):
                     for i in xrange(min(nn, len(comp_varInds))):
                     #for i in randinds:
                         ind = comp_varInds[i]
-                        if (s.getVarStatus(cl[ind]) != 1 and 
+                        if (s.CLP_getVarStatus(cl[ind]) != 1 and
                                    comp_rc[i] > maxCompRc):
                             maxCompInd = ind
                             maxCompRc = rc[maxCompInd]
@@ -146,14 +146,14 @@ class WolfePivotPE(PivotPythonBase):
         if len(rc2) > 0:
             maxInd = indicesToConsider[np.argmax(rc2)]
             maxRc = rc[maxInd]
-        
+
         del rc2
-        
+
         if maxCompInd != -1 and abs(maxCompRc) > 0.00001 * abs(maxRc):
             self.compCount += 1
             #print s.getVarNameByIndex(maxCompInd)
             return maxCompInd
-       
+
         if self.iCounter % self.iInterval == 0:
             rhs = self.rhs
             s.getRightHandSide(rhs)
@@ -177,15 +177,15 @@ class WolfePivotPE(PivotPythonBase):
         #else:
         #    self.numberOfIncompSinceLastUpdate += 1
 
-#        
+#
 #        for i in xrange(s.nConstraints):
 #            print s.getVarNameByIndex(s.getPivotVariable()[i]),
 #        print
-        
+
         return maxInd
-        
-#        
-#        
+
+#
+#
 #        if rc2.shape[0] > 0:
 #            if checkFree:
 #                w = np.where(s.varIsFree)[0]
@@ -196,16 +196,16 @@ class WolfePivotPE(PivotPythonBase):
 #            else:
 #                    ind = np.argmax(rc2)
 #            #print 'incomming var: %d' % indicesToConsider[ind]
-#            ret = indicesToConsider[ind] 
+#            ret = indicesToConsider[ind]
 #            del indicesToConsider  # not sure if this is necessary
 #            del rc2  # HUGE memory leak otherwise
-#            return ret 
+#            return ret
 #        return -1
 #        return self.pivotColumnFirst()
 
 
     def isPivotAcceptable(self):
-        #import pdb; pdb.set_trace() 
+        #import pdb; pdb.set_trace()
 #        return True
 #        #TODO ComplementarityList can be defined in the current class
         s = self.clpModel
@@ -225,8 +225,8 @@ class WolfePivotPE(PivotPythonBase):
 #        print s.getPivotVariable()
 #        print 'leave: ', leavingVarIndex
 #        print 'entering: ', colInd, ' comp: ', cl[colInd]
-         
-        if s.getVarStatus(cl[colInd]) == 1 and \
+
+        if s.CLP_getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:
             #self.banList = np.concatenate((self.banList, [colInd]))
             self.notBanned[colInd] = False
@@ -235,14 +235,14 @@ class WolfePivotPE(PivotPythonBase):
                 self.compRej += 1
             return 0
 
-        
+
         #self.banList = np.zeros(self.dim, np.int)
         del self.notBanned
         self.notBanned = self.orgBan.copy()
         #self.notBanned = np.array(self.dim * [True])
 
         return 1
-    
+
     def setComplement(self, model, v1, v2):
         v1n = v1.name
         v2n = v2.name

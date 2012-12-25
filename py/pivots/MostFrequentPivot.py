@@ -45,14 +45,14 @@ class MostFrequentPivot(PivotPythonBase):
         tol = s.dualTolerance
 
         for i in self.priorityList:
-            if s.flagged(i) or s.getVarStatus(i) == 5:  # flagged or fixed
+            if s.flagged(i) or s.CLP_getVarStatus(i) == 5:  # flagged or fixed
                 continue
 
             #TODO: can we just say dualInfeasibility = rc[i] ** 2
-            if s.getVarStatus(i) == 2:  # upperbound
+            if s.CLP_getVarStatus(i) == 2:  # upperbound
                 dualInfeasibility = rc[i]
             # free or superbasic
-            elif s.getVarStatus(i) == 4 or s.getVarStatus(i) == 0:
+            elif s.CLP_getVarStatus(i) == 4 or s.CLP_getVarStatus(i) == 0:
                 dualInfeasibility = abs(rc[i])
             else:  # lowerbound
                 dualInfeasibility = -rc[i]
