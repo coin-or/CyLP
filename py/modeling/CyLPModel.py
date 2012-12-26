@@ -333,7 +333,6 @@ class CyLPConstraint:
                 #self.nRows = right.dim
                 #self.varCoefs[right] = ones
                 self.varCoefs[right] = -identitySub(right)
-                print 'uuu -> ', self.varCoefs[right]
                 self.nRows = len(right.indices)
                 self.isRange = False
             elif opr == 'sum':
@@ -980,6 +979,10 @@ class CyLPModel(object):
         return c
 
     def removeConstraint(self, name):
+        '''
+        Remove constraint called ``name`` and return its CLP indices back
+        for actual removal.
+        '''
         if not self.inds.hasConst(name):
             raise Exception('Constraint "%s" does not exist.' % name)
 
