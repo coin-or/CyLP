@@ -228,6 +228,8 @@ cdef extern from "IClpSimplex.hpp":
         void setBasisStatus(int* cstat, int* rstat)
         void getBasisStatus(int* cstat, int* rstat)
 
+        void setLogLevel(int value)
+        int logLevel()
 
 cdef class CyClpSimplex:
     '''

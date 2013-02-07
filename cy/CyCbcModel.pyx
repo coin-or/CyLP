@@ -25,19 +25,19 @@ cdef int RunEvery1000Nodes(void* ptr, CppICbcModel* model, int numberNodes):
                                  numberNodes)
 
 # Understandable messages to translate what branchAndBound() returns
-problemStatus =  ['solution', 'relaxation infeasible', 
+problemStatus =  ['solution', 'relaxation infeasible',
          'stopped on gap', 'stopped on nodes', 'stopped on time'
          'stopped on user event', 'stopped on solutions'
          'linear relaxation unbounded', 'unset']
 
 cdef class CyCbcModel:
     '''
-    Interfaces ``CbcModel``. To solve a first you create a 
+    Interfaces ``CbcModel``. To solve a first you create a
     :class:`CyLP.cy.CyClpSimplex` object either
-    by reading it from an ``mps`` file using 
-    :func:`CyClpSimplex.readMps() <CyLP.cy.CyClpSimplex.CyClpSimplex.readMps>` 
-    or by using CyLP modeling tool 
-    :mod:`CyLP.py.modeling.CyLPModel`. Then you ask the object for a 
+    by reading it from an ``mps`` file using
+    :func:`CyClpSimplex.readMps() <CyLP.cy.CyClpSimplex.CyClpSimplex.readMps>`
+    or by using CyLP modeling tool
+    :mod:`CyLP.py.modeling.CyLPModel`. Then you ask the object for a
     ``CyCbcModel`` which is capable solving MIPs using B&B
 
     **Usage**
@@ -57,10 +57,10 @@ cdef class CyCbcModel:
     >>> b = CyLPArray([4.2, 3])
     >>> x_u= CyLPArray([2., 3.5])
     >>>
-    >>> model += A*x <= a                   
-    >>> model += 2 <= B * x + D * y <= b    
-    >>> model += y >= 0                     
-    >>> model += 1.1 <= x[1:3] <= x_u       
+    >>> model += A*x <= a
+    >>> model += 2 <= B * x + D * y <= b
+    >>> model += y >= 0
+    >>> model += 1.1 <= x[1:3] <= x_u
     >>>
     >>> c = CyLPArray([1., -2., 3.])
     >>> model.objective = c * x + 2 * y.sum()
@@ -77,7 +77,7 @@ cdef class CyCbcModel:
     True
 
     '''
-    
+
     def __cinit__(self, cyLPModel=None):
         self.cyLPModel = cyLPModel
 
@@ -120,15 +120,22 @@ cdef class CyCbcModel:
 
             return problemStatus[self.CppSelf.status()]
 
+    property logLevel:
+        def __get__(self):
+            return self.CppSelf.logLevel()
+
+        def __set__(self, value):
+            self.CppSelf.setLogLevel(value)
+
     def isRelaxationInfeasible(self):
         return self.CppSelf.isInitialSolveProvenPrimalInfeasible()
 
-    def isRelaxationDualInfeasible(self): 
+    def isRelaxationDualInfeasible(self):
         return self.CppSelf.isInitialSolveProvenDualInfeasible()
-    
+
     def isRelaxationOptimal(self):
         return self.CppSelf.isInitialSolveProvenOptimal()
-    
+
     def isRelaxationAbondoned(self):
         return self.CppSelf.isInitialSolveAbandoned()
 
@@ -146,7 +153,7 @@ cdef class CyCbcModel:
                         d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
-                            d[v][element] = ret[var.__getitem__(element).indices[0]] 
+                            d[v][element] = ret[var.__getitem__(element).indices[0]]
                 ret = d
             else:
                 names = self.clpModel.variableNames
@@ -187,5 +194,5 @@ cdef class CyCbcModel:
 
         def __set__(self, value):
            self.CppSelf.setIntegerTolerance(value)
-        
+
     #TODO: add access to solver: getLower, getUpper,...

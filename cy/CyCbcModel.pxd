@@ -45,8 +45,10 @@ cdef extern from "ICbcModel.hpp":
         bint isInitialSolveProvenDualInfeasible()
         bint isInitialSolveProvenOptimal()
         bint isInitialSolveAbandoned()
-        bint setIntegerTolerance(double value) 
+        bint setIntegerTolerance(double value)
         double getIntegerTolerance()
+        void setLogLevel(int value)
+        int logLevel()
 
 cdef class CyCbcModel:
     cdef CppICbcModel* CppSelf
