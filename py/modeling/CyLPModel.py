@@ -122,6 +122,7 @@ from itertools import product
 from copy import deepcopy
 from operator import mul
 import numpy as np
+import resource
 from scipy import sparse
 from scipy.sparse import identity, lil_matrix
 from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
@@ -131,6 +132,10 @@ def isNumber(n):
     return (isinstance(n, NUMBERS) or
             (isinstance(n, CyLPArray) and n.shape == ()))
 
+# Increase max stack size from 8MB to 512MB
+#resource.setrlimit(resource.RLIMIT_STACK, (2**5,-1))
+#sys.setrecursionlimit(10**6)
+
 #from CyLP.py.utils.sparseUtil import sparseConcat
 def I(n):
     '''
@@ -139,7 +144,7 @@ def I(n):
     if n <= 0:
         return None
     #return csc_matrixPlus(sparse.eye(n, n))
-    return identity(n)
+    return identity(n).tocsr()
 
 def identitySub(var):
     '''
