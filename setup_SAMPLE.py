@@ -159,7 +159,7 @@ ext_modules += [Extension('CyLP.cy.CyClpSimplex',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyPEPivot',
-                           sources=[join(cppFilesDir, 
+                           sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                     join(cythonFilesDir, 'CyPEPivot' + fileext)],
                           language='c++',
@@ -170,7 +170,7 @@ ext_modules += [Extension('CyLP.cy.CyPEPivot',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyWolfePivot',
-                           sources=[join(cppFilesDir, 
+                           sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                     join(cythonFilesDir, 'CyWolfePivot' + fileext)],
                           language='c++',
@@ -181,7 +181,7 @@ ext_modules += [Extension('CyLP.cy.CyWolfePivot',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyDantzigPivot',
-                          sources=[join(cppFilesDir, 
+                          sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                    join(cythonFilesDir, 'CyDantzigPivot' +
                                         fileext)],
@@ -202,7 +202,7 @@ ext_modules += [Extension('CyLP.cy.CyTest',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyPivotPythonBase',
-                          sources=[join(cppFilesDir, 
+                          sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                    join(cythonFilesDir, 'CyPivotPythonBase' +
                                         fileext)],
