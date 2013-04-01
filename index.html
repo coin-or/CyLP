@@ -105,8 +105,8 @@ $ make install</pre>
 </div>
 </dd>
 <dt>STEP 2:</dt>
-<dd>Edit setup.py and set CoinDir to the location of the top directory of
-CoinMP.</dd>
+<dd>Edit setup_SAMPLE.py and set CoinDir to the location of the top directory of
+CoinMP. Rename setup_SAMPLE.py to setup.py.</dd>
 <dt>STEP 3:</dt>
 <dd>Install CyLP. Go to CyLP&#8217;s root directory (which MUST be called CyLP) and
 run &#8216;make&#8217;.</dd>
@@ -144,10 +144,10 @@ LD_LIBRARY_PATH as follows:</p>
 <div class="section" id="usage">
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <p>To run the primal Simplex method on a problem in MPS format, use:</p>
-<div class="highlight-python"><pre>$ python python/PySolve.py input/netlib/25fv47.mps d</pre>
+<div class="highlight-python"><pre>$ python py/PySolve.py input/netlib/25fv47.mps d</pre>
 </div>
 <p>or:</p>
-<div class="highlight-python"><pre>$ python cython/CySolve.py input/netlib/25fv47.mps d</pre>
+<div class="highlight-python"><pre>$ python cy/CySolve.py input/netlib/25fv47.mps d</pre>
 </div>
 <p>Use <cite>p</cite> instead of the trailing <cite>d</cite> to use the positive edge pivot rule instead of Dantzig&#8217;s canonical pivot rule.</p>
 </div>

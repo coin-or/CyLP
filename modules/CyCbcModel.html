@@ -62,12 +62,12 @@
 <dl class="class">
 <dt id="CyLP.cy.CyCbcModel.CyCbcModel">
 <em class="property">class </em><tt class="descclassname">CyLP.cy.CyCbcModel.</tt><tt class="descname">CyCbcModel</tt><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interfaces <tt class="docutils literal"><span class="pre">CbcModel</span></tt>. To solve a first you create a 
+<dd><p>Interfaces <tt class="docutils literal"><span class="pre">CbcModel</span></tt>. To solve a first you create a
 <a class="reference internal" href="CyClpSimplex.html#module-CyLP.cy.CyClpSimplex" title="CyLP.cy.CyClpSimplex"><tt class="xref py py-class docutils literal"><span class="pre">CyLP.cy.CyClpSimplex</span></tt></a> object either
-by reading it from an <tt class="docutils literal"><span class="pre">mps</span></tt> file using 
-<a class="reference internal" href="CyClpSimplex.html#CyLP.cy.CyClpSimplex.CyClpSimplex.readMps" title="CyLP.cy.CyClpSimplex.CyClpSimplex.readMps"><tt class="xref py py-func docutils literal"><span class="pre">CyClpSimplex.readMps()</span></tt></a> 
-or by using CyLP modeling tool 
-<a class="reference internal" href="modeling.html#module-CyLP.py.modeling.CyLPModel" title="CyLP.py.modeling.CyLPModel"><tt class="xref py py-mod docutils literal"><span class="pre">CyLP.py.modeling.CyLPModel</span></tt></a>. Then you ask the object for a 
+by reading it from an <tt class="docutils literal"><span class="pre">mps</span></tt> file using
+<a class="reference internal" href="CyClpSimplex.html#CyLP.cy.CyClpSimplex.CyClpSimplex.readMps" title="CyLP.cy.CyClpSimplex.CyClpSimplex.readMps"><tt class="xref py py-func docutils literal"><span class="pre">CyClpSimplex.readMps()</span></tt></a>
+or by using CyLP modeling tool
+<a class="reference internal" href="modeling.html#module-CyLP.py.modeling.CyLPModel" title="CyLP.py.modeling.CyLPModel"><tt class="xref py py-mod docutils literal"><span class="pre">CyLP.py.modeling.CyLPModel</span></tt></a>. Then you ask the object for a
 <tt class="docutils literal"><span class="pre">CyCbcModel</span></tt> which is capable solving MIPs using B&amp;B</p>
 <p><strong>Usage</strong></p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -85,10 +85,10 @@ or by using CyLP modeling tool
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">4.2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">A</span><span class="o">*</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>                   
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>    
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>                     
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>       
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">A</span><span class="o">*</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
