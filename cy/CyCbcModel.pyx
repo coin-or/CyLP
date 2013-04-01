@@ -195,4 +195,17 @@ cdef class CyCbcModel:
         def __set__(self, value):
            self.CppSelf.setIntegerTolerance(value)
 
+    property maximumSeconds:
+        def __get__(self):
+            return self.CppSelf.getMaximumSeconds()
+
+        def __set__(self, value):
+           self.CppSelf.setMaximumSeconds(value)
+
+    property maximumNodes:
+        def __get__(self):
+            return self.CppSelf.getMaximumNodes()
+
+        def __set__(self, value):
+           self.CppSelf.setMaximumNodes(value)
     #TODO: add access to solver: getLower, getUpper,...

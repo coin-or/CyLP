@@ -6,14 +6,14 @@ all: #pivot
 		$(buildCommand)
 
 clean:
-		$(cleanCommand)	
+		$(cleanCommand)
 
 cleanall:
 		$(cleanCommand)
 		rm cy/Cy*.cpp  # So rarely necessary
-		
+
 re:
 		$(cleanCommand)
 		$(buildCommand)
-		
-	
+
+

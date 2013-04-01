@@ -45,8 +45,16 @@ cdef extern from "ICbcModel.hpp":
         bint isInitialSolveProvenDualInfeasible()
         bint isInitialSolveProvenOptimal()
         bint isInitialSolveAbandoned()
+
         bint setIntegerTolerance(double value)
         double getIntegerTolerance()
+
+        bint setMaximumSeconds(double value)
+        double getMaximumSeconds()
+
+        bint setMaximumNodes(int value)
+        int getMaximumNodes()
+
         void setLogLevel(int value)
         int logLevel()
 
