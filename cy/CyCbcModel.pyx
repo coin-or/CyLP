@@ -26,7 +26,7 @@ cdef int RunEvery1000Nodes(void* ptr, CppICbcModel* model, int numberNodes):
 
 # Understandable messages to translate what branchAndBound() returns
 problemStatus =  ['solution', 'relaxation infeasible',
-         'stopped on gap', 'stopped on nodes', 'stopped on time'
+         'stopped on gap', 'stopped on nodes', 'stopped on time',
          'stopped on user event', 'stopped on solutions'
          'linear relaxation unbounded', 'unset']
 
@@ -113,12 +113,13 @@ cdef class CyCbcModel:
 
     property status:
         def __get__(self):
-            if self.isRelaxationInfeasible():
-                return problemStatus[1]
-            if self.isRelaxationAbondoned():
-                return 'relaxation abondoned'
-
-            return problemStatus[self.CppSelf.status()]
+            # secondaryStatus() should be used instead of status() (??)
+            #if self.isRelaxationInfeasible():
+            #    return problemStatus[1]
+            #if self.isRelaxationAbondoned():
+            #    return 'relaxation abondoned'
+            #return problemStatus[self.CppSelf.status()]
+            return problemStatus[self.CppSelf.secondaryStatus()]
 
     property logLevel:
         def __get__(self):
