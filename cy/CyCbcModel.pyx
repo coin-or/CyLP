@@ -209,4 +209,14 @@ cdef class CyCbcModel:
 
         def __set__(self, value):
            self.CppSelf.setMaximumNodes(value)
+
+    property numberThreads:
+        def __get__(self):
+            return self.CppSelf.getNumberThreads()
+
+        def __set__(self, value):
+            self.CppSelf.setNumberThreads(value)
+
+
+
     #TODO: add access to solver: getLower, getUpper,...

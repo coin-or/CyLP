@@ -56,6 +56,9 @@ cdef extern from "ICbcModel.hpp":
         bint setMaximumNodes(int value)
         int getMaximumNodes()
 
+        int getNumberThreads()
+        void setNumberThreads(int value)
+
         void setLogLevel(int value)
         int logLevel()
 
