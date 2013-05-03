@@ -44,7 +44,7 @@ includeDirs = ['./cpp/', join('.', cythonFilesDir),
 if operatingSystem == 'mac':
     extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
 elif operatingSystem == 'linux':
-    extra_link_args = ['-llapack', '-lblas']
+    extra_link_args = ['-llapack', '-lblas', '-lrt']
 else:
     #WINDOWS?
     extra_link_args = ['-llapack', '-lblas']
