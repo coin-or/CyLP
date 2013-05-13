@@ -810,8 +810,6 @@ void IClpSimplex::getRightHandSide(double* righthandside)
         slack_val[i] = righthandside[i] - row_act[i];
     }
 
-
-
     int ncol = numberColumns();
     for (int i = 0 ; i < nr; i++) {
         if (basis_index[i] < ncol){
@@ -947,9 +945,12 @@ IClpSimplex* IClpSimplex::preSolve(IClpSimplex* si,
 int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
 {
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    tempRow = new double[numberRows()];
-    tempRow_vector = new CoinIndexedVector();
-    QP_BanList = new int[numberColumns() + numberRows()];
+    if (tempRow == NULL)
+        tempRow = new double[numberRows()];
+    if (tempRow_vector == NULL)
+        tempRow_vector = new CoinIndexedVector();
+    if (QP_BanList == NULL)
+        QP_BanList = new int[numberColumns() + numberRows()];
     //FIXME: This is a crazy 1000 here.
     //But whatever you do to fix this try it on adlittle, degen2
     tempRow_vector->reserve(numberRows() + numberColumns() + numberExtraRows() + 1000);
@@ -1221,9 +1222,10 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
     //if (problemStatus_==1&&lastAlgorithm==1)
     //returnCode=10; // so will do primal after postsolve
 
-    delete tempRow;
-    delete tempRow_vector;
-    delete QP_BanList;
+    //delete tempRow;
+    //delete tempRow_vector;
+    //delete QP_BanList;
+
 
     return returnCode;
 }
