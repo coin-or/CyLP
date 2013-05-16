@@ -1,4 +1,4 @@
-#define NPY_NO_DEPRECATED_API
+//#define NPY_NO_DEPRECATED_API
 
 #include "CbcConfig.h"
 
@@ -13,9 +13,9 @@
 #include "IClpSimplex.hpp"
 #include "CbcCompareUser.hpp"
 
-ICbcModel* CbcSolveMIP(IClpSimplex* model, 
+ICbcModel* CbcSolveMIP(IClpSimplex* model,
                        PyObject* obj,
-                       runTest_t runTest, 
+                       runTest_t runTest,
                        runNewSolution_t runNewSolution,
                        runEvery1000Nodes_t runEvery1000Nodes);
 

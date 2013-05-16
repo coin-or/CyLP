@@ -4,8 +4,11 @@
 import pyximport
 pyximport.install()
 
+
 cimport cpython.ref as cpy_ref
-from cpython.ref cimport PyObject
+#from cpython.ref cimport PyObject
+from cpython cimport PyObject, Py_INCREF
+
 from CyLP.cy.CyClpPrimalColumnPivotBase cimport CyClpPrimalColumnPivotBase
 #from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
 from CyLP.cy.CyCoinModel cimport CyCoinModel, CppCoinModel
@@ -109,7 +112,9 @@ cdef extern from "IClpSimplex.hpp":
                         int * columns,
                         double * elements)
 
+        void getBasics(int* index)
         void getBInvACol(int col, double* vec)
+        void getBInvCol(int col, double* vec)
         void getACol(int ncol, CppCoinIndexedVector * colArray)
         void getRightHandSide(double* righthandside)
 

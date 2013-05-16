@@ -702,7 +702,7 @@ IClpSimplex::getBInvACol(int col, double* vec)
 #ifndef NDEBUG
     int n = numberColumns_+numberRows_;
     if (col<0||col>=n) {
-        indexError(col,"getBInvACol");
+        //indexError(col,"getBInvACol");
     }
 #endif
     if (!rowScale_) {
@@ -804,7 +804,11 @@ void IClpSimplex::getRightHandSide(double* righthandside)
     //FIXME: change these lines to be like getColSoution and getRowActivity in OsiClp
     const double *solution = solutionRegion(1);
     const double *row_act = solutionRegion(0);
-    double *slack_val = tempRow;//PE_tempRow[1];//new double[nr];
+
+    //FIXME: This must be fixed. The first line causes seg fault
+    //So I'm allocating and deleting in this function
+    //double *slack_val = tempRow;
+    double *slack_val = new double[nr];
 
     for(int i=0; i<nr; i++) {
         slack_val[i] = righthandside[i] - row_act[i];
@@ -822,7 +826,7 @@ void IClpSimplex::getRightHandSide(double* righthandside)
 
     }
 
-    //delete slack_val;
+    delete slack_val;
 
     //return righthandside;
 }

@@ -33,6 +33,10 @@ StatusToInt = {'free' : 0, 'basic' : 1, 'atUpperBound' : 2,
 IntToStatus = ['free', 'basic', 'atUpperBound',
                              'atLowerBound', 'superBasic','fixed']
 
+startFinishOptionsDic = {'x' : 1,  #do not delete work areas
+                      'f' : 2, #use old factorization
+                      's' : 4} #skip initialization of work areas
+
 cdef class CyClpSimplex:
     '''
     CyClpSimplex is a Cython interface to CLP.
@@ -75,12 +79,47 @@ cdef class CyClpSimplex:
                                 'CyLPSimplex constructor. Got %s' %
                                 cyLPModel.__class__)
 
+    def __dealloc__(self):
+        del self.CppSelf
+
     cdef setCppSelf(self,  CppIClpSimplex* s):
         self.CppSelf = s
 
     #############################################
     # Properties
     #############################################
+
+    property basicVariables:
+        def __get__(self):
+            cdef np.ndarray[np.int32_t, ndim=1] bv = np.zeros(self.nConstraints, dtype=np.int32)
+            self.CppSelf.getBasics(<int*>bv.data)
+            return bv
+
+    property rhs:
+        def __get__(self):
+            r = np.zeros(self.nConstraints, dtype=np.double)
+            self.getRightHandSide(r)
+            #Py_INCREF(r)
+            return r
+
+    property basisInverse:
+        def __get__(self):
+            b = np.empty((self.nConstraints, self.nConstraints), dtype=np.double)
+            cdef np.ndarray[np.double_t, ndim=1] c = np.zeros(self.nConstraints, dtype=np.double)
+            for colInd in xrange(self.nConstraints):
+                self.getBInvCol(colInd, c)
+                b[:, colInd] = c
+            return b
+
+    property tableau:
+        def __get__(self):
+            nAllVars = self.nVariables + self.nConstraints
+            t = np.empty((self.nConstraints, nAllVars), dtype=np.double)
+            cdef np.ndarray[np.double_t, ndim=1] c = np.zeros(self.nConstraints, dtype=np.double)
+            for colInd in xrange(nAllVars):
+                self.getBInvACol(colInd, c)
+                t[:, colInd] = c
+            return t
 
     property objective:
         '''
@@ -148,9 +187,18 @@ cdef class CyClpSimplex:
         def __get__(self):
             return self.CppSelf.getNumCols()
 
+    property coefMatrix:
+        '''
+        The coefficient matrix. A scipy sparse matrix.
+        '''
+        def __get__(self):
+            mat = self.matrix
+            return csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
+                             shape=(self.nConstraints, self.nVariables))
+
     property matrix:
         '''
-        The coefficient matrix.
+        The coefficient matrix. A CyCoinPackedMatrix.
         '''
         def __get__(self):
             cdef CppCoinPackedMatrix* cppMat = self.CppSelf.getMatrix()
@@ -1275,15 +1323,30 @@ cdef class CyClpSimplex:
         self.cyLPModel = m
         return m
 
-
+    def _extractStartFinish(self, startFinishOptions):
+        if isinstance(startFinishOptions, int):
+            sf = startFinishOptions
+        else:
+            sf = 0
+            for option in startFinishOptions:
+                sf = sf | startFinishOptionsDic[option]
+        return sf
 
     def primal(self, ifValuesPass=0, startFinishOptions=0):
         '''
         Solve the problem using the primal simplex algorithm.
         See this :ref:`usage example <simple-run>`.
+
+        startFinishOptions is a string containing one or
+        more of the following characters:
+        'x': do not delete work areas
+        'f': use old factorization if possible
+        's': skip initialization of work areas
+        So one might call ``self.primal(startFinishOptions='sx')``
         '''
+        sf = self._extractStartFinish(startFinishOptions)
         return problemStatus[self.CppSelf.primal(
-                             ifValuesPass, startFinishOptions)]
+                             ifValuesPass, sf)]
 
     def dual(self, ifValuesPass=0, startFinishOptions=0):
         '''
@@ -1300,8 +1363,9 @@ cdef class CyClpSimplex:
         'optimal'
 
         '''
+        sf = self._extractStartFinish(startFinishOptions)
         return problemStatus[self.CppSelf.dual(
-                            ifValuesPass, startFinishOptions)]
+                            ifValuesPass, sf)]
 
     def setPerturbation(self, value):
         '''
@@ -1329,6 +1393,12 @@ cdef class CyClpSimplex:
         Compute :math:`A_B^{-1}A_{col}` and store the result in ``cl``.
         '''
         self.CppSelf.getBInvACol(col, <double*>cl.data)
+
+    def getBInvCol(self, col, np.ndarray[np.double_t, ndim=1] cl):
+        '''
+        Return :math:`A_B^{-1}_{col}` and store the result in ``cl``.
+        '''
+        self.CppSelf.getBInvCol(col, <double*>cl.data)
 
     def transposeTimesSubset(self, number,
                              np.ndarray[np.int64_t, ndim=1] which,
@@ -1755,56 +1825,6 @@ cdef class CyClpSimplex:
                                 np.zeros(self.nConstraints, dtype='int32')
         self.CppSelf.getBasisStatus(<int*>cstat.data, <int*>rstat.data)
         return cstat, rstat
-
-#cdef api void CyPostPrimalRow(CppIClpSimplex* s):
-#    cl = s.ComplementarityList()
-#    pivotRow = s.pivotRow()
-#    if pivotRow < 0:
-#        return
-#    leavingVarIndex = s.pivotVariable()[pivotRow]
-#    colInd = s.sequenceIn()
-#
-#    print 'in: ', colInd
-#    print 'out: ', leavingVarIndex
-#
-#    print 'Basis'
-#    for i in xrange(s.getNumRows()):
-#        print s.pivotVariable()[i],
-#    print
-#
-#    print 'status : ', s.getStatus(cl[colInd])
-#
-#    if s.getStatus(cl[colInd]) == 1 and \
-#        cl[colInd] != leavingVarIndex:
-#
-#        print colInd, ' flagged'
-#        s.setFlagged(colInd)
-#        s.setPivotRow(-3)
-#
-#cdef api int CyPivotIsAcceptable(CppIClpSimplex* s):
-#    cl = s.ComplementarityList()
-#    pivotRow = s.pivotRow()
-#    if pivotRow < 0:
-#        return 1
-#
-#    leavingVarIndex = s.pivotVariable()[pivotRow]
-#    colInd = s.sequenceIn()
-#
-#    print '____________________\nBasis'
-#    for i in xrange(s.getNumRows()):
-#        print s.pivotVariable()[i],
-#    print
-#
-#    print 'in: ', colInd
-#    print 'out: ', leavingVarIndex
-#
-#    if s.getStatus(cl[colInd]) == 1 and \
-#        cl[colInd] != leavingVarIndex:
-#        print colInd, ' flagged'
-#        s.setFlagged(colInd)
-#        return 0
-#
-#    return 1
 
 
 def getModelExample():

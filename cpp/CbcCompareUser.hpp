@@ -3,7 +3,7 @@
 #ifndef CbcCompareUser_H
 #define CbcCompareUser_H
 
-#define NPY_NO_DEPRECATED_API
+//#define NPY_NO_DEPRECATED_API
 
 #include "CbcNode.hpp"
 #include "CbcCompareBase.hpp"
@@ -23,17 +23,17 @@
 */
 class CbcCompareUser  : public CbcCompareBase {
 public:
-  // Default Constructor 
+  // Default Constructor
   CbcCompareUser (PyObject* obj, runTest_t runTest,
                     runNewSolution_t runNewSolution,
                     runEvery1000Nodes_t runEvery1000Nodes) ;
   // Constructor with weight
   //CbcCompareUser (double weight);
 
-  // Copy constructor 
+  // Copy constructor
   CbcCompareUser ( const CbcCompareUser &rhs);
-   
-  // Assignment operator 
+
+  // Assignment operator
   CbcCompareUser & operator=( const CbcCompareUser& rhs);
 
   /// Clone
@@ -53,7 +53,7 @@ public:
 			   int numberInfeasibilitiesAtContinuous) ;
   /// Returns true if wants code to do scan with alternate criterion
   virtual bool fullScan() const;
-  // This allows method to change behavior 
+  // This allows method to change behavior
   // Return true if want tree re-sorted
   virtual bool every1000Nodes(CbcModel * model,int numberNodes);
 
