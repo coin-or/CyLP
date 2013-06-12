@@ -1,6 +1,7 @@
 from DantzigPivot import DantzigPivot
 from PositiveEdgePivot import PositiveEdgePivot
 from PivotPythonBase import PivotPythonBase
+from DualPivotPythonBase import DualPivotPythonBase
 from LIFOPivot import LIFOPivot
 from MostFrequentPivot import MostFrequentPivot
 from PositiveEdgeWolfePivot import PositiveEdgeWolfePivot

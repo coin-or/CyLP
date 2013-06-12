@@ -88,6 +88,7 @@ public:
 
 
 	void setPrimalColumnPivotAlgorithm(ClpPrimalColumnPivot *choice){ClpSimplex::setPrimalColumnPivotAlgorithm(*choice);}
+  void setDualRowPivotAlgorithm(ClpDualRowPivot *choice){ClpSimplex::setDualRowPivotAlgorithm(*choice);}
 
     void loadQuadraticObjective(const CoinPackedMatrix* matrix){ClpModel::loadQuadraticObjective(*matrix);}
     ICoinPackedMatrix* getMatrix(){return static_cast<ICoinPackedMatrix*>(ClpModel::matrix());}

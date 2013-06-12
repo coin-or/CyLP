@@ -13,11 +13,13 @@ cimport cpython.ref as cpy_ref
 from CyWolfePivot cimport CyWolfePivot
 from CyPEPivot cimport CyPEPivot
 from CyPivotPythonBase cimport CyPivotPythonBase
+from CyDualPivotPythonBase cimport CyDualPivotPythonBase
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy cimport CyCoinModel
 from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
 from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
+from CyLP.py.pivots import DualPivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
 from CyLP.cy cimport CyCoinMpsIO
 
@@ -1381,6 +1383,14 @@ cdef class CyClpSimplex:
         cdef CppClpPrimalColumnPivot* c = <CppClpPrimalColumnPivot*> choice
         self.CppSelf.setPrimalColumnPivotAlgorithm(c)
 
+    cdef setDualRowPivotAlgorithm(self, void* choice):
+        '''
+        Set dual simplex's pivot rule to ``choice``
+        This is used when setting a pivot rule in Cython
+        '''
+        cdef CppClpDualRowPivot* c = <CppClpDualRowPivot*> choice
+        self.CppSelf.setDualRowPivotAlgorithm(c)
+
     def resize(self, newNumberRows, newNumberColumns):
         '''
         Resize the problem. After a call to ``resize`` the problem will have
@@ -1681,6 +1691,22 @@ cdef class CyClpSimplex:
         self.cyPivot = p
         p.cyModel = self
         self.setPrimalColumnPivotAlgorithm(p.CppSelf)
+
+    def setDualPivotMethod(self, dualPivotMethodObject):
+        '''
+        Takes a python object and sets it as the dual
+        pivot rule. ``dualPivotObjectMethod`` should
+        implement :py:class:`DualPivotPythonBase`.
+        '''
+        if not issubclass(dualPivotMethodObject.__class__, DualPivotPythonBase):
+            raise TypeError('dualPivotMethodObject should be of a \
+                            class derived from DualPivotPythonBase')
+
+        cdef CyDualPivotPythonBase p = CyDualPivotPythonBase(dualPivotMethodObject)
+        self.cyDualPivot = p
+        p.cyModel = self
+        self.setDualRowPivotAlgorithm(p.CppSelf)
+
 
     cpdef filterVars(self,  inds):
         return <object>self.CppSelf.filterVars(<PyObject*>inds)

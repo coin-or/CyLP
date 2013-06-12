@@ -10,6 +10,7 @@ cimport cpython.ref as cpy_ref
 from cpython cimport PyObject, Py_INCREF
 
 from CyLP.cy.CyClpPrimalColumnPivotBase cimport CyClpPrimalColumnPivotBase
+from CyLP.cy.CyClpDualRowPivotBase cimport CyClpDualRowPivotBase
 #from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
 from CyLP.cy.CyCoinModel cimport CyCoinModel, CppCoinModel
 from CyLP.cy.CyCoinPackedMatrix cimport CyCoinPackedMatrix, CppCoinPackedMatrix
@@ -35,6 +36,12 @@ cdef extern from "ClpPrimalColumnPivot.hpp":
     CppClpPrimalColumnPivot *new_ClpPrimalColumnPivot \
                                     "new ClpPrimalColumnPivot" ()
 
+cdef extern from "ClpDualRowPivot.hpp":
+    cdef cppclass CppClpDualRowPivot "ClpDualRowPivot":
+        pass
+    CppClpDualRowPivot *new_ClpDualRowPivot \
+                                    "new ClpDualRowPivot" ()
+
 cdef extern from "IClpSimplex.hpp":
 
     ctypedef int (*runIsPivotAcceptable_t)(void* obj)
@@ -51,6 +58,7 @@ cdef extern from "IClpSimplex.hpp":
 
         void setCriteria(varSelCriteria_t vsc)
         void setPrimalColumnPivotAlgorithm(CppClpPrimalColumnPivot* choice)
+        void setDualRowPivotAlgorithm(CppClpDualRowPivot* choice)
         int readMps(char*, int keepNames, int ignoreErrors)
         void loadQuadraticObjective(CppCoinPackedMatrix* matrix)
         CppCoinPackedMatrix* getMatrix()
@@ -252,6 +260,7 @@ cdef class CyClpSimplex:
     cdef setCppSelf(self,  CppIClpSimplex* s)
 
     cdef CyClpPrimalColumnPivotBase cyPivot
+    cdef CyClpDualRowPivotBase cyDualPivot
     #cdef CppICbcModel* cbcModel
     #cdef object nodeCompareObject
     #cdef cbcModelExists
@@ -262,6 +271,7 @@ cdef class CyClpSimplex:
                       int ignoreErrors=*)
 
     cdef setPrimalColumnPivotAlgorithm(self, void* choice)
+    cdef setDualRowPivotAlgorithm(self, void* choice)
     cdef double* primalColumnSolution(self)
     cdef double* dualColumnSolution(self)
     cdef double* primalRowSolution(self)
