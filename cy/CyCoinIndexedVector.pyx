@@ -3,7 +3,7 @@
 
 cdef class CyCoinIndexedVector:
     '''
-    ``CyCoinIndexedVector`` interfaces ``CoinIndexedVector``. 
+    ``CyCoinIndexedVector`` interfaces ``CoinIndexedVector``.
 
     **Usage**
 
@@ -20,9 +20,16 @@ cdef class CyCoinIndexedVector:
     >>> [vector[i] for i in [0, 2]] == [-1, -2]
     True
     '''
-    
+
     def __cinit__(self):
         self.CppSelf = new_CppCoinIndexedVector()
+
+    def __dealloc__(self):
+        del self.CppSelf
+
+    cdef setCppSelf(self, CppCoinIndexedVector* s):
+        #del self.CppSelf
+        self.CppSelf = s
 
     def Print(self):
         self.CppSelf.Print()

@@ -448,16 +448,30 @@ PyObject* IClpSimplex::getRowUpper(){
     return Arr;
 }
 
+PyObject* IClpSimplex::getUpper(){
+
+    npy_intp dims = getNumRows() + getNumCols();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->upperRegion() );
+    return Arr;
+}
+
+PyObject* IClpSimplex::getLower(){
+
+    npy_intp dims = getNumRows() + getNumCols();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->lowerRegion() );
+    return Arr;
+}
+
 PyObject* IClpSimplex::getColLower(){
 
-    npy_intp dims = getNumCols();
+    npy_intp dims = getNumCols() + getNumRows();
     PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnLower() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getColUpper(){
 
-    npy_intp dims = getNumCols();
+    npy_intp dims = getNumCols() + getNumRows();
     PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnUpper() );
     return Arr;
 }

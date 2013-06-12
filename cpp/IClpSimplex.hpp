@@ -79,6 +79,11 @@ public:
 	PyObject * getColLower();
 	PyObject * getColUpper();
 
+
+  PyObject* getLower();
+  PyObject* getUpper();
+
+
 	void getBInvACol(int col, double* vec);
 	void getACol(int ncol, CoinIndexedVector * colArray);
 

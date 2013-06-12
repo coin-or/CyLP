@@ -437,6 +437,24 @@ cdef class CyClpSimplex:
         def __get__(self):
             return <object>self.CppSelf.getRowLower()
 
+    property lower:
+        '''
+        lower bounds (CLP's lower_)
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getLower()
+
+    property upper:
+        '''
+        upper bounds (CLP's upper_)
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getUpper()
+
     property status:
         '''
         A Numpy array of all the variables' status

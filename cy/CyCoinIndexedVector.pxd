@@ -20,6 +20,7 @@ cdef class CyCoinIndexedVector:
     cpdef CppCoinIndexedVector *CppSelf
     cpdef reserve(self, n)
     cpdef assign(self, ind, other)
+    cdef setCppSelf(self, CppCoinIndexedVector* s)
     #cpdef getIndices(self)
     #cpdef getElements(self)
     #cpdef getNumElements(self)

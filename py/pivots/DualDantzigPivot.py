@@ -42,21 +42,30 @@ class DualDantzigPivot(DualPivotPythonBase):
         model = self.clpModel
         nConstraints = model.nConstraints
         basicVarInds = model.basicVariables
-        tol = model.primalTolerance
-        largest = 0.0
-        chosenRow = -1
-        for i in xrange(nConstraints):
-            varInd = basicVarInds[i]
-            value = model.primalConstraintSolution[i]
-            lower = model.constraintsLower[i]
-            upper = model.constraintsUpper[i]
-            infeasibility = max(value - upper, lower - value)
-            if (infeasibility > tol and infeasibility > largest and
-                                    not model.flagged(varInd)):
-                chosenRow = i
-                largest = infeasibility
-        print 'returning %d' % chosenRow
-        return chosenRow
+
+        u = model.upper[basicVarInds]
+        l = model.lower[basicVarInds]
+        v = model.solution[basicVarInds]
+        #print v
+
+        infeasibilities = np.maximum(v - u, l - v)
+
+        m = max(infeasibilities)
+
+        if m > model.primalTolerance:
+            #print 'returning: ', model.iteration, np.argmax(infeasibilities)
+            return np.argmax(infeasibilities)
+        #print 'returning -1'
+        return -1
+
+    def updateWeights(self, inp, spare, spare2, updatedColumn):
+        print '----------------------> '
+        print updatedColumn
+        return 1
+
+    def updatePrimalSolution(self, inp, theta):
+        print 'updddddddddddddddddddddddatePrimalSolution'
+        return
 
     def pivotColumnStatusWhere(self):
         'Finds the variable with the best reduced cost and returns its index'

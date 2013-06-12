@@ -25,11 +25,23 @@ cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):
                                   CppCoinIndexedVector* spare,
                                   CppCoinIndexedVector* spare2,
                                   CppCoinIndexedVector* updatedColumn):
-        #TODO: change cppCoinIndexedVector
-        return 0
+        print 'CyUpdateWeights'
+        cyinp = CyCoinIndexedVector()
+        cyinp.setCppSelf(inp)
+        cyspare = CyCoinIndexedVector()
+        cyspare.setCppSelf(spare)
+        cyspare2 = CyCoinIndexedVector()
+        cyspare2.setCppSelf(spare2)
+        cyupdatedColumn = CyCoinIndexedVector()
+        cyupdatedColumn.setCppSelf(updatedColumn)
+        return self.dualPivotMethodObject.updateWeights(cyinp, cyspare, cyspare2, cyupdatedColumn)
 
     cdef void updatePrimalSolution(self,
                                    CppCoinIndexedVector* inp,
                                    double theta,
                                    double * changeInObjective):
-        pass
+        print 'CyUpdatePrimalSolution'
+        cyinp = CyCoinIndexedVector()
+        cyinp.setCppSelf(inp)
+        change = self.dualPivotMethodObject.updatePrimalSolution(cyinp, theta)
+        changeInObjective[0] = change

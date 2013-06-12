@@ -210,6 +210,8 @@ cdef extern from "IClpSimplex.hpp":
         void setObjectiveArray(double* objective, int numberColumns)
         PyObject* getRowLower()
         PyObject* getRowUpper()
+        PyObject* getLower()
+        PyObject* getUpper()
         PyObject* getColLower()
         PyObject* getColUpper()
         PyObject* getObjective()
