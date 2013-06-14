@@ -34,7 +34,9 @@ cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):
         cyspare2.setCppSelf(spare2)
         cyupdatedColumn = CyCoinIndexedVector()
         cyupdatedColumn.setCppSelf(updatedColumn)
-        return self.dualPivotMethodObject.updateWeights(cyinp, cyspare, cyspare2, cyupdatedColumn)
+        ret = self.dualPivotMethodObject.updateWeights(cyinp, cyspare, cyspare2, cyupdatedColumn)
+        print 'CyDualPivotPythonBase alpha: ', ret
+        return ret
 
     cdef void updatePrimalSolution(self,
                                    CppCoinIndexedVector* inp,

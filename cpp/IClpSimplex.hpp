@@ -86,6 +86,8 @@ public:
 
 	void getBInvACol(int col, double* vec);
 	void getACol(int ncol, CoinIndexedVector * colArray);
+  int updateColumnFT(CoinIndexedVector * spare,
+                          CoinIndexedVector * updatedColumn){return this->factorization()->updateColumnFT(spare, updatedColumn);}
 
 	int customPrimal;
 	void useCustomPrimal(int);

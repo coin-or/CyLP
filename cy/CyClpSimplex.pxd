@@ -180,6 +180,7 @@ cdef extern from "IClpSimplex.hpp":
         void vectorTimesB_1(CppCoinIndexedVector* vec)
         void transposeTimesSubset(int number, int* which,
                                   double* pi, double* y)
+        int updateColumnFT(CppCoinIndexedVector* spare, CppCoinIndexedVector* updatedColumn)
         void transposeTimesSubsetAll(int number, long long int* which,
                                      double* pi, double* y)
 

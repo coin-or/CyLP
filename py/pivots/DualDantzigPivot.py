@@ -17,19 +17,19 @@ class DualDantzigPivot(DualPivotPythonBase):
 
     **Usage**
 
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
-    >>> from CyLP.py.pivots.DualDantzigPivot import getMpsExample
-    >>> # Get the path to a sample mps file
-    >>> f = getMpsExample()
-    >>> s = CyClpSimplex()
-    >>> s.readMps(f)  # Returns 0 if OK
+    from CyLP.cy import CyClpSimplex
+    from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
+    from CyLP.py.pivots.DualDantzigPivot import getMpsExample
+    # Get the path to a sample mps file
+    f = getMpsExample()
+    s = CyClpSimplex()
+    s.readMps(f)  # Returns 0 if OK
     0
-    >>> pivot = DualDantzigPivot(s)
-    >>> s.setDualPivotMethod(pivot)
-    >>> s.dual()
+    pivot = DualDantzigPivot(s)
+    s.setDualPivotMethod(pivot)
+    s.dual()
     'optimal'
-    >>> round(s.objectiveValue, 5)
+    round(s.objectiveValue, 5)
     2520.57174
 
     '''
@@ -45,10 +45,8 @@ class DualDantzigPivot(DualPivotPythonBase):
 
         u = model.upper[basicVarInds]
         l = model.lower[basicVarInds]
-        v = model.solution[basicVarInds]
-        #print v
-
-        infeasibilities = np.maximum(v - u, l - v)
+        s = model.solution[basicVarInds]
+        infeasibilities = np.maximum(s - u, l - s)
 
         m = max(infeasibilities)
 
@@ -60,8 +58,22 @@ class DualDantzigPivot(DualPivotPythonBase):
 
     def updateWeights(self, inp, spare, spare2, updatedColumn):
         print '----------------------> '
-        print updatedColumn
-        return 1
+        model = self.clpModel
+        pr = model.pivotRow()
+        model.updateColumnFT(spare, updatedColumn)
+        updatedColumn.Print()
+        indices = updatedColumn.indices
+        elements = updatedColumn.elements
+        print updatedColumn.nElements
+        print updatedColumn.isInPackedMode
+        if updatedColumn.isInPackedMode:
+            if pr in indices:
+                ind = np.where(indices==pr)[0][0]
+                print 'pr: ', pr, ', alpha = ', elements[ind]
+                return elements[ind]
+        else:
+            return elements[pr]
+        return 0
 
     def updatePrimalSolution(self, inp, theta):
         print 'updddddddddddddddddddddddatePrimalSolution'
@@ -113,5 +125,15 @@ def getMpsExample():
     return os.path.join(curpath, '../../input/p0033.mps')
 
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    from CyLP.cy import CyClpSimplex
+    from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
+    from CyLP.py.pivots.DualDantzigPivot import getMpsExample
+    # Get the path to a sample mps file
+    f = getMpsExample()
+    s = CyClpSimplex()
+    s.readMps(f)  # Returns 0 if OK
+    pivot = DualDantzigPivot(s)
+    s.setDualPivotMethod(pivot)
+    s.dual()
+    #import doctest
+    #doctest.testmod()

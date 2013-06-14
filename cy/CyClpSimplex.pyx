@@ -1571,6 +1571,10 @@ cdef class CyClpSimplex:
 
         return self.CppSelf.writeMps(filename, formatType, numberAcross,
                                      objSense)
+
+    def updateColumnFT(self, CyCoinIndexedVector spare, CyCoinIndexedVector updatedColumn):
+        return self.CppSelf.updateColumnFT(spare.CppSelf, updatedColumn.CppSelf)
+
     #############################################
     # Modeling
     #############################################

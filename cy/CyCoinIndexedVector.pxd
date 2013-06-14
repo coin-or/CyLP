@@ -13,6 +13,7 @@ cdef extern from "ICoinIndexedVector.hpp":
         void clear()
         void assign(PyObject*, PyObject*)
         void Print()
+        bint packedMode()
     CppCoinIndexedVector *new_CppCoinIndexedVector "new ICoinIndexedVector" ()
 
 

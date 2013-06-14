@@ -1,55 +1,13 @@
 #include "IClpDualRowPivotBase.h"
+#include "ICoinIndexedVector.hpp"
 
 int
 CppClpDualRowPivotBase::pivotRow()
 {
-
-//      assert(model_);
-//      int iRow;
-//      const int * pivotVariable = model_->pivotVariable();
-//      double tolerance = model_->currentPrimalTolerance();
-//      // we can't really trust infeasibilities if there is primal error
-//      if (model_->largestPrimalError() > 1.0e-8)
-//           tolerance *= model_->largestPrimalError() / 1.0e-8;
-//      double largest = 0.0;
-//      int chosenRow = -1;
-//      int numberRows = model_->numberRows();
-// #ifdef CLP_DUAL_COLUMN_MULTIPLIER
-//      int numberColumns = model_->numberColumns();
-// #endif
-//      for (iRow = 0; iRow < numberRows; iRow++) {
-//           int iSequence = pivotVariable[iRow];
-//           double value = model_->solution(iSequence);
-//           double lower = model_->lower(iSequence);
-//           double upper = model_->upper(iSequence);
-// 	  double infeas = CoinMax(value - upper , lower - value);
-//      std::cout << "iSequence: " << iSequence ;
-//      std::cout << ", lower: " << lower;
-//      std::cout << ", upper: " << upper;
-//      std::cout << ", value: " << value;
-//      std::cout << ", inf: " << infeas << std::endl;
-//           if (infeas > tolerance) {
-// #ifdef CLP_DUAL_COLUMN_MULTIPLIER
-// 	      if (iSequence < numberColumns)
-// 		infeas *= CLP_DUAL_COLUMN_MULTIPLIER;
-// #endif
-// 	      if (infeas > largest) {
-// 		if (!model_->flagged(iSequence)) {
-// 		  chosenRow = iRow;
-// 		  largest = infeas;
-// 		}
-// 	      }
-//           }
-//      }
-//      std::cout << "chosenRow: " << chosenRow << std::endl << std::endl;
-//      return chosenRow;
-
-
-
 	//std::cout << "::Cy..Base::pivotRow()...\n";
-	//if (this->obj && this->runPivotRow) {
+	if (this->obj && this->runPivotRow) {
 		return this->runPivotRow(this->obj);
-	//}
+	}
 	std::cerr << "** pivotRow: invalid cy-state: obj [" << this->obj << "] fct: ["
 	<< this->runPivotRow << "]\n";
 	return -100;
@@ -70,33 +28,38 @@ double CppClpDualRowPivotBase::updateWeights(CoinIndexedVector * input,
                                   CoinIndexedVector * spare2,
                                   CoinIndexedVector * updatedColumn) {
 
-     // Do FT update
-     model_->factorization()->updateColumnFT(spare, updatedColumn);
-     // pivot element
-     double alpha = 0.0;
-     // look at updated column
-     double * work = updatedColumn->denseVector();
-     int number = updatedColumn->getNumElements();
-     int * which = updatedColumn->getIndices();
-     int i;
-     int pivotRow = model_->pivotRow();
-
-     if (updatedColumn->packedMode()) {
-          for (i = 0; i < number; i++) {
-               int iRow = which[i];
-               if (iRow == pivotRow) {
-                    alpha = work[i];
-                    break;
-               }
-          }
-     } else {
-          alpha = work[pivotRow];
-     }
-     return alpha;
-
+//     // Do FT update
+//     model_->factorization()->updateColumnFT(spare, updatedColumn);
+//     static_cast<ICoinIndexedVector*>(updatedColumn)->Print();
+//     // pivot element
+//     double alpha = 0.0;
+//     // look at updated column
+//     double * work = updatedColumn->denseVector();
+//     int number = updatedColumn->getNumElements();
+//     int * which = updatedColumn->getIndices();
+//     int i;
+//     int pivotRow = model_->pivotRow();
+//     if (updatedColumn->packedMode()) {
+//          for (i = 0; i < number; i++) {
+//               int iRow = which[i];
+//               if (iRow == pivotRow) {
+//                    alpha = work[i];
+//                    break;
+//               }
+//          }
+//     } else {
+//          alpha = work[pivotRow];
+//     }
+//     std::cout << "pr: " << pivotRow << ", alpha: " << alpha << std::endl;
+//     return alpha;
+//
 
 	if (this->obj && this->runUpdateWeights) {
-		return this->runUpdateWeights(this->obj, input, spare, spare2, updatedColumn);
+		double ret = this->runUpdateWeights(this->obj, input, spare, spare2, updatedColumn);
+		std::cout << "after updateWeigts: " <<std::endl;
+		static_cast<ICoinIndexedVector*>(updatedColumn)->Print();
+		std::cout << "cpp alpha: " << ret << std::endl;
+		return ret;
 	}
 	std::cerr << "** clone: invalid cy-state: obj [" << this->obj << "] fct: ["
 	<< this->runUpdateWeights << "]\n";

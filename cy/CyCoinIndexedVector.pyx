@@ -24,8 +24,8 @@ cdef class CyCoinIndexedVector:
     def __cinit__(self):
         self.CppSelf = new_CppCoinIndexedVector()
 
-    def __dealloc__(self):
-        del self.CppSelf
+    #def __dealloc__(self):
+    #    del self.CppSelf
 
     cdef setCppSelf(self, CppCoinIndexedVector* s):
         #del self.CppSelf
@@ -65,3 +65,7 @@ cdef class CyCoinIndexedVector:
     property nElements:
         def __get__(self):
             return self.CppSelf.getNumElements()
+
+    property isInPackedMode:
+        def __get__(self):
+            return self.CppSelf.packedMode()
