@@ -172,6 +172,7 @@ cdef extern from "IClpSimplex.hpp":
         PyObject* getPrimalColumnSolution()
         PyObject* getPrimalColumnSolutionAll()
         PyObject* getSolutionRegion()
+        PyObject* getCostRegion()
         PyObject* getDualRowSolution()
         PyObject* getDualColumnSolution()
 

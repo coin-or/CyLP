@@ -51,6 +51,9 @@ cdef class CyCoinIndexedVector:
     def clear(self):
         self.CppSelf.clear()
 
+    def empty(self):
+        self.CppSelf.empty()
+
     cpdef assign(self, ind, other):
         self.CppSelf.assign(<PyObject*>ind, <PyObject*>other)
 
@@ -65,6 +68,9 @@ cdef class CyCoinIndexedVector:
     property nElements:
         def __get__(self):
             return self.CppSelf.getNumElements()
+
+        def __set__(self, value):
+            self.CppSelf.setNumElements(value)
 
     property isInPackedMode:
         def __get__(self):

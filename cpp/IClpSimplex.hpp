@@ -71,6 +71,7 @@ public:
 	PyObject * getPrimalColumnSolution();
     PyObject * getPrimalColumnSolutionAll();
     PyObject * getSolutionRegion();
+    PyObject * getCostRegion();
 	PyObject * getDualRowSolution();
 	PyObject * getDualColumnSolution();
 	PyObject * getObjective();

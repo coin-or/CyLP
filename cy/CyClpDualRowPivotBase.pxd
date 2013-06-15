@@ -3,8 +3,8 @@ cimport cpython.ref as cpy_ref
 from cpython.ref cimport PyObject
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy.CyCoinIndexedVector cimport CppCoinIndexedVector
-#import numpy as np
-#cimport numpy as np
+import numpy as np
+cimport numpy as np
 
 cdef extern from "ClpDualRowPivot.hpp":
     cdef cppclass CyClpDualRowPivot "ClpDualRowPivot":
@@ -82,7 +82,7 @@ cdef class CyClpDualRowPivotBase:
                                   CppCoinIndexedVector* updatedColumn)
     cdef void updatePrimalSolution(self, CppCoinIndexedVector * inp,
                                        double theta,
-                                       double * changeInObjective)
+                                       np.ndarray[np.double_t,ndim=1] changeInObjective)
     cdef CyClpSimplex.CppIClpSimplex* model(self)
     cdef void setModel(self, CyClpSimplex.CppIClpSimplex* m)
     cdef double* getReducedCosts(self)

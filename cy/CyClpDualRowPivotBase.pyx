@@ -1,6 +1,8 @@
 # cython: profile=True
 # cython: embedsignature=True
 
+np.import_array()
+
 cimport CyLP.cy.CyClpDualRowPivotBase
 #from CyLP.cy import CyClpSimplex
 
@@ -14,12 +16,14 @@ cdef double RunUpdateWeights(void *ptr,CppCoinIndexedVector* inp,
                                   CppCoinIndexedVector* spare,
                                   CppCoinIndexedVector* spare2,
                                   CppCoinIndexedVector* updatedColumn):
-    (<CyClpDualRowPivotBase>(ptr)).updateWeights(inp, spare, spare2, updatedColumn)
+    return (<CyClpDualRowPivotBase>(ptr)).updateWeights(inp, spare, spare2, updatedColumn)
 
 cdef void RunUpdatePrimalSolution(void *ptr,CppCoinIndexedVector * inp,
                                        double theta,
                                        double * changeInObjective):
-    (<CyClpDualRowPivotBase>(ptr)).updatePrimalSolution(inp, theta, changeInObjective)
+    cdef np.npy_intp shape = <np.npy_intp> 1
+    cho = np.PyArray_SimpleNewFromData(1, &shape, np.NPY_DOUBLE, <void*>changeInObjective)
+    (<CyClpDualRowPivotBase>(ptr)).updatePrimalSolution(inp, theta, cho)
 
 
 cdef class CyClpDualRowPivotBase:
@@ -54,7 +58,7 @@ cdef class CyClpDualRowPivotBase:
 
     cdef void updatePrimalSolution(self, CppCoinIndexedVector * inp,
                                        double theta,
-                                       double * changeInObjective):
+                                       np.ndarray[np.double_t,ndim=1] changeInObjective):
         raise Exception('CyClpDualRowPivotBase.pyx: updatePrimalSolution should ' \
                         'be implemented.')
 

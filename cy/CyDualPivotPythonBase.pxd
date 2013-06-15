@@ -1,3 +1,5 @@
+import numpy as np
+cimport numpy as np
 from CyClpDualRowPivotBase cimport *
 cimport cython.operator.dereference as deref
 from CyLP.cy cimport CyClpSimplex
@@ -14,6 +16,6 @@ cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):
 
     cdef void updatePrimalSolution(self, CppCoinIndexedVector* inp,
                                          double theta,
-                                         double * changeInObjective)
+                                         np.ndarray[np.double_t,ndim=1] changeInObjective)
 
     cdef object dualPivotMethodObject

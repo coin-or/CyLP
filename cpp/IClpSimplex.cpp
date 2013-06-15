@@ -411,6 +411,12 @@ PyObject* IClpSimplex::getSolutionRegion(){
     return Arr;
 }
 
+PyObject* IClpSimplex::getCostRegion(){
+    npy_intp dims = getNumCols() + getNumRows();
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->costRegion() );
+    return Arr;
+}
+
 PyObject* IClpSimplex::getDualRowSolution(){
 
     npy_intp dims = getNumRows();

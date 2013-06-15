@@ -57,65 +57,44 @@ class DualDantzigPivot(DualPivotPythonBase):
         return -1
 
     def updateWeights(self, inp, spare, spare2, updatedColumn):
-        print '----------------------> '
         model = self.clpModel
         pr = model.pivotRow()
         model.updateColumnFT(spare, updatedColumn)
-        updatedColumn.Print()
         indices = updatedColumn.indices
         elements = updatedColumn.elements
-        print updatedColumn.nElements
-        print updatedColumn.isInPackedMode
         if updatedColumn.isInPackedMode:
             if pr in indices:
                 ind = np.where(indices==pr)[0][0]
-                print 'pr: ', pr, ', alpha = ', elements[ind]
                 return elements[ind]
         else:
             return elements[pr]
         return 0
 
-    def updatePrimalSolution(self, inp, theta):
-        print 'updddddddddddddddddddddddatePrimalSolution'
-        return
+    def updatePrimalSolution(self, primalUpdate, primalRatio, objectiveChange):
+        model = self.clpModel
+        nConstraints = model.nConstraints
+        basicVarInds = model.basicVariables
+        rowNumbers = primalUpdate.indices
+        elements = primalUpdate.elements
+        nElements = primalUpdate.nElements
+        changeObj = 0
 
-    def pivotColumnStatusWhere(self):
-        'Finds the variable with the best reduced cost and returns its index'
-        s = self.clpModel
-        rc = s.reducedCosts
+        sol = model.solution[basicVarInds[rowNumbers]]
+        cost = model.cost[basicVarInds[rowNumbers]]
 
-        tol = s.dualTolerance
-        #tol = 0
-        #incides of vars not fixed and not flagged
-        #indicesToConsider = np.where((status & 7 != 1) & (status & 7 != 5) &
-        #        (status & 64 == 0) & (((rc > tol) & (status & 7 == 2)) |
-        #            ((rc < -tol) & (status & 7 == 3))) )[0]
+        if primalUpdate.isInPackedMode:
+            change = primalRatio * elements[:nElements]
+            model.solution[basicVarInds[rowNumbers]] -= change
+        else:
+            change = primalRatio * elements[rowNumbers]
+            model.solution[basicVarInds[rowNumbers]] -= change
 
-        indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
-                                     s.varNotBasic &
-                                     (((rc > tol) & s.varIsAtUpperBound) |
-                                     ((rc < -tol) & s.varIsAtLowerBound) |
-                                     s.varIsFree))[0]
+        changeObj = -np.dot(change, cost)
+        elements[:] = np.zeros(len(elements), dtype=np.double)
+        primalUpdate.nElements = 0
+        objectiveChange[0] += changeObj
 
-        #freeVarInds = np.where(s.varIsFree)
-        #rc[freeVarInds] *= 10
-
-        rc2 = np.abs(rc[indicesToConsider])
-
-        checkFree = True
-        #rc2[np.where((status & 7 == 4) | (status & 7 == 0))] *= 10
-        if rc2.shape[0] > 0:
-            if checkFree:
-                w = np.where(s.varIsFree)[0]
-                if w.shape[0] > 0:
-                    ind = s.argWeightedMax(rc2, indicesToConsider, 1, w)
-                else:
-                    ind = np.argmax(rc2)
-            else:
-                    ind = np.argmax(rc2)
-            #del rc2
-            return  indicesToConsider[ind]
-        return -1
+        return changeObj
 
 
 def getMpsExample():

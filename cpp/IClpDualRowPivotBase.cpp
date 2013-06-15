@@ -55,60 +55,69 @@ double CppClpDualRowPivotBase::updateWeights(CoinIndexedVector * input,
 //
 
 	if (this->obj && this->runUpdateWeights) {
-		double ret = this->runUpdateWeights(this->obj, input, spare, spare2, updatedColumn);
-		std::cout << "after updateWeigts: " <<std::endl;
-		static_cast<ICoinIndexedVector*>(updatedColumn)->Print();
-		std::cout << "cpp alpha: " << ret << std::endl;
-		return ret;
+		return this->runUpdateWeights(this->obj, input, spare, spare2, updatedColumn);
 	}
 	std::cerr << "** clone: invalid cy-state: obj [" << this->obj << "] fct: ["
 	<< this->runUpdateWeights << "]\n";
 	return -1;
 }
 
-void CppClpDualRowPivotBase::updatePrimalSolution(CoinIndexedVector * primalUpdate,
+void CppClpDualRowPivotBase::updatePrimalSolution(
+									   CoinIndexedVector * primalUpdate,
                                        double primalRatio,
                                        double & objectiveChange){
 
-     double * work = primalUpdate->denseVector();
-     int number = primalUpdate->getNumElements();
-     int * which = primalUpdate->getIndices();
-     int i;
-     double changeObj = 0.0;
-     const int * pivotVariable = model_->pivotVariable();
-     if (primalUpdate->packedMode()) {
-          for (i = 0; i < number; i++) {
-               int iRow = which[i];
-               int iPivot = pivotVariable[iRow];
-               double & value = model_->solutionAddress(iPivot);
-               double cost = model_->cost(iPivot);
-               double change = primalRatio * work[i];
-               value -= change;
-               changeObj -= change * cost;
-               work[i] = 0.0;
-          }
-     } else {
-          for (i = 0; i < number; i++) {
-               int iRow = which[i];
-               int iPivot = pivotVariable[iRow];
-               double & value = model_->solutionAddress(iPivot);
-               double cost = model_->cost(iPivot);
-               double change = primalRatio * work[iRow];
-               value -= change;
-               changeObj -= change * cost;
-               work[iRow] = 0.0;
-          }
-     }
-     primalUpdate->setNumElements(0);
-     objectiveChange += changeObj;
+//     double * work = primalUpdate->denseVector();
+//     int number = primalUpdate->getNumElements();
+//     int * which = primalUpdate->getIndices();
+//     int i;
+//     double changeObj = 0.0;
+//     const int * pivotVariable = model_->pivotVariable();
+//     std::cout << "Before: \n" ;
+//     static_cast<ICoinIndexedVector*>(primalUpdate)->Print();
+//     if (primalUpdate->packedMode()) {
+//          for (i = 0; i < number; i++) {
+//               int iRow = which[i];
+//               int iPivot = pivotVariable[iRow];
+//               double & value = model_->solutionAddress(iPivot);
+//               double cost = model_->cost(iPivot);
+//               double change = primalRatio * work[i];
+//               value -= change;
+//               changeObj -= change * cost;
+//               std::cout << "p  : change: " << change << ", cost: " << cost << std::endl;
+//               work[i] = 0.0;
+//          }
+//     } else {
+//          for (i = 0; i < number; i++) {
+//               int iRow = which[i];
+//               int iPivot = pivotVariable[iRow];
+//               double & value = model_->solutionAddress(iPivot);
+//               double cost = model_->cost(iPivot);
+//               double change = primalRatio * work[iRow];
+//               value -= change;
+//               changeObj -= change * cost;
+//               std::cout << "unp: change: " << change << ", cost: " << cost << std::endl;
+//               work[iRow] = 0.0;
+//          }
+//     }
+//     std::cout << "After: \n" ;
+//     static_cast<ICoinIndexedVector*>(primalUpdate)->Print();
+//     primalUpdate->setNumElements(0);
+//     std::cout << "change: " << changeObj << std::endl;
+//
+//     objectiveChange += changeObj;
+//
+//     std::cout << "objective change: " << objectiveChange << std::endl;
+//
+//
+//     return;
+	 if (this->obj && this->runUpdatePrimalSolution) {
+    	return this->runUpdatePrimalSolution(this->obj, primalUpdate,
+     											primalRatio, &objectiveChange);
+     	 }
+     std::cerr << "** clone: invalid cy-state: obj [" << this->obj << "] fct: ["
+     << this->runUpdatePrimalSolution << "]\n";
      return;
-
-	// if (this->obj && this->runUpdatePrimalSolution) {
-	// 	return this->runUpdatePrimalSolution(this->obj, input, theta, &changeInObjective);
-	// }
-	// std::cerr << "** clone: invalid cy-state: obj [" << this->obj << "] fct: ["
-	// << this->runUpdatePrimalSolution << "]\n";
-	// return;
 
 }
 
