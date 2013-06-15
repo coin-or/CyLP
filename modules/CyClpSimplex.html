@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -223,6 +225,20 @@ For CyLP modeling tool see <tt class="xref py py-mod docutils literal"><span cla
 <tt class="descname">copyInIntegerInformation</tt><big>(</big><em>self</em>, <em>ndarray colType</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.copyInIntegerInformation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Take in a character array containing 0-1 specifying whether or not
 a variable is integer</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.cost">
+<tt class="descname">cost</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.cost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the current point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -550,6 +566,20 @@ for example:</p>
 <dd></dd></dl>
 
 <dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.lower">
+<tt class="descname">lower</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.lower" title="Permalink to this definition">¶</a></dt>
+<dd><p>lower bounds (CLP&#8217;s <a href="#id1"><span class="problematic" id="id2">lower_</span></a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.matrix">
 <tt class="descname">matrix</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>The coefficient matrix. A CyCoinPackedMatrix.</p>
@@ -828,6 +858,16 @@ arguments may be integers signifying indices, or CyLPVars.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.setDualPivotMethod">
+<tt class="descname">setDualPivotMethod</tt><big>(</big><em>self</em>, <em>dualPivotMethodObject</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.setDualPivotMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a python object and sets it as the dual
+pivot rule. <tt class="docutils literal"><span class="pre">dualPivotObjectMethod</span></tt> should
+implement <tt class="xref py py-class docutils literal"><span class="pre">DualPivotPythonBase</span></tt>.
+See <a class="reference internal" href="DantzigPivot.html#custom-dual-pivot-usage"><em>how to use custom dual Python pivots
+to solve LPs</em></a>.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.setFlagged">
 <tt class="descname">setFlagged</tt><big>(</big><em>self</em>, <em>varInd</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.setFlagged" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set variables index <tt class="docutils literal"><span class="pre">varInd</span></tt> flagged.</p>
@@ -1043,6 +1083,25 @@ can also address slack variables.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.updateColumnFT">
+<tt class="descname">updateColumnFT</tt><big>(</big><em>self</em>, <em>CyCoinIndexedVector spare</em>, <em>CyCoinIndexedVector updatedColumn</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.updateColumnFT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.upper">
+<tt class="descname">upper</tt><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.upper" title="Permalink to this definition">¶</a></dt>
+<dd><p>upper bounds (CLP&#8217;s <a href="#id3"><span class="problematic" id="id4">upper_</span></a>)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Numpy array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="CyLP.cy.CyClpSimplex.CyClpSimplex.useCustomPrimal">
 <tt class="descname">useCustomPrimal</tt><big>(</big><em>self</em>, <em>customPrimal</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyClpSimplex.CyClpSimplex.useCustomPrimal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines if
@@ -1245,7 +1304,7 @@ entering and leaving variables are obtained.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
     </div>
   </body>
 </html>
