@@ -9,6 +9,7 @@ from operator import itemgetter
 from random import shuffle
 from math import floor
 from DualPivotPythonBase import DualPivotPythonBase
+#from CyLP.py.pivots import DantzigPivot
 
 
 class DualDantzigPivot(DualPivotPythonBase):
@@ -17,19 +18,19 @@ class DualDantzigPivot(DualPivotPythonBase):
 
     **Usage**
 
-    from CyLP.cy import CyClpSimplex
-    from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
-    from CyLP.py.pivots.DualDantzigPivot import getMpsExample
-    # Get the path to a sample mps file
-    f = getMpsExample()
-    s = CyClpSimplex()
-    s.readMps(f)  # Returns 0 if OK
+    >>> from CyLP.cy import CyClpSimplex
+    >>> from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
+    >>> from CyLP.py.pivots.DualDantzigPivot import getMpsExample
+    >>> # Get the path to a sample mps file
+    >>> f = getMpsExample()
+    >>> s = CyClpSimplex()
+    >>> s.readMps(f)  # Returns 0 if OK
     0
-    pivot = DualDantzigPivot(s)
-    s.setDualPivotMethod(pivot)
-    s.dual()
+    >>> pivot = DualDantzigPivot(s)
+    >>> s.setDualPivotMethod(pivot)
+    >>> s.dual()
     'optimal'
-    round(s.objectiveValue, 5)
+    >>> round(s.objectiveValue, 5)
     2520.57174
 
     '''
@@ -51,9 +52,7 @@ class DualDantzigPivot(DualPivotPythonBase):
         m = max(infeasibilities)
 
         if m > model.primalTolerance:
-            #print 'returning: ', model.iteration, np.argmax(infeasibilities)
             return np.argmax(infeasibilities)
-        #print 'returning -1'
         return -1
 
     def updateWeights(self, inp, spare, spare2, updatedColumn):
@@ -100,19 +99,10 @@ class DualDantzigPivot(DualPivotPythonBase):
 def getMpsExample():
     import os
     import inspect
+    import sys
     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
     return os.path.join(curpath, '../../input/p0033.mps')
 
 if __name__ == "__main__":
-    from CyLP.cy import CyClpSimplex
-    from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
-    from CyLP.py.pivots.DualDantzigPivot import getMpsExample
-    # Get the path to a sample mps file
-    f = getMpsExample()
-    s = CyClpSimplex()
-    s.readMps(f)  # Returns 0 if OK
-    pivot = DualDantzigPivot(s)
-    s.setDualPivotMethod(pivot)
-    s.dual()
-    #import doctest
-    #doctest.testmod()
+    import doctest
+    doctest.testmod()

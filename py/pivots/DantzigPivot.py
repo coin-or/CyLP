@@ -15,6 +15,8 @@ class DantzigPivot(PivotPythonBase):
     '''
     Dantzig's pivot rule implementation.
 
+    .. _custom-dual-pivot-usage:
+
     **Usage**
 
     >>> from CyLP.cy import CyClpSimplex

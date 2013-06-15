@@ -1730,7 +1730,8 @@ cdef class CyClpSimplex:
         Takes a python object and sets it as the dual
         pivot rule. ``dualPivotObjectMethod`` should
         implement :py:class:`DualPivotPythonBase`.
-        '''
+        See :ref:`how to use custom dual Python pivots
+        to solve LPs <custom-dual-pivot-usage>`.       '''
         if not issubclass(dualPivotMethodObject.__class__, DualPivotPythonBase):
             raise TypeError('dualPivotMethodObject should be of a \
                             class derived from DualPivotPythonBase')
