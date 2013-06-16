@@ -4,8 +4,7 @@ Installation
 STEP 1:
     Install CoinMP. You can get the source at
     http://www.coin-or.org/download/source/CoinMP/. CyLP can be compiled against
-    CoinMP-1.6.0 or CoinMP-1.4.0 (earlier versions might work too). If you
-    choose CoinMP 1.6.0, to compile CyLP you will need a LAPACK
+    CoinMP-1.6.0. To compile CyLP you will need a LAPACK
     implementation and BZIP2 installed. If you are on a MAC or a linux
     system you might already have both. CoinMP-1.4.0 does not have this
     requirement.
@@ -16,8 +15,13 @@ STEP 1:
         $ make install
 
 STEP 2:
-    Edit setup_SAMPLE.py and set CoinDir to the location of the top directory of
-    CoinMP. Rename setup_SAMPLE.py to setup.py.
+    Create an environment variable called COIN_INSTALL_DIR pointing to your
+    installation of Coin. For example::
+
+        $ export COIN_INSTALL_DIR=/Users/mehdi/CoinMP-1.6.0
+
+    You may also add this line to your ~/.bash_rc or ~/.profile to make
+    it persistent.
 
 STEP 3:
     Install CyLP. Go to CyLP's root directory (which MUST be called CyLP) and

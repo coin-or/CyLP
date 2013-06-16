@@ -5,10 +5,31 @@ from CyLP.cy cimport CyWolfePivot
 
 cdef class CyWolfePivot(CyClpPrimalColumnPivotBase):
 
-    cdef pivotColumn(self, CppCoinIndexedVector* v1,
-                     CppCoinIndexedVector* v2, CppCoinIndexedVector* v3,
-                     CppCoinIndexedVector* v4, CppCoinIndexedVector* v5):
-        self.DantzigDualUpdate(v1, v2, v3, v4, v5)
+    cdef pivotColumn(self, CppCoinIndexedVector* cppupdates, CppCoinIndexedVector* cppspareRow1,
+                    CppCoinIndexedVector* cppspareRow2, CppCoinIndexedVector* cppspareCol1,
+                    CppCoinIndexedVector* cppspareCol2):
+        updates = CyCoinIndexedVector()
+        updates.setCppSelf(cppupdates)
+        spareRow1 = CyCoinIndexedVector()
+        spareRow1.setCppSelf(cppspareRow1)
+        spareRow2 = CyCoinIndexedVector()
+        spareRow2.setCppSelf(cppspareRow2)
+        spareCol1 = CyCoinIndexedVector()
+        spareCol1.setCppSelf(cppspareCol1)
+        spareCol2 = CyCoinIndexedVector()
+        spareCol2.setCppSelf(cppspareCol2)
+
+        m = self.cyModel
+
+        # Update the reduced costs, for both the original and the slack variables
+        if updates.nElements:
+            m.updateColumnTranspose(spareRow2, updates)
+            m.transposeTimes(-1, updates, spareCol2, spareCol1)
+            m.reducedCosts[s.nVariables:][updates.indices] -= updates.elements[:updates.nElements]
+            m.reducedCosts[:s.nVariables][spareCol1.indices] -= spareCol1.elements[:spareCol1.nElements]
+        updates.clear()
+        spareCol1.clear()
+
 
         cdef double* reducedCosts = self.getReducedCosts()
         cdef int dim = self.nCols() + self.nRows()
