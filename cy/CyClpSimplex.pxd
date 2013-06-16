@@ -181,9 +181,15 @@ cdef extern from "IClpSimplex.hpp":
         void vectorTimesB_1(CppCoinIndexedVector* vec)
         void transposeTimesSubset(int number, int* which,
                                   double* pi, double* y)
-        int updateColumnFT(CppCoinIndexedVector* spare, CppCoinIndexedVector* updatedColumn)
+        void transposeTimes(CppIClpSimplex * model, double scalar,
+                                 CppCoinIndexedVector * x,
+                                 CppCoinIndexedVector * y,
+                                 CppCoinIndexedVector * z)
         void transposeTimesSubsetAll(int number, long long int* which,
                                      double* pi, double* y)
+        int updateColumnFT(CppCoinIndexedVector* spare, CppCoinIndexedVector* updatedColumn)
+        int updateColumnTranspose(CppCoinIndexedVector* regionSparse1,
+                                  CppCoinIndexedVector* regionSparse2)
 
         CppIClpSimplex* preSolve(CppIClpSimplex* si,
                               double feasibilityTolerance,

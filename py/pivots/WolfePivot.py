@@ -17,7 +17,8 @@ class WolfePivot(PivotPythonBase):
         self.complementarityList = np.arange(self.dim)
 
 
-    def pivotColumn(self):
+    def pivotColumn(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
+        self.updateReducedCosts(updates, spareRow1, spareRow2, spareCol1, spareCol2)
         s = self.clpModel
 
         # If objective function linear proceed as normal
@@ -81,6 +82,8 @@ class WolfePivot(PivotPythonBase):
         return -1
         return self.pivotColumnFirst()
 
+    def saveWeights(self, model, mode):
+        self.clpModel = model
 
     def isPivotAcceptable(self):
         #import pdb; pdb.set_trace()

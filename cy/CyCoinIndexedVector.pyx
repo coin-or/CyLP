@@ -28,7 +28,7 @@ cdef class CyCoinIndexedVector:
     #    del self.CppSelf
 
     cdef setCppSelf(self, CppCoinIndexedVector* s):
-        #del self.CppSelf
+        del self.CppSelf
         self.CppSelf = s
 
     def Print(self):

@@ -16,12 +16,32 @@ cdef class CyDantzigPivot(CyClpPrimalColumnPivotBase):
         self.cyModel = cyModel
         CyClpPrimalColumnPivotBase.__init__(self)
 
-    cdef pivotColumn(self, CppCoinIndexedVector* v1, CppCoinIndexedVector* v2,
-                    CppCoinIndexedVector* v3, CppCoinIndexedVector* v4,
-                    CppCoinIndexedVector* v5):
-        self.DantzigDualUpdate(v1, v2, v3, v4, v5)
+    cdef pivotColumn(self, CppCoinIndexedVector* cppupdates, CppCoinIndexedVector* cppspareRow1,
+                    CppCoinIndexedVector* cppspareRow2, CppCoinIndexedVector* cppspareCol1,
+                    CppCoinIndexedVector* cppspareCol2):
+        updates = CyCoinIndexedVector()
+        updates.setCppSelf(cppupdates)
+        spareRow1 = CyCoinIndexedVector()
+        spareRow1.setCppSelf(cppspareRow1)
+        spareRow2 = CyCoinIndexedVector()
+        spareRow2.setCppSelf(cppspareRow2)
+        spareCol1 = CyCoinIndexedVector()
+        spareCol1.setCppSelf(cppspareCol1)
+        spareCol2 = CyCoinIndexedVector()
+        spareCol2.setCppSelf(cppspareCol2)
 
+        #self.DantzigDualUpdate(v1, v2, v3, v4, v5)
         s = self.cyModel
+
+        # Update the reduced costs, for both the original and the slack variables
+        if updates.nElements:
+            s.updateColumnTranspose(spareRow2, updates)
+            s.transposeTimes(-1, updates, spareCol2, spareCol1)
+            s.reducedCosts[s.nVariables:][updates.indices] -= updates.elements[:updates.nElements]
+            s.reducedCosts[:s.nVariables][spareCol1.indices] -= spareCol1.elements[:spareCol1.nElements]
+        updates.clear()
+        spareCol1.clear()
+
         rc = s.reducedCosts
 
         cdef double tol = s.dualTolerance

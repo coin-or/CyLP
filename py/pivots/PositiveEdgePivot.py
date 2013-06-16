@@ -15,7 +15,7 @@ class PositiveEdgePivot(PivotPythonBase):
     Positive Edge pivot rule implementation.
 
     .. _custom-pivot-usage:
-    
+
     **Usage**
 
     >>> from CyLP.cy import CyClpSimplex
@@ -94,17 +94,11 @@ class PositiveEdgePivot(PivotPythonBase):
 
         return abs(cydot(self.aColumn, self.w)) < self.EPSILON
 
-    def pivotColumn(self):
-        'Runs the desired pivotColumn'
-        #TODO: this should be controled by an attribute
-        return self.vecPivotColumn()
-        #return self.pivotColumnFirst()
-        #return self.pivotDantzig()
-
     def checkVar(self, i):
         return self.isCompatible(i)
 
-    def vecPivotColumn(self):
+    def pivotColumn(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
+        self.updateReducedCosts(updates, spareRow1, spareRow2, spareCol1, spareCol2)
         s = self.clpModel
         rc = s.reducedCosts
 
@@ -143,6 +137,9 @@ class PositiveEdgePivot(PivotPythonBase):
             return maxCompInd
         self.updateW()
         return maxInd
+
+    def saveWeights(self, model, mode):
+        self.clpModel = model
 
     def isPivotAcceptable(self):
         return True

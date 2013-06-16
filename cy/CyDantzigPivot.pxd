@@ -1,5 +1,6 @@
 from CyClpPrimalColumnPivotBase cimport *
 from CyLP.cy cimport CyClpSimplex
+from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
 
 
 cdef class CyDantzigPivot(CyClpPrimalColumnPivotBase):

@@ -88,7 +88,15 @@ public:
 	void getBInvACol(int col, double* vec);
 	void getACol(int ncol, CoinIndexedVector * colArray);
   int updateColumnFT(CoinIndexedVector * spare,
-                          CoinIndexedVector * updatedColumn){return this->factorization()->updateColumnFT(spare, updatedColumn);}
+                          CoinIndexedVector * updatedColumn)
+      {
+      return this->factorization()->updateColumnFT(spare, updatedColumn);
+      }
+
+  int updateColumnTranspose (CoinIndexedVector * regionSparse,
+                                 CoinIndexedVector * regionSparse2){
+      return this->factorization()->updateColumnTranspose(regionSparse, regionSparse2);
+      }
 
 	int customPrimal;
 	void useCustomPrimal(int);
@@ -132,8 +140,12 @@ public:
 	void vectorTimesB_1(CoinIndexedVector*);
     void transposeTimesSubsetAll(int number, long long int* which, double* pi, double* y);
     void transposeTimesSubset(int number, int* which, double* pi, double* y);
+    void transposeTimes(const ClpSimplex * model, double scalar,
+                                 const CoinIndexedVector * x,
+                                 CoinIndexedVector * y,
+                                 CoinIndexedVector * z);
 
-	IClpSimplex*	preSolve(IClpSimplex* si,
+    IClpSimplex*	preSolve(IClpSimplex* si,
                               double feasibilityTolerance=0.0,
                               bool keepIntegers=true,
                               int numberPasses=5,

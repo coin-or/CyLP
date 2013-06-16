@@ -1,4 +1,5 @@
 from DantzigPivot import DantzigPivot
+from DualDantzigPivot import DualDantzigPivot
 from PositiveEdgePivot import PositiveEdgePivot
 from PivotPythonBase import PivotPythonBase
 from DualPivotPythonBase import DualPivotPythonBase

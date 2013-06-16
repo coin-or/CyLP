@@ -47,14 +47,6 @@ cdef class CyClpPrimalColumnPivotBase:
         raise Exception('CyClpPrimalColumnPivotBase.pyx: saveWeights should ' \
                         'be implemented.')
 
-    cdef int DantzigDualUpdate(self, CppCoinIndexedVector * updates,
-                CppCoinIndexedVector * spareRow1,
-              CppCoinIndexedVector * spareRow2,
-              CppCoinIndexedVector * spareColumn1,
-              CppCoinIndexedVector * spareColumn2):
-        return self.CppSelf.DantzigDualUpdate(updates, spareRow1, spareRow2,
-                                              spareColumn1, spareColumn2)
-
     cdef CyClpSimplex.CppIClpSimplex* model(self):
         return self.CppSelf.model()
 

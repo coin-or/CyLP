@@ -36,8 +36,9 @@ class LIFOPivot(PivotPythonBase):
         self.banList = []
         self.priorityList = range(self.dim)
 
-    def pivotColumn(self):
+    def pivotColumn(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
         'Finds the variable with the best reduced cost and returns its index'
+        self.updateReducedCosts(updates, spareRow1, spareRow2, spareCol1, spareCol2)
         s = self.clpModel
         rc = s.reducedCosts
         dim = s.nCols + s.nRows
@@ -62,6 +63,9 @@ class LIFOPivot(PivotPythonBase):
                 return i
 
         return -1
+
+    def saveWeights(self, model, mode):
+        self.clpModel = model
 
     def isPivotAcceptable(self):
         '''

@@ -85,7 +85,8 @@ class WolfePivotPE(PivotPythonBase):
 
     # End of Positive-Edge-related attributes
 
-    def pivotColumn(self):
+    def pivotColumn(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
+        self.updateReducedCosts(updates, spareRow1, spareRow2, spareCol1, spareCol2)
         s = self.clpModel
 
         self.CompIter = True
@@ -203,6 +204,8 @@ class WolfePivotPE(PivotPythonBase):
 #        return -1
 #        return self.pivotColumnFirst()
 
+    def saveWeights(self, model, mode):
+        self.clpModel = model
 
     def isPivotAcceptable(self):
         #import pdb; pdb.set_trace()

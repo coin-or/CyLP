@@ -8,11 +8,22 @@ cdef class CyPivotPythonBase(CyClpPrimalColumnPivotBase):
         CyClpPrimalColumnPivotBase.__init__(self)
         self.pivotMethodObject = pivotMethodObject
 
-    cdef pivotColumn(self, CppCoinIndexedVector* v1,
-                     CppCoinIndexedVector* v2, CppCoinIndexedVector* v3,
-                     CppCoinIndexedVector* v4, CppCoinIndexedVector* v5):
-        self.DantzigDualUpdate(v1, v2, v3, v4, v5)
-        return self.pivotMethodObject.pivotColumn()
+    cdef pivotColumn(self, CppCoinIndexedVector* updates,
+                     CppCoinIndexedVector* spareRow1, CppCoinIndexedVector* spareRow2,
+                     CppCoinIndexedVector* spareCol1, CppCoinIndexedVector* spareCol2):
+        cyupdates = CyCoinIndexedVector()
+        cyupdates.setCppSelf(updates)
+        cyspareRow1 = CyCoinIndexedVector()
+        cyspareRow1.setCppSelf(spareRow1)
+        cyspareRow2 = CyCoinIndexedVector()
+        cyspareRow2.setCppSelf(spareRow2)
+        cyspareCol1 = CyCoinIndexedVector()
+        cyspareCol1.setCppSelf(spareCol1)
+        cyspareCol2 = CyCoinIndexedVector()
+        cyspareCol2.setCppSelf(spareCol2)
+        return self.pivotMethodObject.pivotColumn(cyupdates,
+                                    cyspareRow1, cyspareRow2,
+                                    cyspareCol1, cyspareCol2)
 
     cdef CyClpPrimalColumnPivot* clone(self, bint copyData):
         cdef CyClpPrimalColumnPivot* ret =  \
@@ -22,5 +33,9 @@ cdef class CyPivotPythonBase(CyClpPrimalColumnPivotBase):
                             <runClone_t>RunClone,
                             <runSaveWeights_t>RunSaveWeights)
         return ret
-    cdef void saveWeights(self, CyClpSimplex.CppIClpSimplex * model, int mode):
-        self.CppSelf.setModel(model)
+
+    cdef void saveWeights(self, CppIClpSimplex * model, int mode):
+        cymodel = CyClpSimplex()
+        cymodel.setCppSelf(model)
+        self.pivotMethodObject.saveWeights(cymodel, mode)
+

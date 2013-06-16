@@ -81,10 +81,11 @@ cdef class CyClpSimplex:
                                 'CyLPSimplex constructor. Got %s' %
                                 cyLPModel.__class__)
 
-    def __dealloc__(self):
-        del self.CppSelf
+    #def __dealloc__(self):
+    #    del self.CppSelf
 
     cdef setCppSelf(self,  CppIClpSimplex* s):
+        del self.CppSelf
         self.CppSelf = s
 
     #############################################
@@ -1439,6 +1440,14 @@ cdef class CyClpSimplex:
         '''
         self.CppSelf.getBInvCol(col, <double*>cl.data)
 
+    def transposeTimes(self, scalar, CyCoinIndexedVector x,
+                       CyCoinIndexedVector y, CyCoinIndexedVector z):
+        '''
+        Compute :math:`x * scalar * A + y` and store the result in ``z``.
+        '''
+        self.CppSelf.transposeTimes(self.CppSelf, scalar,
+                                    x.CppSelf, y.CppSelf, z.CppSelf)
+
     def transposeTimesSubset(self, number,
                              np.ndarray[np.int64_t, ndim=1] which,
                              np.ndarray[np.double_t, ndim=1] pi,
@@ -1585,6 +1594,10 @@ cdef class CyClpSimplex:
 
     def updateColumnFT(self, CyCoinIndexedVector spare, CyCoinIndexedVector updatedColumn):
         return self.CppSelf.updateColumnFT(spare.CppSelf, updatedColumn.CppSelf)
+
+    def updateColumnTranspose(self, CyCoinIndexedVector regionSparse1,
+                                    CyCoinIndexedVector regionSparse2):
+        return self.CppSelf.updateColumnTranspose(regionSparse1.CppSelf, regionSparse2.CppSelf)
 
     #############################################
     # Modeling

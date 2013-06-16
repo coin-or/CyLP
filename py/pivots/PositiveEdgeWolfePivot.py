@@ -14,10 +14,11 @@ class PositiveEdgeWolfePivot(PositiveEdgePivot):
         PositiveEdgePivot.__init__(self, clpModel, bucketSize, EPSILON)
         self.banList = []
 
-    def pivotColumnFirst(self):
+    def pivotColumnFirst(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
         '''Finds the first variable with an acceptable
         reduced costs searching in random buckets
         '''
+        self.updateReducedCosts(updates, spareRow1, spareRow2, spareCol1, spareCol2)
         s = self.clpModel
         rc = s.getReducedCosts()
         dim = s.getNumRows() + s.getNumCols()
@@ -127,6 +128,9 @@ class PositiveEdgeWolfePivot(PositiveEdgePivot):
             self.updateW()
 
         return bestVarInd
+
+    def saveWeights(self, model, mode):
+        self.clpModel = model
 
     def isPivotAcceptable(self):
         #TODO ComplementarityList can be defined in the current class

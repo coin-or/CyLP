@@ -44,12 +44,6 @@ cdef extern from "IClpPrimalColumnPivotBase.h":
                         CppCoinIndexedVector*,
                         CppCoinIndexedVector*)
 
-        int DantzigDualUpdate(CppCoinIndexedVector * updates,
-                CppCoinIndexedVector * spareRow1,
-              CppCoinIndexedVector * spareRow2,
-              CppCoinIndexedVector * spareColumn1,
-              CppCoinIndexedVector * spareColumn2)
-
         CyClpPrimalColumnPivot* clone(bint copyData)
         void saveWeights(CyClpSimplex.CppIClpSimplex * model,
                          int mode)
@@ -76,12 +70,6 @@ cdef class CyClpPrimalColumnPivotBase:
                         CppCoinIndexedVector* v3,
                         CppCoinIndexedVector* v4,
                         CppCoinIndexedVector* v5)
-
-    cdef int DantzigDualUpdate(self, CppCoinIndexedVector * updates,
-                CppCoinIndexedVector * spareRow1,
-              CppCoinIndexedVector * spareRow2,
-              CppCoinIndexedVector * spareColumn1,
-              CppCoinIndexedVector * spareColumn2)
 
     cdef CyClpPrimalColumnPivot * clone(self, bint copyData)
     cdef void saveWeights(self, CyClpSimplex.CppIClpSimplex * model,

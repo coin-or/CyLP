@@ -24,10 +24,10 @@ public:
   	runPivotColumn_t runPivotColumn;
 	runClone_t runClone;
 	runSaveWeights_t runSaveWeights;
-	
+
 	//IClpSimplex model_;
 
-  	CppClpPrimalColumnPivotBase(PyObject *obj, runPivotColumn_t , 
+  	CppClpPrimalColumnPivotBase(PyObject *obj, runPivotColumn_t ,
 							 runClone_t , runSaveWeights_t );
   	virtual ~CppClpPrimalColumnPivotBase();
 
@@ -41,12 +41,7 @@ public:
 						  CoinIndexedVector * spareColumn2);
 	void setModel(IClpSimplex* m);
 	IClpSimplex* model();
-	
-	int DantzigDualUpdate(CoinIndexedVector * updates,
-				CoinIndexedVector * spareRow1,
-			  CoinIndexedVector * spareRow2,
-			  CoinIndexedVector * spareColumn1,
-			  CoinIndexedVector * spareColumn2);
+
 };
 
 

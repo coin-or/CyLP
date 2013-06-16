@@ -4,6 +4,7 @@ As a part of ``CyLP.python.pivots`` it implements Dantzig's
 for testing purposes we implement one in Python.
 '''
 
+import sys
 import numpy as np
 from operator import itemgetter
 from random import shuffle
@@ -15,6 +16,8 @@ from DualPivotPythonBase import DualPivotPythonBase
 class DualDantzigPivot(DualPivotPythonBase):
     '''
     Dantzig's dual pivot rule implementation.
+
+    .. _custom-dual-pivot-usage:
 
     **Usage**
 
@@ -89,8 +92,9 @@ class DualDantzigPivot(DualPivotPythonBase):
             model.solution[basicVarInds[rowNumbers]] -= change
 
         changeObj = -np.dot(change, cost)
-        elements[:] = np.zeros(len(elements), dtype=np.double)
-        primalUpdate.nElements = 0
+        primalUpdate.clear()
+        #elements[:] = np.zeros(len(elements), dtype=np.double)
+        #primalUpdate.nElements = 0
         objectiveChange[0] += changeObj
 
         return changeObj
@@ -103,6 +107,17 @@ def getMpsExample():
     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
     return os.path.join(curpath, '../../input/p0033.mps')
 
+
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    print sys.argv
+    if len(sys.argv) == 1:
+        import doctest
+        doctest.testmod()
+    else:
+        from CyLP.cy import CyClpSimplex
+        from CyLP.py.pivots import DualDantzigPivot
+        s = CyClpSimplex()
+        s.readMps(sys.argv[1])  # Returns 0 if OK
+        pivot = DualDantzigPivot(s)
+        s.setDualPivotMethod(pivot)
+        s.dual()

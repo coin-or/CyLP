@@ -4,6 +4,7 @@ Classical Simplex pivot rule. Although it already exists in CLP,
 for testing purposes we implement one in Python.
 '''
 
+import sys
 import numpy as np
 from operator import itemgetter
 from random import shuffle
@@ -14,8 +15,6 @@ from PivotPythonBase import PivotPythonBase
 class DantzigPivot(PivotPythonBase):
     '''
     Dantzig's pivot rule implementation.
-
-    .. _custom-dual-pivot-usage:
 
     **Usage**
 
@@ -40,16 +39,21 @@ class DantzigPivot(PivotPythonBase):
         self.dim = clpModel.nRows + clpModel.nCols
         self.clpModel = clpModel
 
-    def pivotColumn(self):
-        return  self.pivotColumnStatusWhere()
-
-    def pivotColumnStatusWhere(self):
+    def pivotColumn(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
         'Finds the variable with the best reduced cost and returns its index'
         s = self.clpModel
-        rc = s.reducedCosts
 
+        # Update the reduced costs, for both the original and the slack variables
+        if updates.nElements:
+            s.updateColumnTranspose(spareRow2, updates)
+            s.transposeTimes(-1, updates, spareCol2, spareCol1)
+            s.reducedCosts[s.nVariables:][updates.indices] -= updates.elements[:updates.nElements]
+            s.reducedCosts[:s.nVariables][spareCol1.indices] -= spareCol1.elements[:spareCol1.nElements]
+        updates.clear()
+        spareCol1.clear()
+
+        rc = s.reducedCosts
         tol = s.dualTolerance
-        #tol = 0
         #incides of vars not fixed and not flagged
         #indicesToConsider = np.where((status & 7 != 1) & (status & 7 != 5) &
         #        (status & 64 == 0) & (((rc > tol) & (status & 7 == 2)) |
@@ -81,8 +85,11 @@ class DantzigPivot(PivotPythonBase):
             return  indicesToConsider[ind]
         return -1
 
+    def saveWeights(self, model, mode):
+        self.clpModel = model
+
     def isPivotAcceptable(self):
-        return 1
+        return True
 
 
 def getMpsExample():
@@ -90,3 +97,17 @@ def getMpsExample():
     import inspect
     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
     return os.path.join(curpath, '../../input/p0033.mps')
+
+
+if __name__ == "__main__":
+    if len(sys.argv) == 1:
+        import doctest
+        doctest.testmod()
+    else:
+        from CyLP.cy import CyClpSimplex
+        from CyLP.py.pivots import DantzigPivot
+        s = CyClpSimplex()
+        s.readMps(sys.argv[1])
+        pivot = DantzigPivot(s)
+        s.setPivotMethod(pivot)
+        s.primal()

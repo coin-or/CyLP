@@ -914,10 +914,23 @@ void IClpSimplex::vectorTimesB_1(CoinIndexedVector* vec){
     factorization_->updateColumnTranspose(tempRow_vector, vec);
 }
 
+
+
 void IClpSimplex::transposeTimesSubset(int number, int* which, double* pi, double* y){
     reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimesSubset(number,
                              which, pi, y, rowScale(), columnScale(), NULL);
 }
+
+
+void IClpSimplex::transposeTimes(const ClpSimplex * model, double scalar,
+                                 const CoinIndexedVector * x,
+                                 CoinIndexedVector * y,
+                                 CoinIndexedVector * z){
+    reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimes(
+                                model, scalar, x, y, z);
+}
+
+
 void IClpSimplex::transposeTimesSubsetAll(int number, long long int* which, double* pi, double* y){
     reinterpret_cast<IClpPackedMatrix*>(matrix_)->transposeTimesSubsetAll(this, number,
                              which, pi, y, rowScale(), columnScale(), NULL);

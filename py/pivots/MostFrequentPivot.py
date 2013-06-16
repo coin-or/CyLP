@@ -36,8 +36,9 @@ class MostFrequentPivot(PivotPythonBase):
         self.priorityList = range(self.dim)
         self.frequencies = np.zeros(self.dim)
 
-    def pivotColumn(self):
+    def pivotColumn(self, updates, spareRow1, spareRow2, spareCol1, spareCol2):
         'Finds the variable with the best reduced cost and returns its index'
+        self.updateReducedCosts(updates, spareRow1, spareRow2, spareCol1, spareCol2)
         s = self.clpModel
         rc = s.getReducedCosts()
         dim = s.nRows + s.nCols
@@ -75,6 +76,9 @@ class MostFrequentPivot(PivotPythonBase):
                 self.priorityList.insert(j, i)
                 return
         self.priorityList.append(i)
+
+    def saveWeights(self, model, mode):
+        self.clpModel = model
 
     def isPivotAcceptable(self):
         return True
