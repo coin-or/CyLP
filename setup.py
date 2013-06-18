@@ -8,8 +8,8 @@ import numpy
 #Specify whether to use Cython for installation
 USECYTHON = True
 
-cythonFilesDir = 'cy/'
-cppFilesDir = 'cpp/'
+cythonFilesDir = 'cy'
+cppFilesDir = 'cpp'
 
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
@@ -31,10 +31,10 @@ def get_libs(*dependencies):
 
 libs = get_libs('Clp', 'Cbc', 'Cgl', 'Osi', 'CoinUtils', 'CoinMp')
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib')]
-includeDirs = ['./cpp/', join('.', cythonFilesDir),
-                join(CoinDir, 'include/coin/'),
-                join(CoinDir, 'BuildTools/headers/'),
-                join(CoinDir, 'Clp/src/'), numpy.get_include(), '.']
+includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
+                join(CoinDir, 'include', 'coin'),
+                join(CoinDir, 'BuildTools', 'headers'),
+                join(CoinDir, 'Clp', 'src'), numpy.get_include(), '.']
 
 
 operatingSystem = sys.platform
