@@ -54,10 +54,6 @@ class DantzigPivot(PivotPythonBase):
 
         rc = s.reducedCosts
         tol = s.dualTolerance
-        #incides of vars not fixed and not flagged
-        #indicesToConsider = np.where((status & 7 != 1) & (status & 7 != 5) &
-        #        (status & 64 == 0) & (((rc > tol) & (status & 7 == 2)) |
-        #            ((rc < -tol) & (status & 7 == 3))) )[0]
 
         indicesToConsider = np.where(s.varNotFlagged & s.varNotFixed &
                                      s.varNotBasic &

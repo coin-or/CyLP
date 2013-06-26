@@ -93,8 +93,6 @@ class DualDantzigPivot(DualPivotPythonBase):
 
         changeObj = -np.dot(change, cost)
         primalUpdate.clear()
-        #elements[:] = np.zeros(len(elements), dtype=np.double)
-        #primalUpdate.nElements = 0
         objectiveChange[0] += changeObj
 
         return changeObj

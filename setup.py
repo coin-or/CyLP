@@ -93,6 +93,47 @@ ext_modules += [Extension('CyLP.cy.CyClpDualRowPivotBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
+ext_modules += [Extension('CyLP.cy.CyCglCutGeneratorBase',
+                          sources=[join(cppFilesDir,
+                                        'ICglCutGeneratorBase.cpp'),
+                          join(cythonFilesDir, 'CyCglCutGeneratorBase' +
+                               fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('CyLP.cy.CyOsiCuts',
+                          sources=[join(cythonFilesDir, 'CyOsiCuts' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('CyLP.cy.CyOsiSolverInterface',
+                          sources=[join(cythonFilesDir, 'CyOsiSolverInterface' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('CyLP.cy.CyCglTreeInfo',
+                          sources=[join(cythonFilesDir, 'CyCglTreeInfo' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyCoinIndexedVector',
                           sources=[join(cppFilesDir, 'ICoinIndexedVector.cpp'),
