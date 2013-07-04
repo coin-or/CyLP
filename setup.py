@@ -253,6 +253,6 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
 
 
 setup(name='CyLP',
-      packages=['cy'],
+      packages=['CyLP.cy'],
       cmdclass=cmdclass,
       ext_modules=ext_modules)
