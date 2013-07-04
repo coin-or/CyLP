@@ -25,7 +25,7 @@ PyObject* ICoinPackedMatrix::np_getVectorStarts(){
 	return Arr;
 }
 
-ICoinPackedMatrix::ICoinPackedMatrix():CoinPackedMatrix::CoinPackedMatrix(){
+ICoinPackedMatrix::ICoinPackedMatrix(){
 
 }
 
