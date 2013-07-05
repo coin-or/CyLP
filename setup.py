@@ -26,9 +26,12 @@ def get_libs():
         link_line = f.read()
         libs = [flag[:-4] for flag in link_line.split() if 
                 flag.endswith('.lib')]
+        libs += [flag[2:] for flag in link_line.split() if
+                 flag.startswith('-l')]
     return libs
 
 libs = get_libs()
+print libs
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
            join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
