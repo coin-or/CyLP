@@ -8,8 +8,8 @@ import numpy
 #Specify whether to use Cython for installation
 USECYTHON = True
 
-cythonFilesDir = 'cy'
-cppFilesDir = 'cpp'
+cythonFilesDir = join('CyLP', 'cy')
+cppFilesDir = join('CyLP', 'cpp')
 
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
@@ -24,11 +24,21 @@ def get_libs():
     with open(join(CoinDir, 'share', 'coin',
                    'doc', 'Cbc', 'cbc_addlibs.txt')) as f:
         link_line = f.read()
-        libs = [flag[:-4] for flag in link_line.split() if 
-                flag.endswith('.lib')]
-        libs += [flag[2:] for flag in link_line.split() if
-                 flag.startswith('-l')]
+        if operatingSystem == 'windows':
+            libs = [flag[:-4] for flag in link_line.split() if 
+                    flag.endswith('.lib')]
+        else:
+            libs = [flag[2:] for flag in link_line.split() if
+                    flag.startswith('-l')]
     return libs
+
+operatingSystem = sys.platform
+if 'linux' in operatingSystem:
+    operatingSystem = 'linux'
+elif 'darwin' in operatingSystem:
+    operatingSystem = 'mac'
+elif 'win' in operatingSystem:
+    operatingSystem = 'windows'
 
 libs = get_libs()
 print libs
@@ -37,12 +47,6 @@ libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
                 join(CoinDir, 'include', 'coin'),
                 numpy.get_include(), '.']
-
-operatingSystem = sys.platform
-if 'linux' in operatingSystem:
-    operatingSystem = 'linux'
-elif 'darwin' in operatingSystem:
-    operatingSystem = 'mac'
 
 cmdclass = {}
 if USECYTHON:
@@ -256,6 +260,6 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
 
 
 setup(name='CyLP',
-      packages=['CyLP.cy'],
+      packages=['CyLP.cy', 'CyLP.py'],
       cmdclass=cmdclass,
       ext_modules=ext_modules)
