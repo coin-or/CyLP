@@ -17,33 +17,29 @@ except:
     raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
                     'to the location of the COIN installation')
 
-def get_libs(*dependencies):
+def get_libs():
     '''
     Return a list of distinct library names used by ``dependencies``.
     '''
-    libs = set()
-    for dependency in dependencies:
-        with open(join(CoinDir, 'share', 'coin',
-                  'doc', dependency, dependency.lower() + '_addlibs.txt')) as f:
-            link_line = f.read()
-            libs.update([flag.strip() for flag in link_line.split('-l')][1:])
-    return list(libs)
+    with open(join(CoinDir, 'share', 'coin',
+                   'doc', 'Cbc', 'cbc_addlibs.txt')) as f:
+        link_line = f.read()
+        libs = [flag[:-4] for flag in link_line.split() if 
+                flag.endswith('.lib')]
+    return libs
 
-libs = get_libs('Clp', 'Cbc', 'Cgl', 'Osi', 'CoinUtils', 'CoinMp')
-libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib')]
+libs = get_libs()
+libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
+           join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
                 join(CoinDir, 'include', 'coin'),
-                join(CoinDir, 'BuildTools', 'headers'),
-                join(CoinDir, 'Clp', 'src'), numpy.get_include(), '.']
-
+                numpy.get_include(), '.']
 
 operatingSystem = sys.platform
 if 'linux' in operatingSystem:
     operatingSystem = 'linux'
 elif 'darwin' in operatingSystem:
     operatingSystem = 'mac'
-#WINDOWS??
-
 
 cmdclass = {}
 if USECYTHON:
@@ -61,10 +57,9 @@ else:
 if operatingSystem == 'mac':
     extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
 elif operatingSystem == 'linux':
-    extra_link_args = ['-llapack', '-lblas', '-lrt']
+    extra_link_args = ['-lrt']
 else:
-    #WINDOWS?
-    extra_link_args = ['-llapack', '-lblas']
+    extra_link_args = []
 
 extra_compile_args = []
 ext_modules = []
