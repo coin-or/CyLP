@@ -25,7 +25,7 @@ def get_libs():
                    'doc', 'Cbc', 'cbc_addlibs.txt')) as f:
         link_line = f.read()
         if operatingSystem == 'windows':
-            libs = [flag[:-4] for flag in link_line.split() if 
+            libs = [flag[:-4] for flag in link_line.split() if
                     flag.endswith('.lib')]
         else:
             libs = [flag[2:] for flag in link_line.split() if
@@ -41,7 +41,6 @@ elif 'win' in operatingSystem:
     operatingSystem = 'windows'
 
 libs = get_libs()
-print libs
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
            join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
