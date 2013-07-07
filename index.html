@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>CyLP Documentation &mdash; CyLP 1.0 documentation</title>
+    <title>CyLP Documentation &mdash; CyLP 0.1 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.0',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="CyLP 1.0 documentation" href="#" />
+    <link rel="top" title="CyLP 0.1 documentation" href="#" />
     <link rel="next" title="CyLP.cy" href="modules/cy.html" /> 
   </head>
   <body>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="modules/cy.html" title="CyLP.cy"
              accesskey="N">next</a> |</li>
-        <li><a href="#">CyLP 1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">CyLP 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -86,80 +86,6 @@ it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca.</p>
 <ul class="simple">
 </ul>
 </div>
-</div>
-<div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<dl class="docutils">
-<dt>STEP 1:</dt>
-<dd><p class="first">Install CoinMP. You can get the source at
-<a class="reference external" href="http://www.coin-or.org/download/source/CoinMP/">http://www.coin-or.org/download/source/CoinMP/</a>. CyLP can be compiled against
-CoinMP-1.6.0 or CoinMP-1.4.0 (earlier versions might work too). If you
-choose CoinMP 1.6.0, to compile CyLP you will need a LAPACK
-implementation and BZIP2 installed. If you are on a MAC or a linux
-system you might already have both. CoinMP-1.4.0 does not have this
-requirement.
-To compile CoinMP&#8217;s source you may need to pass &#8216;g95&#8217; to configure:</p>
-<div class="last highlight-python"><pre>$ ./configure F77=/path/to/g95
-$ make
-$ make install</pre>
-</div>
-</dd>
-<dt>STEP 2:</dt>
-<dd>Edit setup_SAMPLE.py and set CoinDir to the location of the top directory of
-CoinMP. Rename setup_SAMPLE.py to setup.py.</dd>
-<dt>STEP 3:</dt>
-<dd>Install CyLP. Go to CyLP&#8217;s root directory (which MUST be called CyLP) and
-run &#8216;make&#8217;.</dd>
-<dt>STEP 4:</dt>
-<dd><p class="first">Update you PYTHONPATH environment variable to contain the
-parent directory of CyLP. For example, if the path to CyLP
-installation is /Users/Mehdi/CyLP, then &#8216;/Users/Mehdi&#8217; must
-be in your PYTHONPATH. To this end, you may run:</p>
-<div class="last highlight-python"><pre>$ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"</pre>
-</div>
-</dd>
-<dt>STEP 5 (LINUX):</dt>
-<dd><p class="first">In linux you might also need to add COIN&#8217;s lib directory to
-LD_LIBRARY_PATH as follows:</p>
-<div class="last highlight-python"><pre>$ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"</pre>
-</div>
-</dd>
-</dl>
-<p>Now you can use CyLP in your python code. For example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="s">&#39;../input/netlib/adlittle.mps&#39;</span><span class="p">)</span>
-<span class="go">0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">initialSolve</span><span class="p">()</span>
-<span class="go">&#39;optimal&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">objectiveValue</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="go">225494.963</span>
-</pre></div>
-</div>
-<p>Or simply go to CyLP and run:</p>
-<div class="highlight-python"><pre>$ python -m unittest discover</pre>
-</div>
-<p>to run all CyLP unit tests.</p>
-</div>
-<div class="section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>To run the primal Simplex method on a problem in MPS format, use:</p>
-<div class="highlight-python"><pre>$ python py/PySolve.py input/netlib/25fv47.mps d</pre>
-</div>
-<p>or:</p>
-<div class="highlight-python"><pre>$ python cy/CySolve.py input/netlib/25fv47.mps d</pre>
-</div>
-<p>Use <cite>p</cite> instead of the trailing <cite>d</cite> to use the positive edge pivot rule instead of Dantzig&#8217;s canonical pivot rule.</p>
-</div>
-<div class="section" id="documentation">
-<h1>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h1>
-<p>You may access CyLP&#8217;s documentation:</p>
-<blockquote>
-<div><ol class="arabic simple">
-<li><em>Online</em> : <a class="reference external" href="http://mpy.github.com/CyLP">http://mpy.github.com/CyLP</a>.</li>
-<li><em>Offline</em> : To install CyLP&#8217;s documentation in your repository, you need Sphinx (<a class="reference external" href="http://sphinx.pocoo.org/">http://sphinx.pocoo.org/</a>). You can generate the documentation by going to CyLP/doc and run <tt class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></tt> or <tt class="docutils literal"><span class="pre">make</span> <span class="pre">latex</span></tt> and access the documentation under CyLP/doc/build. You can also run <tt class="docutils literal"><span class="pre">make</span> <span class="pre">doctest</span></tt> to perform all the doctest.</li>
-</ol>
-</div></blockquote>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -221,9 +147,6 @@ LD_LIBRARY_PATH as follows:</p>
 <li><a class="reference internal" href="#">CyLP Documentation</a><ul>
 </ul>
 </li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#usage">Usage</a></li>
-<li><a class="reference internal" href="#documentation">Documentation</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 <li><a class="reference internal" href="#modules">Modules</a><ul>
 </ul>
@@ -267,7 +190,7 @@ LD_LIBRARY_PATH as follows:</p>
         <li class="right" >
           <a href="modules/cy.html" title="CyLP.cy"
              >next</a> |</li>
-        <li><a href="#">CyLP 1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">CyLP 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

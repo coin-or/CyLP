@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>PivotPythonBase &mdash; CyLP 1.0 documentation</title>
+    <title>PivotPythonBase &mdash; CyLP 0.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.0',
+        VERSION:     '0.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="CyLP 1.0 documentation" href="../index.html" />
+    <link rel="top" title="CyLP 0.1 documentation" href="../index.html" />
     <link rel="up" title="pivots" href="pivots.html" />
     <link rel="next" title="DantzigPivot" href="DantzigPivot.html" />
     <link rel="prev" title="pivots" href="pivots.html" /> 
@@ -47,7 +47,7 @@
         <li class="right" >
           <a href="pivots.html" title="pivots"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
           <li><a href="py.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li>
           <li><a href="pivots.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">pivots</span></tt></a> &raquo;</li> 
       </ul>
@@ -76,9 +76,15 @@ if the pivot is not acceptable for your method.</p>
 <dl class="method">
 <dt id="CyLP.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn">
 <tt class="descname">pivotColumn</tt><big>(</big><big>)</big><a class="reference internal" href="../_modules/CyLP/py/pivots/PivotPythonBase.html#PivotPythonBase.pivotColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Every subclass of <tt class="docutils literal"><span class="pre">PivotPythonBase</span></tt>, i.e. every pivot rule, must 
+<dd><p>Every subclass of <tt class="docutils literal"><span class="pre">PivotPythonBase</span></tt>, i.e. every pivot rule, must
 implement this method.</p>
 <p>Return the index of the entering variable, an integer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="CyLP.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts">
+<tt class="descname">updateReducedCosts</tt><big>(</big><em>updates</em>, <em>spareRow1</em>, <em>spareRow2</em>, <em>spareCol1</em>, <em>spareCol2</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/pivots/PivotPythonBase.html#PivotPythonBase.updateReducedCosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the reduced costs as its done in CLP&#8217;s Dantzig rule.</p>
 </dd></dl>
 
 </dd></dl>
@@ -134,7 +140,7 @@ implement this method.</p>
         <li class="right" >
           <a href="pivots.html" title="pivots"
              >previous</a> |</li>
-        <li><a href="../index.html">CyLP 1.0 documentation</a> &raquo;</li>
+        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
           <li><a href="py.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li>
           <li><a href="pivots.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">pivots</span></tt></a> &raquo;</li> 
       </ul>
