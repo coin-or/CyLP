@@ -6,8 +6,7 @@ STEP 1:
     http://www.coin-or.org/download/source/CoinMP/. CyLP can be compiled against
     CoinMP-1.6.0. To compile CyLP you will need a LAPACK
     implementation and BZIP2 installed. If you are on a MAC or a linux
-    system you might already have both. CoinMP-1.4.0 does not have this
-    requirement.
+    system you might already have both.
     To compile CoinMP's source you may need to pass 'g95' to configure::
 
         $ ./configure F77=/path/to/g95
