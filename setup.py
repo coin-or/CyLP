@@ -5,6 +5,14 @@ from distutils.core import setup
 from distutils.extension import Extension
 import numpy
 
+
+PROJECT = 'CyLP'
+VERSION = '0.1'
+URL = 'https://github.com/mpy/CyLP'
+AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
+DESC = 'A Python interface for CLP, CBC, and CGL'
+
+
 #Specify whether to use Cython for installation
 USECYTHON = True
 
@@ -258,7 +266,22 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
                           extra_link_args=extra_link_args), ]
 
 
+with open('README.rst') as f_README, \
+     open('AUTHORS') as f_AUTHORS, \
+     open('LICENSE') as f_LICENSE:
+     s_README = f_README.read()
+     s_AUTHORS = f_AUTHORS.read()
+     s_LICENSE = f_LICENSE.read()
+
 setup(name='CyLP',
-      packages=['CyLP.cy', 'CyLP.py'],
+      version=VERSION,
+      description=DESC,
+      long_description=s_README,
+      author=s_AUTHORS,
+      author_email=AUTHOR_EMAIL,
+      url=URL,
+      license=s_LICENSE,
+      packages=['CyLP', 'CyLP.cy', 'CyLP.py', 'CyLP.py.pivots', 'CyLP.py.modeling',
+                'CyLP.py.utils', 'CyLP.py.mip','CyLP.py.QP'],
       cmdclass=cmdclass,
       ext_modules=ext_modules)
