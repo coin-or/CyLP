@@ -26,7 +26,7 @@ PyObject* ICoinPackedMatrix::np_getVectorStarts(){
 }
 
 ICoinPackedMatrix::ICoinPackedMatrix(){
-
+        CoinPackedMatrix::CoinPackedMatrix();
 }
 
 ICoinPackedMatrix::ICoinPackedMatrix(const bool colordered,
