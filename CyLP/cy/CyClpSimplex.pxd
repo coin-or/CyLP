@@ -264,6 +264,7 @@ cdef class CyClpSimplex:
     cdef object varSelCriteria
     cdef CyCoinModel coinModel
     cdef object cyLPModel
+    cdef CyCbcModel cbcModel
     cdef object Hessian
 
     #cdef void prepareForCython(self, int useCustomPrimal)

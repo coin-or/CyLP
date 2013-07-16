@@ -93,7 +93,7 @@ ext_modules += [Extension('CyLP.cy.CyClpPrimalColumnPivotBase',
 ext_modules += [Extension('CyLP.cy.CyClpDualRowPivotBase',
                           sources=[join(cppFilesDir,
                                         'IClpDualRowPivotBase.cpp'),
-                          join(cythonFilesDir, 'CyClpDualRowPivotBase' +
+                             join(cythonFilesDir, 'CyClpDualRowPivotBase' +
                                fileext)],
                           language='c++',
                           include_dirs=includeDirs,
@@ -105,7 +105,7 @@ ext_modules += [Extension('CyLP.cy.CyClpDualRowPivotBase',
 ext_modules += [Extension('CyLP.cy.CyCglCutGeneratorBase',
                           sources=[join(cppFilesDir,
                                         'ICglCutGeneratorBase.cpp'),
-                          join(cythonFilesDir, 'CyCglCutGeneratorBase' +
+                            join(cythonFilesDir, 'CyCglCutGeneratorBase' +
                                fileext)],
                           language='c++',
                           include_dirs=includeDirs,
@@ -115,8 +115,8 @@ ext_modules += [Extension('CyLP.cy.CyCglCutGeneratorBase',
                           extra_link_args=extra_link_args), ]
 
 ext_modules += [Extension('CyLP.cy.CyOsiCuts',
-                          sources=[join(cythonFilesDir, 'CyOsiCuts' +
-                                        fileext)],
+                          sources=[join(cppFilesDir, 'IOsiCuts.cpp'),
+                            join(cythonFilesDir, 'CyOsiCuts' + fileext)],
                           language='c++',
                           include_dirs=includeDirs,
                           library_dirs=libDirs,
@@ -298,6 +298,18 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
                           sources=[join(cppFilesDir,
                                          'IClpDualRowPivotBase.cpp'),
                                    join(cythonFilesDir, 'CyDualPivotPythonBase' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('CyLP.cy.CyCutGeneratorPythonBase',
+                          sources=[join(cppFilesDir,
+                                         'IOsiCuts.cpp'),
+                                    join(cythonFilesDir, 'CyCutGeneratorPythonBase' +
                                         fileext)],
                           language='c++',
                           include_dirs=includeDirs,

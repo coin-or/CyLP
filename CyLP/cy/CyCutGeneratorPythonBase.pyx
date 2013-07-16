@@ -1,45 +1,42 @@
 # cython: embedsignature=True
 
 
-cimport CyCglCutGeneratorBase
+cimport CyCutGeneratorPythonBase
 
-cdef class CyCglCutGeneratorBase(CyCglCutGeneratorBase):
-    def __init__(self, pivotMethodObject):
+
+cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
+    def __init__(self, cutGeneratorObject):
         CyCglCutGeneratorBase.__init__(self)
-        self.pivotMethodObject = pivotMethodObject
+        self.cutGeneratorObject = cutGeneratorObject
+        print id(self), 'self.cutGeneratorObject set'
+        print self.cutGeneratorObject.generateCuts(1, 2, 3)
+        print 'tested'
 
-#    cdef pivotColumn(self, CppCoinIndexedVector* updates,
-#                     CppCoinIndexedVector* spareRow1, CppCoinIndexedVector* spareRow2,
-#                     CppCoinIndexedVector* spareCol1, CppCoinIndexedVector* spareCol2):
-#        cyupdates = CyCoinIndexedVector()
-#        cyupdates.setCppSelf(updates)
-#        cyspareRow1 = CyCoinIndexedVector()
-#        cyspareRow1.setCppSelf(spareRow1)
-#        cyspareRow2 = CyCoinIndexedVector()
-#        cyspareRow2.setCppSelf(spareRow2)
-#        cyspareCol1 = CyCoinIndexedVector()
-#        cyspareCol1.setCppSelf(spareCol1)
-#        cyspareCol2 = CyCoinIndexedVector()
-#        cyspareCol2.setCppSelf(spareCol2)
-#        return self.pivotMethodObject.pivotColumn(cyupdates,
-#                                    cyspareRow1, cyspareRow2,
-#                                    cyspareCol1, cyspareCol2)
-#
 
     cdef generateCuts(self, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):
+        print 'cy too'
         cysi =  CyOsiSolverInterface()
         cysi.setCppSelf(si)
         cycs = CyOsiCuts()
         cycs.setCppSelf(cs)
         cyinfo = CyCglTreeInfo()
-        cyinfo.setCppSelf(info)
-        self.cutGeneratorObject.generateCuts(cysi, cycs, cyinfo)
+        cyinfo.setCppSelf(&info)
+        print 'going to python'
 
-    cdef CyCglCutGenerator* clone(self):
-        cdef CyCglCutGenerator* ret =  \
-                <CyCglCutGenerator*> new CppCglCutGeneratorBase(
+        print 'in python: ', id(self)
+        cuts = self.cutGeneratorObject.generateCuts(cysi, cycs, cyinfo)
+        print 'python returned'
+        for cut in cuts:
+            if cut.isRange:
+                cycs.addColumnCut(cut)
+            else:
+                cycs.addRowCut(cut)
+
+    cdef CppCglCutGenerator* clone(self):
+        cdef CppCglCutGenerator* ret =  \
+                <CppCglCutGenerator*> new CppCglCutGeneratorBase(
                             <cpy_ref.PyObject*>self,
                             <runGenerateCuts_t>RunGenerateCuts,
                             <runCglClone_t>RunCglClone)

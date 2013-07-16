@@ -1,8 +1,12 @@
-
-cdef extern from "OsiCuts.hpp":
-    cdef cppclass CppOsiCuts "OsiCuts":
-        pass
-    CppOsiCuts *new_CppOsiCuts "new OsiCuts" ()
+cimport numpy as np
+import numpy as np
+cdef extern from "IOsiCuts.hpp":
+    cdef cppclass CppOsiCuts "CppOsiCuts":
+        void addColumnCut(int size, int* lowerBoundInds, double* lowerBoundElements,
+                        int* upperBoundInds, double* upperBoundElements)
+        void addRowCut(int size, int* indices, double* elements,
+                   double lowerBound, double upperBound)
+    CppOsiCuts *new_CppOsiCuts "new CppOsiCuts" ()
 
 cdef class CyOsiCuts:
     cdef CppOsiCuts* CppSelf

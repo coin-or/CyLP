@@ -2,6 +2,7 @@ cimport numpy as np
 from cpython.ref cimport PyObject
 from CyLP.cy.CyCgl cimport CyCglCutGenerator, CppCglCutGenerator
 from CyLP.cy.CyCbcNode cimport CyCbcNode, CppICbcNode
+from CyLP.cy.CyOsiSolverInterface cimport CppOsiSolverInterface, CyOsiSolverInterface
 
 
 cdef extern from "CbcCompareUser.hpp":
@@ -61,6 +62,8 @@ cdef extern from "ICbcModel.hpp":
 
         void setLogLevel(int value)
         int logLevel()
+
+        CppOsiSolverInterface* solver()
 
 cdef class CyCbcModel:
     cdef CppICbcModel* CppSelf

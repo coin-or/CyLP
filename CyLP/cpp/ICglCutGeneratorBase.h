@@ -28,6 +28,8 @@ public:
   	CppCglCutGeneratorBase(PyObject *obj, runGenerateCuts_t ,
 							 runCglClone_t );
   	virtual ~CppCglCutGeneratorBase();
+    CppCglCutGeneratorBase(const CglCutGenerator & source);
+    CppCglCutGeneratorBase();
 
 	virtual CglCutGenerator * clone() const;
 

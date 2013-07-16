@@ -50,7 +50,8 @@
     >>> s.primalVariableSolution['y']
     array([ 0.,  1.])
 
-    **Usage (single dimension, using CyLPModel directly, depending on size could be faster than the indirect approach)**
+    **Usage (single dimension, using CyLPModel directly, depending on the
+      size could be faster than the indirect approach)**
 
     >>> import numpy as np
     >>> from CyLP.cy import CyClpSimplex
@@ -1031,7 +1032,7 @@ class CyLPModel(object):
 
     def makeMatrices(self):
         '''
-        Makes coef matrix and rhs vector from CyLPConastraints
+        Makes coef matrix and rhs vector from CyLPConstraints
         in self.constraints
         '''
         #if len(self.constraints) == 0:

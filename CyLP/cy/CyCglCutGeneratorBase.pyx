@@ -1,4 +1,3 @@
-# cython: profile=True
 # cython: embedsignature=True
 
 cimport CyCglCutGeneratorBase
@@ -7,6 +6,7 @@ from CyLP.cy.CyCglCutGeneratorBase import CyCglCutGeneratorBase
 cdef void RunGenerateCuts(void *ptr, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):
+    print 'cython Base ...'
     (<CyCglCutGeneratorBase>(ptr)).generateCuts(si, cs, info)
 
 cdef CppCglCutGenerator* RunCglClone(void *ptr):
@@ -23,7 +23,7 @@ cdef class CyCglCutGeneratorBase:
     cdef generateCuts(self, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):
-        raise Exception('CyCglCutGenerator.pyx: generateCuts should' \
+        raise Exception('CyCglCutGenerator.pyx: generateCuts must' \
                         ' be implemented.')
 
     cdef CppCglCutGenerator* clone(self):

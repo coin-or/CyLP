@@ -3,6 +3,7 @@
 from itertools import izip, product
 from CyLP.py.mip import NodeCompareBase
 from CyLP.py.modeling.CyLPModel import CyLPSolution
+from CyLP.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
 from libcpp cimport bool
 
 
@@ -107,6 +108,20 @@ cdef class CyCbcModel:
                                     infeasible, howOftenInSub, whatDepth,
                                     whatDepthInSub)
 
+    def addPythonCutGenerator(self, pythonCutGeneratorObject,
+                        howOften=1, name="", normal=True, atSolution=False,
+                        infeasible=False, howOftenInSub=-100, whatDepth=-1,
+                        whatDepthInSub=-1):
+        cdef CyCutGeneratorPythonBase generator = \
+                            CyCutGeneratorPythonBase(pythonCutGeneratorObject)
+        #self.cyPivot = p
+        #p.cyModel = self
+        print 'id after constructor: ', id(generator)
+        self.CppSelf.addCutGenerator(<CppCglCutGenerator*>generator.CppSelf,
+                                    howOften, name, normal, atSolution,
+                                    infeasible, howOftenInSub, whatDepth,
+                                    whatDepthInSub)
+
     def branchAndBound(self, doStatistics=0):
         self.CppSelf.branchAndBound(doStatistics)
         return self.status
@@ -139,6 +154,12 @@ cdef class CyCbcModel:
 
     def isRelaxationAbondoned(self):
         return self.CppSelf.isInitialSolveAbandoned()
+
+    property osiSolverInteface:
+        def __get__(self):
+            cdef CyOsiSolverInterface osi = CyOsiSolverInterface()
+            osi.setCppSelf(self.CppSelf.solver())
+            return osi
 
     property primalVariableSolution:
         def __get__(self):

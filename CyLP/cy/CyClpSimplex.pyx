@@ -1686,7 +1686,7 @@ cdef class CyClpSimplex:
         used to add cuts, run B&B and ...
         '''
         cdef CppICbcModel* model = self.CppSelf.getICbcModel()
-        cm =  CyCbcModel()
+        self.cbcModel = cm =  CyCbcModel()
         cm.setCppSelf(model)
         cm.setClpModel(self)
         if self.cyLPModel:
