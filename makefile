@@ -1,5 +1,5 @@
-buildCommand = python setup.py build_ext --build-lib=../ --build-temp=cy/temp
-cleanCommand = rm cy/*.so; rm -rf cy/temp
+buildCommand = python setup.py build_ext --build-lib=./ --build-temp=CyLP/cy/temp
+cleanCommand = rm CyLP/cy/*.so; rm -rf CyLP/cy/temp
 
 
 all: #pivot
@@ -10,7 +10,7 @@ clean:
 
 cleanall:
 		$(cleanCommand)
-		rm cy/Cy*.cpp  # So rarely necessary
+		rm CyLP/cy/Cy*.cpp  # So rarely necessary
 
 re:
 		$(cleanCommand)

@@ -5,11 +5,19 @@ from distutils.core import setup
 from distutils.extension import Extension
 import numpy
 
+
+PROJECT = 'CyLP'
+VERSION = '0.1'
+URL = 'https://github.com/mpy/CyLP'
+AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
+DESC = 'A Python interface for CLP, CBC, and CGL'
+
+
 #Specify whether to use Cython for installation
 USECYTHON = True
 
-cythonFilesDir = 'cy'
-cppFilesDir = 'cpp'
+cythonFilesDir = join('CyLP', 'cy')
+cppFilesDir = join('CyLP', 'cpp')
 
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
@@ -17,33 +25,35 @@ except:
     raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
                     'to the location of the COIN installation')
 
-def get_libs(*dependencies):
+def get_libs():
     '''
     Return a list of distinct library names used by ``dependencies``.
     '''
-    libs = set()
-    for dependency in dependencies:
-        with open(join(CoinDir, 'share', 'coin',
-                  'doc', dependency, dependency.lower() + '_addlibs.txt')) as f:
-            link_line = f.read()
-            libs.update([flag.strip() for flag in link_line.split('-l')][1:])
-    return list(libs)
-
-libs = get_libs('Clp', 'Cbc', 'Cgl', 'Osi', 'CoinUtils', 'CoinMp')
-libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib')]
-includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
-                join(CoinDir, 'include', 'coin'),
-                join(CoinDir, 'BuildTools', 'headers'),
-                join(CoinDir, 'Clp', 'src'), numpy.get_include(), '.']
-
+    with open(join(CoinDir, 'share', 'coin',
+                   'doc', 'Cbc', 'cbc_addlibs.txt')) as f:
+        link_line = f.read()
+        if operatingSystem == 'windows':
+            libs = [flag[:-4] for flag in link_line.split() if
+                    flag.endswith('.lib')]
+        else:
+            libs = [flag[2:] for flag in link_line.split() if
+                    flag.startswith('-l')]
+    return libs
 
 operatingSystem = sys.platform
 if 'linux' in operatingSystem:
     operatingSystem = 'linux'
 elif 'darwin' in operatingSystem:
     operatingSystem = 'mac'
-#WINDOWS??
+elif 'win' in operatingSystem:
+    operatingSystem = 'windows'
 
+libs = get_libs()
+libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
+           join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
+includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
+                join(CoinDir, 'include', 'coin'),
+                numpy.get_include(), '.']
 
 cmdclass = {}
 if USECYTHON:
@@ -61,10 +71,9 @@ else:
 if operatingSystem == 'mac':
     extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
 elif operatingSystem == 'linux':
-    extra_link_args = ['-llapack', '-lblas', '-lrt']
+    extra_link_args = ['-lrt']
 else:
-    #WINDOWS?
-    extra_link_args = ['-llapack', '-lblas']
+    extra_link_args = []
 
 extra_compile_args = []
 ext_modules = []
@@ -298,7 +307,22 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
                           extra_link_args=extra_link_args), ]
 
 
+with open('README.rst') as f_README, \
+     open('AUTHORS') as f_AUTHORS, \
+     open('LICENSE') as f_LICENSE:
+     s_README = f_README.read()
+     s_AUTHORS = f_AUTHORS.read()
+     s_LICENSE = f_LICENSE.read()
+
 setup(name='CyLP',
-      packages=['CyLP.cy'],
+      version=VERSION,
+      description=DESC,
+      long_description=s_README,
+      author=s_AUTHORS,
+      author_email=AUTHOR_EMAIL,
+      url=URL,
+      license=s_LICENSE,
+      packages=['CyLP', 'CyLP.cy', 'CyLP.py', 'CyLP.py.pivots', 'CyLP.py.modeling',
+                'CyLP.py.utils', 'CyLP.py.mip','CyLP.py.QP'],
       cmdclass=cmdclass,
       ext_modules=ext_modules)

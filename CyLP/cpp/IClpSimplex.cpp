@@ -636,9 +636,9 @@ void IClpSimplex::getBasisStatus(int* cstat, int* rstat){
 }
 
 IClpSimplex::IClpSimplex (ClpSimplex * wholeModel,
-        int numberColumns, const int * whichColumns):
-    ClpSimplex::ClpSimplex(wholeModel, numberColumns, whichColumns)
+        int numberColumns, const int * whichColumns)
 {
+    ClpSimplex::ClpSimplex(wholeModel, numberColumns, whichColumns);
     std::cout << "Unfinished constructor called.\n";
     _import_array();
     tempArrayExists = false;
@@ -884,7 +884,7 @@ void IClpSimplex::extractSenseRhsRange(double* rhs_)
 void IClpSimplex::convertBoundToSense(const double lower, const double upper,
         double& right)
 {
-    double inf = pow(10, 16);
+   double inf = pow(double(10), 16);
     if (lower > -inf) {
         if (upper < inf) {
             right = upper;

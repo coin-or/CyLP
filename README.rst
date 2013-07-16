@@ -6,8 +6,7 @@ STEP 1:
     http://www.coin-or.org/download/source/CoinMP/. CyLP can be compiled against
     CoinMP-1.6.0. To compile CyLP you will need a LAPACK
     implementation and BZIP2 installed. If you are on a MAC or a linux
-    system you might already have both. CoinMP-1.4.0 does not have this
-    requirement.
+    system you might already have both.
     To compile CoinMP's source you may need to pass 'g95' to configure::
 
         $ ./configure F77=/path/to/g95
@@ -24,18 +23,11 @@ STEP 2:
     it persistent.
 
 STEP 3:
-    Install CyLP. Go to CyLP's root directory (which MUST be called CyLP) and
-    run 'make'.
+    Install CyLP. Go to CyLP's root directory and run::
 
-STEP 4:
-    Update you PYTHONPATH environment variable to contain the
-    parent directory of CyLP. For example, if the path to CyLP
-    installation is /Users/Mehdi/CyLP, then '/Users/Mehdi' must
-    be in your PYTHONPATH. To this end, you may run::
+        $ python setup.py install
 
-        $ export PYTHONPATH="/Users/Mehdi/:$PYTHONPATH"
-
-STEP 5 (LINUX):
+STEP 4 (LINUX):
      In linux you might also need to add COIN's lib directory to
      LD_LIBRARY_PATH as follows::
 
@@ -61,15 +53,15 @@ to run all CyLP unit tests.
 
 
 Usage
-=====
+=======
 
 To run the primal Simplex method on a problem in MPS format, use::
 
-    $ python py/PySolve.py input/netlib/25fv47.mps d
+    $ python CyLP/py/PySolve.py input/netlib/25fv47.mps d
 
 or::
 
-    $ python cy/CySolve.py input/netlib/25fv47.mps d
+    $ python CyLP/cy/CySolve.py input/netlib/25fv47.mps d
 
 Use `p` instead of the trailing `d` to use the positive edge pivot rule instead of Dantzig's canonical pivot rule.
 

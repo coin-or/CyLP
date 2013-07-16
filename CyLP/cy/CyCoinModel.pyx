@@ -1,7 +1,7 @@
 # cython: embedsignature=True
 
 
-cimport CyCoinModel
+from CyLP.cy cimport CyCoinModel
 
 cdef class CyCoinModel:
     '''
