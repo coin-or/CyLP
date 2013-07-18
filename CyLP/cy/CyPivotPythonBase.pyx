@@ -6,7 +6,11 @@ cimport CyPivotPythonBase
 cdef class CyPivotPythonBase(CyClpPrimalColumnPivotBase):
     def __init__(self, pivotMethodObject):
         CyClpPrimalColumnPivotBase.__init__(self)
+        Py_INCREF(pivotMethodObject)
         self.pivotMethodObject = pivotMethodObject
+
+    def __dealloc__(self):
+        Py_DECREF(self.pivotMethodObject)
 
     cdef pivotColumn(self, CppCoinIndexedVector* updates,
                      CppCoinIndexedVector* spareRow1, CppCoinIndexedVector* spareRow2,

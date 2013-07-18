@@ -2,6 +2,8 @@ import scipy
 from scipy.sparse import csr_matrix
 cimport CyOsiCuts
 from CyLP.py.modeling.CyLPModel import CyLPModel
+cimport numpy as np
+import numpy as np
 
 cdef class CyOsiCuts:
     'CyOsiCuts documentation'
@@ -12,34 +14,37 @@ cdef class CyOsiCuts:
         del self.CppSelf
         self.CppSelf = s
 
-    def addColumnCut(self, cut):
+    def addColumnCut(self, cut, cyLpModel):
         '''
-        Add ``cut`` to cuts. ``cut`` is a CyLPConstraint
+        Add ``cut`` to cuts. ``cut`` is a CyLPExpr
         and ``cut.isRange`` is ``True``.
         '''
-        # CyLPConstraint's lower and upper are dense vectors
-        # First convert them to sparse
-        lower = csr_matrix(cut.lower)
-        upper = csr_matrix(cut.upper)
+        m = CyLPModel()
+        for var in cyLpModel.variables:
+            m.addVariable(var.name, var.dim, var.isInt)
+        x = m.getVarByName('x')
+        m += cut
+        mat, cl, cu, vl, vu = cyLpModel.makeMatrices()
 
-        cdef np.ndarray[np.int32_t, ndim=1] lower_inds = lower.indices
-        cdef np.ndarray[np.double_t, ndim=1] lower_data = lower.data
-        cdef np.ndarray[np.int32_t, ndim=1] upper_inds = upper.indices
-        cdef np.ndarray[np.double_t, ndim=1] upper_data = upper.data
+        inds = np.arange(len(vl), dtype=np.int32)
+        cdef np.ndarray[np.int32_t, ndim=1] vl_inds = inds
+        cdef np.ndarray[np.double_t, ndim=1] vl_data = vl
+        cdef np.ndarray[np.int32_t, ndim=1] vu_inds = inds
+        cdef np.ndarray[np.double_t, ndim=1] vu_data = vu
 
-        self.CppSelf.addColumnCut(cut.upper.shape[1],
-                                  <int*>lower_inds.data,
-                                  <double*>lower_data.data,
-                                  <int*>upper_inds.data,
-                                  <double*>upper_data.data)
+        self.CppSelf.addColumnCut(len(vl),
+                                  <int*>vl_inds.data,
+                                  <double*>vl_data.data,
+                                  <int*>vu_inds.data,
+                                  <double*>vu_data.data)
 
     def addRowCut(self, cut, cyLpModel):
         '''
-        Add ``cut`` to cuts. ``cut`` is a CyLPConstraint
+        Add ``cut`` to cuts. ``cut`` is a CyLPExpr
         and ``cut.isRange`` is ``False``.
         '''
         m = CyLPModel()
-        for var in m.vars:
+        for var in cyLpModel.variables:
             m.addVariable(var.name, var.dim, var.isInt)
         m += cut
         mat, cl, cu, vl, vu = m.makeMatrices()

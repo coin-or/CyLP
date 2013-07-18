@@ -6,7 +6,6 @@ from CyLP.cy.CyCglCutGeneratorBase import CyCglCutGeneratorBase
 cdef void RunGenerateCuts(void *ptr, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):
-    print 'cython Base ...'
     (<CyCglCutGeneratorBase>(ptr)).generateCuts(si, cs, info)
 
 cdef CppCglCutGenerator* RunCglClone(void *ptr):
@@ -15,10 +14,15 @@ cdef CppCglCutGenerator* RunCglClone(void *ptr):
 
 cdef class CyCglCutGeneratorBase:
     def __init__(self):
+        Py_INCREF(self)
         self.CppSelf = new CppCglCutGeneratorBase(
             <cpy_ref.PyObject*>self,
             <runGenerateCuts_t>RunGenerateCuts,
             <runCglClone_t>RunCglClone)
+
+    def __dealloc__(self):
+        Py_DECREF(self)
+        del self.CppSelf
 
     cdef generateCuts(self, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,

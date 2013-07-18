@@ -3,8 +3,8 @@ cimport cpython.ref as cpy_ref
 from cpython.ref cimport PyObject
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy.CyCoinIndexedVector cimport CppCoinIndexedVector
-#import numpy as np
-#cimport numpy as np
+from cpython cimport Py_INCREF, Py_DECREF
+
 
 cdef extern from "ClpPrimalColumnPivot.hpp":
     cdef cppclass CyClpPrimalColumnPivot "ClpPrimalColumnPivot":
@@ -16,6 +16,7 @@ cdef extern from "ClpFactorization.hpp":
     cdef cppclass ClpFactorization:
         int updateColumnTranspose (CppCoinIndexedVector * regionSparse,
                   CppCoinIndexedVector * regionSparse2)
+
 
 cdef extern from "IClpPrimalColumnPivotBase.h":
     #cdef cppclass CoinIndexedVector:
@@ -57,6 +58,8 @@ cdef int RunPivotColumn(void *ptr,
                         CppCoinIndexedVector* v5)
 
 cdef CyClpPrimalColumnPivot* RunClone(void *ptr, bint copyData)
+
+
 cdef void RunSaveWeights(void *ptr, CyClpSimplex.CppIClpSimplex * model,
                          int mode)
 

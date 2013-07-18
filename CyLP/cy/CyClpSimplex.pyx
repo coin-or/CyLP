@@ -19,7 +19,7 @@ from CyLP.cy cimport CyCoinModel
 from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
 from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
-from CyLP.py.pivots import DualPivotPythonBase
+from CyLP.py.pivots.DualPivotPythonBase import DualPivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
 from CyLP.cy cimport CyCoinMpsIO
 
@@ -466,6 +466,16 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             return <object>self.CppSelf.getUpper()
+
+    property integerIndices:
+        '''
+        A binary list of size *nVariables* that specifies whether
+        a variable is integer or not. (ClpModel::integerInformation())
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getIntegerIndices()
 
     property status:
         '''
@@ -1472,6 +1482,11 @@ cdef class CyClpSimplex:
                                             <double*>pi.data,
                                             <double*>y.data)
 
+    def isInteger(self, ind):
+        '''
+        Returns True if the variable index ``ind`` is integer.
+        '''
+        return self.CppSelf.isInteger(ind)
 
     def setInteger(self, arg):
         '''

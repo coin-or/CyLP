@@ -27,6 +27,11 @@ cdef class CyClpPrimalColumnPivotBase:
             <runPivotColumn_t>RunPivotColumn,
             <runClone_t>RunClone,
             <runSaveWeights_t>RunSaveWeights)
+        Py_INCREF(self)
+
+    def __dealloc__(self):
+        Py_DECREF(self)
+        del self.CppSelf
 
     cdef pivotColumn(self, CppCoinIndexedVector* v1, CppCoinIndexedVector* v2,
                         CppCoinIndexedVector* v3, CppCoinIndexedVector* v4,

@@ -102,8 +102,8 @@ def getMpsExample():
     import os
     import inspect
     import sys
-    curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
-    return os.path.join(curpath, '../../input/p0033.mps')
+    cylpDir = os.environ['CYLP_SOURCE_DIR']
+    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
 
 
 if __name__ == "__main__":

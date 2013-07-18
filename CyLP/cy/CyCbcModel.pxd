@@ -3,6 +3,7 @@ from cpython.ref cimport PyObject
 from CyLP.cy.CyCgl cimport CyCglCutGenerator, CppCglCutGenerator
 from CyLP.cy.CyCbcNode cimport CyCbcNode, CppICbcNode
 from CyLP.cy.CyOsiSolverInterface cimport CppOsiSolverInterface, CyOsiSolverInterface
+from cpython cimport Py_INCREF, Py_DECREF
 
 
 cdef extern from "CbcCompareUser.hpp":
@@ -69,6 +70,7 @@ cdef class CyCbcModel:
     cdef CppICbcModel* CppSelf
     cdef object cyLPModel
     cdef object clpModel
+    cdef object cutGenerators
     cdef setCppSelf(self, CppICbcModel* cppmodel)
     cdef setClpModel(self, clpmodel)
     cpdef addCutGenerator(self, CyCglCutGenerator generator,

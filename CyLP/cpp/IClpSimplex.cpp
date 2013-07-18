@@ -482,6 +482,16 @@ PyObject* IClpSimplex::getColUpper(){
     return Arr;
 }
 
+PyObject* IClpSimplex::getIntegerIndices(){
+    npy_intp dims = getNumCols();
+    PyObject* Arr;
+    if (this->integerInformation())
+        Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_INT8, this->integerInformation());
+    else
+        Arr = PyArray_ZEROS(1, &dims, PyArray_INT8, 0);
+    return Arr;
+}
+
 std::vector<std::string> IClpSimplex::getVariableNames(){
     if (lengthNames_)
         return columnNames_;

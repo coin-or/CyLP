@@ -66,7 +66,6 @@ class PositiveEdgePivot(PivotPythonBase):
         self.z = np.where(np.abs(rhs) <= self.EPSILON)[0]
 
         #print 'degeneracy level : ', (len(self.z)) / float(nRows)
-        #self.isDegenerate = (len(self.p) != nRows)
         self.isDegenerate = (len(self.z) > 0)
 
     def updateW(self):
@@ -148,5 +147,6 @@ class PositiveEdgePivot(PivotPythonBase):
 def getMpsExample():
     import os
     import inspect
-    curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
-    return os.path.join(curpath, '../../input/p0033.mps')
+    cylpDir = os.environ['CYLP_SOURCE_DIR']
+    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+

@@ -6,14 +6,21 @@ class DumbCutGenerator:
     def __init__(self, cyLPModel):
         self.cyLPModel = cyLPModel
 
-    def generateCuts(self, x, y, z):
-        print 'py cut called'
+    def generateCuts(self, si, y, z):
         m = self.cyLPModel
         x = m.getVarByName('x')
-        return x[0] + x[1] >= 2
 
-    def test():
-        print 'test success'
+        clpModel = si.clpModel
+        #print clpModel.primalVariableSolution
+        #print clpModel.dualVariableSolution
+
+        #print clpModel.integerIndices
+
+        #print clpModel.isInteger(0)
+        #print clpModel.isInteger(1)
+
+
+        return x[1]  >= 0.6
 
 
 if __name__ == '__main__':
@@ -34,6 +41,9 @@ if __name__ == '__main__':
     cbcModel = s.getCbcModel()
 
     dc = DumbCutGenerator(m)
-    cbcModel.addPythonCutGenerator(dc)
+    cbcModel.addPythonCutGenerator(dc, name='MYCUT')
 
     cbcModel.branchAndBound()
+
+    print cbcModel.primalVariableSolution
+

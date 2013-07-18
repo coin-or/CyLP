@@ -81,6 +81,11 @@ cdef class CyCbcModel:
 
     def __cinit__(self, cyLPModel=None):
         self.cyLPModel = cyLPModel
+        self.cutGenerators = []
+
+    def __dealloc(self):
+        for generator in self.cutGenerators:
+            Py_DECREF(generator)
 
     cdef setCppSelf(self, CppICbcModel* cppmodel):
         self.CppSelf = cppmodel
@@ -103,6 +108,8 @@ cdef class CyCbcModel:
                         howOften=1, name="", normal=True, atSolution=False,
                         infeasible=False, howOftenInSub=-100, whatDepth=-1,
                         whatDepthInSub=-1):
+        self.cutGenerators.append(generator)
+        Py_INCREF(generator)
         self.CppSelf.addCutGenerator(generator.CppSelf, howOften,
                                     name, normal, atSolution,
                                     infeasible, howOftenInSub, whatDepth,
@@ -114,9 +121,7 @@ cdef class CyCbcModel:
                         whatDepthInSub=-1):
         cdef CyCutGeneratorPythonBase generator = \
                             CyCutGeneratorPythonBase(pythonCutGeneratorObject)
-        #self.cyPivot = p
-        #p.cyModel = self
-        print 'id after constructor: ', id(generator)
+        generator.cyLPModel = self.cyLPModel
         self.CppSelf.addCutGenerator(<CppCglCutGenerator*>generator.CppSelf,
                                     howOften, name, normal, atSolution,
                                     infeasible, howOftenInSub, whatDepth,

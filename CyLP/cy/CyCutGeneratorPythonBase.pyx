@@ -5,34 +5,34 @@ cimport CyCutGeneratorPythonBase
 
 
 cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
-    def __init__(self, cutGeneratorObject):
+    def __init__(self, cutGeneratorObject, cyLPModel=None):
         CyCglCutGeneratorBase.__init__(self)
         self.cutGeneratorObject = cutGeneratorObject
-        print id(self), 'self.cutGeneratorObject set'
-        print self.cutGeneratorObject.generateCuts(1, 2, 3)
-        print 'tested'
+        Py_INCREF(cutGeneratorObject)
+        self.cyLPModel = cyLPModel
 
+    def __dealloc__(self):
+        Py_DECREF(self.cutGeneratorObject)
 
     cdef generateCuts(self, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):
-        print 'cy too'
         cysi =  CyOsiSolverInterface()
         cysi.setCppSelf(si)
         cycs = CyOsiCuts()
         cycs.setCppSelf(cs)
         cyinfo = CyCglTreeInfo()
         cyinfo.setCppSelf(&info)
-        print 'going to python'
-
-        print 'in python: ', id(self)
         cuts = self.cutGeneratorObject.generateCuts(cysi, cycs, cyinfo)
-        print 'python returned'
+        if type(cuts) is not list:
+            cuts = [cuts]
         for cut in cuts:
-            if cut.isRange:
-                cycs.addColumnCut(cut)
+            # Getting a CyLPContraint
+            isRange = cut.evaluate('cut').isRange
+            if isRange:
+                cycs.addColumnCut(cut, self.cyLPModel)
             else:
-                cycs.addRowCut(cut)
+                cycs.addRowCut(cut, self.cyLPModel)
 
     cdef CppCglCutGenerator* clone(self):
         cdef CppCglCutGenerator* ret =  \

@@ -146,8 +146,6 @@ class PositiveEdgeWolfePivot(PositiveEdgePivot):
 
         if s.getStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:
-            #print colInd , ' flagged'
-            #self.banList[colInd] = 1
             self.banList.append(colInd)
 
             #s.setFlagged(colInd)
