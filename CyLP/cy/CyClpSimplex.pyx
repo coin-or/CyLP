@@ -196,6 +196,11 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             mat = self.matrix
+            #print '((((((((((((((((((('
+            #print mat.nElements
+            #print len(mat.indices)
+            #print mat.vectorStarts
+            #print ')))))))))))))))))))'
             return csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
                              shape=(self.nConstraints, self.nVariables))
 
@@ -467,7 +472,7 @@ cdef class CyClpSimplex:
         def __get__(self):
             return <object>self.CppSelf.getUpper()
 
-    property integerIndices:
+    property integerInformation:
         '''
         A binary list of size *nVariables* that specifies whether
         a variable is integer or not. (ClpModel::integerInformation())
@@ -475,7 +480,7 @@ cdef class CyClpSimplex:
         :rtype: Numpy array
         '''
         def __get__(self):
-            return <object>self.CppSelf.getIntegerIndices()
+            return <object>self.CppSelf.getIntegerInformation()
 
     property status:
         '''

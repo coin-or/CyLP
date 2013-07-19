@@ -23,7 +23,7 @@ cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
         cycs.setCppSelf(cs)
         cyinfo = CyCglTreeInfo()
         cyinfo.setCppSelf(&info)
-        cuts = self.cutGeneratorObject.generateCuts(cysi, cycs, cyinfo)
+        cuts = self.cutGeneratorObject.generateCuts(cysi, cyinfo)
         if type(cuts) is not list:
             cuts = [cuts]
         for cut in cuts:
@@ -33,6 +33,7 @@ cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
                 cycs.addColumnCut(cut, self.cyLPModel)
             else:
                 cycs.addRowCut(cut, self.cyLPModel)
+
 
     cdef CppCglCutGenerator* clone(self):
         cdef CppCglCutGenerator* ret =  \

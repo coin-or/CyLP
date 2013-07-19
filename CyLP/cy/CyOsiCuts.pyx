@@ -32,6 +32,7 @@ cdef class CyOsiCuts:
         cdef np.ndarray[np.int32_t, ndim=1] vu_inds = inds
         cdef np.ndarray[np.double_t, ndim=1] vu_data = vu
 
+        #print '##################->', len(vl_inds), len(vl_data), len(vu_inds), len(vu_data)
         self.CppSelf.addColumnCut(len(vl),
                                   <int*>vl_inds.data,
                                   <double*>vl_data.data,
@@ -56,7 +57,9 @@ cdef class CyOsiCuts:
             row = mat[nr, :]
             row_inds = row.indices
             row_data = row.data
-            self.CppSelf.addRowCut(mat.shape[1],
+            #print '@@@@@@@@@@@@@@@@@@@@->', len(row_inds), len(row_data)
+            assert len(row_inds) == len(row_data)
+            self.CppSelf.addRowCut(len(row_inds),
                                   <int*>row_inds.data,
                                   <double*>row_data.data,
                                   cl[nr], cu[nr])

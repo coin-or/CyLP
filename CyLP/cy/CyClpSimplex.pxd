@@ -255,7 +255,7 @@ cdef extern from "IClpSimplex.hpp":
         int logLevel()
 
         bint isInteger(int index)
-        PyObject* getIntegerIndices()
+        PyObject* getIntegerInformation()
 
 cdef class CyClpSimplex:
     '''
