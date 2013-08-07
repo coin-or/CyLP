@@ -266,12 +266,9 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
                           extra_link_args=extra_link_args), ]
 
 
-with open('README.rst') as f_README, \
-     open('AUTHORS') as f_AUTHORS, \
-     open('LICENSE') as f_LICENSE:
-     s_README = f_README.read()
-     s_AUTHORS = f_AUTHORS.read()
-     s_LICENSE = f_LICENSE.read()
+s_README = open('README.rst').read()
+s_AUTHORS = open('AUTHORS').read()
+s_LICENSE = open('LICENSE').read()
 
 setup(name='CyLP',
       version=VERSION,
