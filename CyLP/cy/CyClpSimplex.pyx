@@ -196,11 +196,16 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             mat = self.matrix
-            #print '((((((((((((((((((('
-            #print mat.nElements
-            #print len(mat.indices)
-            #print mat.vectorStarts
-            #print ')))))))))))))))))))'
+            print '((((((((((((((((((('
+            print 'nelements:     ', mat.nElements
+            print 'len(indices):  ', len(mat.indices)
+            print 'mat.majorDim:  ', mat.majorDim
+            print 'mat.minorDim:  ', mat.minorDim
+            print 'len vec starts:', len(mat.vectorStarts)
+            print 'vec starts:    ', mat.vectorStarts
+            print 'col ordered:   ', mat.isColOrdered
+            mat.dumpMatrix('tttttt')
+            print ')))))))))))))))))))'
             return csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
                              shape=(self.nConstraints, self.nVariables))
 

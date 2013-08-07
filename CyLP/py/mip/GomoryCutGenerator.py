@@ -1,3 +1,4 @@
+import os
 import math
 import numpy as np
 from CyLP.cy import CyClpSimplex
@@ -17,17 +18,20 @@ def isInt(x):
 
 def gomoryCut(lp, rowInd):
     'Return the Gomory cut of row ``rowInd`` of lp (a CyClpSimplex object)'
+    print 'here'
     fractions = np.array([getFraction(x) for x in lp.tableau[rowInd, :]])
+    print '1'
     pi, pi0 = fractions[:lp.nVariables], getFraction(lp.rhs[rowInd])
+    print '2'
     pi_slacks = fractions[lp.nVariables:]
-    #print 'g4'
-    #print pi.shape
-    #print pi_slacks.shape
-    #print lp.coefMatrix.shape
+    print '3'
     pi -= pi_slacks * lp.coefMatrix
-    #print 'g5'
+    print '4'
     pi0 -= np.dot(pi_slacks, lp.constraintsUpper)
-    return pi, pi0
+    print 'done'
+    if (abs(pi) > 1e-6).any():
+        return pi, pi0
+    return None, None
 
 def getFraction(x):
     'Return the fraction part of x: x - floor(x)'
@@ -38,52 +42,31 @@ class GomoryCutGenerator:
         self.cyLPModel = cyLPModel
 
     def generateCuts(self, si, cglTreeInfo):
-        #print '----------------------'
-        #print '1'
         m = self.cyLPModel
         x = m.getVarByName('x')
 
         clpModel = si.clpModel
-        #print 'solving'
         clpModel.dual(startFinishOptions='x')
-        #print clpModel.tableau
-        #print 'solved'
+        print clpModel.coefMatrix
+        return []
         solution = clpModel.primalVariableSolution
         bv = clpModel.basicVariables
         rhs = clpModel.rhs
-        #print clpModel.dualVariableSolution
 
         intInds = clpModel.integerInformation
 
         rhsIsInt = map(isInt, rhs)
 
-        #print '2'
-
-        #print 'basic vars: ', bv
-        #print 'rhs: ', rhs
-        #print 'sol: ', solution
-        #print 'objective: ', clpModel.objectiveValue
-
         cuts = []
         for rowInd in xrange(s.nConstraints):
-            #print '2.1'
             basicVarInd = bv[rowInd]
-            #print 'basicVarInd = ', basicVarInd
-            #print 'intInds = ', intInds
-            #print 'rhsIsInt = ', rhsIsInt
-
             if basicVarInd < clpModel.nVariables and intInds[basicVarInd] and not rhsIsInt[rowInd]:
-                #print '2.2'
                 coef, b = gomoryCut(clpModel, rowInd)
-                #print '2.3'
-                #print (abs(coef) <= 0.0001).all()
-                if b > -1000:
-                    print 'Adding cut: ', coef, '>=', b
+                #print 'Adding cut: ', coef, '>=', b
+                if b != None:
                     cuts.append(CyLPArray(coef) * x >= b)
-        #print '3'
-        #print clpModel.isInteger(0)
-        #print clpModel.isInteger(1)
-        #print 'returning cuts'
+                break
+
         return cuts
 
 
@@ -104,10 +87,15 @@ if __name__ == '__main__':
         s = CyClpSimplex(m)
     else:
         s = CyClpSimplex()
-        #m = s.extractCyLPModel('/Users/mehdi/Documents/CyLP/CyLP/input/netlib/boeing1.mps')
-        m = s.extractCyLPModel('/Users/mehdi/Downloads/timtab1.mps')
+        cylpDir = os.environ['CYLP_SOURCE_DIR']
+        #inputFile = os.path.join(cylpDir, 'CyLP', 'input', 'netlib', 'adlittle.mps')
+        inputFile = os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+        m = s.extractCyLPModel(inputFile)
+        #m = s.extractCyLPModel('/Users/mehdi/Downloads/timtab1.mps')
         x = m.getVarByName('x')
-        s.setInteger(x[:10])
+        s.setInteger(x)
+        #s.setInteger(x[14])
+
 
     cbcModel = s.getCbcModel()
 

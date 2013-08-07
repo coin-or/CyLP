@@ -15,6 +15,7 @@ public:
     void addRowCut(int size, int* indices, double* elements,
                    double lowerBound, double upperBound);
 
+    void eraseRowCut(int i);
 };
 
 

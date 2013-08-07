@@ -50,6 +50,8 @@ cdef class CyOsiCuts:
         m += cut
         mat, cl, cu, vl, vu = m.makeMatrices()
 
+        print '--------------------------------------------->', mat.shape
+
         cdef np.ndarray[np.int32_t, ndim=1] row_inds
         cdef np.ndarray[np.double_t, ndim=1] row_data
 
