@@ -249,14 +249,55 @@
 #define _USE_MATH_DEFINES
 #endif
 #include <math.h>
-#define __PYX_HAVE__CyLP__cy__CyCoinMpsIO
-#define __PYX_HAVE_API__CyLP__cy__CyCoinMpsIO
+#define __PYX_HAVE__CyLP__cy__CyCglCutGeneratorBase
+#define __PYX_HAVE_API__CyLP__cy__CyCglCutGeneratorBase
 #include "stdio.h"
+#include "pythread.h"
+#include "ICoinIndexedVector.hpp"
+#include "ClpPrimalColumnPivot.hpp"
+#include "ClpFactorization.hpp"
+#include "IClpPrimalColumnPivotBase.h"
 #include "stdlib.h"
 #include "numpy/arrayobject.h"
 #include "numpy/ufuncobject.h"
+#include "ClpDualRowPivot.hpp"
+#include "IClpDualRowPivotBase.h"
+#include "CoinModel.hpp"
 #include "ICoinPackedMatrix.hpp"
-#include "ICoinMpsIO.hpp"
+#include "CglAllDifferent.hpp"
+#include "CglClique.hpp"
+#include "CglKnapsackCover.hpp"
+#include "CglOddHole.hpp"
+#include "CglFlowCover.hpp"
+#include "CglGomory.hpp"
+#include "CglRedSplit.hpp"
+#include "CglLiftAndProject.hpp"
+#include "CglLandP.hpp"
+#include "CglMixedIntegerRounding.hpp"
+#include "CglMixedIntegerRounding2.hpp"
+#include "CglTwomir.hpp"
+#include "CglResidualCapacity.hpp"
+#include "CglPreProcess.hpp"
+#include "CglProbing.hpp"
+#include "CglSimpleRounding.hpp"
+#include "CglCutGenerator.hpp"
+#include "ICbcNode.hpp"
+#include "ClpSimplex.hpp"
+#include "OsiClpSolverInterface.hpp"
+#include "OsiSolverInterface.hpp"
+#include "CbcCompareUser.hpp"
+#include "ICbcModel.hpp"
+#include "string.h"
+#include <string>
+#include "ios"
+#include "new"
+#include "stdexcept"
+#include "typeinfo"
+#include <vector>
+#include "IClpSimplex.hpp"
+#include "IOsiCuts.hpp"
+#include "CglTreeInfo.hpp"
+#include "ICglCutGeneratorBase.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -364,10 +405,23 @@ static const char *__pyx_filename;
 
 
 static const char *__pyx_f[] = {
-  "CyCoinMpsIO.pyx",
+  "CyCglCutGeneratorBase.pyx",
   "numpy.pxd",
   "type.pxd",
+  "bool.pxd",
+  "complex.pxd",
+  "CyCoinIndexedVector.pxd",
+  "CyClpPrimalColumnPivotBase.pxd",
+  "CyClpDualRowPivotBase.pxd",
+  "CyCoinModel.pxd",
   "CyCoinPackedMatrix.pxd",
+  "CyCgl.pxd",
+  "CyCbcNode.pxd",
+  "CyOsiSolverInterface.pxd",
+  "CyCbcModel.pxd",
+  "CyClpSimplex.pxd",
+  "CyOsiCuts.pxd",
+  "CyCglTreeInfo.pxd",
 };
 
 /* "numpy.pxd":723
@@ -580,8 +634,36 @@ typedef npy_longdouble __pyx_t_5numpy_longdouble_t;
 
 
 /*--- Type declarations ---*/
-struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO;
+struct __pyx_obj_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglLandP;
+struct __pyx_obj_4CyLP_2cy_11CyCoinModel_CyCoinModel;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglRedSplit;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglOddHole;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglTwomir;
+struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglSimpleRounding;
+struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglProbing;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglClique;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglFlowCover;
+struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglResidualCapacity;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglPreProcess;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglAllDifferent;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglGomory;
+struct __pyx_obj_4CyLP_2cy_9CyCbcNode_CyCbcNode;
+struct __pyx_obj_4CyLP_2cy_9CyOsiCuts_CyOsiCuts;
+struct __pyx_obj_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo;
 struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix;
+struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_VarStatus;
+struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel;
+struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglKnapsackCover;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding2;
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglLiftAndProject;
+struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase;
 
 /* "numpy.pxd":762
  * ctypedef npy_longdouble longdouble_t
@@ -618,18 +700,329 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  * cdef inline object PyArray_MultiIterNew1(a):
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
+struct __pyx_opt_args_4CyLP_2cy_10CyCbcModel_10CyCbcModel_addCutGenerator;
 
-/* "CyLP/cy/CyCoinMpsIO.pxd":46
- * 
- * 
- * cdef class CyCoinMpsIO:             # <<<<<<<<<<<<<<
- *     cdef CppICoinMpsIO *CppSelf
- *     cpdef Hessian
+/* "CyLP/cy/CyCbcModel.pxd":76
+ *     cdef setCppSelf(self, CppICbcModel* cppmodel)
+ *     cdef setClpModel(self, clpmodel)
+ *     cpdef addCutGenerator(self, CyCglCutGenerator generator,             # <<<<<<<<<<<<<<
+ *                         howOften=*, name=*, normal=*, atSolution=*,
+ *                         infeasible=*, howOftenInSub=*, whatDepth=*,
  */
-struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO {
+struct __pyx_opt_args_4CyLP_2cy_10CyCbcModel_10CyCbcModel_addCutGenerator {
+  int __pyx_n;
+  PyObject *howOften;
+  PyObject *name;
+  PyObject *normal;
+  PyObject *atSolution;
+  PyObject *infeasible;
+  PyObject *howOftenInSub;
+  PyObject *whatDepth;
+  PyObject *whatDepthInSub;
+};
+struct __pyx_opt_args_4CyLP_2cy_12CyClpSimplex_12CyClpSimplex_readMps;
+
+/* "CyClpSimplex.pxd":284
+ *     #cdef object isPivotAcceptable_func
+ * 
+ *     cpdef int readMps(self, char* filename, int keepNames=*,             # <<<<<<<<<<<<<<
+ *                       int ignoreErrors=*)
+ * 
+ */
+struct __pyx_opt_args_4CyLP_2cy_12CyClpSimplex_12CyClpSimplex_readMps {
+  int __pyx_n;
+  int keepNames;
+  int ignoreErrors;
+};
+
+/* "CyLP/cy/CyOsiSolverInterface.pxd":15
+ *         pass
+ * 
+ * cdef class CyOsiSolverInterface:             # <<<<<<<<<<<<<<
+ *     cdef CppOsiSolverInterface* CppSelf
+ *     cdef setCppSelf(self, CppOsiSolverInterface* s)
+ */
+struct __pyx_obj_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface {
   PyObject_HEAD
-  ICoinMpsIO *CppSelf;
+  struct __pyx_vtabstruct_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface *__pyx_vtab;
+  OsiSolverInterface *CppSelf;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":103
+ * 
+ * 
+ * cdef class CyCglCutGenerator:             # <<<<<<<<<<<<<<
+ *     cdef CppCglCutGenerator* CppSelf
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator {
+  PyObject_HEAD
+  CglCutGenerator *CppSelf;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":140
+ *     pass
+ * 
+ * cdef class CyCglLandP(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglLandP {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCoinModel.pxd":34
+ * 
+ * 
+ * cdef class CyCoinModel:             # <<<<<<<<<<<<<<
+ *     cdef CppCoinModel* CppSelf
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_11CyCoinModel_CyCoinModel {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_11CyCoinModel_CyCoinModel *__pyx_vtab;
+  CoinModel *CppSelf;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":145
+ * ###################
+ * 
+ * cdef class CyCglMixedIntegerRounding(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":132
+ *     #cdef CppCglCutGenerator* CppSelf
+ * 
+ * cdef class CyCglRedSplit(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglRedSplit {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":117
+ *     cdef CppCglKnapsackCover* realCppSelf(self)
+ * 
+ * cdef class CyCglOddHole(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglOddHole {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":151
+ *     pass
+ * 
+ * cdef class CyCglTwomir(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglTwomir {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCoinIndexedVector.pxd":22
+ * 
+ * 
+ * cdef class CyCoinIndexedVector:             # <<<<<<<<<<<<<<
+ *     cpdef CppCoinIndexedVector *CppSelf
+ *     cpdef reserve(self, n)
+ */
+struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *__pyx_vtab;
+  ICoinIndexedVector *CppSelf;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":168
+ *     pass
+ * 
+ * cdef class CyCglSimpleRounding(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglSimpleRounding {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyClpDualRowPivotBase.pxd":72
+ * 
+ * 
+ * cdef class CyClpDualRowPivotBase:             # <<<<<<<<<<<<<<
+ *     cdef CppClpDualRowPivotBase* CppSelf
+ *     cdef CyClpSimplex.CyClpSimplex cyModel
+ */
+struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *__pyx_vtab;
+  CppClpDualRowPivotBase *CppSelf;
+  struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *cyModel;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":165
+ *     pass
+ * 
+ * cdef class CyCglProbing(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglProbing {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":111
+ *     pass
+ * 
+ * cdef class CyCglClique(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglClique {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":122
+ * ##################
+ * 
+ * cdef class CyCglFlowCover(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglFlowCover {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyClpSimplex.pxd":260
+ *         PyObject* getIntegerInformation()
+ * 
+ * cdef class CyClpSimplex:             # <<<<<<<<<<<<<<
+ *     '''
+ *     This is the documentation of CyClpSimpelx in the pyx class
+ */
+struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *__pyx_vtab;
+  IClpSimplex *CppSelf;
+  PyObject *vars;
+  PyObject *varSelCriteria;
+  struct __pyx_obj_4CyLP_2cy_11CyCoinModel_CyCoinModel *coinModel;
+  PyObject *cyLPModel;
+  struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel *cbcModel;
   PyObject *Hessian;
+  struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *cyPivot;
+  struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *cyDualPivot;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":154
+ *     pass
+ * 
+ * cdef class CyCglResidualCapacity(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglResidualCapacity {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":162
+ * #    pass
+ * 
+ * cdef class CyCglPreProcess(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglPreProcess {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":108
+ * ###########
+ * 
+ * cdef class CyCglAllDifferent(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglAllDifferent {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":127
+ * ##################
+ * 
+ * cdef class CyCglGomory(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     cdef CppCglGomory* realCppSelf(self)
+ *     #cdef CppCglGomory* CppSelf
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglGomory {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+  struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglGomory *__pyx_vtab;
+};
+
+
+/* "CyLP/cy/CyCbcNode.pxd":13
+ *         bint breakTie(CppICbcNode* y)
+ * 
+ * cdef class CyCbcNode:             # <<<<<<<<<<<<<<
+ *     cdef CppICbcNode* CppSelf
+ *     cdef setCppSelf(self, CppICbcNode* cbcnode)
+ */
+struct __pyx_obj_4CyLP_2cy_9CyCbcNode_CyCbcNode {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_9CyCbcNode_CyCbcNode *__pyx_vtab;
+  ICbcNode *CppSelf;
+};
+
+
+/* "CyLP/cy/CyOsiCuts.pxd":14
+ * 
+ * 
+ * cdef class CyOsiCuts:             # <<<<<<<<<<<<<<
+ *     cdef CppOsiCuts* CppSelf
+ *     cdef setCppSelf(self, CppOsiCuts* s)
+ */
+struct __pyx_obj_4CyLP_2cy_9CyOsiCuts_CyOsiCuts {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_9CyOsiCuts_CyOsiCuts *__pyx_vtab;
+  CppOsiCuts *CppSelf;
+};
+
+
+/* "CyLP/cy/CyCglTreeInfo.pxd":7
+ *     CppCglTreeInfo *new_CppCglTreeInfo "new CglTreeInfo" ()
+ * 
+ * cdef class CyCglTreeInfo:             # <<<<<<<<<<<<<<
+ *     cdef CppCglTreeInfo* CppSelf
+ *     cdef setCppSelf(self, CppCglTreeInfo* s)
+ */
+struct __pyx_obj_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo *__pyx_vtab;
+  CglTreeInfo *CppSelf;
 };
 
 
@@ -645,6 +1038,316 @@ struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix {
   ICoinPackedMatrix *CppSelf;
 };
 
+
+/* "CyClpSimplex.pxd":335
+ *     cpdef setConstraintName(self, constInd, name)
+ * 
+ * cdef class VarStatus:             # <<<<<<<<<<<<<<
+ *     pass
+ * cpdef cydot(CyCoinIndexedVector v1, CyCoinIndexedVector v2)
+ */
+struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_VarStatus {
+  PyObject_HEAD
+};
+
+
+/* "CyLP/cy/CyCbcModel.pxd":69
+ *         CppOsiSolverInterface* solver()
+ * 
+ * cdef class CyCbcModel:             # <<<<<<<<<<<<<<
+ *     cdef CppICbcModel* CppSelf
+ *     cdef object cyLPModel
+ */
+struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_10CyCbcModel_CyCbcModel *__pyx_vtab;
+  ICbcModel *CppSelf;
+  PyObject *cyLPModel;
+  PyObject *clpModel;
+  PyObject *cutGenerators;
+};
+
+
+/* "CyLP/cy/CyCglCutGeneratorBase.pxd":52
+ * cdef CppCglCutGenerator* RunCglClone(void *ptr)
+ * 
+ * cdef class CyCglCutGeneratorBase:             # <<<<<<<<<<<<<<
+ *     cdef CppCglCutGeneratorBase* CppSelf
+ *     cdef CyClpSimplex.CyClpSimplex cyModel
+ */
+struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_vtab;
+  CppCglCutGeneratorBase *CppSelf;
+  struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *cyModel;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":114
+ *     pass
+ * 
+ * cdef class CyCglKnapsackCover(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     cdef CppCglKnapsackCover* realCppSelf(self)
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglKnapsackCover {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+  struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglKnapsackCover *__pyx_vtab;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":148
+ *     pass
+ * 
+ * cdef class CyCglMixedIntegerRounding2(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding2 {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyCgl.pxd":137
+ * ###################
+ * 
+ * cdef class CyCglLiftAndProject(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     pass
+ * 
+ */
+struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglLiftAndProject {
+  struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator __pyx_base;
+};
+
+
+/* "CyLP/cy/CyClpPrimalColumnPivotBase.pxd":67
+ * 
+ * 
+ * cdef class CyClpPrimalColumnPivotBase:             # <<<<<<<<<<<<<<
+ *     cdef CppClpPrimalColumnPivotBase* CppSelf
+ *     cdef CyClpSimplex.CyClpSimplex cyModel
+ */
+struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase {
+  PyObject_HEAD
+  struct __pyx_vtabstruct_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *__pyx_vtab;
+  CppClpPrimalColumnPivotBase *CppSelf;
+  struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *cyModel;
+};
+
+
+
+/* "CyLP/cy/CyOsiCuts.pxd":14
+ * 
+ * 
+ * cdef class CyOsiCuts:             # <<<<<<<<<<<<<<
+ *     cdef CppOsiCuts* CppSelf
+ *     cdef setCppSelf(self, CppOsiCuts* s)
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_9CyOsiCuts_CyOsiCuts {
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_9CyOsiCuts_CyOsiCuts *, CppOsiCuts *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_9CyOsiCuts_CyOsiCuts *__pyx_vtabptr_4CyLP_2cy_9CyOsiCuts_CyOsiCuts;
+
+
+/* "CyLP/cy/CyClpDualRowPivotBase.pxd":72
+ * 
+ * 
+ * cdef class CyClpDualRowPivotBase:             # <<<<<<<<<<<<<<
+ *     cdef CppClpDualRowPivotBase* CppSelf
+ *     cdef CyClpSimplex.CyClpSimplex cyModel
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase {
+  PyObject *(*pivotRow)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *);
+  ClpDualRowPivot *(*clone)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *, int);
+  double (*updateWeights)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *);
+  void (*updatePrimalSolution)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *, ICoinIndexedVector *, double, PyArrayObject *);
+  IClpSimplex *(*model)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *);
+  void (*setModel)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *, IClpSimplex *);
+  double *(*getReducedCosts)(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase *__pyx_vtabptr_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase;
+
+
+/* "CyLP/cy/CyClpPrimalColumnPivotBase.pxd":67
+ * 
+ * 
+ * cdef class CyClpPrimalColumnPivotBase:             # <<<<<<<<<<<<<<
+ *     cdef CppClpPrimalColumnPivotBase* CppSelf
+ *     cdef CyClpSimplex.CyClpSimplex cyModel
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase {
+  PyObject *(*pivotColumn)(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *);
+  ClpPrimalColumnPivot *(*clone)(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *, int);
+  void (*saveWeights)(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *, IClpSimplex *, int);
+  IClpSimplex *(*model)(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *);
+  void (*setModel)(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *, IClpSimplex *);
+  double *(*getReducedCosts)(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase *__pyx_vtabptr_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase;
+
+
+/* "CyLP/cy/CyCgl.pxd":114
+ *     pass
+ * 
+ * cdef class CyCglKnapsackCover(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     cdef CppCglKnapsackCover* realCppSelf(self)
+ * 
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglKnapsackCover {
+  CglKnapsackCover *(*realCppSelf)(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglKnapsackCover *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglKnapsackCover *__pyx_vtabptr_4CyLP_2cy_5CyCgl_CyCglKnapsackCover;
+
+
+/* "CyLP/cy/CyCoinModel.pxd":34
+ * 
+ * 
+ * cdef class CyCoinModel:             # <<<<<<<<<<<<<<
+ *     cdef CppCoinModel* CppSelf
+ * 
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_11CyCoinModel_CyCoinModel {
+  void (*CLP_addColumn)(struct __pyx_obj_4CyLP_2cy_11CyCoinModel_CyCoinModel *, int, int *, double *, double, double, double);
+  void (*CLP_addRow)(struct __pyx_obj_4CyLP_2cy_11CyCoinModel_CyCoinModel *, int, int *, double *, double, double);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_11CyCoinModel_CyCoinModel *__pyx_vtabptr_4CyLP_2cy_11CyCoinModel_CyCoinModel;
+
+
+/* "CyLP/cy/CyCbcModel.pxd":69
+ *         CppOsiSolverInterface* solver()
+ * 
+ * cdef class CyCbcModel:             # <<<<<<<<<<<<<<
+ *     cdef CppICbcModel* CppSelf
+ *     cdef object cyLPModel
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_10CyCbcModel_CyCbcModel {
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel *, ICbcModel *);
+  PyObject *(*setClpModel)(struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel *, PyObject *);
+  PyObject *(*addCutGenerator)(struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel *, struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator *, int __pyx_skip_dispatch, struct __pyx_opt_args_4CyLP_2cy_10CyCbcModel_10CyCbcModel_addCutGenerator *__pyx_optional_args);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_10CyCbcModel_CyCbcModel *__pyx_vtabptr_4CyLP_2cy_10CyCbcModel_CyCbcModel;
+
+
+/* "CyLP/cy/CyCbcNode.pxd":13
+ *         bint breakTie(CppICbcNode* y)
+ * 
+ * cdef class CyCbcNode:             # <<<<<<<<<<<<<<
+ *     cdef CppICbcNode* CppSelf
+ *     cdef setCppSelf(self, CppICbcNode* cbcnode)
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_9CyCbcNode_CyCbcNode {
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_9CyCbcNode_CyCbcNode *, ICbcNode *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_9CyCbcNode_CyCbcNode *__pyx_vtabptr_4CyLP_2cy_9CyCbcNode_CyCbcNode;
+
+
+/* "CyClpSimplex.pxd":260
+ *         PyObject* getIntegerInformation()
+ * 
+ * cdef class CyClpSimplex:             # <<<<<<<<<<<<<<
+ *     '''
+ *     This is the documentation of CyClpSimpelx in the pyx class
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_12CyClpSimplex_CyClpSimplex {
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, IClpSimplex *);
+  int (*readMps)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, char *, int __pyx_skip_dispatch, struct __pyx_opt_args_4CyLP_2cy_12CyClpSimplex_12CyClpSimplex_readMps *__pyx_optional_args);
+  PyObject *(*setPrimalColumnPivotAlgorithm)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, void *);
+  PyObject *(*setDualRowPivotAlgorithm)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, void *);
+  double *(*primalColumnSolution)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  double *(*dualColumnSolution)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  double *(*primalRowSolution)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  double *(*dualRowSolution)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  double *(*rowLower)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  double *(*rowUpper)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  PyObject *(*getReducedCosts)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int __pyx_skip_dispatch);
+  PyObject *(*getStatusArray)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int __pyx_skip_dispatch);
+  PyObject *(*getComplementarityList)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int __pyx_skip_dispatch);
+  PyObject *(*getPivotVariable)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int __pyx_skip_dispatch);
+  PyObject *(*filterVars)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, PyObject *, int __pyx_skip_dispatch);
+  PyObject *(*CLP_getVarStatus)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int, int __pyx_skip_dispatch);
+  PyObject *(*CLP_setVarStatus)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int, int, int __pyx_skip_dispatch);
+  PyObject *(*primalRow)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *, ICoinIndexedVector *, int);
+  PyObject *(*getACol)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, int, struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *, int __pyx_skip_dispatch);
+  int *(*ComplementarityList)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  int *(*pivotVariable)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *);
+  PyObject *(*vectorTimesB_1)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *, int __pyx_skip_dispatch);
+  PyObject *(*setVariableName)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, PyObject *, PyObject *, int __pyx_skip_dispatch);
+  PyObject *(*setConstraintName)(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *, PyObject *, PyObject *, int __pyx_skip_dispatch);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *__pyx_vtabptr_4CyLP_2cy_12CyClpSimplex_CyClpSimplex;
+
+
+/* "CyLP/cy/CyCoinIndexedVector.pxd":22
+ * 
+ * 
+ * cdef class CyCoinIndexedVector:             # <<<<<<<<<<<<<<
+ *     cpdef CppCoinIndexedVector *CppSelf
+ *     cpdef reserve(self, n)
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector {
+  PyObject *(*reserve)(struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *, PyObject *, int __pyx_skip_dispatch);
+  PyObject *(*assign)(struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *, PyObject *, PyObject *, int __pyx_skip_dispatch);
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *, ICoinIndexedVector *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector *__pyx_vtabptr_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector;
+
+
+/* "CyLP/cy/CyCglTreeInfo.pxd":7
+ *     CppCglTreeInfo *new_CppCglTreeInfo "new CglTreeInfo" ()
+ * 
+ * cdef class CyCglTreeInfo:             # <<<<<<<<<<<<<<
+ *     cdef CppCglTreeInfo* CppSelf
+ *     cdef setCppSelf(self, CppCglTreeInfo* s)
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo {
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo *, CglTreeInfo *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo *__pyx_vtabptr_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo;
+
+
+/* "CyLP/cy/CyCgl.pxd":127
+ * ##################
+ * 
+ * cdef class CyCglGomory(CyCglCutGenerator):             # <<<<<<<<<<<<<<
+ *     cdef CppCglGomory* realCppSelf(self)
+ *     #cdef CppCglGomory* CppSelf
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglGomory {
+  CglGomory *(*realCppSelf)(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglGomory *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglGomory *__pyx_vtabptr_4CyLP_2cy_5CyCgl_CyCglGomory;
+
+
+/* "CyLP/cy/CyOsiSolverInterface.pxd":15
+ *         pass
+ * 
+ * cdef class CyOsiSolverInterface:             # <<<<<<<<<<<<<<
+ *     cdef CppOsiSolverInterface* CppSelf
+ *     cdef setCppSelf(self, CppOsiSolverInterface* s)
+ */
+
+struct __pyx_vtabstruct_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface {
+  PyObject *(*setCppSelf)(struct __pyx_obj_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface *, OsiSolverInterface *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface *__pyx_vtabptr_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface;
+
+
+struct __pyx_vtabstruct_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase {
+  PyObject *(*generateCuts)(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *, OsiSolverInterface *, CppOsiCuts *, CglTreeInfo);
+  CglCutGenerator *(*clone)(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *);
+};
+static struct __pyx_vtabstruct_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_vtabptr_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase;
 #ifndef CYTHON_REFNANNY
   #define CYTHON_REFNANNY 0
 #endif
@@ -706,12 +1409,6 @@ static void __Pyx_RaiseArgtupleInvalid(const char* func_name, int exact,
 
 static CYTHON_INLINE int __Pyx_CheckKeywordStrings(PyObject *kwdict, const char* function_name, int kw_allowed); /*proto*/
 
-static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_name); /*proto*/
-
-static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[], \
-    PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args, \
-    const char* function_name); /*proto*/
-
 static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb); /*proto*/
 static CYTHON_INLINE void __Pyx_ErrFetch(PyObject **type, PyObject **value, PyObject **tb); /*proto*/
 
@@ -732,45 +1429,6 @@ static CYTHON_INLINE int __Pyx_TypeTest(PyObject *obj, PyTypeObject *type); /*pr
 static PyObject *__Pyx_Import(PyObject *name, PyObject *from_list, long level); /*proto*/
 
 static CYTHON_INLINE void __Pyx_RaiseImportError(PyObject *name);
-
-#ifndef __Pyx_CppExn2PyErr
-#include <new>
-#include <typeinfo>
-#include <stdexcept>
-#include <ios>
-static void __Pyx_CppExn2PyErr() {
-  try {
-    if (PyErr_Occurred())
-      ; // let the latest Python exn pass through and ignore the current one
-    else
-      throw;
-  } catch (const std::bad_alloc& exn) {
-    PyErr_SetString(PyExc_MemoryError, exn.what());
-  } catch (const std::bad_cast& exn) {
-    PyErr_SetString(PyExc_TypeError, exn.what());
-  } catch (const std::domain_error& exn) {
-    PyErr_SetString(PyExc_ValueError, exn.what());
-  } catch (const std::invalid_argument& exn) {
-    PyErr_SetString(PyExc_ValueError, exn.what());
-  } catch (const std::ios_base::failure& exn) {
-    PyErr_SetString(PyExc_IOError, exn.what());
-  } catch (const std::out_of_range& exn) {
-    PyErr_SetString(PyExc_IndexError, exn.what());
-  } catch (const std::overflow_error& exn) {
-    PyErr_SetString(PyExc_OverflowError, exn.what());
-  } catch (const std::range_error& exn) {
-    PyErr_SetString(PyExc_ArithmeticError, exn.what());
-  } catch (const std::underflow_error& exn) {
-    PyErr_SetString(PyExc_ArithmeticError, exn.what());
-  } catch (const std::exception& exn) {
-    PyErr_SetString(PyExc_RuntimeError, exn.what());
-  }
-  catch (...)
-  {
-    PyErr_SetString(PyExc_RuntimeError, "Unknown exception");
-  }
-}
-#endif
 
 #if CYTHON_CCOMPLEX
   #ifdef __cplusplus
@@ -902,7 +1560,14 @@ static CYTHON_INLINE signed long __Pyx_PyInt_AsSignedLong(PyObject *);
 
 static CYTHON_INLINE signed PY_LONG_LONG __Pyx_PyInt_AsSignedLongLong(PyObject *);
 
+static void __Pyx_WriteUnraisable(const char *name, int clineno,
+                                  int lineno, const char *filename); /*proto*/
+
 static int __Pyx_check_binary_version(void);
+
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig); /*proto*/
+
+static int __Pyx_SetVtable(PyObject *dict, void *vtable); /*proto*/
 
 #if !defined(__Pyx_PyIdentifier_FromString)
 #if PY_MAJOR_VERSION < 3
@@ -915,6 +1580,8 @@ static int __Pyx_check_binary_version(void);
 static PyObject *__Pyx_ImportModule(const char *name); /*proto*/
 
 static PyTypeObject *__Pyx_ImportType(const char *module_name, const char *class_name, size_t size, int strict);  /*proto*/
+
+static void* __Pyx_GetVtable(PyObject *dict); /*proto*/
 
 typedef struct {
     int code_line;
@@ -938,16 +1605,92 @@ static int __Pyx_InitStrings(__Pyx_StringTabEntry *t); /*proto*/
 
 /* Module declarations from 'cpython.ref' */
 
-/* Module declarations from 'cpython.buffer' */
+/* Module declarations from 'CyLP.cy' */
+
+/* Module declarations from 'cpython.version' */
+
+/* Module declarations from 'cpython.exc' */
+
+/* Module declarations from 'cpython.module' */
+
+/* Module declarations from 'cpython.mem' */
+
+/* Module declarations from 'cpython.tuple' */
+
+/* Module declarations from 'cpython.list' */
 
 /* Module declarations from 'libc.stdio' */
 
 /* Module declarations from 'cpython.object' */
 
+/* Module declarations from 'cpython.sequence' */
+
+/* Module declarations from 'cpython.mapping' */
+
+/* Module declarations from 'cpython.iterator' */
+
 /* Module declarations from '__builtin__' */
 
 /* Module declarations from 'cpython.type' */
 static PyTypeObject *__pyx_ptype_7cpython_4type_type = 0;
+
+/* Module declarations from 'cpython.number' */
+
+/* Module declarations from 'cpython.int' */
+
+/* Module declarations from '__builtin__' */
+
+/* Module declarations from 'cpython.bool' */
+static PyTypeObject *__pyx_ptype_7cpython_4bool_bool = 0;
+
+/* Module declarations from 'cpython.long' */
+
+/* Module declarations from 'cpython.float' */
+
+/* Module declarations from '__builtin__' */
+
+/* Module declarations from 'cpython.complex' */
+static PyTypeObject *__pyx_ptype_7cpython_7complex_complex = 0;
+
+/* Module declarations from 'cpython.string' */
+
+/* Module declarations from 'cpython.unicode' */
+
+/* Module declarations from 'cpython.dict' */
+
+/* Module declarations from 'cpython.instance' */
+
+/* Module declarations from 'cpython.function' */
+
+/* Module declarations from 'cpython.method' */
+
+/* Module declarations from 'cpython.weakref' */
+
+/* Module declarations from 'cpython.getargs' */
+
+/* Module declarations from 'cpython.pythread' */
+
+/* Module declarations from 'cpython.pystate' */
+
+/* Module declarations from 'cpython.cobject' */
+
+/* Module declarations from 'cpython.oldbuffer' */
+
+/* Module declarations from 'cpython.set' */
+
+/* Module declarations from 'cpython.buffer' */
+
+/* Module declarations from 'cpython.bytes' */
+
+/* Module declarations from 'cpython.pycapsule' */
+
+/* Module declarations from 'cpython' */
+
+/* Module declarations from 'CyLP.cy.CyCoinIndexedVector' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector = 0;
+
+/* Module declarations from 'CyLP.cy.CyClpPrimalColumnPivotBase' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase = 0;
 
 /* Module declarations from 'libc.stdlib' */
 
@@ -961,64 +1704,90 @@ static PyTypeObject *__pyx_ptype_5numpy_ndarray = 0;
 static PyTypeObject *__pyx_ptype_5numpy_ufunc = 0;
 static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *, char *, char *, int *); /*proto*/
 
+/* Module declarations from 'CyLP.cy.CyClpDualRowPivotBase' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase = 0;
+
+/* Module declarations from 'CyLP.cy.CyCoinModel' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_11CyCoinModel_CyCoinModel = 0;
+
 /* Module declarations from 'CyLP.cy.CyCoinPackedMatrix' */
 static PyTypeObject *__pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix = 0;
 
-/* Module declarations from 'CyLP.cy.CyCoinMpsIO' */
-static PyTypeObject *__pyx_ptype_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO = 0;
-#define __Pyx_MODULE_NAME "CyLP.cy.CyCoinMpsIO"
-int __pyx_module_is_main_CyLP__cy__CyCoinMpsIO = 0;
+/* Module declarations from 'CyLP.cy.CyCgl' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglCutGenerator = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglAllDifferent = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglClique = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglKnapsackCover = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglOddHole = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglFlowCover = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglGomory = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglRedSplit = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglLiftAndProject = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglLandP = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding2 = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglTwomir = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglResidualCapacity = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglPreProcess = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglProbing = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglSimpleRounding = 0;
 
-/* Implementation of 'CyLP.cy.CyCoinMpsIO' */
-static PyObject *__pyx_builtin_xrange;
+/* Module declarations from 'CyLP.cy.CyCbcNode' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_9CyCbcNode_CyCbcNode = 0;
+
+/* Module declarations from 'CyLP.cy.CyOsiSolverInterface' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface = 0;
+
+/* Module declarations from 'CyLP.cy.CyCbcModel' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_10CyCbcModel_CyCbcModel = 0;
+
+/* Module declarations from 'libc.string' */
+
+/* Module declarations from 'libcpp.string' */
+
+/* Module declarations from 'libcpp.vector' */
+
+/* Module declarations from 'CyLP.cy.CyClpSimplex' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_12CyClpSimplex_CyClpSimplex = 0;
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_12CyClpSimplex_VarStatus = 0;
+
+/* Module declarations from 'CyLP.cy.CyOsiCuts' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_9CyOsiCuts_CyOsiCuts = 0;
+
+/* Module declarations from 'CyLP.cy.CyCglTreeInfo' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo = 0;
+
+/* Module declarations from 'CyLP.cy.CyCglCutGeneratorBase' */
+static PyTypeObject *__pyx_ptype_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase = 0;
+static void __pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunGenerateCuts(void *, OsiSolverInterface *, CppOsiCuts *, CglTreeInfo); /*proto*/
+static CglCutGenerator *__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunCglClone(void *); /*proto*/
+#define __Pyx_MODULE_NAME "CyLP.cy.CyCglCutGeneratorBase"
+int __pyx_module_is_main_CyLP__cy__CyCglCutGeneratorBase = 0;
+
+/* Implementation of 'CyLP.cy.CyCglCutGeneratorBase' */
+static PyObject *__pyx_builtin_Exception;
 static PyObject *__pyx_builtin_ValueError;
 static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_RuntimeError;
-static int __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO___cinit__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_2readMps(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self, PyObject *__pyx_v_filename); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_4readQuadraticMps(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_filename, PyObject *__pyx_v_checkSymmetry); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static int __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_2__set__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self, PyObject *__pyx_v_h); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableLower___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableUpper___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintSigns___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13rightHandSide___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintRange___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintLower___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintUpper___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objCoefficients___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14integerColumns___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14QPColumnStarts___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_9QPColumns___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10QPElements___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByRow___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByCol___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objectiveOffset___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10nVariables___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_12nConstraints___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_getQpsExample(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
+static int __pyx_pf_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase___init__(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_v_self); /* proto */
+static void __pyx_pf_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_2__dealloc__(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_v_self); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
-static char __pyx_k_1[] = "../input/hs268.qps";
-static char __pyx_k_2[] = "ndarray is not C contiguous";
-static char __pyx_k_4[] = "ndarray is not Fortran contiguous";
-static char __pyx_k_6[] = "Non-native byte order not supported";
-static char __pyx_k_8[] = "unknown dtype code in numpy.pxd (%d)";
-static char __pyx_k_9[] = "Format string allocated too short, see comment in numpy.pxd";
-static char __pyx_k_12[] = "Format string allocated too short.";
-static char __pyx_k_14[] = "\nThis module interface COIN-OR's ``CoinMpsIO``. When you call\n:func:`CyLP.cy.CyClpSimplex.readMps` then ``CoinMpsIO``'s ``readMps`` is\ncalled.  The main reason why CyLP interfaces this class is to be able to read\nan ``mps`` file without creating a Simplex object. This way it is possible to\nread a QP using CoinMpsIO and work on the elements of the problem, e.g. the\nHessian,...\n";
-static char __pyx_k_15[] = "CyLP.py.utils.sparseUtil";
-static char __pyx_k_18[] = "/Users/mehdi/Documents/CyLP/CyLP/cy/CyCoinMpsIO.pyx";
-static char __pyx_k_19[] = "CyLP.cy.CyCoinMpsIO";
-static char __pyx_k_20[] = "CyCoinMpsIO.readMps (line 20)";
-static char __pyx_k_21[] = "\n        Read an mps file. Check if the file is a QP symmetrisize its Hessian\n        and store it.\n\n        >>> import numpy as np\n        >>> from CyLP.cy import CyCoinMpsIO\n        >>> from CyLP.cy.CyCoinMpsIO import getQpsExample\n        >>> problem = CyCoinMpsIO()\n        >>> problem.readMps(getQpsExample())\n        0\n        >>> problem.nVariables\n        5\n        >>> problem.nConstraints\n        5\n        >>> signs = problem.constraintSigns\n        >>> [chr(i) for i in signs] == problem.nConstraints * ['G']\n        True\n        >>> c = problem.matrixByRow\n        >>> (abs(c.elements - \n        ...     np.array([-1., -1., -1., -1., -1.,  10.,  10.,  -3.,\n        ...                5., 4.,  -8., 1., -2., -5., 3., 8., -1., 2.,\n        ...                5., -3.,  -4.,  -2., 3., -5., 1.])) < \n        ...                            10 ** -8).all()\n        True\n        >>> (c.indices ==\n        ...       np.array([0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1,\n        ...                 2, 3, 4, 0, 1, 2, 3, 4], dtype=np.int32)).all()\n        True\n        >>> (c.vectorStarts ==\n        ...        np.array([0, 5, 10, 15, 20, 25], dtype=np.int32)).all()\n        True\n        >>> (problem.rightHandSide ==\n        ...        np.array([-5., 20., -40., 11., -30.])).all()\n        True\n        >>> H = problem.Hessian.todense()\n        >>> (abs(H -\n        ... np.matrix([[20394., -24908., -2026., 3896., 658.],\n        ...            [-24908., 41818., -3466., -9828., -372.],\n        ...            [-2026., -3466., 3510., 2178., -348.],\n        ...            [3896., -9828., 2178., 3030., -44.],\n        ...            [658., -372., -348., -44., 54.]])) < \n        ...                            10 ** -8).all()\n        True\n\n        ";
+static char __pyx_k_1[] = "CyCglCutGenerator.pyx: generateCuts must be implemented.";
+static char __pyx_k_3[] = "ndarray is not C contiguous";
+static char __pyx_k_5[] = "ndarray is not Fortran contiguous";
+static char __pyx_k_7[] = "Non-native byte order not supported";
+static char __pyx_k_9[] = "unknown dtype code in numpy.pxd (%d)";
+static char __pyx_k_10[] = "Format string allocated too short, see comment in numpy.pxd";
+static char __pyx_k_13[] = "Format string allocated too short.";
+static char __pyx_k_15[] = "CyLP.cy.CyCglCutGeneratorBase";
+static char __pyx_k_16[] = "CyCglCutGeneratorBase";
 static char __pyx_k__B[] = "B";
 static char __pyx_k__H[] = "H";
 static char __pyx_k__I[] = "I";
 static char __pyx_k__L[] = "L";
 static char __pyx_k__O[] = "O";
 static char __pyx_k__Q[] = "Q";
-static char __pyx_k__T[] = "T";
 static char __pyx_k__b[] = "b";
 static char __pyx_k__d[] = "d";
 static char __pyx_k__f[] = "f";
@@ -1030,1675 +1799,269 @@ static char __pyx_k__q[] = "q";
 static char __pyx_k__Zd[] = "Zd";
 static char __pyx_k__Zf[] = "Zf";
 static char __pyx_k__Zg[] = "Zg";
-static char __pyx_k__os[] = "os";
-static char __pyx_k__join[] = "join";
-static char __pyx_k__path[] = "path";
 static char __pyx_k__range[] = "range";
-static char __pyx_k__scipy[] = "scipy";
-static char __pyx_k__shape[] = "shape";
-static char __pyx_k__sparse[] = "sparse";
-static char __pyx_k__xrange[] = "xrange";
-static char __pyx_k__curpath[] = "curpath";
-static char __pyx_k__dirname[] = "dirname";
-static char __pyx_k__getfile[] = "getfile";
-static char __pyx_k__inspect[] = "inspect";
 static char __pyx_k____main__[] = "__main__";
 static char __pyx_k____test__[] = "__test__";
-static char __pyx_k__filename[] = "filename";
-static char __pyx_k__QPColumns[] = "QPColumns";
-static char __pyx_k__QPElements[] = "QPElements";
+static char __pyx_k__Exception[] = "Exception";
 static char __pyx_k__ValueError[] = "ValueError";
-static char __pyx_k__nVariables[] = "nVariables";
 static char __pyx_k__RuntimeError[] = "RuntimeError";
-static char __pyx_k__currentframe[] = "currentframe";
-static char __pyx_k__nConstraints[] = "nConstraints";
-static char __pyx_k__checkSymmetry[] = "checkSymmetry";
-static char __pyx_k__getQpsExample[] = "getQpsExample";
-static char __pyx_k__QPColumnStarts[] = "QPColumnStarts";
-static char __pyx_k__csc_matrixPlus[] = "csc_matrixPlus";
-static char __pyx_k__csr_matrixPlus[] = "csr_matrixPlus";
 static PyObject *__pyx_kp_s_1;
-static PyObject *__pyx_kp_u_12;
+static PyObject *__pyx_kp_u_10;
+static PyObject *__pyx_kp_u_13;
 static PyObject *__pyx_n_s_15;
-static PyObject *__pyx_kp_s_18;
-static PyObject *__pyx_n_s_19;
-static PyObject *__pyx_kp_u_2;
-static PyObject *__pyx_kp_u_20;
-static PyObject *__pyx_kp_u_21;
-static PyObject *__pyx_kp_u_4;
-static PyObject *__pyx_kp_u_6;
-static PyObject *__pyx_kp_u_8;
+static PyObject *__pyx_n_s_16;
+static PyObject *__pyx_kp_u_3;
+static PyObject *__pyx_kp_u_5;
+static PyObject *__pyx_kp_u_7;
 static PyObject *__pyx_kp_u_9;
-static PyObject *__pyx_n_s__QPColumnStarts;
-static PyObject *__pyx_n_s__QPColumns;
-static PyObject *__pyx_n_s__QPElements;
+static PyObject *__pyx_n_s__Exception;
 static PyObject *__pyx_n_s__RuntimeError;
-static PyObject *__pyx_n_s__T;
 static PyObject *__pyx_n_s__ValueError;
 static PyObject *__pyx_n_s____main__;
 static PyObject *__pyx_n_s____test__;
-static PyObject *__pyx_n_s__checkSymmetry;
-static PyObject *__pyx_n_s__csc_matrixPlus;
-static PyObject *__pyx_n_s__csr_matrixPlus;
-static PyObject *__pyx_n_s__curpath;
-static PyObject *__pyx_n_s__currentframe;
-static PyObject *__pyx_n_s__dirname;
-static PyObject *__pyx_n_s__filename;
-static PyObject *__pyx_n_s__getQpsExample;
-static PyObject *__pyx_n_s__getfile;
-static PyObject *__pyx_n_s__inspect;
-static PyObject *__pyx_n_s__join;
-static PyObject *__pyx_n_s__nConstraints;
-static PyObject *__pyx_n_s__nVariables;
-static PyObject *__pyx_n_s__os;
-static PyObject *__pyx_n_s__path;
 static PyObject *__pyx_n_s__range;
-static PyObject *__pyx_n_s__scipy;
-static PyObject *__pyx_n_s__shape;
-static PyObject *__pyx_n_s__sparse;
-static PyObject *__pyx_n_s__xrange;
-static PyObject *__pyx_int_0;
-static PyObject *__pyx_int_2;
 static PyObject *__pyx_int_15;
-static PyObject *__pyx_k_tuple_3;
-static PyObject *__pyx_k_tuple_5;
-static PyObject *__pyx_k_tuple_7;
-static PyObject *__pyx_k_tuple_10;
+static PyObject *__pyx_k_tuple_2;
+static PyObject *__pyx_k_tuple_4;
+static PyObject *__pyx_k_tuple_6;
+static PyObject *__pyx_k_tuple_8;
 static PyObject *__pyx_k_tuple_11;
-static PyObject *__pyx_k_tuple_13;
-static PyObject *__pyx_k_tuple_16;
-static PyObject *__pyx_k_codeobj_17;
+static PyObject *__pyx_k_tuple_12;
+static PyObject *__pyx_k_tuple_14;
 
-/* Python wrapper */
-static int __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static int __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_1__cinit__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__cinit__ (wrapper)", 0);
-  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
-    __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
-  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__cinit__", 0))) return -1;
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO___cinit__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":16
+/* "CyLP/cy/CyCglCutGeneratorBase.pyx":6
+ * from CyLP.cy.CyCglCutGeneratorBase import CyCglCutGeneratorBase
  * 
- * cdef class CyCoinMpsIO:
- *     def __cinit__(self):             # <<<<<<<<<<<<<<
- *         self.CppSelf = new CppICoinMpsIO()
- *         self.Hessian = 0
+ * cdef void RunGenerateCuts(void *ptr, CppOsiSolverInterface *si,             # <<<<<<<<<<<<<<
+ *                                      CppOsiCuts *cs,
+ *                                      CppCglTreeInfo info):
  */
 
-static int __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO___cinit__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  int __pyx_r;
+static void __pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunGenerateCuts(void *__pyx_v_ptr, OsiSolverInterface *__pyx_v_si, CppOsiCuts *__pyx_v_cs, CglTreeInfo __pyx_v_info) {
   __Pyx_RefNannyDeclarations
-  ICoinMpsIO *__pyx_t_1;
+  PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__cinit__", 0);
+  __Pyx_RefNannySetupContext("RunGenerateCuts", 0);
 
-  /* "CyLP/cy/CyCoinMpsIO.pyx":17
- * cdef class CyCoinMpsIO:
- *     def __cinit__(self):
- *         self.CppSelf = new CppICoinMpsIO()             # <<<<<<<<<<<<<<
- *         self.Hessian = 0
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":9
+ *                                      CppOsiCuts *cs,
+ *                                      CppCglTreeInfo info):
+ *     (<CyCglCutGeneratorBase>(ptr)).generateCuts(si, cs, info)             # <<<<<<<<<<<<<<
  * 
+ * cdef CppCglCutGenerator* RunCglClone(void *ptr):
  */
-  try {__pyx_t_1 = new ICoinMpsIO();} catch(...) {__Pyx_CppExn2PyErr(); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 17; __pyx_clineno = __LINE__; goto __pyx_L1_error;}}
-  __pyx_v_self->CppSelf = __pyx_t_1;
+  __pyx_t_1 = ((struct __pyx_vtabstruct_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)__pyx_v_ptr)->__pyx_vtab)->generateCuts(((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)__pyx_v_ptr), __pyx_v_si, __pyx_v_cs, __pyx_v_info); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "CyLP/cy/CyCoinMpsIO.pyx":18
- *     def __cinit__(self):
- *         self.CppSelf = new CppICoinMpsIO()
- *         self.Hessian = 0             # <<<<<<<<<<<<<<
- * 
- *     def readMps(self, filename):
- */
-  __Pyx_INCREF(__pyx_int_0);
-  __Pyx_GIVEREF(__pyx_int_0);
-  __Pyx_GOTREF(__pyx_v_self->Hessian);
-  __Pyx_DECREF(__pyx_v_self->Hessian);
-  __pyx_v_self->Hessian = __pyx_int_0;
-
-  __pyx_r = 0;
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = -1;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_WriteUnraisable("CyLP.cy.CyCglCutGeneratorBase.RunGenerateCuts", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_L0:;
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "CyLP/cy/CyCglCutGeneratorBase.pyx":11
+ *     (<CyCglCutGeneratorBase>(ptr)).generateCuts(si, cs, info)
+ * 
+ * cdef CppCglCutGenerator* RunCglClone(void *ptr):             # <<<<<<<<<<<<<<
+ *     return (<CyCglCutGeneratorBase>(ptr)).clone()
+ * 
+ */
+
+static CglCutGenerator *__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunCglClone(void *__pyx_v_ptr) {
+  CglCutGenerator *__pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("RunCglClone", 0);
+
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":12
+ * 
+ * cdef CppCglCutGenerator* RunCglClone(void *ptr):
+ *     return (<CyCglCutGeneratorBase>(ptr)).clone()             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_r = ((struct __pyx_vtabstruct_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)__pyx_v_ptr)->__pyx_vtab)->clone(((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)__pyx_v_ptr));
+  goto __pyx_L0;
+
+  __pyx_r = 0;
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
 /* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_3readMps(PyObject *__pyx_v_self, PyObject *__pyx_v_filename); /*proto*/
-static char __pyx_doc_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_2readMps[] = "\n        Read an mps file. Check if the file is a QP symmetrisize its Hessian\n        and store it.\n\n        >>> import numpy as np\n        >>> from CyLP.cy import CyCoinMpsIO\n        >>> from CyLP.cy.CyCoinMpsIO import getQpsExample\n        >>> problem = CyCoinMpsIO()\n        >>> problem.readMps(getQpsExample())\n        0\n        >>> problem.nVariables\n        5\n        >>> problem.nConstraints\n        5\n        >>> signs = problem.constraintSigns\n        >>> [chr(i) for i in signs] == problem.nConstraints * ['G']\n        True\n        >>> c = problem.matrixByRow\n        >>> (abs(c.elements - \n        ...     np.array([-1., -1., -1., -1., -1.,  10.,  10.,  -3.,\n        ...                5., 4.,  -8., 1., -2., -5., 3., 8., -1., 2.,\n        ...                5., -3.,  -4.,  -2., 3., -5., 1.])) < \n        ...                            10 ** -8).all()\n        True\n        >>> (c.indices ==\n        ...       np.array([0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1,\n        ...                 2, 3, 4, 0, 1, 2, 3, 4], dtype=np.int32)).all()\n        True\n        >>> (c.vectorStarts ==\n        ...        np.array([0, 5, 10, 15, 20, 25], dtype=np.int32)).all()\n        True\n        >>> (problem.rightHandSide ==\n        ...        np.array([-5., 20., -40., 11., -30.])).all()\n        True\n        >>> H = problem.Hessian.todense()\n        >>> (abs(H -\n        ... np.matrix([[20394., -24908., -2026., 3896., 658.],\n        ...            [-24908., 41818., -3466., -9828., -372.],\n        ...            [-2026., -3466., 3510., 2178., -348.],\n        ...            [3896., -9828., 2178., 3030., -44.],\n        ...            [658., -372., -348., -44., 54.]])) < \n        ...                            10 ** -8).all()\n        True\n\n        ";
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_3readMps(PyObject *__pyx_v_self, PyObject *__pyx_v_filename) {
-  PyObject *__pyx_r = 0;
+static int __pyx_pw_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static int __pyx_pw_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_1__init__(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+  int __pyx_r;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("readMps (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_2readMps(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self), ((PyObject *)__pyx_v_filename));
+  __Pyx_RefNannySetupContext("__init__ (wrapper)", 0);
+  if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
+    __Pyx_RaiseArgtupleInvalid("__init__", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return -1;}
+  if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "__init__", 0))) return -1;
+  __pyx_r = __pyx_pf_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase___init__(((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)__pyx_v_self));
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-/* "CyLP/cy/CyCoinMpsIO.pyx":20
- *         self.Hessian = 0
+/* "CyLP/cy/CyCglCutGeneratorBase.pyx":16
  * 
- *     def readMps(self, filename):             # <<<<<<<<<<<<<<
- *         '''
- *         Read an mps file. Check if the file is a QP symmetrisize its Hessian
+ * cdef class CyCglCutGeneratorBase:
+ *     def __init__(self):             # <<<<<<<<<<<<<<
+ *         Py_INCREF(self)
+ *         self.CppSelf = new CppCglCutGeneratorBase(
  */
 
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_2readMps(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self, PyObject *__pyx_v_filename) {
-  int __pyx_v_ret;
-  PyObject *__pyx_v_start = NULL;
-  PyObject *__pyx_v_col = NULL;
-  PyObject *__pyx_v_el = NULL;
-  PyObject *__pyx_v_n = NULL;
-  PyObject *__pyx_v_Hessian = NULL;
-  CYTHON_UNUSED PyObject *__pyx_v_m = NULL;
-  PyObject *__pyx_v_i = NULL;
+static int __pyx_pf_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase___init__(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_v_self) {
+  int __pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__init__", 0);
+
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":17
+ * cdef class CyCglCutGeneratorBase:
+ *     def __init__(self):
+ *         Py_INCREF(self)             # <<<<<<<<<<<<<<
+ *         self.CppSelf = new CppCglCutGeneratorBase(
+ *             <cpy_ref.PyObject*>self,
+ */
+  Py_INCREF(((PyObject *)__pyx_v_self));
+
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":18
+ *     def __init__(self):
+ *         Py_INCREF(self)
+ *         self.CppSelf = new CppCglCutGeneratorBase(             # <<<<<<<<<<<<<<
+ *             <cpy_ref.PyObject*>self,
+ *             <runGenerateCuts_t>RunGenerateCuts,
+ */
+  __pyx_v_self->CppSelf = new CppCglCutGeneratorBase(((PyObject *)__pyx_v_self), ((runGenerateCuts_t)__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunGenerateCuts), ((runCglClone_t)__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunCglClone));
+
+  __pyx_r = 0;
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* Python wrapper */
+static void __pyx_pw_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_3__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_3__dealloc__(PyObject *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
+  __pyx_pf_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_2__dealloc__(((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)__pyx_v_self));
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "CyLP/cy/CyCglCutGeneratorBase.pyx":23
+ *             <runCglClone_t>RunCglClone)
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ *         Py_DECREF(self)
+ *         del self.CppSelf
+ */
+
+static void __pyx_pf_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_2__dealloc__(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__", 0);
+
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":24
+ * 
+ *     def __dealloc__(self):
+ *         Py_DECREF(self)             # <<<<<<<<<<<<<<
+ *         del self.CppSelf
+ * 
+ */
+  Py_DECREF(((PyObject *)__pyx_v_self));
+
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":25
+ *     def __dealloc__(self):
+ *         Py_DECREF(self)
+ *         del self.CppSelf             # <<<<<<<<<<<<<<
+ * 
+ *     cdef generateCuts(self, CppOsiSolverInterface *si,
+ */
+  delete __pyx_v_self->CppSelf;
+
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "CyLP/cy/CyCglCutGeneratorBase.pyx":27
+ *         del self.CppSelf
+ * 
+ *     cdef generateCuts(self, CppOsiSolverInterface *si,             # <<<<<<<<<<<<<<
+ *                                      CppOsiCuts *cs,
+ *                                      CppCglTreeInfo info):
+ */
+
+static PyObject *__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_generateCuts(CYTHON_UNUSED struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_v_self, CYTHON_UNUSED OsiSolverInterface *__pyx_v_si, CYTHON_UNUSED CppOsiCuts *__pyx_v_cs, CglTreeInfo __pyx_v_info) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  char *__pyx_t_1;
-  int __pyx_t_2;
-  int __pyx_t_3;
-  int __pyx_t_4;
-  PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
-  PyObject *__pyx_t_7 = NULL;
-  PyObject *__pyx_t_8 = NULL;
-  Py_ssize_t __pyx_t_9;
-  PyObject *(*__pyx_t_10)(PyObject *);
+  PyObject *__pyx_t_1 = NULL;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("readMps", 0);
+  __Pyx_RefNannySetupContext("generateCuts", 0);
 
-  /* "CyLP/cy/CyCoinMpsIO.pyx":67
- *         '''
- * 
- *         ret = self.CppSelf.readMps(filename)             # <<<<<<<<<<<<<<
- *         if ret == 0 and self.CppSelf.IreadQuadraticMps(NULL, 0) == 0:
- *             start = self.QPColumnStarts
- */
-  __pyx_t_1 = PyBytes_AsString(__pyx_v_filename); if (unlikely((!__pyx_t_1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v_ret = __pyx_v_self->CppSelf->readMps(__pyx_t_1);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":68
- * 
- *         ret = self.CppSelf.readMps(filename)
- *         if ret == 0 and self.CppSelf.IreadQuadraticMps(NULL, 0) == 0:             # <<<<<<<<<<<<<<
- *             start = self.QPColumnStarts
- *             col = self.QPColumns
- */
-  __pyx_t_2 = (__pyx_v_ret == 0);
-  if (__pyx_t_2) {
-    __pyx_t_3 = (__pyx_v_self->CppSelf->IreadQuadraticMps(NULL, 0) == 0);
-    __pyx_t_4 = __pyx_t_3;
-  } else {
-    __pyx_t_4 = __pyx_t_2;
-  }
-  if (__pyx_t_4) {
-
-    /* "CyLP/cy/CyCoinMpsIO.pyx":69
- *         ret = self.CppSelf.readMps(filename)
- *         if ret == 0 and self.CppSelf.IreadQuadraticMps(NULL, 0) == 0:
- *             start = self.QPColumnStarts             # <<<<<<<<<<<<<<
- *             col = self.QPColumns
- *             el = self.QPElements
- */
-    __pyx_t_5 = PyObject_GetAttr(((PyObject *)__pyx_v_self), __pyx_n_s__QPColumnStarts); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_v_start = __pyx_t_5;
-    __pyx_t_5 = 0;
-
-    /* "CyLP/cy/CyCoinMpsIO.pyx":70
- *         if ret == 0 and self.CppSelf.IreadQuadraticMps(NULL, 0) == 0:
- *             start = self.QPColumnStarts
- *             col = self.QPColumns             # <<<<<<<<<<<<<<
- *             el = self.QPElements
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":30
+ *                                      CppOsiCuts *cs,
+ *                                      CppCglTreeInfo info):
+ *         raise Exception('CyCglCutGenerator.pyx: generateCuts must' \             # <<<<<<<<<<<<<<
+ *                         ' be implemented.')
  * 
  */
-    __pyx_t_5 = PyObject_GetAttr(((PyObject *)__pyx_v_self), __pyx_n_s__QPColumns); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 70; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_v_col = __pyx_t_5;
-    __pyx_t_5 = 0;
+  __pyx_t_1 = PyObject_Call(__pyx_builtin_Exception, ((PyObject *)__pyx_k_tuple_2), NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_1);
+  __Pyx_Raise(__pyx_t_1, 0, 0, 0);
+  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
+  {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
 
-    /* "CyLP/cy/CyCoinMpsIO.pyx":71
- *             start = self.QPColumnStarts
- *             col = self.QPColumns
- *             el = self.QPElements             # <<<<<<<<<<<<<<
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("CyLP.cy.CyCglCutGeneratorBase.CyCglCutGeneratorBase.generateCuts", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = 0;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "CyLP/cy/CyCglCutGeneratorBase.pyx":33
+ *                         ' be implemented.')
  * 
- *             n = self.nVariables
+ *     cdef CppCglCutGenerator* clone(self):             # <<<<<<<<<<<<<<
+ *         cdef CppCglCutGenerator* ret =  \
+ *                 <CppCglCutGenerator*> new CppCglCutGeneratorBase(
  */
-    __pyx_t_5 = PyObject_GetAttr(((PyObject *)__pyx_v_self), __pyx_n_s__QPElements); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 71; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_v_el = __pyx_t_5;
-    __pyx_t_5 = 0;
 
-    /* "CyLP/cy/CyCoinMpsIO.pyx":73
- *             el = self.QPElements
- * 
- *             n = self.nVariables             # <<<<<<<<<<<<<<
- * 
- *             #Hessian = csc_matrixPlus((el,col,start), shape=(n, n))
- */
-    __pyx_t_5 = PyObject_GetAttr(((PyObject *)__pyx_v_self), __pyx_n_s__nVariables); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 73; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_v_n = __pyx_t_5;
-    __pyx_t_5 = 0;
+static CglCutGenerator *__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_clone(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *__pyx_v_self) {
+  CglCutGenerator *__pyx_v_ret;
+  CglCutGenerator *__pyx_r;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("clone", 0);
 
-    /* "CyLP/cy/CyCoinMpsIO.pyx":86
- *             #print Hessian.todense()
- * 
- *             Hessian = csr_matrixPlus((el, col, start), shape=(n, n))             # <<<<<<<<<<<<<<
- * 
- *             m = self.nConstraints
- */
-    __pyx_t_5 = __Pyx_GetName(__pyx_m, __pyx_n_s__csr_matrixPlus); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = PyTuple_New(3); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_INCREF(__pyx_v_el);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_el);
-    __Pyx_GIVEREF(__pyx_v_el);
-    __Pyx_INCREF(__pyx_v_col);
-    PyTuple_SET_ITEM(__pyx_t_6, 1, __pyx_v_col);
-    __Pyx_GIVEREF(__pyx_v_col);
-    __Pyx_INCREF(__pyx_v_start);
-    PyTuple_SET_ITEM(__pyx_t_6, 2, __pyx_v_start);
-    __Pyx_GIVEREF(__pyx_v_start);
-    __pyx_t_7 = PyTuple_New(1); if (unlikely(!__pyx_t_7)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_7);
-    PyTuple_SET_ITEM(__pyx_t_7, 0, ((PyObject *)__pyx_t_6));
-    __Pyx_GIVEREF(((PyObject *)__pyx_t_6));
-    __pyx_t_6 = 0;
-    __pyx_t_6 = PyDict_New(); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(((PyObject *)__pyx_t_6));
-    __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_INCREF(__pyx_v_n);
-    PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_v_n);
-    __Pyx_GIVEREF(__pyx_v_n);
-    __Pyx_INCREF(__pyx_v_n);
-    PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_v_n);
-    __Pyx_GIVEREF(__pyx_v_n);
-    if (PyDict_SetItem(__pyx_t_6, ((PyObject *)__pyx_n_s__shape), ((PyObject *)__pyx_t_8)) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(((PyObject *)__pyx_t_8)); __pyx_t_8 = 0;
-    __pyx_t_8 = PyObject_Call(__pyx_t_5, ((PyObject *)__pyx_t_7), ((PyObject *)__pyx_t_6)); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 86; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __Pyx_DECREF(((PyObject *)__pyx_t_7)); __pyx_t_7 = 0;
-    __Pyx_DECREF(((PyObject *)__pyx_t_6)); __pyx_t_6 = 0;
-    __pyx_v_Hessian = __pyx_t_8;
-    __pyx_t_8 = 0;
-
-    /* "CyLP/cy/CyCoinMpsIO.pyx":88
- *             Hessian = csr_matrixPlus((el, col, start), shape=(n, n))
- * 
- *             m = self.nConstraints             # <<<<<<<<<<<<<<
- * 
- * #            for i in xrange(n):
- */
-    __pyx_t_8 = PyObject_GetAttr(((PyObject *)__pyx_v_self), __pyx_n_s__nConstraints); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 88; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_v_m = __pyx_t_8;
-    __pyx_t_8 = 0;
-
-    /* "CyLP/cy/CyCoinMpsIO.pyx":94
- * #                    jCol = Hessian.indices[j]
- * #                    Hessian[jCol, i] = Hessian[i, jCol]
- *             Hessian = Hessian + Hessian.T             # <<<<<<<<<<<<<<
- *             for i in xrange(n):
- *                 Hessian[i, i] /= 2
- */
-    __pyx_t_8 = PyObject_GetAttr(__pyx_v_Hessian, __pyx_n_s__T); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 94; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_6 = PyNumber_Add(__pyx_v_Hessian, __pyx_t_8); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 94; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __Pyx_DECREF(__pyx_v_Hessian);
-    __pyx_v_Hessian = __pyx_t_6;
-    __pyx_t_6 = 0;
-
-    /* "CyLP/cy/CyCoinMpsIO.pyx":95
- * #                    Hessian[jCol, i] = Hessian[i, jCol]
- *             Hessian = Hessian + Hessian.T
- *             for i in xrange(n):             # <<<<<<<<<<<<<<
- *                 Hessian[i, i] /= 2
- *             self.Hessian = Hessian
- */
-    __pyx_t_6 = PyTuple_New(1); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_6);
-    __Pyx_INCREF(__pyx_v_n);
-    PyTuple_SET_ITEM(__pyx_t_6, 0, __pyx_v_n);
-    __Pyx_GIVEREF(__pyx_v_n);
-    __pyx_t_8 = PyObject_Call(__pyx_builtin_xrange, ((PyObject *)__pyx_t_6), NULL); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_8);
-    __Pyx_DECREF(((PyObject *)__pyx_t_6)); __pyx_t_6 = 0;
-    if (PyList_CheckExact(__pyx_t_8) || PyTuple_CheckExact(__pyx_t_8)) {
-      __pyx_t_6 = __pyx_t_8; __Pyx_INCREF(__pyx_t_6); __pyx_t_9 = 0;
-      __pyx_t_10 = NULL;
-    } else {
-      __pyx_t_9 = -1; __pyx_t_6 = PyObject_GetIter(__pyx_t_8); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_6);
-      __pyx_t_10 = Py_TYPE(__pyx_t_6)->tp_iternext;
-    }
-    __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    for (;;) {
-      if (!__pyx_t_10 && PyList_CheckExact(__pyx_t_6)) {
-        if (__pyx_t_9 >= PyList_GET_SIZE(__pyx_t_6)) break;
-        #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_8 = PyList_GET_ITEM(__pyx_t_6, __pyx_t_9); __Pyx_INCREF(__pyx_t_8); __pyx_t_9++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        #else
-        __pyx_t_8 = PySequence_ITEM(__pyx_t_6, __pyx_t_9); __pyx_t_9++; if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        #endif
-      } else if (!__pyx_t_10 && PyTuple_CheckExact(__pyx_t_6)) {
-        if (__pyx_t_9 >= PyTuple_GET_SIZE(__pyx_t_6)) break;
-        #if CYTHON_COMPILING_IN_CPYTHON
-        __pyx_t_8 = PyTuple_GET_ITEM(__pyx_t_6, __pyx_t_9); __Pyx_INCREF(__pyx_t_8); __pyx_t_9++; if (unlikely(0 < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        #else
-        __pyx_t_8 = PySequence_ITEM(__pyx_t_6, __pyx_t_9); __pyx_t_9++; if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-        #endif
-      } else {
-        __pyx_t_8 = __pyx_t_10(__pyx_t_6);
-        if (unlikely(!__pyx_t_8)) {
-          if (PyErr_Occurred()) {
-            if (likely(PyErr_ExceptionMatches(PyExc_StopIteration))) PyErr_Clear();
-            else {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-          }
-          break;
-        }
-        __Pyx_GOTREF(__pyx_t_8);
-      }
-      __Pyx_XDECREF(__pyx_v_i);
-      __pyx_v_i = __pyx_t_8;
-      __pyx_t_8 = 0;
-
-      /* "CyLP/cy/CyCoinMpsIO.pyx":96
- *             Hessian = Hessian + Hessian.T
- *             for i in xrange(n):
- *                 Hessian[i, i] /= 2             # <<<<<<<<<<<<<<
- *             self.Hessian = Hessian
- * 
- */
-      __pyx_t_8 = PyTuple_New(2); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_8);
-      __Pyx_INCREF(__pyx_v_i);
-      PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_v_i);
-      __Pyx_GIVEREF(__pyx_v_i);
-      __Pyx_INCREF(__pyx_v_i);
-      PyTuple_SET_ITEM(__pyx_t_8, 1, __pyx_v_i);
-      __Pyx_GIVEREF(__pyx_v_i);
-      __pyx_t_7 = PyObject_GetItem(__pyx_v_Hessian, ((PyObject *)__pyx_t_8)); if (!__pyx_t_7) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_7);
-      __pyx_t_5 = __Pyx_PyNumber_InPlaceDivide(__pyx_t_7, __pyx_int_2); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_GOTREF(__pyx_t_5);
-      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-      if (PyObject_SetItem(__pyx_v_Hessian, ((PyObject *)__pyx_t_8), __pyx_t_5) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 96; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-      __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-      __Pyx_DECREF(((PyObject *)__pyx_t_8)); __pyx_t_8 = 0;
-    }
-    __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-    /* "CyLP/cy/CyCoinMpsIO.pyx":97
- *             for i in xrange(n):
- *                 Hessian[i, i] /= 2
- *             self.Hessian = Hessian             # <<<<<<<<<<<<<<
- * 
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":38
+ *                                             <cpy_ref.PyObject*>self,
+ *                                             <runGenerateCuts_t>RunGenerateCuts,
+ *                                             <runCglClone_t>RunCglClone)             # <<<<<<<<<<<<<<
  *         return ret
- */
-    __Pyx_INCREF(__pyx_v_Hessian);
-    __Pyx_GIVEREF(__pyx_v_Hessian);
-    __Pyx_GOTREF(__pyx_v_self->Hessian);
-    __Pyx_DECREF(__pyx_v_self->Hessian);
-    __pyx_v_self->Hessian = __pyx_v_Hessian;
-    goto __pyx_L3;
-  }
-  __pyx_L3:;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":99
- *             self.Hessian = Hessian
  * 
+ */
+  __pyx_v_ret = ((CglCutGenerator *)new CppCglCutGeneratorBase(((PyObject *)__pyx_v_self), ((runGenerateCuts_t)__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunGenerateCuts), ((runCglClone_t)__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunCglClone)));
+
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":39
+ *                                             <runGenerateCuts_t>RunGenerateCuts,
+ *                                             <runCglClone_t>RunCglClone)
  *         return ret             # <<<<<<<<<<<<<<
  * 
- *     def readQuadraticMps(self, filename, checkSymmetry):
+ * #    cdef CyClpSimplex.CppIClpSimplex* model(self):
  */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_6 = PyInt_FromLong(__pyx_v_ret); if (unlikely(!__pyx_t_6)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 99; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_6);
-  __pyx_r = __pyx_t_6;
-  __pyx_t_6 = 0;
+  __pyx_r = __pyx_v_ret;
   goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
-  __Pyx_XDECREF(__pyx_t_7);
-  __Pyx_XDECREF(__pyx_t_8);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.readMps", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_start);
-  __Pyx_XDECREF(__pyx_v_col);
-  __Pyx_XDECREF(__pyx_v_el);
-  __Pyx_XDECREF(__pyx_v_n);
-  __Pyx_XDECREF(__pyx_v_Hessian);
-  __Pyx_XDECREF(__pyx_v_m);
-  __Pyx_XDECREF(__pyx_v_i);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_5readQuadraticMps(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_5readQuadraticMps(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
-  CYTHON_UNUSED PyObject *__pyx_v_filename = 0;
-  PyObject *__pyx_v_checkSymmetry = 0;
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("readQuadraticMps (wrapper)", 0);
-  {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s__filename,&__pyx_n_s__checkSymmetry,0};
-    PyObject* values[2] = {0,0};
-    if (unlikely(__pyx_kwds)) {
-      Py_ssize_t kw_args;
-      const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
-      switch (pos_args) {
-        case  2: values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-        case  1: values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-        case  0: break;
-        default: goto __pyx_L5_argtuple_error;
-      }
-      kw_args = PyDict_Size(__pyx_kwds);
-      switch (pos_args) {
-        case  0:
-        if (likely((values[0] = PyDict_GetItem(__pyx_kwds, __pyx_n_s__filename)) != 0)) kw_args--;
-        else goto __pyx_L5_argtuple_error;
-        case  1:
-        if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s__checkSymmetry)) != 0)) kw_args--;
-        else {
-          __Pyx_RaiseArgtupleInvalid("readQuadraticMps", 1, 2, 2, 1); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-        }
-      }
-      if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "readQuadraticMps") < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-      }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
-      goto __pyx_L5_argtuple_error;
-    } else {
-      values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
-      values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
-    }
-    __pyx_v_filename = values[0];
-    __pyx_v_checkSymmetry = values[1];
-  }
-  goto __pyx_L4_argument_unpacking_done;
-  __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("readQuadraticMps", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); {__pyx_filename = __pyx_f[0]; __pyx_lineno = 101; __pyx_clineno = __LINE__; goto __pyx_L3_error;}
-  __pyx_L3_error:;
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.readQuadraticMps", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __Pyx_RefNannyFinishContext();
-  return NULL;
-  __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_4readQuadraticMps(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self), __pyx_v_filename, __pyx_v_checkSymmetry);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":101
- *         return ret
- * 
- *     def readQuadraticMps(self, filename, checkSymmetry):             # <<<<<<<<<<<<<<
- *         return self.CppSelf.IreadQuadraticMps(NULL, checkSymmetry)
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_4readQuadraticMps(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v_filename, PyObject *__pyx_v_checkSymmetry) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("readQuadraticMps", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":102
- * 
- *     def readQuadraticMps(self, filename, checkSymmetry):
- *         return self.CppSelf.IreadQuadraticMps(NULL, checkSymmetry)             # <<<<<<<<<<<<<<
- * 
- *     property Hessian:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_AsInt(__pyx_v_checkSymmetry); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_2 = PyInt_FromLong(__pyx_v_self->CppSelf->IreadQuadraticMps(NULL, __pyx_t_1)); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 102; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_r = __pyx_t_2;
-  __pyx_t_2 = 0;
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.readQuadraticMps", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":105
- * 
- *     property Hessian:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return self.Hessian
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":106
- *     property Hessian:
- *         def __get__(self):
- *             return self.Hessian             # <<<<<<<<<<<<<<
- * 
- *         def __set__(self, h):
- */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(__pyx_v_self->Hessian);
-  __pyx_r = __pyx_v_self->Hessian;
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static int __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_h); /*proto*/
-static int __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_3__set__(PyObject *__pyx_v_self, PyObject *__pyx_v_h) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__set__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_2__set__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self), ((PyObject *)__pyx_v_h));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":108
- *             return self.Hessian
- * 
- *         def __set__(self, h):             # <<<<<<<<<<<<<<
- *             self.Hessian = h
- * 
- */
-
-static int __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_2__set__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self, PyObject *__pyx_v_h) {
-  int __pyx_r;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__set__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":109
- * 
- *         def __set__(self, h):
- *             self.Hessian = h             # <<<<<<<<<<<<<<
- * 
- *     property variableLower:
- */
-  __Pyx_INCREF(__pyx_v_h);
-  __Pyx_GIVEREF(__pyx_v_h);
-  __Pyx_GOTREF(__pyx_v_self->Hessian);
-  __Pyx_DECREF(__pyx_v_self->Hessian);
-  __pyx_v_self->Hessian = __pyx_v_h;
 
   __pyx_r = 0;
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableLower_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableLower_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableLower___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":112
- * 
- *     property variableLower:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getColLower()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableLower___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":113
- *     property variableLower:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getColLower()             # <<<<<<<<<<<<<<
- * 
- *     property variableUpper:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getColLower();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableUpper_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableUpper_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableUpper___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":116
- * 
- *     property variableUpper:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getColUpper()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableUpper___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":117
- *     property variableUpper:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getColUpper()             # <<<<<<<<<<<<<<
- * 
- *     property constraintSigns:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getColUpper();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintSigns_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintSigns_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintSigns___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":120
- * 
- *     property constraintSigns:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getRowSense()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintSigns___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":121
- *     property constraintSigns:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getRowSense()             # <<<<<<<<<<<<<<
- * 
- *     property rightHandSide:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getRowSense();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13rightHandSide_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13rightHandSide_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13rightHandSide___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":124
- * 
- *     property rightHandSide:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getRightHandSide()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13rightHandSide___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":125
- *     property rightHandSide:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getRightHandSide()             # <<<<<<<<<<<<<<
- * 
- *     property constraintRange:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getRightHandSide();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintRange_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintRange_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintRange___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":128
- * 
- *     property constraintRange:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getRowRange()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintRange___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":129
- *     property constraintRange:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getRowRange()             # <<<<<<<<<<<<<<
- * 
- *     property constraintLower:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getRowRange();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintLower_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintLower_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintLower___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":132
- * 
- *     property constraintLower:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getRowLower()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintLower___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":133
- *     property constraintLower:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getRowLower()             # <<<<<<<<<<<<<<
- * 
- *     property constraintUpper:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getRowLower();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintUpper_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintUpper_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintUpper___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":136
- * 
- *     property constraintUpper:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getRowUpper()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintUpper___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":137
- *     property constraintUpper:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getRowUpper()             # <<<<<<<<<<<<<<
- * 
- *     property objCoefficients:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getRowUpper();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objCoefficients_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objCoefficients_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objCoefficients___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":140
- * 
- *     property objCoefficients:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_getObjCoefficients()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objCoefficients___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":141
- *     property objCoefficients:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_getObjCoefficients()             # <<<<<<<<<<<<<<
- * 
- *     property integerColumns:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_getObjCoefficients();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14integerColumns_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14integerColumns_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14integerColumns___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":144
- * 
- *     property integerColumns:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.np_integerColumns()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14integerColumns___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":145
- *     property integerColumns:
- *         def __get__(self):
- *             return <object>self.CppSelf.np_integerColumns()             # <<<<<<<<<<<<<<
- * 
- *     property QPColumnStarts:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->np_integerColumns();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14QPColumnStarts_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14QPColumnStarts_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14QPColumnStarts___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":148
- * 
- *     property QPColumnStarts:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.getQPColumnStarts()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14QPColumnStarts___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":149
- *     property QPColumnStarts:
- *         def __get__(self):
- *             return <object>self.CppSelf.getQPColumnStarts()             # <<<<<<<<<<<<<<
- * 
- *     property QPColumns:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->getQPColumnStarts();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_9QPColumns_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_9QPColumns_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_9QPColumns___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":152
- * 
- *     property QPColumns:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.getQPColumns()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_9QPColumns___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":153
- *     property QPColumns:
- *         def __get__(self):
- *             return <object>self.CppSelf.getQPColumns()             # <<<<<<<<<<<<<<
- * 
- *     property QPElements:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->getQPColumns();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10QPElements_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10QPElements_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10QPElements___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":156
- * 
- *     property QPElements:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return <object>self.CppSelf.getQPElements()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10QPElements___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":157
- *     property QPElements:
- *         def __get__(self):
- *             return <object>self.CppSelf.getQPElements()             # <<<<<<<<<<<<<<
- * 
- *     property matrixByRow:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __pyx_v_self->CppSelf->getQPElements();
-  __Pyx_INCREF(((PyObject *)__pyx_t_1));
-  __pyx_r = ((PyObject *)__pyx_t_1);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByRow_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByRow_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByRow___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":160
- * 
- *     property matrixByRow:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByRow()
- *             cym = CyCoinPackedMatrix()
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByRow___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  ICoinPackedMatrix *__pyx_v_m;
-  struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix *__pyx_v_cym = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":161
- *     property matrixByRow:
- *         def __get__(self):
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByRow()             # <<<<<<<<<<<<<<
- *             cym = CyCoinPackedMatrix()
- *             cym.CppSelf = m
- */
-  __pyx_v_m = __pyx_v_self->CppSelf->IgetMatrixByRow();
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":162
- *         def __get__(self):
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByRow()
- *             cym = CyCoinPackedMatrix()             # <<<<<<<<<<<<<<
- *             cym.CppSelf = m
- *             return cym
- */
-  __pyx_t_1 = PyObject_Call(((PyObject *)((PyObject*)__pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix)), ((PyObject *)__pyx_empty_tuple), NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 162; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_cym = ((struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix *)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":163
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByRow()
- *             cym = CyCoinPackedMatrix()
- *             cym.CppSelf = m             # <<<<<<<<<<<<<<
- *             return cym
- * 
- */
-  __pyx_v_cym->CppSelf = __pyx_v_m;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":164
- *             cym = CyCoinPackedMatrix()
- *             cym.CppSelf = m
- *             return cym             # <<<<<<<<<<<<<<
- * 
- *     property matrixByCol:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)__pyx_v_cym));
-  __pyx_r = ((PyObject *)__pyx_v_cym);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByRow.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF((PyObject *)__pyx_v_cym);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByCol_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByCol_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByCol___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":167
- * 
- *     property matrixByCol:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByCol()
- *             cym = CyCoinPackedMatrix()
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByCol___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  ICoinPackedMatrix *__pyx_v_m;
-  struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix *__pyx_v_cym = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":168
- *     property matrixByCol:
- *         def __get__(self):
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByCol()             # <<<<<<<<<<<<<<
- *             cym = CyCoinPackedMatrix()
- *             cym.CppSelf = m
- */
-  __pyx_v_m = __pyx_v_self->CppSelf->IgetMatrixByCol();
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":169
- *         def __get__(self):
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByCol()
- *             cym = CyCoinPackedMatrix()             # <<<<<<<<<<<<<<
- *             cym.CppSelf = m
- *             return cym
- */
-  __pyx_t_1 = PyObject_Call(((PyObject *)((PyObject*)__pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix)), ((PyObject *)__pyx_empty_tuple), NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 169; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_cym = ((struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix *)__pyx_t_1);
-  __pyx_t_1 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":170
- *             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByCol()
- *             cym = CyCoinPackedMatrix()
- *             cym.CppSelf = m             # <<<<<<<<<<<<<<
- *             return cym
- * 
- */
-  __pyx_v_cym->CppSelf = __pyx_v_m;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":171
- *             cym = CyCoinPackedMatrix()
- *             cym.CppSelf = m
- *             return cym             # <<<<<<<<<<<<<<
- * 
- *     property objectiveOffset:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)__pyx_v_cym));
-  __pyx_r = ((PyObject *)__pyx_v_cym);
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByCol.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF((PyObject *)__pyx_v_cym);
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objectiveOffset_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objectiveOffset_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objectiveOffset___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":174
- * 
- *     property objectiveOffset:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return self.CppSelf.getObjectiveOffset()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objectiveOffset___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":175
- *     property objectiveOffset:
- *         def __get__(self):
- *             return self.CppSelf.getObjectiveOffset()             # <<<<<<<<<<<<<<
- * 
- *     property nVariables:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyFloat_FromDouble(__pyx_v_self->CppSelf->getObjectiveOffset()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 175; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.objectiveOffset.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10nVariables_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10nVariables_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10nVariables___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":178
- * 
- *     property nVariables:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return self.CppSelf.getNumCols()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10nVariables___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":179
- *     property nVariables:
- *         def __get__(self):
- *             return self.CppSelf.getNumCols()             # <<<<<<<<<<<<<<
- * 
- *     property nConstraints:
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyInt_FromLong(__pyx_v_self->CppSelf->getNumCols()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 179; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.nVariables.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_12nConstraints_1__get__(PyObject *__pyx_v_self); /*proto*/
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_12nConstraints_1__get__(PyObject *__pyx_v_self) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("__get__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_12nConstraints___get__(((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)__pyx_v_self));
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":182
- * 
- *     property nConstraints:
- *         def __get__(self):             # <<<<<<<<<<<<<<
- *             return self.CppSelf.getNumRows()
- * 
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_12nConstraints___get__(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *__pyx_v_self) {
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("__get__", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":183
- *     property nConstraints:
- *         def __get__(self):
- *             return self.CppSelf.getNumRows()             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = PyInt_FromLong(__pyx_v_self->CppSelf->getNumRows()); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 183; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_r = __pyx_t_1;
-  __pyx_t_1 = 0;
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO.nConstraints.__get__", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* Python wrapper */
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_1getQpsExample(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_4CyLP_2cy_11CyCoinMpsIO_getQpsExample[] = "\n    Return full path to a QPS example file for doctests\n    ";
-static PyMethodDef __pyx_mdef_4CyLP_2cy_11CyCoinMpsIO_1getQpsExample = {__Pyx_NAMESTR("getQpsExample"), (PyCFunction)__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_1getQpsExample, METH_NOARGS, __Pyx_DOCSTR(__pyx_doc_4CyLP_2cy_11CyCoinMpsIO_getQpsExample)};
-static PyObject *__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_1getQpsExample(PyObject *__pyx_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("getQpsExample (wrapper)", 0);
-  __pyx_r = __pyx_pf_4CyLP_2cy_11CyCoinMpsIO_getQpsExample(__pyx_self);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "CyLP/cy/CyCoinMpsIO.pyx":186
- * 
- * 
- * def getQpsExample():             # <<<<<<<<<<<<<<
- *     '''
- *     Return full path to a QPS example file for doctests
- */
-
-static PyObject *__pyx_pf_4CyLP_2cy_11CyCoinMpsIO_getQpsExample(CYTHON_UNUSED PyObject *__pyx_self) {
-  PyObject *__pyx_v_os = NULL;
-  PyObject *__pyx_v_inspect = NULL;
-  PyObject *__pyx_v_curpath = NULL;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  int __pyx_lineno = 0;
-  const char *__pyx_filename = NULL;
-  int __pyx_clineno = 0;
-  __Pyx_RefNannySetupContext("getQpsExample", 0);
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":190
- *     Return full path to a QPS example file for doctests
- *     '''
- *     import os             # <<<<<<<<<<<<<<
- *     import inspect
- *     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
- */
-  __pyx_t_1 = __Pyx_Import(((PyObject *)__pyx_n_s__os), 0, -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 190; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_os = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":191
- *     '''
- *     import os
- *     import inspect             # <<<<<<<<<<<<<<
- *     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
- *     return os.path.join(curpath, '../input/hs268.qps')
- */
-  __pyx_t_1 = __Pyx_Import(((PyObject *)__pyx_n_s__inspect), 0, -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 191; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_v_inspect = __pyx_t_1;
-  __pyx_t_1 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":192
- *     import os
- *     import inspect
- *     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))             # <<<<<<<<<<<<<<
- *     return os.path.join(curpath, '../input/hs268.qps')
- * 
- */
-  __pyx_t_1 = PyObject_GetAttr(__pyx_v_os, __pyx_n_s__path); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = PyObject_GetAttr(__pyx_t_1, __pyx_n_s__dirname); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = PyObject_GetAttr(__pyx_v_inspect, __pyx_n_s__getfile); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyObject_GetAttr(__pyx_v_inspect, __pyx_n_s__currentframe); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = PyObject_Call(__pyx_t_3, ((PyObject *)__pyx_empty_tuple), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
-  __Pyx_GIVEREF(__pyx_t_4);
-  __pyx_t_4 = 0;
-  __pyx_t_4 = PyObject_Call(__pyx_t_1, ((PyObject *)__pyx_t_3), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __Pyx_DECREF(((PyObject *)__pyx_t_3)); __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_4);
-  __Pyx_GIVEREF(__pyx_t_4);
-  __pyx_t_4 = 0;
-  __pyx_t_4 = PyObject_Call(__pyx_t_2, ((PyObject *)__pyx_t_3), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 192; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(((PyObject *)__pyx_t_3)); __pyx_t_3 = 0;
-  __pyx_v_curpath = __pyx_t_4;
-  __pyx_t_4 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":193
- *     import inspect
- *     curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
- *     return os.path.join(curpath, '../input/hs268.qps')             # <<<<<<<<<<<<<<
- * 
- * 
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_4 = PyObject_GetAttr(__pyx_v_os, __pyx_n_s__path); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_3 = PyObject_GetAttr(__pyx_t_4, __pyx_n_s__join); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_INCREF(__pyx_v_curpath);
-  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_v_curpath);
-  __Pyx_GIVEREF(__pyx_v_curpath);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_s_1));
-  PyTuple_SET_ITEM(__pyx_t_4, 1, ((PyObject *)__pyx_kp_s_1));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_s_1));
-  __pyx_t_2 = PyObject_Call(__pyx_t_3, ((PyObject *)__pyx_t_4), NULL); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 193; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(((PyObject *)__pyx_t_4)); __pyx_t_4 = 0;
-  __pyx_r = __pyx_t_2;
-  __pyx_t_2 = 0;
-  goto __pyx_L0;
-
-  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
-  goto __pyx_L0;
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_AddTraceback("CyLP.cy.CyCoinMpsIO.getQpsExample", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XDECREF(__pyx_v_os);
-  __Pyx_XDECREF(__pyx_v_inspect);
-  __Pyx_XDECREF(__pyx_v_curpath);
-  __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
@@ -2859,7 +2222,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  * 
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)
  */
-    __pyx_t_4 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_3), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_4), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -2899,7 +2262,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  * 
  *             info.buf = PyArray_DATA(self)
  */
-    __pyx_t_4 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_5), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    __pyx_t_4 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_6), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     __Pyx_GOTREF(__pyx_t_4);
     __Pyx_Raise(__pyx_t_4, 0, 0, 0);
     __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -3172,7 +2535,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  *                 if   t == NPY_BYTE:        f = "b"
  *                 elif t == NPY_UBYTE:       f = "B"
  */
-      __pyx_t_4 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_7), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_4 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_8), NULL); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
       __Pyx_Raise(__pyx_t_4, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
@@ -3412,7 +2775,7 @@ static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, P
  */
       __pyx_t_4 = PyInt_FromLong(__pyx_v_t); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_4);
-      __pyx_t_8 = PyNumber_Remainder(((PyObject *)__pyx_kp_u_8), __pyx_t_4); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_8 = PyNumber_Remainder(((PyObject *)__pyx_kp_u_9), __pyx_t_4); if (unlikely(!__pyx_t_8)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(((PyObject *)__pyx_t_8));
       __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
       __pyx_t_4 = PyTuple_New(1); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 276; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -3986,7 +3349,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  * 
  *         if ((child.byteorder == c'>' and little_endian) or
  */
-      __pyx_t_5 = PyObject_Call(__pyx_builtin_RuntimeError, ((PyObject *)__pyx_k_tuple_10), NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PyObject_Call(__pyx_builtin_RuntimeError, ((PyObject *)__pyx_k_tuple_11), NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -4037,7 +3400,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  *             # One could encode it in the format string and have Cython
  *             # complain instead, BUT: < and > in format strings also imply
  */
-      __pyx_t_5 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_11), NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 803; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+      __pyx_t_5 = PyObject_Call(__pyx_builtin_ValueError, ((PyObject *)__pyx_k_tuple_12), NULL); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 803; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
       __Pyx_GOTREF(__pyx_t_5);
       __Pyx_Raise(__pyx_t_5, 0, 0, 0);
       __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
@@ -4141,7 +3504,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  * 
  *             # Until ticket #99 is fixed, use integers to avoid warnings
  */
-        __pyx_t_3 = PyObject_Call(__pyx_builtin_RuntimeError, ((PyObject *)__pyx_k_tuple_13), NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_3 = PyObject_Call(__pyx_builtin_RuntimeError, ((PyObject *)__pyx_k_tuple_14), NULL); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
         __Pyx_Raise(__pyx_t_3, 0, 0, 0);
         __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
@@ -4470,7 +3833,7 @@ static CYTHON_INLINE char *__pyx_f_5numpy__util_dtypestring(PyArray_Descr *__pyx
  *             f += 1
  *         else:
  */
-        __pyx_t_5 = PyNumber_Remainder(((PyObject *)__pyx_kp_u_8), __pyx_v_t); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+        __pyx_t_5 = PyNumber_Remainder(((PyObject *)__pyx_kp_u_9), __pyx_v_t); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(((PyObject *)__pyx_t_5));
         __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 844; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
         __Pyx_GOTREF(__pyx_t_3);
@@ -4675,156 +4038,58 @@ static CYTHON_INLINE PyObject *__pyx_f_5numpy_get_array_base(PyArrayObject *__py
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
+static struct __pyx_vtabstruct_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase __pyx_vtable_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase;
 
-static PyObject *__pyx_tp_new_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
-  struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *p;
+static PyObject *__pyx_tp_new_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase(PyTypeObject *t, CYTHON_UNUSED PyObject *a, CYTHON_UNUSED PyObject *k) {
+  struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *p;
   PyObject *o = (*t->tp_alloc)(t, 0);
   if (!o) return 0;
-  p = ((struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)o);
-  p->Hessian = Py_None; Py_INCREF(Py_None);
-  if (__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_1__cinit__(o, __pyx_empty_tuple, NULL) < 0) {
-    Py_DECREF(o); o = 0;
-  }
+  p = ((struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)o);
+  p->__pyx_vtab = __pyx_vtabptr_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase;
+  p->cyModel = ((struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *)Py_None); Py_INCREF(Py_None);
   return o;
 }
 
-static void __pyx_tp_dealloc_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO(PyObject *o) {
-  struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *p = (struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)o;
+static void __pyx_tp_dealloc_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase(PyObject *o) {
+  struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *p = (struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)o;
   PyObject_GC_UnTrack(o);
-  Py_CLEAR(p->Hessian);
+  {
+    PyObject *etype, *eval, *etb;
+    PyErr_Fetch(&etype, &eval, &etb);
+    ++Py_REFCNT(o);
+    __pyx_pw_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_3__dealloc__(o);
+    if (PyErr_Occurred()) PyErr_WriteUnraisable(o);
+    --Py_REFCNT(o);
+    PyErr_Restore(etype, eval, etb);
+  }
+  Py_CLEAR(p->cyModel);
   PyObject_GC_Track(o);
   (*Py_TYPE(o)->tp_free)(o);
 }
 
-static int __pyx_tp_traverse_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO(PyObject *o, visitproc v, void *a) {
+static int __pyx_tp_traverse_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase(PyObject *o, visitproc v, void *a) {
   int e;
-  struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *p = (struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)o;
-  if (p->Hessian) {
-    e = (*v)(p->Hessian, a); if (e) return e;
+  struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *p = (struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)o;
+  if (p->cyModel) {
+    e = (*v)(((PyObject*)p->cyModel), a); if (e) return e;
   }
   return 0;
 }
 
-static int __pyx_tp_clear_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO(PyObject *o) {
-  struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *p = (struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO *)o;
+static int __pyx_tp_clear_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase(PyObject *o) {
+  struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *p = (struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *)o;
   PyObject* tmp;
-  tmp = ((PyObject*)p->Hessian);
-  p->Hessian = Py_None; Py_INCREF(Py_None);
+  tmp = ((PyObject*)p->cyModel);
+  p->cyModel = ((struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex *)Py_None); Py_INCREF(Py_None);
   Py_XDECREF(tmp);
   return 0;
 }
 
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_Hessian(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_1__get__(o);
-}
-
-static int __pyx_setprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_Hessian(PyObject *o, PyObject *v, CYTHON_UNUSED void *x) {
-  if (v) {
-    return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_7Hessian_3__set__(o, v);
-  }
-  else {
-    PyErr_SetString(PyExc_NotImplementedError, "__del__");
-    return -1;
-  }
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_variableLower(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableLower_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_variableUpper(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13variableUpper_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintSigns(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintSigns_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_rightHandSide(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_13rightHandSide_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintRange(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintRange_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintLower(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintLower_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintUpper(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15constraintUpper_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_objCoefficients(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objCoefficients_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_integerColumns(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14integerColumns_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_QPColumnStarts(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_14QPColumnStarts_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_QPColumns(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_9QPColumns_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_QPElements(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10QPElements_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_matrixByRow(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByRow_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_matrixByCol(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_11matrixByCol_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_objectiveOffset(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_15objectiveOffset_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_nVariables(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_10nVariables_1__get__(o);
-}
-
-static PyObject *__pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_nConstraints(PyObject *o, CYTHON_UNUSED void *x) {
-  return __pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_12nConstraints_1__get__(o);
-}
-
-static PyMethodDef __pyx_methods_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO[] = {
-  {__Pyx_NAMESTR("readMps"), (PyCFunction)__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_3readMps, METH_O, __Pyx_DOCSTR(__pyx_doc_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_2readMps)},
-  {__Pyx_NAMESTR("readQuadraticMps"), (PyCFunction)__pyx_pw_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_5readQuadraticMps, METH_VARARGS|METH_KEYWORDS, __Pyx_DOCSTR(0)},
+static PyMethodDef __pyx_methods_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase[] = {
   {0, 0, 0, 0}
 };
 
-static struct PyGetSetDef __pyx_getsets_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO[] = {
-  {(char *)"Hessian", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_Hessian, __pyx_setprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_Hessian, 0, 0},
-  {(char *)"variableLower", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_variableLower, 0, 0, 0},
-  {(char *)"variableUpper", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_variableUpper, 0, 0, 0},
-  {(char *)"constraintSigns", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintSigns, 0, 0, 0},
-  {(char *)"rightHandSide", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_rightHandSide, 0, 0, 0},
-  {(char *)"constraintRange", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintRange, 0, 0, 0},
-  {(char *)"constraintLower", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintLower, 0, 0, 0},
-  {(char *)"constraintUpper", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_constraintUpper, 0, 0, 0},
-  {(char *)"objCoefficients", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_objCoefficients, 0, 0, 0},
-  {(char *)"integerColumns", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_integerColumns, 0, 0, 0},
-  {(char *)"QPColumnStarts", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_QPColumnStarts, 0, 0, 0},
-  {(char *)"QPColumns", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_QPColumns, 0, 0, 0},
-  {(char *)"QPElements", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_QPElements, 0, 0, 0},
-  {(char *)"matrixByRow", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_matrixByRow, 0, 0, 0},
-  {(char *)"matrixByCol", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_matrixByCol, 0, 0, 0},
-  {(char *)"objectiveOffset", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_objectiveOffset, 0, 0, 0},
-  {(char *)"nVariables", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_nVariables, 0, 0, 0},
-  {(char *)"nConstraints", __pyx_getprop_4CyLP_2cy_11CyCoinMpsIO_11CyCoinMpsIO_nConstraints, 0, 0, 0},
-  {0, 0, 0, 0, 0}
-};
-
-static PyNumberMethods __pyx_tp_as_number_CyCoinMpsIO = {
+static PyNumberMethods __pyx_tp_as_number_CyCglCutGeneratorBase = {
   0, /*nb_add*/
   0, /*nb_subtract*/
   0, /*nb_multiply*/
@@ -4882,7 +4147,7 @@ static PyNumberMethods __pyx_tp_as_number_CyCoinMpsIO = {
   #endif
 };
 
-static PySequenceMethods __pyx_tp_as_sequence_CyCoinMpsIO = {
+static PySequenceMethods __pyx_tp_as_sequence_CyCglCutGeneratorBase = {
   0, /*sq_length*/
   0, /*sq_concat*/
   0, /*sq_repeat*/
@@ -4895,13 +4160,13 @@ static PySequenceMethods __pyx_tp_as_sequence_CyCoinMpsIO = {
   0, /*sq_inplace_repeat*/
 };
 
-static PyMappingMethods __pyx_tp_as_mapping_CyCoinMpsIO = {
+static PyMappingMethods __pyx_tp_as_mapping_CyCglCutGeneratorBase = {
   0, /*mp_length*/
   0, /*mp_subscript*/
   0, /*mp_ass_subscript*/
 };
 
-static PyBufferProcs __pyx_tp_as_buffer_CyCoinMpsIO = {
+static PyBufferProcs __pyx_tp_as_buffer_CyCglCutGeneratorBase = {
   #if PY_MAJOR_VERSION < 3
   0, /*bf_getreadbuffer*/
   #endif
@@ -4922,12 +4187,12 @@ static PyBufferProcs __pyx_tp_as_buffer_CyCoinMpsIO = {
   #endif
 };
 
-static PyTypeObject __pyx_type_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO = {
+static PyTypeObject __pyx_type_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase = {
   PyVarObject_HEAD_INIT(0, 0)
-  __Pyx_NAMESTR("CyLP.cy.CyCoinMpsIO.CyCoinMpsIO"), /*tp_name*/
-  sizeof(struct __pyx_obj_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO), /*tp_basicsize*/
+  __Pyx_NAMESTR("CyLP.cy.CyCglCutGeneratorBase.CyCglCutGeneratorBase"), /*tp_name*/
+  sizeof(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase), /*tp_basicsize*/
   0, /*tp_itemsize*/
-  __pyx_tp_dealloc_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO, /*tp_dealloc*/
+  __pyx_tp_dealloc_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase, /*tp_dealloc*/
   0, /*tp_print*/
   0, /*tp_getattr*/
   0, /*tp_setattr*/
@@ -4937,34 +4202,34 @@ static PyTypeObject __pyx_type_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO = {
   0, /*reserved*/
   #endif
   0, /*tp_repr*/
-  &__pyx_tp_as_number_CyCoinMpsIO, /*tp_as_number*/
-  &__pyx_tp_as_sequence_CyCoinMpsIO, /*tp_as_sequence*/
-  &__pyx_tp_as_mapping_CyCoinMpsIO, /*tp_as_mapping*/
+  &__pyx_tp_as_number_CyCglCutGeneratorBase, /*tp_as_number*/
+  &__pyx_tp_as_sequence_CyCglCutGeneratorBase, /*tp_as_sequence*/
+  &__pyx_tp_as_mapping_CyCglCutGeneratorBase, /*tp_as_mapping*/
   0, /*tp_hash*/
   0, /*tp_call*/
   0, /*tp_str*/
   0, /*tp_getattro*/
   0, /*tp_setattro*/
-  &__pyx_tp_as_buffer_CyCoinMpsIO, /*tp_as_buffer*/
+  &__pyx_tp_as_buffer_CyCglCutGeneratorBase, /*tp_as_buffer*/
   Py_TPFLAGS_DEFAULT|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_HAVE_NEWBUFFER|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC, /*tp_flags*/
-  0, /*tp_doc*/
-  __pyx_tp_traverse_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO, /*tp_traverse*/
-  __pyx_tp_clear_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO, /*tp_clear*/
+  __Pyx_DOCSTR("CyCglCutGeneratorBase()"), /*tp_doc*/
+  __pyx_tp_traverse_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase, /*tp_traverse*/
+  __pyx_tp_clear_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase, /*tp_clear*/
   0, /*tp_richcompare*/
   0, /*tp_weaklistoffset*/
   0, /*tp_iter*/
   0, /*tp_iternext*/
-  __pyx_methods_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO, /*tp_methods*/
+  __pyx_methods_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase, /*tp_methods*/
   0, /*tp_members*/
-  __pyx_getsets_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO, /*tp_getset*/
+  0, /*tp_getset*/
   0, /*tp_base*/
   0, /*tp_dict*/
   0, /*tp_descr_get*/
   0, /*tp_descr_set*/
   0, /*tp_dictoffset*/
-  0, /*tp_init*/
+  __pyx_pw_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_1__init__, /*tp_init*/
   0, /*tp_alloc*/
-  __pyx_tp_new_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO, /*tp_new*/
+  __pyx_tp_new_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase, /*tp_new*/
   0, /*tp_free*/
   0, /*tp_is_gc*/
   0, /*tp_bases*/
@@ -4985,8 +4250,8 @@ static PyMethodDef __pyx_methods[] = {
 #if PY_MAJOR_VERSION >= 3
 static struct PyModuleDef __pyx_moduledef = {
     PyModuleDef_HEAD_INIT,
-    __Pyx_NAMESTR("CyCoinMpsIO"),
-    __Pyx_DOCSTR(__pyx_k_14), /* m_doc */
+    __Pyx_NAMESTR("CyCglCutGeneratorBase"),
+    0, /* m_doc */
     -1, /* m_size */
     __pyx_methods /* m_methods */,
     NULL, /* m_reload */
@@ -4998,53 +4263,24 @@ static struct PyModuleDef __pyx_moduledef = {
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_kp_s_1, __pyx_k_1, sizeof(__pyx_k_1), 0, 0, 1, 0},
-  {&__pyx_kp_u_12, __pyx_k_12, sizeof(__pyx_k_12), 0, 1, 0, 0},
+  {&__pyx_kp_u_10, __pyx_k_10, sizeof(__pyx_k_10), 0, 1, 0, 0},
+  {&__pyx_kp_u_13, __pyx_k_13, sizeof(__pyx_k_13), 0, 1, 0, 0},
   {&__pyx_n_s_15, __pyx_k_15, sizeof(__pyx_k_15), 0, 0, 1, 1},
-  {&__pyx_kp_s_18, __pyx_k_18, sizeof(__pyx_k_18), 0, 0, 1, 0},
-  {&__pyx_n_s_19, __pyx_k_19, sizeof(__pyx_k_19), 0, 0, 1, 1},
-  {&__pyx_kp_u_2, __pyx_k_2, sizeof(__pyx_k_2), 0, 1, 0, 0},
-  {&__pyx_kp_u_20, __pyx_k_20, sizeof(__pyx_k_20), 0, 1, 0, 0},
-  {&__pyx_kp_u_21, __pyx_k_21, sizeof(__pyx_k_21), 0, 1, 0, 0},
-  {&__pyx_kp_u_4, __pyx_k_4, sizeof(__pyx_k_4), 0, 1, 0, 0},
-  {&__pyx_kp_u_6, __pyx_k_6, sizeof(__pyx_k_6), 0, 1, 0, 0},
-  {&__pyx_kp_u_8, __pyx_k_8, sizeof(__pyx_k_8), 0, 1, 0, 0},
+  {&__pyx_n_s_16, __pyx_k_16, sizeof(__pyx_k_16), 0, 0, 1, 1},
+  {&__pyx_kp_u_3, __pyx_k_3, sizeof(__pyx_k_3), 0, 1, 0, 0},
+  {&__pyx_kp_u_5, __pyx_k_5, sizeof(__pyx_k_5), 0, 1, 0, 0},
+  {&__pyx_kp_u_7, __pyx_k_7, sizeof(__pyx_k_7), 0, 1, 0, 0},
   {&__pyx_kp_u_9, __pyx_k_9, sizeof(__pyx_k_9), 0, 1, 0, 0},
-  {&__pyx_n_s__QPColumnStarts, __pyx_k__QPColumnStarts, sizeof(__pyx_k__QPColumnStarts), 0, 0, 1, 1},
-  {&__pyx_n_s__QPColumns, __pyx_k__QPColumns, sizeof(__pyx_k__QPColumns), 0, 0, 1, 1},
-  {&__pyx_n_s__QPElements, __pyx_k__QPElements, sizeof(__pyx_k__QPElements), 0, 0, 1, 1},
+  {&__pyx_n_s__Exception, __pyx_k__Exception, sizeof(__pyx_k__Exception), 0, 0, 1, 1},
   {&__pyx_n_s__RuntimeError, __pyx_k__RuntimeError, sizeof(__pyx_k__RuntimeError), 0, 0, 1, 1},
-  {&__pyx_n_s__T, __pyx_k__T, sizeof(__pyx_k__T), 0, 0, 1, 1},
   {&__pyx_n_s__ValueError, __pyx_k__ValueError, sizeof(__pyx_k__ValueError), 0, 0, 1, 1},
   {&__pyx_n_s____main__, __pyx_k____main__, sizeof(__pyx_k____main__), 0, 0, 1, 1},
   {&__pyx_n_s____test__, __pyx_k____test__, sizeof(__pyx_k____test__), 0, 0, 1, 1},
-  {&__pyx_n_s__checkSymmetry, __pyx_k__checkSymmetry, sizeof(__pyx_k__checkSymmetry), 0, 0, 1, 1},
-  {&__pyx_n_s__csc_matrixPlus, __pyx_k__csc_matrixPlus, sizeof(__pyx_k__csc_matrixPlus), 0, 0, 1, 1},
-  {&__pyx_n_s__csr_matrixPlus, __pyx_k__csr_matrixPlus, sizeof(__pyx_k__csr_matrixPlus), 0, 0, 1, 1},
-  {&__pyx_n_s__curpath, __pyx_k__curpath, sizeof(__pyx_k__curpath), 0, 0, 1, 1},
-  {&__pyx_n_s__currentframe, __pyx_k__currentframe, sizeof(__pyx_k__currentframe), 0, 0, 1, 1},
-  {&__pyx_n_s__dirname, __pyx_k__dirname, sizeof(__pyx_k__dirname), 0, 0, 1, 1},
-  {&__pyx_n_s__filename, __pyx_k__filename, sizeof(__pyx_k__filename), 0, 0, 1, 1},
-  {&__pyx_n_s__getQpsExample, __pyx_k__getQpsExample, sizeof(__pyx_k__getQpsExample), 0, 0, 1, 1},
-  {&__pyx_n_s__getfile, __pyx_k__getfile, sizeof(__pyx_k__getfile), 0, 0, 1, 1},
-  {&__pyx_n_s__inspect, __pyx_k__inspect, sizeof(__pyx_k__inspect), 0, 0, 1, 1},
-  {&__pyx_n_s__join, __pyx_k__join, sizeof(__pyx_k__join), 0, 0, 1, 1},
-  {&__pyx_n_s__nConstraints, __pyx_k__nConstraints, sizeof(__pyx_k__nConstraints), 0, 0, 1, 1},
-  {&__pyx_n_s__nVariables, __pyx_k__nVariables, sizeof(__pyx_k__nVariables), 0, 0, 1, 1},
-  {&__pyx_n_s__os, __pyx_k__os, sizeof(__pyx_k__os), 0, 0, 1, 1},
-  {&__pyx_n_s__path, __pyx_k__path, sizeof(__pyx_k__path), 0, 0, 1, 1},
   {&__pyx_n_s__range, __pyx_k__range, sizeof(__pyx_k__range), 0, 0, 1, 1},
-  {&__pyx_n_s__scipy, __pyx_k__scipy, sizeof(__pyx_k__scipy), 0, 0, 1, 1},
-  {&__pyx_n_s__shape, __pyx_k__shape, sizeof(__pyx_k__shape), 0, 0, 1, 1},
-  {&__pyx_n_s__sparse, __pyx_k__sparse, sizeof(__pyx_k__sparse), 0, 0, 1, 1},
-  {&__pyx_n_s__xrange, __pyx_k__xrange, sizeof(__pyx_k__xrange), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
 };
 static int __Pyx_InitCachedBuiltins(void) {
-  #if PY_MAJOR_VERSION >= 3
-  __pyx_builtin_xrange = __Pyx_GetName(__pyx_b, __pyx_n_s__range); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  #else
-  __pyx_builtin_xrange = __Pyx_GetName(__pyx_b, __pyx_n_s__xrange); if (!__pyx_builtin_xrange) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 95; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  #endif
+  __pyx_builtin_Exception = __Pyx_GetName(__pyx_b, __pyx_n_s__Exception); if (!__pyx_builtin_Exception) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_ValueError = __Pyx_GetName(__pyx_b, __pyx_n_s__ValueError); if (!__pyx_builtin_ValueError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_range = __Pyx_GetName(__pyx_b, __pyx_n_s__range); if (!__pyx_builtin_range) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 228; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_builtin_RuntimeError = __Pyx_GetName(__pyx_b, __pyx_n_s__RuntimeError); if (!__pyx_builtin_RuntimeError) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -5057,6 +4293,20 @@ static int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":30
+ *                                      CppOsiCuts *cs,
+ *                                      CppCglTreeInfo info):
+ *         raise Exception('CyCglCutGenerator.pyx: generateCuts must' \             # <<<<<<<<<<<<<<
+ *                         ' be implemented.')
+ * 
+ */
+  __pyx_k_tuple_2 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 30; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_2);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_s_1));
+  PyTuple_SET_ITEM(__pyx_k_tuple_2, 0, ((PyObject *)__pyx_kp_s_1));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_s_1));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_2));
+
   /* "numpy.pxd":215
  *             if ((flags & pybuf.PyBUF_C_CONTIGUOUS == pybuf.PyBUF_C_CONTIGUOUS)
  *                 and not PyArray_CHKFLAGS(self, NPY_C_CONTIGUOUS)):
@@ -5064,12 +4314,12 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)
  */
-  __pyx_k_tuple_3 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_3)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_3);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_u_2));
-  PyTuple_SET_ITEM(__pyx_k_tuple_3, 0, ((PyObject *)__pyx_kp_u_2));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_2));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_3));
+  __pyx_k_tuple_4 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_4)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 215; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_4);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_u_3));
+  PyTuple_SET_ITEM(__pyx_k_tuple_4, 0, ((PyObject *)__pyx_kp_u_3));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_3));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_4));
 
   /* "numpy.pxd":219
  *             if ((flags & pybuf.PyBUF_F_CONTIGUOUS == pybuf.PyBUF_F_CONTIGUOUS)
@@ -5078,12 +4328,12 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             info.buf = PyArray_DATA(self)
  */
-  __pyx_k_tuple_5 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_5)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_5);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_u_4));
-  PyTuple_SET_ITEM(__pyx_k_tuple_5, 0, ((PyObject *)__pyx_kp_u_4));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_4));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_5));
+  __pyx_k_tuple_6 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_6)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 219; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_6);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_u_5));
+  PyTuple_SET_ITEM(__pyx_k_tuple_6, 0, ((PyObject *)__pyx_kp_u_5));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_5));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_6));
 
   /* "numpy.pxd":257
  *                 if ((descr.byteorder == c'>' and little_endian) or
@@ -5092,12 +4342,12 @@ static int __Pyx_InitCachedConstants(void) {
  *                 if   t == NPY_BYTE:        f = "b"
  *                 elif t == NPY_UBYTE:       f = "B"
  */
-  __pyx_k_tuple_7 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_7)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_7);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_u_6));
-  PyTuple_SET_ITEM(__pyx_k_tuple_7, 0, ((PyObject *)__pyx_kp_u_6));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_6));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_7));
+  __pyx_k_tuple_8 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_8)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 257; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_8);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_u_7));
+  PyTuple_SET_ITEM(__pyx_k_tuple_8, 0, ((PyObject *)__pyx_kp_u_7));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_7));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_8));
 
   /* "numpy.pxd":799
  * 
@@ -5106,12 +4356,12 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *         if ((child.byteorder == c'>' and little_endian) or
  */
-  __pyx_k_tuple_10 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_10)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_10);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_u_9));
-  PyTuple_SET_ITEM(__pyx_k_tuple_10, 0, ((PyObject *)__pyx_kp_u_9));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_9));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_10));
+  __pyx_k_tuple_11 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_11)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 799; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_11);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_u_10));
+  PyTuple_SET_ITEM(__pyx_k_tuple_11, 0, ((PyObject *)__pyx_kp_u_10));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_10));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_11));
 
   /* "numpy.pxd":803
  *         if ((child.byteorder == c'>' and little_endian) or
@@ -5120,12 +4370,12 @@ static int __Pyx_InitCachedConstants(void) {
  *             # One could encode it in the format string and have Cython
  *             # complain instead, BUT: < and > in format strings also imply
  */
-  __pyx_k_tuple_11 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_11)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 803; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_11);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_u_6));
-  PyTuple_SET_ITEM(__pyx_k_tuple_11, 0, ((PyObject *)__pyx_kp_u_6));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_6));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_11));
+  __pyx_k_tuple_12 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_12)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 803; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_12);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_u_7));
+  PyTuple_SET_ITEM(__pyx_k_tuple_12, 0, ((PyObject *)__pyx_kp_u_7));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_7));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_12));
 
   /* "numpy.pxd":823
  *             t = child.type_num
@@ -5134,33 +4384,12 @@ static int __Pyx_InitCachedConstants(void) {
  * 
  *             # Until ticket #99 is fixed, use integers to avoid warnings
  */
-  __pyx_k_tuple_13 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_13)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_13);
-  __Pyx_INCREF(((PyObject *)__pyx_kp_u_12));
-  PyTuple_SET_ITEM(__pyx_k_tuple_13, 0, ((PyObject *)__pyx_kp_u_12));
-  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_12));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_13));
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":186
- * 
- * 
- * def getQpsExample():             # <<<<<<<<<<<<<<
- *     '''
- *     Return full path to a QPS example file for doctests
- */
-  __pyx_k_tuple_16 = PyTuple_New(3); if (unlikely(!__pyx_k_tuple_16)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_k_tuple_16);
-  __Pyx_INCREF(((PyObject *)__pyx_n_s__os));
-  PyTuple_SET_ITEM(__pyx_k_tuple_16, 0, ((PyObject *)__pyx_n_s__os));
-  __Pyx_GIVEREF(((PyObject *)__pyx_n_s__os));
-  __Pyx_INCREF(((PyObject *)__pyx_n_s__inspect));
-  PyTuple_SET_ITEM(__pyx_k_tuple_16, 1, ((PyObject *)__pyx_n_s__inspect));
-  __Pyx_GIVEREF(((PyObject *)__pyx_n_s__inspect));
-  __Pyx_INCREF(((PyObject *)__pyx_n_s__curpath));
-  PyTuple_SET_ITEM(__pyx_k_tuple_16, 2, ((PyObject *)__pyx_n_s__curpath));
-  __Pyx_GIVEREF(((PyObject *)__pyx_n_s__curpath));
-  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_16));
-  __pyx_k_codeobj_17 = (PyObject*)__Pyx_PyCode_New(0, 0, 3, 0, 0, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_k_tuple_16, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_18, __pyx_n_s__getQpsExample, 186, __pyx_empty_bytes); if (unlikely(!__pyx_k_codeobj_17)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_k_tuple_14 = PyTuple_New(1); if (unlikely(!__pyx_k_tuple_14)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 823; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_k_tuple_14);
+  __Pyx_INCREF(((PyObject *)__pyx_kp_u_13));
+  PyTuple_SET_ITEM(__pyx_k_tuple_14, 0, ((PyObject *)__pyx_kp_u_13));
+  __Pyx_GIVEREF(((PyObject *)__pyx_kp_u_13));
+  __Pyx_GIVEREF(((PyObject *)__pyx_k_tuple_14));
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -5170,8 +4399,6 @@ static int __Pyx_InitCachedConstants(void) {
 
 static int __Pyx_InitGlobals(void) {
   if (__Pyx_InitStrings(__pyx_string_tab) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
-  __pyx_int_0 = PyInt_FromLong(0); if (unlikely(!__pyx_int_0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
-  __pyx_int_2 = PyInt_FromLong(2); if (unlikely(!__pyx_int_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   __pyx_int_15 = PyInt_FromLong(15); if (unlikely(!__pyx_int_15)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   return 0;
   __pyx_L1_error:;
@@ -5179,11 +4406,11 @@ static int __Pyx_InitGlobals(void) {
 }
 
 #if PY_MAJOR_VERSION < 3
-PyMODINIT_FUNC initCyCoinMpsIO(void); /*proto*/
-PyMODINIT_FUNC initCyCoinMpsIO(void)
+PyMODINIT_FUNC initCyCglCutGeneratorBase(void); /*proto*/
+PyMODINIT_FUNC initCyCglCutGeneratorBase(void)
 #else
-PyMODINIT_FUNC PyInit_CyCoinMpsIO(void); /*proto*/
-PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
+PyMODINIT_FUNC PyInit_CyCglCutGeneratorBase(void); /*proto*/
+PyMODINIT_FUNC PyInit_CyCglCutGeneratorBase(void)
 #endif
 {
   PyObject *__pyx_t_1 = NULL;
@@ -5198,7 +4425,7 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
           Py_FatalError("failed to import 'refnanny' module");
   }
   #endif
-  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)", 0);
+  __Pyx_RefNannySetupContext("PyMODINIT_FUNC PyInit_CyCglCutGeneratorBase(void)", 0);
   if ( __Pyx_check_binary_version() < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_tuple = PyTuple_New(0); if (unlikely(!__pyx_empty_tuple)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_empty_bytes = PyBytes_FromStringAndSize("", 0); if (unlikely(!__pyx_empty_bytes)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
@@ -5220,7 +4447,7 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
   #endif
   /*--- Module creation code ---*/
   #if PY_MAJOR_VERSION < 3
-  __pyx_m = Py_InitModule4(__Pyx_NAMESTR("CyCoinMpsIO"), __pyx_methods, __Pyx_DOCSTR(__pyx_k_14), 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
+  __pyx_m = Py_InitModule4(__Pyx_NAMESTR("CyCglCutGeneratorBase"), __pyx_methods, 0, 0, PYTHON_API_VERSION); Py_XINCREF(__pyx_m);
   #else
   __pyx_m = PyModule_Create(&__pyx_moduledef);
   #endif
@@ -5228,8 +4455,8 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
   #if PY_MAJOR_VERSION >= 3
   {
     PyObject *modules = PyImport_GetModuleDict(); if (unlikely(!modules)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    if (!PyDict_GetItemString(modules, "CyLP.cy.CyCoinMpsIO")) {
-      if (unlikely(PyDict_SetItemString(modules, "CyLP.cy.CyCoinMpsIO", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+    if (!PyDict_GetItemString(modules, "CyLP.cy.CyCglCutGeneratorBase")) {
+      if (unlikely(PyDict_SetItemString(modules, "CyLP.cy.CyCglCutGeneratorBase", __pyx_m) < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
     }
   }
   #endif
@@ -5240,7 +4467,7 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
   if (__Pyx_SetAttrString(__pyx_m, "__builtins__", __pyx_b) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   /*--- Initialize various global constants etc. ---*/
   if (unlikely(__Pyx_InitGlobals() < 0)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__pyx_module_is_main_CyLP__cy__CyCoinMpsIO) {
+  if (__pyx_module_is_main_CyLP__cy__CyCglCutGeneratorBase) {
     if (__Pyx_SetAttrString(__pyx_m, "__name__", __pyx_n_s____main__) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;};
   }
   /*--- Builtin init code ---*/
@@ -5250,10 +4477,16 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
   /*--- Global init code ---*/
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
+  if (__Pyx_ExportFunction("RunGenerateCuts", (void (*)(void))__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunGenerateCuts, "void (void *, OsiSolverInterface *, CppOsiCuts *, CglTreeInfo)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_ExportFunction("RunCglClone", (void (*)(void))__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_RunCglClone, "CglCutGenerator *(void *)") < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (__Pyx_SetAttrString(__pyx_m, "CyCoinMpsIO", (PyObject *)&__pyx_type_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO = &__pyx_type_4CyLP_2cy_11CyCoinMpsIO_CyCoinMpsIO;
+  __pyx_vtabptr_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase = &__pyx_vtable_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase;
+  __pyx_vtable_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase.generateCuts = (PyObject *(*)(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *, OsiSolverInterface *, CppOsiCuts *, CglTreeInfo))__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_generateCuts;
+  __pyx_vtable_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase.clone = (CglCutGenerator *(*)(struct __pyx_obj_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase *))__pyx_f_4CyLP_2cy_21CyCglCutGeneratorBase_21CyCglCutGeneratorBase_clone;
+  if (PyType_Ready(&__pyx_type_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_SetVtable(__pyx_type_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase.tp_dict, __pyx_vtabptr_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  if (__Pyx_SetAttrString(__pyx_m, "CyCglCutGeneratorBase", (PyObject *)&__pyx_type_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase = &__pyx_type_4CyLP_2cy_21CyCglCutGeneratorBase_CyCglCutGeneratorBase;
   /*--- Type import code ---*/
   __pyx_ptype_7cpython_4type_type = __Pyx_ImportType(__Pyx_BUILTIN_MODULE_NAME, "type", 
   #if CYTHON_COMPILING_IN_PYPY
@@ -5262,99 +4495,84 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
   sizeof(PyHeapTypeObject),
   #endif
   0); if (unlikely(!__pyx_ptype_7cpython_4type_type)) {__pyx_filename = __pyx_f[2]; __pyx_lineno = 9; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_7cpython_4bool_bool = __Pyx_ImportType(__Pyx_BUILTIN_MODULE_NAME, "bool", sizeof(PyBoolObject), 0); if (unlikely(!__pyx_ptype_7cpython_4bool_bool)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 8; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_7cpython_7complex_complex = __Pyx_ImportType(__Pyx_BUILTIN_MODULE_NAME, "complex", sizeof(PyComplexObject), 0); if (unlikely(!__pyx_ptype_7cpython_7complex_complex)) {__pyx_filename = __pyx_f[4]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector = __Pyx_ImportType("CyLP.cy.CyCoinIndexedVector", "CyCoinIndexedVector", sizeof(struct __pyx_obj_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector = (struct __pyx_vtabstruct_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_19CyCoinIndexedVector_CyCoinIndexedVector)) {__pyx_filename = __pyx_f[5]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase = __Pyx_ImportType("CyLP.cy.CyClpPrimalColumnPivotBase", "CyClpPrimalColumnPivotBase", sizeof(struct __pyx_obj_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase)) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase = (struct __pyx_vtabstruct_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_26CyClpPrimalColumnPivotBase_CyClpPrimalColumnPivotBase)) {__pyx_filename = __pyx_f[6]; __pyx_lineno = 67; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5numpy_dtype = __Pyx_ImportType("numpy", "dtype", sizeof(PyArray_Descr), 0); if (unlikely(!__pyx_ptype_5numpy_dtype)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 155; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5numpy_flatiter = __Pyx_ImportType("numpy", "flatiter", sizeof(PyArrayIterObject), 0); if (unlikely(!__pyx_ptype_5numpy_flatiter)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 165; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5numpy_broadcast = __Pyx_ImportType("numpy", "broadcast", sizeof(PyArrayMultiIterObject), 0); if (unlikely(!__pyx_ptype_5numpy_broadcast)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 169; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5numpy_ndarray = __Pyx_ImportType("numpy", "ndarray", sizeof(PyArrayObject), 0); if (unlikely(!__pyx_ptype_5numpy_ndarray)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 178; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __pyx_ptype_5numpy_ufunc = __Pyx_ImportType("numpy", "ufunc", sizeof(PyUFuncObject), 0); if (unlikely(!__pyx_ptype_5numpy_ufunc)) {__pyx_filename = __pyx_f[1]; __pyx_lineno = 861; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix = __Pyx_ImportType("CyLP.cy.CyCoinPackedMatrix", "CyCoinPackedMatrix", sizeof(struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix)) {__pyx_filename = __pyx_f[3]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase = __Pyx_ImportType("CyLP.cy.CyClpDualRowPivotBase", "CyClpDualRowPivotBase", sizeof(struct __pyx_obj_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase)) {__pyx_filename = __pyx_f[7]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase = (struct __pyx_vtabstruct_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_21CyClpDualRowPivotBase_CyClpDualRowPivotBase)) {__pyx_filename = __pyx_f[7]; __pyx_lineno = 72; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_11CyCoinModel_CyCoinModel = __Pyx_ImportType("CyLP.cy.CyCoinModel", "CyCoinModel", sizeof(struct __pyx_obj_4CyLP_2cy_11CyCoinModel_CyCoinModel), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_11CyCoinModel_CyCoinModel)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_11CyCoinModel_CyCoinModel = (struct __pyx_vtabstruct_4CyLP_2cy_11CyCoinModel_CyCoinModel*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_11CyCoinModel_CyCoinModel->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_11CyCoinModel_CyCoinModel)) {__pyx_filename = __pyx_f[8]; __pyx_lineno = 34; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix = __Pyx_ImportType("CyLP.cy.CyCoinPackedMatrix", "CyCoinPackedMatrix", sizeof(struct __pyx_obj_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_18CyCoinPackedMatrix_CyCoinPackedMatrix)) {__pyx_filename = __pyx_f[9]; __pyx_lineno = 22; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglCutGenerator = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglCutGenerator", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglCutGenerator), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglCutGenerator)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 103; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglAllDifferent = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglAllDifferent", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglAllDifferent), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglAllDifferent)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 108; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglClique = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglClique", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglClique), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglClique)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 111; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglKnapsackCover = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglKnapsackCover", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglKnapsackCover), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglKnapsackCover)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_5CyCgl_CyCglKnapsackCover = (struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglKnapsackCover*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglKnapsackCover->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_5CyCgl_CyCglKnapsackCover)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 114; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglOddHole = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglOddHole", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglOddHole), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglOddHole)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 117; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglFlowCover = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglFlowCover", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglFlowCover), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglFlowCover)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 122; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglGomory = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglGomory", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglGomory), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglGomory)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_5CyCgl_CyCglGomory = (struct __pyx_vtabstruct_4CyLP_2cy_5CyCgl_CyCglGomory*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglGomory->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_5CyCgl_CyCglGomory)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 127; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglRedSplit = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglRedSplit", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglRedSplit), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglRedSplit)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 132; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglLiftAndProject = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglLiftAndProject", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglLiftAndProject), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglLiftAndProject)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 137; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglLandP = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglLandP", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglLandP), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglLandP)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 140; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglMixedIntegerRounding", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 145; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding2 = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglMixedIntegerRounding2", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding2), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglMixedIntegerRounding2)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 148; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglTwomir = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglTwomir", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglTwomir), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglTwomir)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 151; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglResidualCapacity = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglResidualCapacity", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglResidualCapacity), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglResidualCapacity)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 154; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglPreProcess = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglPreProcess", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglPreProcess), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglPreProcess)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 162; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglProbing = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglProbing", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglProbing), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglProbing)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 165; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_5CyCgl_CyCglSimpleRounding = __Pyx_ImportType("CyLP.cy.CyCgl", "CyCglSimpleRounding", sizeof(struct __pyx_obj_4CyLP_2cy_5CyCgl_CyCglSimpleRounding), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_5CyCgl_CyCglSimpleRounding)) {__pyx_filename = __pyx_f[10]; __pyx_lineno = 168; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_9CyCbcNode_CyCbcNode = __Pyx_ImportType("CyLP.cy.CyCbcNode", "CyCbcNode", sizeof(struct __pyx_obj_4CyLP_2cy_9CyCbcNode_CyCbcNode), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_9CyCbcNode_CyCbcNode)) {__pyx_filename = __pyx_f[11]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_9CyCbcNode_CyCbcNode = (struct __pyx_vtabstruct_4CyLP_2cy_9CyCbcNode_CyCbcNode*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_9CyCbcNode_CyCbcNode->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_9CyCbcNode_CyCbcNode)) {__pyx_filename = __pyx_f[11]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface = __Pyx_ImportType("CyLP.cy.CyOsiSolverInterface", "CyOsiSolverInterface", sizeof(struct __pyx_obj_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface)) {__pyx_filename = __pyx_f[12]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface = (struct __pyx_vtabstruct_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_20CyOsiSolverInterface_CyOsiSolverInterface)) {__pyx_filename = __pyx_f[12]; __pyx_lineno = 15; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_10CyCbcModel_CyCbcModel = __Pyx_ImportType("CyLP.cy.CyCbcModel", "CyCbcModel", sizeof(struct __pyx_obj_4CyLP_2cy_10CyCbcModel_CyCbcModel), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_10CyCbcModel_CyCbcModel)) {__pyx_filename = __pyx_f[13]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_10CyCbcModel_CyCbcModel = (struct __pyx_vtabstruct_4CyLP_2cy_10CyCbcModel_CyCbcModel*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_10CyCbcModel_CyCbcModel->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_10CyCbcModel_CyCbcModel)) {__pyx_filename = __pyx_f[13]; __pyx_lineno = 69; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_12CyClpSimplex_CyClpSimplex = __Pyx_ImportType("CyLP.cy.CyClpSimplex", "CyClpSimplex", sizeof(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_CyClpSimplex), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_12CyClpSimplex_CyClpSimplex)) {__pyx_filename = __pyx_f[14]; __pyx_lineno = 260; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_12CyClpSimplex_CyClpSimplex = (struct __pyx_vtabstruct_4CyLP_2cy_12CyClpSimplex_CyClpSimplex*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_12CyClpSimplex_CyClpSimplex->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_12CyClpSimplex_CyClpSimplex)) {__pyx_filename = __pyx_f[14]; __pyx_lineno = 260; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_12CyClpSimplex_VarStatus = __Pyx_ImportType("CyLP.cy.CyClpSimplex", "VarStatus", sizeof(struct __pyx_obj_4CyLP_2cy_12CyClpSimplex_VarStatus), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_12CyClpSimplex_VarStatus)) {__pyx_filename = __pyx_f[14]; __pyx_lineno = 335; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_9CyOsiCuts_CyOsiCuts = __Pyx_ImportType("CyLP.cy.CyOsiCuts", "CyOsiCuts", sizeof(struct __pyx_obj_4CyLP_2cy_9CyOsiCuts_CyOsiCuts), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_9CyOsiCuts_CyOsiCuts)) {__pyx_filename = __pyx_f[15]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_9CyOsiCuts_CyOsiCuts = (struct __pyx_vtabstruct_4CyLP_2cy_9CyOsiCuts_CyOsiCuts*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_9CyOsiCuts_CyOsiCuts->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_9CyOsiCuts_CyOsiCuts)) {__pyx_filename = __pyx_f[15]; __pyx_lineno = 14; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_ptype_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo = __Pyx_ImportType("CyLP.cy.CyCglTreeInfo", "CyCglTreeInfo", sizeof(struct __pyx_obj_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo), 1); if (unlikely(!__pyx_ptype_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo)) {__pyx_filename = __pyx_f[16]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_vtabptr_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo = (struct __pyx_vtabstruct_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo*)__Pyx_GetVtable(__pyx_ptype_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo->tp_dict); if (unlikely(!__pyx_vtabptr_4CyLP_2cy_13CyCglTreeInfo_CyCglTreeInfo)) {__pyx_filename = __pyx_f[16]; __pyx_lineno = 7; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   /*--- Variable import code ---*/
   /*--- Function import code ---*/
   /*--- Execution code ---*/
 
-  /* "CyLP/cy/CyCoinMpsIO.pyx":12
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":4
  * 
+ * cimport CyCglCutGeneratorBase
+ * from CyLP.cy.CyCglCutGeneratorBase import CyCglCutGeneratorBase             # <<<<<<<<<<<<<<
  * 
- * from scipy import sparse             # <<<<<<<<<<<<<<
- * from CyLP.py.utils.sparseUtil import csc_matrixPlus, csr_matrixPlus
- * 
+ * cdef void RunGenerateCuts(void *ptr, CppOsiSolverInterface *si,
  */
-  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_t_1 = PyList_New(1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_INCREF(((PyObject *)__pyx_n_s__sparse));
-  PyList_SET_ITEM(__pyx_t_1, 0, ((PyObject *)__pyx_n_s__sparse));
-  __Pyx_GIVEREF(((PyObject *)__pyx_n_s__sparse));
-  __pyx_t_2 = __Pyx_Import(((PyObject *)__pyx_n_s__scipy), ((PyObject *)__pyx_t_1), -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_INCREF(((PyObject *)__pyx_n_s_16));
+  PyList_SET_ITEM(__pyx_t_1, 0, ((PyObject *)__pyx_n_s_16));
+  __Pyx_GIVEREF(((PyObject *)__pyx_n_s_16));
+  __pyx_t_2 = __Pyx_Import(((PyObject *)__pyx_n_s_15), ((PyObject *)__pyx_t_1), -1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 4; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(((PyObject *)__pyx_t_1)); __pyx_t_1 = 0;
-  __pyx_t_1 = PyObject_GetAttr(__pyx_t_2, __pyx_n_s__sparse);
-  if (__pyx_t_1 == NULL) {
-    if (PyErr_ExceptionMatches(PyExc_AttributeError)) __Pyx_RaiseImportError(__pyx_n_s__sparse);
-    if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s__sparse, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 12; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "CyLP/cy/CyCoinMpsIO.pyx":13
+  /* "CyLP/cy/CyCglCutGeneratorBase.pyx":1
+ * # cython: embedsignature=True             # <<<<<<<<<<<<<<
  * 
- * from scipy import sparse
- * from CyLP.py.utils.sparseUtil import csc_matrixPlus, csr_matrixPlus             # <<<<<<<<<<<<<<
- * 
- * cdef class CyCoinMpsIO:
+ * cimport CyCglCutGeneratorBase
  */
-  __pyx_t_2 = PyList_New(2); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_INCREF(((PyObject *)__pyx_n_s__csc_matrixPlus));
-  PyList_SET_ITEM(__pyx_t_2, 0, ((PyObject *)__pyx_n_s__csc_matrixPlus));
-  __Pyx_GIVEREF(((PyObject *)__pyx_n_s__csc_matrixPlus));
-  __Pyx_INCREF(((PyObject *)__pyx_n_s__csr_matrixPlus));
-  PyList_SET_ITEM(__pyx_t_2, 1, ((PyObject *)__pyx_n_s__csr_matrixPlus));
-  __Pyx_GIVEREF(((PyObject *)__pyx_n_s__csr_matrixPlus));
-  __pyx_t_1 = __Pyx_Import(((PyObject *)__pyx_n_s_15), ((PyObject *)__pyx_t_2), -1); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_t_2 = PyDict_New(); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(((PyObject *)__pyx_t_2));
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s____test__, ((PyObject *)__pyx_t_2)) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
   __Pyx_DECREF(((PyObject *)__pyx_t_2)); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetAttr(__pyx_t_1, __pyx_n_s__csc_matrixPlus);
-  if (__pyx_t_2 == NULL) {
-    if (PyErr_ExceptionMatches(PyExc_AttributeError)) __Pyx_RaiseImportError(__pyx_n_s__csc_matrixPlus);
-    if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s__csc_matrixPlus, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyObject_GetAttr(__pyx_t_1, __pyx_n_s__csr_matrixPlus);
-  if (__pyx_t_2 == NULL) {
-    if (PyErr_ExceptionMatches(PyExc_AttributeError)) __Pyx_RaiseImportError(__pyx_n_s__csr_matrixPlus);
-    if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  }
-  __Pyx_GOTREF(__pyx_t_2);
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s__csr_matrixPlus, __pyx_t_2) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 13; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":186
- * 
- * 
- * def getQpsExample():             # <<<<<<<<<<<<<<
- *     '''
- *     Return full path to a QPS example file for doctests
- */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_4CyLP_2cy_11CyCoinMpsIO_1getQpsExample, NULL, __pyx_n_s_19); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_1);
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s__getQpsExample, __pyx_t_1) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 186; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-
-  /* "CyLP/cy/CyCoinMpsIO.pyx":1
- * '''             # <<<<<<<<<<<<<<
- * This module interface COIN-OR's ``CoinMpsIO``. When you call
- * :func:`CyLP.cy.CyClpSimplex.readMps` then ``CoinMpsIO``'s ``readMps`` is
- */
-  __pyx_t_1 = PyDict_New(); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(((PyObject *)__pyx_t_1));
-  if (PyDict_SetItem(__pyx_t_1, ((PyObject *)__pyx_kp_u_20), ((PyObject *)__pyx_kp_u_21)) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s____test__, ((PyObject *)__pyx_t_1)) < 0) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 1; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_DECREF(((PyObject *)__pyx_t_1)); __pyx_t_1 = 0;
 
   /* "numpy.pxd":975
  *      arr.base = baseptr
@@ -5368,10 +4586,10 @@ PyMODINIT_FUNC PyInit_CyCoinMpsIO(void)
   __Pyx_XDECREF(__pyx_t_1);
   __Pyx_XDECREF(__pyx_t_2);
   if (__pyx_m) {
-    __Pyx_AddTraceback("init CyLP.cy.CyCoinMpsIO", __pyx_clineno, __pyx_lineno, __pyx_filename);
+    __Pyx_AddTraceback("init CyLP.cy.CyCglCutGeneratorBase", __pyx_clineno, __pyx_lineno, __pyx_filename);
     Py_DECREF(__pyx_m); __pyx_m = 0;
   } else if (!PyErr_Occurred()) {
-    PyErr_SetString(PyExc_ImportError, "init CyLP.cy.CyCoinMpsIO");
+    PyErr_SetString(PyExc_ImportError, "init CyLP.cy.CyCglCutGeneratorBase");
   }
   __pyx_L0:;
   __Pyx_RefNannyFinishContext();
@@ -5476,120 +4694,6 @@ invalid_keyword:
         function_name, key);
     #endif
     return 0;
-}
-
-static void __Pyx_RaiseDoubleKeywordsError(
-    const char* func_name,
-    PyObject* kw_name)
-{
-    PyErr_Format(PyExc_TypeError,
-        #if PY_MAJOR_VERSION >= 3
-        "%s() got multiple values for keyword argument '%U'", func_name, kw_name);
-        #else
-        "%s() got multiple values for keyword argument '%s'", func_name,
-        PyString_AsString(kw_name));
-        #endif
-}
-
-static int __Pyx_ParseOptionalKeywords(
-    PyObject *kwds,
-    PyObject **argnames[],
-    PyObject *kwds2,
-    PyObject *values[],
-    Py_ssize_t num_pos_args,
-    const char* function_name)
-{
-    PyObject *key = 0, *value = 0;
-    Py_ssize_t pos = 0;
-    PyObject*** name;
-    PyObject*** first_kw_arg = argnames + num_pos_args;
-    while (PyDict_Next(kwds, &pos, &key, &value)) {
-        name = first_kw_arg;
-        while (*name && (**name != key)) name++;
-        if (*name) {
-            values[name-argnames] = value;
-            continue;
-        }
-        name = first_kw_arg;
-        #if PY_MAJOR_VERSION < 3
-        if (likely(PyString_CheckExact(key)) || likely(PyString_Check(key))) {
-            while (*name) {
-                if ((CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**name) == PyString_GET_SIZE(key))
-                        && _PyString_Eq(**name, key)) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    if ((**argname == key) || (
-                            (CYTHON_COMPILING_IN_PYPY || PyString_GET_SIZE(**argname) == PyString_GET_SIZE(key))
-                             && _PyString_Eq(**argname, key))) {
-                        goto arg_passed_twice;
-                    }
-                    argname++;
-                }
-            }
-        } else
-        #endif
-        if (likely(PyUnicode_Check(key))) {
-            while (*name) {
-                int cmp = (**name == key) ? 0 :
-                #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                    (PyUnicode_GET_SIZE(**name) != PyUnicode_GET_SIZE(key)) ? 1 :
-                #endif
-                    PyUnicode_Compare(**name, key);
-                if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                if (cmp == 0) {
-                    values[name-argnames] = value;
-                    break;
-                }
-                name++;
-            }
-            if (*name) continue;
-            else {
-                PyObject*** argname = argnames;
-                while (argname != first_kw_arg) {
-                    int cmp = (**argname == key) ? 0 :
-                    #if !CYTHON_COMPILING_IN_PYPY && PY_MAJOR_VERSION >= 3
-                        (PyUnicode_GET_SIZE(**argname) != PyUnicode_GET_SIZE(key)) ? 1 :
-                    #endif
-                        PyUnicode_Compare(**argname, key);
-                    if (cmp < 0 && unlikely(PyErr_Occurred())) goto bad;
-                    if (cmp == 0) goto arg_passed_twice;
-                    argname++;
-                }
-            }
-        } else
-            goto invalid_keyword_type;
-        if (kwds2) {
-            if (unlikely(PyDict_SetItem(kwds2, key, value))) goto bad;
-        } else {
-            goto invalid_keyword;
-        }
-    }
-    return 0;
-arg_passed_twice:
-    __Pyx_RaiseDoubleKeywordsError(function_name, key);
-    goto bad;
-invalid_keyword_type:
-    PyErr_Format(PyExc_TypeError,
-        "%s() keywords must be strings", function_name);
-    goto bad;
-invalid_keyword:
-    PyErr_Format(PyExc_TypeError,
-    #if PY_MAJOR_VERSION < 3
-        "%s() got an unexpected keyword argument '%s'",
-        function_name, PyString_AsString(key));
-    #else
-        "%s() got an unexpected keyword argument '%U'",
-        function_name, key);
-    #endif
-bad:
-    return -1;
 }
 
 static CYTHON_INLINE void __Pyx_ErrRestore(PyObject *type, PyObject *value, PyObject *tb) {
@@ -6563,6 +5667,25 @@ static CYTHON_INLINE signed PY_LONG_LONG __Pyx_PyInt_AsSignedLongLong(PyObject* 
     }
 }
 
+static void __Pyx_WriteUnraisable(const char *name, CYTHON_UNUSED int clineno,
+                                  CYTHON_UNUSED int lineno, CYTHON_UNUSED const char *filename) {
+    PyObject *old_exc, *old_val, *old_tb;
+    PyObject *ctx;
+    __Pyx_ErrFetch(&old_exc, &old_val, &old_tb);
+    #if PY_MAJOR_VERSION < 3
+    ctx = PyString_FromString(name);
+    #else
+    ctx = PyUnicode_FromString(name);
+    #endif
+    __Pyx_ErrRestore(old_exc, old_val, old_tb);
+    if (!ctx) {
+        PyErr_WriteUnraisable(Py_None);
+    } else {
+        PyErr_WriteUnraisable(ctx);
+        Py_DECREF(ctx);
+    }
+}
+
 static int __Pyx_check_binary_version(void) {
     char ctversion[4], rtversion[4];
     PyOS_snprintf(ctversion, 4, "%d.%d", PY_MAJOR_VERSION, PY_MINOR_VERSION);
@@ -6580,6 +5703,59 @@ static int __Pyx_check_binary_version(void) {
         #endif
     }
     return 0;
+}
+
+static int __Pyx_ExportFunction(const char *name, void (*f)(void), const char *sig) {
+    PyObject *d = 0;
+    PyObject *cobj = 0;
+    union {
+        void (*fp)(void);
+        void *p;
+    } tmp;
+    d = PyObject_GetAttrString(__pyx_m, (char *)"__pyx_capi__");
+    if (!d) {
+        PyErr_Clear();
+        d = PyDict_New();
+        if (!d)
+            goto bad;
+        Py_INCREF(d);
+        if (PyModule_AddObject(__pyx_m, (char *)"__pyx_capi__", d) < 0)
+            goto bad;
+    }
+    tmp.fp = f;
+#if PY_VERSION_HEX >= 0x02070000 && !(PY_MAJOR_VERSION==3&&PY_MINOR_VERSION==0)
+    cobj = PyCapsule_New(tmp.p, sig, 0);
+#else
+    cobj = PyCObject_FromVoidPtrAndDesc(tmp.p, (void *)sig, 0);
+#endif
+    if (!cobj)
+        goto bad;
+    if (PyDict_SetItemString(d, name, cobj) < 0)
+        goto bad;
+    Py_DECREF(cobj);
+    Py_DECREF(d);
+    return 0;
+bad:
+    Py_XDECREF(cobj);
+    Py_XDECREF(d);
+    return -1;
+}
+
+static int __Pyx_SetVtable(PyObject *dict, void *vtable) {
+#if PY_VERSION_HEX >= 0x02070000 && !(PY_MAJOR_VERSION==3&&PY_MINOR_VERSION==0)
+    PyObject *ob = PyCapsule_New(vtable, 0, 0);
+#else
+    PyObject *ob = PyCObject_FromVoidPtr(vtable, 0);
+#endif
+    if (!ob)
+        goto bad;
+    if (PyDict_SetItemString(dict, "__pyx_vtable__", ob) < 0)
+        goto bad;
+    Py_DECREF(ob);
+    return 0;
+bad:
+    Py_XDECREF(ob);
+    return -1;
 }
 
 #ifndef __PYX_HAVE_RT_ImportModule
@@ -6650,6 +5826,25 @@ bad:
     return NULL;
 }
 #endif
+
+static void* __Pyx_GetVtable(PyObject *dict) {
+    void* ptr;
+    PyObject *ob = PyMapping_GetItemString(dict, (char *)"__pyx_vtable__");
+    if (!ob)
+        goto bad;
+#if PY_VERSION_HEX >= 0x02070000 && !(PY_MAJOR_VERSION==3&&PY_MINOR_VERSION==0)
+    ptr = PyCapsule_GetPointer(ob, 0);
+#else
+    ptr = PyCObject_AsVoidPtr(ob);
+#endif
+    if (!ptr && !PyErr_Occurred())
+        PyErr_SetString(PyExc_RuntimeError, "invalid vtable found for imported type");
+    Py_DECREF(ob);
+    return ptr;
+bad:
+    Py_XDECREF(ob);
+    return NULL;
+}
 
 static int __pyx_bisect_code_objects(__Pyx_CodeObjectCacheEntry* entries, int count, int code_line) {
     int start = 0, mid = 0, end = count - 1;

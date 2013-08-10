@@ -27,11 +27,16 @@ cdef class CyClpPrimalColumnPivotBase:
             <runPivotColumn_t>RunPivotColumn,
             <runClone_t>RunClone,
             <runSaveWeights_t>RunSaveWeights)
+        Py_INCREF(self)
+
+    def __dealloc__(self):
+        Py_DECREF(self)
+        del self.CppSelf
 
     cdef pivotColumn(self, CppCoinIndexedVector* v1, CppCoinIndexedVector* v2,
                         CppCoinIndexedVector* v3, CppCoinIndexedVector* v4,
                         CppCoinIndexedVector* v5):
-        raise Exception('CyClpPrimalColumnPivotBase.pyx: pivot column should' \
+        raise Exception('CyClpPrimalColumnPivotBase.pyx: pivotColumn must' \
                         ' be implemented.')
 
     cdef CyClpPrimalColumnPivot* clone(self, bint copyData):
@@ -44,7 +49,7 @@ cdef class CyClpPrimalColumnPivotBase:
         return ret
 
     cdef void saveWeights(self, CyClpSimplex.CppIClpSimplex * model, int mode):
-        raise Exception('CyClpPrimalColumnPivotBase.pyx: saveWeights should ' \
+        raise Exception('CyClpPrimalColumnPivotBase.pyx: saveWeights must ' \
                         'be implemented.')
 
     cdef CyClpSimplex.CppIClpSimplex* model(self):

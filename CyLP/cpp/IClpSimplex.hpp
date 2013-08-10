@@ -81,8 +81,10 @@ public:
 	PyObject * getColUpper();
 
 
-  PyObject* getLower();
-  PyObject* getUpper();
+    PyObject* getLower();
+    PyObject* getUpper();
+
+    PyObject* getIntegerInformation();
 
 
 	void getBInvACol(int col, double* vec);

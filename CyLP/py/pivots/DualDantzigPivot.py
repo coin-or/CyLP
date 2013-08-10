@@ -93,8 +93,6 @@ class DualDantzigPivot(DualPivotPythonBase):
 
         changeObj = -np.dot(change, cost)
         primalUpdate.clear()
-        #elements[:] = np.zeros(len(elements), dtype=np.double)
-        #primalUpdate.nElements = 0
         objectiveChange[0] += changeObj
 
         return changeObj
@@ -104,8 +102,8 @@ def getMpsExample():
     import os
     import inspect
     import sys
-    curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
-    return os.path.join(curpath, '../../input/p0033.mps')
+    cylpDir = os.environ['CYLP_SOURCE_DIR']
+    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
 
 
 if __name__ == "__main__":

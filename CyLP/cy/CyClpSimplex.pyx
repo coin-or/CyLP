@@ -19,7 +19,7 @@ from CyLP.cy cimport CyCoinModel
 from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
 from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution
 from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
-from CyLP.py.pivots import DualPivotPythonBase
+from CyLP.py.pivots.DualPivotPythonBase import DualPivotPythonBase
 from CyLP.py.modeling.CyLPModel import CyLPModel
 from CyLP.cy cimport CyCoinMpsIO
 
@@ -196,6 +196,18 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             mat = self.matrix
+##            print '((((((((((((((((((('
+##            print 'nelements:     ', mat.nElements
+##            print 'len(indices):  ', len(mat.indices)
+##            print 'mat.majorDim:  ', mat.majorDim
+##            print 'mat.minorDim:  ', mat.minorDim
+##            print 'len vec starts:', len(mat.vectorStarts)
+##            print 'vec starts:    ', mat.vectorStarts
+##            print 'col ordered:   ', mat.isColOrdered
+##            #mat.dumpMatrix('tttttt')
+            if mat.hasGaps():
+                mat.removeGaps()
+##            print ')))))))))))))))))))'
             return csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
                              shape=(self.nConstraints, self.nVariables))
 
@@ -466,6 +478,16 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             return <object>self.CppSelf.getUpper()
+
+    property integerInformation:
+        '''
+        A binary list of size *nVariables* that specifies whether
+        a variable is integer or not. (ClpModel::integerInformation())
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getIntegerInformation()
 
     property status:
         '''
@@ -1472,6 +1494,11 @@ cdef class CyClpSimplex:
                                             <double*>pi.data,
                                             <double*>y.data)
 
+    def isInteger(self, ind):
+        '''
+        Returns True if the variable index ``ind`` is integer.
+        '''
+        return self.CppSelf.isInteger(ind)
 
     def setInteger(self, arg):
         '''
@@ -1686,7 +1713,7 @@ cdef class CyClpSimplex:
         used to add cuts, run B&B and ...
         '''
         cdef CppICbcModel* model = self.CppSelf.getICbcModel()
-        cm =  CyCbcModel()
+        self.cbcModel = cm =  CyCbcModel()
         cm.setCppSelf(model)
         cm.setClpModel(self)
         if self.cyLPModel:

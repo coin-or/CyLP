@@ -62,31 +62,48 @@ cdef class CyCoinPackedMatrix:
     property minorDim:
         def __get__(self):
             return self.CppSelf.getMinorDim()
-    
+
+    property isColOrdered:
+        def __get__(self):
+            return self.CppSelf.isColOrdered()
+
     def reserve(self,  newMaxMajorDim,  newMaxSize,  create=0):
         self.CppSelf.reserve(newMaxMajorDim, newMaxSize, create)
 
     def appendRow(self, np.ndarray[np.int32_t, ndim=1] vecInd=None,
                   np.ndarray[np.double_t, ndim=1] elements=None):
-       
+
         cdef int* i
         cdef double* d
         if vecInd:
-            self.CppSelf.appendRow(len(elements), <int*>vecInd.data, 
+            self.CppSelf.appendRow(len(elements), <int*>vecInd.data,
                                             <double*>elements.data)
         else:
-            self.CppSelf.appendRow(0, i, d) 
+            self.CppSelf.appendRow(0, i, d)
 
     def appendCol(self, np.ndarray[np.int32_t, ndim=1] vecInd=None,
                   np.ndarray[np.double_t, ndim=1] elements=None):
-       
+
         cdef int* i
         cdef double* d
         if vecInd:
-            self.CppSelf.appendCol(len(elements), <int*>vecInd.data, 
+            self.CppSelf.appendCol(len(elements), <int*>vecInd.data,
                                             <double*>elements.data)
         else:
-            self.CppSelf.appendCol(0, i, d) 
+            self.CppSelf.appendCol(0, i, d)
+
+    def dumpMatrix(self, char* s):
+        #if s:
+        self.CppSelf.dumpMatrix(s)
+        #else:
+        #    self.CppSelf.dumpMatrix(s)
+
+    def hasGaps(self):
+        return self.CppSelf.hasGaps()
+
+    def removeGaps(self, removeValue=-1.0):
+        self.CppSelf.removeGaps(removeValue)
+
     #def __getitem__(self, n):
     #   return self.CppSelf.getItem(n)
 

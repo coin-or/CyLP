@@ -3,6 +3,7 @@
 from itertools import izip, product
 from CyLP.py.mip import NodeCompareBase
 from CyLP.py.modeling.CyLPModel import CyLPSolution
+from CyLP.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
 from libcpp cimport bool
 
 
@@ -80,6 +81,11 @@ cdef class CyCbcModel:
 
     def __cinit__(self, cyLPModel=None):
         self.cyLPModel = cyLPModel
+        self.cutGenerators = []
+
+    def __dealloc(self):
+        for generator in self.cutGenerators:
+            Py_DECREF(generator)
 
     cdef setCppSelf(self, CppICbcModel* cppmodel):
         self.CppSelf = cppmodel
@@ -102,8 +108,22 @@ cdef class CyCbcModel:
                         howOften=1, name="", normal=True, atSolution=False,
                         infeasible=False, howOftenInSub=-100, whatDepth=-1,
                         whatDepthInSub=-1):
+        self.cutGenerators.append(generator)
+        Py_INCREF(generator)
         self.CppSelf.addCutGenerator(generator.CppSelf, howOften,
                                     name, normal, atSolution,
+                                    infeasible, howOftenInSub, whatDepth,
+                                    whatDepthInSub)
+
+    def addPythonCutGenerator(self, pythonCutGeneratorObject,
+                        howOften=1, name="", normal=True, atSolution=False,
+                        infeasible=False, howOftenInSub=-100, whatDepth=-1,
+                        whatDepthInSub=-1):
+        cdef CyCutGeneratorPythonBase generator = \
+                            CyCutGeneratorPythonBase(pythonCutGeneratorObject)
+        generator.cyLPModel = self.cyLPModel
+        self.CppSelf.addCutGenerator(<CppCglCutGenerator*>generator.CppSelf,
+                                    howOften, name, normal, atSolution,
                                     infeasible, howOftenInSub, whatDepth,
                                     whatDepthInSub)
 
@@ -139,6 +159,12 @@ cdef class CyCbcModel:
 
     def isRelaxationAbondoned(self):
         return self.CppSelf.isInitialSolveAbandoned()
+
+    property osiSolverInteface:
+        def __get__(self):
+            cdef CyOsiSolverInterface osi = CyOsiSolverInterface()
+            osi.setCppSelf(self.CppSelf.solver())
+            return osi
 
     property primalVariableSolution:
         def __get__(self):

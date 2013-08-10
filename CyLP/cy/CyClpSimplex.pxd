@@ -254,6 +254,9 @@ cdef extern from "IClpSimplex.hpp":
         void setLogLevel(int value)
         int logLevel()
 
+        bint isInteger(int index)
+        PyObject* getIntegerInformation()
+
 cdef class CyClpSimplex:
     '''
     This is the documentation of CyClpSimpelx in the pyx class
@@ -264,6 +267,7 @@ cdef class CyClpSimplex:
     cdef object varSelCriteria
     cdef CyCoinModel coinModel
     cdef object cyLPModel
+    cdef CyCbcModel cbcModel
     cdef object Hessian
 
     #cdef void prepareForCython(self, int useCustomPrimal)

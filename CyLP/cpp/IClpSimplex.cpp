@@ -482,6 +482,16 @@ PyObject* IClpSimplex::getColUpper(){
     return Arr;
 }
 
+PyObject* IClpSimplex::getIntegerInformation(){
+    npy_intp dims = getNumCols();
+    PyObject* Arr;
+    if (this->integerInformation())
+        Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_INT8, this->integerInformation());
+    else
+        Arr = PyArray_ZEROS(1, &dims, PyArray_INT8, 0);
+    return Arr;
+}
+
 std::vector<std::string> IClpSimplex::getVariableNames(){
     if (lengthNames_)
         return columnNames_;
@@ -699,6 +709,10 @@ int IClpSimplex::checkVar(int varInd){
 
 ICbcModel* IClpSimplex::getICbcModel(){
     OsiClpSolverInterface solver1(this);
+    // ClpSolve cs;
+    // ClpSolve::PresolveType type = ClpSolve::presolveOff;
+    // cs.setPresolveType(type);
+    // solver1.setSolveOptions(cs);
     solver1.initialSolve();
     ICbcModel*  model = new ICbcModel(solver1);
     return model;
