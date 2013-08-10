@@ -98,6 +98,11 @@ cdef class CyCoinPackedMatrix:
         #else:
         #    self.CppSelf.dumpMatrix(s)
 
+    def hasGaps(self):
+        return self.CppSelf.hasGaps()
+
+    def removeGaps(self, removeValue=-1.0):
+        self.CppSelf.removeGaps(removeValue)
 
     #def __getitem__(self, n):
     #   return self.CppSelf.getItem(n)

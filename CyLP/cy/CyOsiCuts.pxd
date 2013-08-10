@@ -8,6 +8,11 @@ cdef extern from "IOsiCuts.hpp":
                         int* upperBoundInds, double* upperBoundElements)
         void addRowCut(int size, int* indices, double* elements,
                    double lowerBound, double upperBound)
+        void printCuts()
+        int sizeRowCuts()
+        int sizeColCuts()
+        int sizeCuts()
+
     CppOsiCuts *new_CppOsiCuts "new CppOsiCuts" ()
 
 

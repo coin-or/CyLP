@@ -18,17 +18,11 @@ def isInt(x):
 
 def gomoryCut(lp, rowInd):
     'Return the Gomory cut of row ``rowInd`` of lp (a CyClpSimplex object)'
-    print 'here'
     fractions = np.array([getFraction(x) for x in lp.tableau[rowInd, :]])
-    print '1'
     pi, pi0 = fractions[:lp.nVariables], getFraction(lp.rhs[rowInd])
-    print '2'
     pi_slacks = fractions[lp.nVariables:]
-    print '3'
     pi -= pi_slacks * lp.coefMatrix
-    print '4'
     pi0 -= np.dot(pi_slacks, lp.constraintsUpper)
-    print 'done'
     if (abs(pi) > 1e-6).any():
         return pi, pi0
     return None, None
@@ -47,8 +41,6 @@ class GomoryCutGenerator:
 
         clpModel = si.clpModel
         clpModel.dual(startFinishOptions='x')
-        print clpModel.coefMatrix
-        return []
         solution = clpModel.primalVariableSolution
         bv = clpModel.basicVariables
         rhs = clpModel.rhs
@@ -62,18 +54,19 @@ class GomoryCutGenerator:
             basicVarInd = bv[rowInd]
             if basicVarInd < clpModel.nVariables and intInds[basicVarInd] and not rhsIsInt[rowInd]:
                 coef, b = gomoryCut(clpModel, rowInd)
-                #print 'Adding cut: ', coef, '>=', b
                 if b != None:
-                    cuts.append(CyLPArray(coef) * x >= b)
-                break
-
+                    #print 'Adding cut: ', coef, '>=', b
+                    expr = CyLPArray(coef) * x >= b
+                    cuts.append(expr)
         return cuts
 
 
 if __name__ == '__main__':
     m = CyLPModel()
 
-    if (False):
+    firstExample = False
+
+    if (firstExample):
         x = m.addVariable('x', 2, isInt=True)
 
         A = np.matrix([[7., -2.],[0., 1], [2., -2]])
@@ -88,14 +81,10 @@ if __name__ == '__main__':
     else:
         s = CyClpSimplex()
         cylpDir = os.environ['CYLP_SOURCE_DIR']
-        #inputFile = os.path.join(cylpDir, 'CyLP', 'input', 'netlib', 'adlittle.mps')
         inputFile = os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
         m = s.extractCyLPModel(inputFile)
-        #m = s.extractCyLPModel('/Users/mehdi/Downloads/timtab1.mps')
         x = m.getVarByName('x')
         s.setInteger(x)
-        #s.setInteger(x[14])
-
 
     cbcModel = s.getCbcModel()
 

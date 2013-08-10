@@ -21,19 +21,19 @@ cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
         cysi.setCppSelf(si)
         cycs = CyOsiCuts()
         cycs.setCppSelf(cs)
+
         cyinfo = CyCglTreeInfo()
         cyinfo.setCppSelf(&info)
         cuts = self.cutGeneratorObject.generateCuts(cysi, cyinfo)
         if type(cuts) is not list:
             cuts = [cuts]
         for cut in cuts:
-            # Getting a CyLPContraint
+            # Getting a CyLPConstraint
             isRange = cut.evaluate('cut').isRange
             if isRange:
                 cycs.addColumnCut(cut, self.cyLPModel)
             else:
                 cycs.addRowCut(cut, self.cyLPModel)
-
 
     cdef CppCglCutGenerator* clone(self):
         cdef CppCglCutGenerator* ret =  \

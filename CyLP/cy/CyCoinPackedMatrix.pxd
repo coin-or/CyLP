@@ -17,6 +17,8 @@ cdef extern from "ICoinPackedMatrix.hpp":
         bint isColOrdered()
         void dumpMatrix(char* fname)
         PyObject * np_getMajorIndices()
+        bint hasGaps()
+        void removeGaps(double removeValue)
         #void setItem(int n, double value)
         #void reserve(int n)
     CppCoinPackedMatrix *new_CppCoinPackedMatrix "new ICoinPackedMatrix" ()
