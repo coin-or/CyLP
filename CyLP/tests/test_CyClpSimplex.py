@@ -20,29 +20,29 @@ class TestCyClpSimplex(unittest.TestCase):
         self.s.readMps(join(currentFilePath, '../input/p0033.mps'))
 
     def test_PE(self):
-        pivot = PositiveEdgePivot(self.s)
-        self.s.setPivotMethod(pivot)
+        #pivot = PositiveEdgePivot(self.s)
+        self.s.setPivotMethod(PositiveEdgePivot(self.s))
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
     def test_Dantzig(self):
-        pivot = DantzigPivot(self.s)
-        self.s.setPivotMethod(pivot)
+        #pivot = DantzigPivot(self.s)
+        self.s.setPivotMethod(DantzigPivot(self.s))
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
     def test_LIFO(self):
-        pivot = LIFOPivot(self.s)
-        self.s.setPivotMethod(pivot)
+        #pivot = LIFOPivot(self.s)
+        self.s.setPivotMethod(LIFOPivot(self.s))
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
     def test_MostFrequent(self):
-        pivot = MostFrequentPivot(self.s)
-        self.s.setPivotMethod(pivot)
+        #pivot = MostFrequentPivot(self.s)
+        self.s.setPivotMethod(MostFrequentPivot(self.s))
         self.s.primal()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
-    
+
     def test_initialSolve(self):
         self.s.initialSolve()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)

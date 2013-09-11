@@ -6,6 +6,7 @@ cimport CyDualPivotPythonBase
 cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):
     def __init__(self, dualPivotMethodObject):
         CyClpDualRowPivotBase.__init__(self)
+        Py_INCREF(dualPivotMethodObject)
         self.dualPivotMethodObject = dualPivotMethodObject
 
     cdef pivotRow(self):

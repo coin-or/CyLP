@@ -33,6 +33,12 @@ STEP 4 (LINUX):
 
         $ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"
 
+Optional step:
+    If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
+    you should also define::
+
+        $ export CYLP_SOURCE_DIR=/Path/to/CyLP
+
 Now you can use CyLP in your python code. For example:
 
     >>> from CyLP.cy import CyClpSimplex

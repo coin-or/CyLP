@@ -4,7 +4,7 @@ from CyClpDualRowPivotBase cimport *
 cimport cython.operator.dereference as deref
 from CyLP.cy cimport CyClpSimplex
 from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
-
+from cpython cimport Py_INCREF, Py_DECREF
 
 cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):
     cdef pivotRow(self)
