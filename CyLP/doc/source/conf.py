@@ -17,11 +17,7 @@ import sys, os
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) +
-                                   '../../../'))
-#sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) +
-#                                    '../../../python/utils'))
-#sys.path.insert(0, os.path.abspath(os.path.dirname(__file__) + '../../../build/temp.macosx-10.6-universal-2.6'))
+sys.path.insert(0, os.path.abspath('../../../'))
 
 # -- General configuration -----------------------------------------------------
 
