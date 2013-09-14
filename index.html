@@ -37,7 +37,7 @@
     CoinMP-1.6.0. To compile CyLP you will need a LAPACK
     implementation and BZIP2 installed. If you are on a MAC or a linux
     system you might already have both.
-    To compile CoinMP's source you may need to pass 'g95' to configure::</p>
+    To compile CoinMP's source you may need to pass 'g95' to configure:</p>
 
 <pre><code>    $ ./configure F77=/path/to/g95
     $ make
@@ -46,30 +46,30 @@
 
 <p>STEP 2:
     Create an environment variable called COIN_INSTALL_DIR pointing to your
-    installation of Coin. For example::</p>
+    installation of Coin. For example:</p>
 
 <pre><code>    $ export COIN_INSTALL_DIR=/Users/mehdi/CoinMP-1.6.0
-
-You may also add this line to your ~/.bash_rc or ~/.profile to make
-it persistent.
 </code></pre>
 
+<p>You may also add this line to your ~/.bash_rc or ~/.profile to make
+it persistent.</p>
+
 <p>STEP 3:
-    Install CyLP. Go to CyLP's root directory and run::</p>
+    Install CyLP. Go to CyLP's root directory and run:</p>
 
 <pre><code>    $ python setup.py install
 </code></pre>
 
 <p>STEP 4 (LINUX):
      In linux you might also need to add COIN's lib directory to
-     LD_LIBRARY_PATH as follows::</p>
+     LD_LIBRARY_PATH as follows:</p>
 
 <pre><code>    $ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"
 </code></pre>
 
 <p>Optional step:
     If you want to run the doctests (i.e. <code>make doctest</code> in the <code>doc</code> directory)
-    you should also define::</p>
+    you should also define:</p>
 
 <pre><code>    $ export CYLP_SOURCE_DIR=/Path/to/CyLP
 </code></pre>
@@ -86,7 +86,7 @@ it persistent.
 225494.963
 </code></pre>
 
-<p>Or simply go to CyLP and run::</p>
+<p>Or simply go to CyLP and run:</p>
 
 <pre><code>$ python -m unittest discover
 </code></pre>
@@ -94,29 +94,52 @@ it persistent.
 <p>to run all CyLP unit tests.</p>
 
 <h1>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
+<a name="modeling-example" class="anchor" href="#modeling-example"><span class="octicon octicon-link"></span></a>Modeling Example</h1>
 
-<p>To run the primal Simplex method on a problem in MPS format, use::</p>
+<p>Here is an example of how to model with CyLP's modeling facility:</p>
 
-<pre><code>$ python CyLP/py/PySolve.py input/netlib/25fv47.mps d
+<pre><code>&gt;&gt;&gt; import numpy as np
+&gt;&gt;&gt; from CyLP.cy import CyClpSimplex
+&gt;&gt;&gt; from CyLP.py.modeling.CyLPModel import CyLPArray
+&gt;&gt;&gt;
+&gt;&gt;&gt; s = CyClpSimplex()
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Add variables
+&gt;&gt;&gt; x = s.addVariable('x', 3)
+&gt;&gt;&gt; y = s.addVariable('y', 2)
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Create coefficients and bounds
+&gt;&gt;&gt; A = np.matrix([[1., 2., 0],[1., 0, 1.]])
+&gt;&gt;&gt; B = np.matrix([[1., 0, 0], [0, 0, 1.]])
+&gt;&gt;&gt; D = np.matrix([[1., 2.],[0, 1]])
+&gt;&gt;&gt; a = CyLPArray([5, 2.5])
+&gt;&gt;&gt; b = CyLPArray([4.2, 3])
+&gt;&gt;&gt; x_u= CyLPArray([2., 3.5])
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Add constraints
+&gt;&gt;&gt; s += A * x &lt;= a
+&gt;&gt;&gt; s += 2 &lt;= B * x + D * y &lt;= b
+&gt;&gt;&gt; s += y &gt;= 0
+&gt;&gt;&gt; s += 1.1 &lt;= x[1:3] &lt;= x_u
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Set the objective function
+&gt;&gt;&gt; c = CyLPArray([1., -2., 3.])
+&gt;&gt;&gt; s.objective = c * x + 2 * y.sum()
+&gt;&gt;&gt;
+&gt;&gt;&gt; # Solve using primal Simplex
+&gt;&gt;&gt; s.primal()
+&gt;&gt;&gt; print s.primalVariableSolution['x']
 </code></pre>
-
-<p>or::</p>
-
-<pre><code>$ python CyLP/cy/CySolve.py input/netlib/25fv47.mps d
-</code></pre>
-
-<p>Use <code>p</code> instead of the trailing <code>d</code> to use the positive edge pivot rule instead of Dantzig's canonical pivot rule.</p>
 
 <h1>
 <a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h1>
 
 <p>You may access CyLP's documentation:</p>
 
-<pre><code>1. *Online* : http://mpy.github.com/CyLP.
-
-2. *Offline* : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest.
-</code></pre>
+<ol>
+<li><p><em>Online</em> : Please visit <a href="cylp.readthedocs.org">cylp.readthedocs.org</a></p></li>
+<li><p><em>Offline</em> : To install CyLP's documentation in your repository, you need Sphinx (<a href="http://sphinx.pocoo.org/">http://sphinx.pocoo.org/</a>). You can generate the documentation by going to CyLP/doc and run <code>make html</code> or <code>make latex</code> and access the documentation under CyLP/doc/build. You can also run <code>make doctest</code> to perform all the doctest.</p></li>
+</ol>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/mpy">mpy</a></p>
