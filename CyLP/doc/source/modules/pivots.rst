@@ -7,6 +7,7 @@
 
    PivotPythonBase
    DantzigPivot
+   DualDantzigPivot
    PositiveEdgePivot
    LIFOPivot
    MostFrequentPivot
