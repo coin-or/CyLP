@@ -101,6 +101,6 @@ Documentation
 ===============
 You may access CyLP's documentation:
 
-1. _Online_ : Please visit [http://mpy.github.io/CyLPdoc/](http://mpy.github.io/CyLPdoc/)
+1. *Online* : Please visit http://mpy.github.io/CyLPdoc/
 
-2. _Offline_ : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest.
+2. *Offline* : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest.
