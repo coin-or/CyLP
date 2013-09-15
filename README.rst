@@ -1,6 +1,6 @@
 What is CyLP?
 ==============
-CyLP is an interface to COIN-OR’s Linear and mixed-integer program solvers
+CyLP is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
 (CLP, CBC, and CGL). CyLP’s unique feature is that you can use it to alter the
 solution process of the solvers from within Python. For example, you may
 define cut generators, branch-and-bound strategies, and primal/dual Simplex
