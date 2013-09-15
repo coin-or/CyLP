@@ -29,8 +29,9 @@ sys.path.insert(0, os.path.abspath('../../../'))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.viewcode']
 
 extensions += ['sphinx.ext.mathjax']
-mathjax_path = 'https://d3eoax9i5htok0.cloudfront.net/mathjax/' \
-                    'latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+mathjax_path = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
+#mathjax_path = 'https://d3eoax9i5htok0.cloudfront.net/mathjax/' \
+#                    'latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -223,25 +224,3 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
-
-class Mock(object):
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def __call__(self, *args, **kwargs):
-        return Mock()
-
-    @classmethod
-    def __getattr__(cls, name):
-        if name in ('__file__', '__path__'):
-            return '/dev/null'
-        elif name[0] == name[0].upper():
-            mockType = type(name, (), {})
-            mockType.__module__ = __name__
-            return mockType
-        else:
-            return Mock()
-
-MOCK_MODULES = ['numpy', 'scipy']
-for mod_name in MOCK_MODULES:
-    sys.modules[mod_name] = Mock()

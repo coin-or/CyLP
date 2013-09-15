@@ -7,7 +7,7 @@ STEP 1:
     CoinMP-1.6.0. To compile CyLP you will need a LAPACK
     implementation and BZIP2 installed. If you are on a MAC or a linux
     system you might already have both.
-    To compile CoinMP's source you may need to pass 'g95' to configure::
+    To compile CoinMP's source you may need to pass 'g95' to configure:
 
         $ ./configure F77=/path/to/g95
         $ make
@@ -15,27 +15,27 @@ STEP 1:
 
 STEP 2:
     Create an environment variable called COIN_INSTALL_DIR pointing to your
-    installation of Coin. For example::
+    installation of Coin. For example:
 
         $ export COIN_INSTALL_DIR=/Users/mehdi/CoinMP-1.6.0
 
-    You may also add this line to your ~/.bash_rc or ~/.profile to make
-    it persistent.
+You may also add this line to your ~/.bash_rc or ~/.profile to make
+it persistent.
 
 STEP 3:
-    Install CyLP. Go to CyLP's root directory and run::
+    Install CyLP. Go to CyLP's root directory and run:
 
         $ python setup.py install
 
 STEP 4 (LINUX):
      In linux you might also need to add COIN's lib directory to
-     LD_LIBRARY_PATH as follows::
+     LD_LIBRARY_PATH as follows:
 
         $ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"
 
 Optional step:
     If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
-    you should also define::
+    you should also define:
 
         $ export CYLP_SOURCE_DIR=/Path/to/CyLP
 
@@ -50,7 +50,7 @@ Now you can use CyLP in your python code. For example:
     >>> round(s.objectiveValue, 3)
     225494.963
 
-Or simply go to CyLP and run::
+Or simply go to CyLP and run:
 
     $ python -m unittest discover
 
@@ -58,24 +58,49 @@ to run all CyLP unit tests.
 
 
 
-Usage
-=======
+Modeling Example
+==================
 
-To run the primal Simplex method on a problem in MPS format, use::
+Here is an example of how to model with CyLP's modeling facility:
 
-    $ python CyLP/py/PySolve.py input/netlib/25fv47.mps d
+    >>> import numpy as np
+    >>> from CyLP.cy import CyClpSimplex
+    >>> from CyLP.py.modeling.CyLPModel import CyLPArray
+    >>>
+    >>> s = CyClpSimplex()
+    >>>
+    >>> # Add variables
+    >>> x = s.addVariable('x', 3)
+    >>> y = s.addVariable('y', 2)
+    >>>
+    >>> # Create coefficients and bounds
+    >>> A = np.matrix([[1., 2., 0],[1., 0, 1.]])
+    >>> B = np.matrix([[1., 0, 0], [0, 0, 1.]])
+    >>> D = np.matrix([[1., 2.],[0, 1]])
+    >>> a = CyLPArray([5, 2.5])
+    >>> b = CyLPArray([4.2, 3])
+    >>> x_u= CyLPArray([2., 3.5])
+    >>>
+    >>> # Add constraints
+    >>> s += A * x <= a
+    >>> s += 2 <= B * x + D * y <= b
+    >>> s += y >= 0
+    >>> s += 1.1 <= x[1:3] <= x_u
+    >>>
+    >>> # Set the objective function
+    >>> c = CyLPArray([1., -2., 3.])
+    >>> s.objective = c * x + 2 * y.sum()
+    >>>
+    >>> # Solve using primal Simplex
+    >>> s.primal()
+    >>> print s.primalVariableSolution['x']
 
-or::
-
-    $ python CyLP/cy/CySolve.py input/netlib/25fv47.mps d
-
-Use `p` instead of the trailing `d` to use the positive edge pivot rule instead of Dantzig's canonical pivot rule.
 
 
 Documentation
 ===============
 You may access CyLP's documentation:
 
-    1. *Online* : http://mpy.github.com/CyLP.
+1. _Online_ : Please visit [http://mpy.github.io/CyLPdoc/](http://mpy.github.io/CyLPdoc/)
 
-    2. *Offline* : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest.
+2. _Offline_ : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest.
