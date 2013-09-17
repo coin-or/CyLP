@@ -29,6 +29,9 @@ sys.path.insert(0, os.path.abspath('../../../'))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.intersphinx', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.pngmath', 'sphinx.ext.viewcode']
 
 extensions += ['sphinx.ext.mathjax']
+extensions += ['sphinxcontrib.googleanalytics']
+googleanalytics_id = 'UA-44100401-1'
+
 mathjax_path = 'http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 #mathjax_path = 'https://d3eoax9i5htok0.cloudfront.net/mathjax/' \
 #                    'latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
