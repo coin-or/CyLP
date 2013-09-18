@@ -186,8 +186,8 @@ int ICoinMpsIO::IreadQuadraticMps(const char * filename, int checkSymmetry){
 	return ret;
 }
 
-ICoinMpsIO::ICoinMpsIO(){
-        CoinMpsIO::CoinMpsIO();
+ICoinMpsIO::ICoinMpsIO() : CoinMpsIO()
+{
 	d_colStart = NULL;
 	d_cols = NULL;
 	d_elements = NULL;
