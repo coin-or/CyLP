@@ -2,7 +2,7 @@
 
 void
 CppCglCutGeneratorBase::generateCuts(const OsiSolverInterface & si, OsiCuts & cs,
-                 const CglTreeInfo info) const
+                 const CglTreeInfo info)
 {
 	//std::cout << "::Cy..Base::generateCuts()...\n";
     if (this->obj && this->runGenerateCuts) {
