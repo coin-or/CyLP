@@ -132,3 +132,9 @@ You may access CyLP's documentation:
    going to CyLP/doc and run ``make html`` or ``make latex`` and access the
    documentation under CyLP/doc/build. You can also run ``make doctest`` to
    perform all the doctest.
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/mpy/cylp/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
