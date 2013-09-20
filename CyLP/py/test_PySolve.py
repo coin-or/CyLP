@@ -5,30 +5,29 @@ from os.path import join
 import numpy as np
 from CyLP.cy import CyClpSimplex
 from PySolve import solve
-currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
+
+
+problem = os.path.join(os.path.dirname(__file__), '..', 'input',
+                       'netlib', 'adlittle.mps')
 
 adlittleSol = 225494.963162
 
 class TestPySolve(unittest.TestCase):
 
     def test_pe(self):
-        objval = solve(join(currentFilePath, '../input/netlib/adlittle.mps'),
-                       'p')
+        objval = solve(problem, 'p')
         self.assertAlmostEqual(objval, adlittleSol, 6)
 
     def test_dantzig(self):
-        objval = solve(join(currentFilePath, '../input/netlib/adlittle.mps'),
-                       'd')
+        objval = solve(problem, 'd')
         self.assertAlmostEqual(objval, adlittleSol, 6)
 
     def test_lifo(self):
-        objval = solve(join(currentFilePath, '../input/netlib/adlittle.mps'),
-                       'l')
+        objval = solve(problem, 'l')
         self.assertAlmostEqual(objval, adlittleSol, 6)
 
     def test_mf(self):
-        objval = solve(join(currentFilePath, '../input/netlib/adlittle.mps'),
-                       'm')
+        objval = solve(problem, 'm')
         self.assertAlmostEqual(objval, adlittleSol, 6)
 
 
