@@ -308,6 +308,8 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
 
 ext_modules += [Extension('CyLP.cy.CyCutGeneratorPythonBase',
                           sources=[join(cppFilesDir,
+                                        'ICglCutGeneratorBase.cpp'),
+                                    join(cppFilesDir,
                                          'IOsiCuts.cpp'),
                                     join(cythonFilesDir, 'CyCutGeneratorPythonBase' +
                                         fileext)],

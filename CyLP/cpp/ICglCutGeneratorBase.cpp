@@ -27,8 +27,8 @@ CglCutGenerator * CppCglCutGeneratorBase::clone() const {
 CppCglCutGeneratorBase::CppCglCutGeneratorBase(PyObject *obj, runGenerateCuts_t runGenerateCuts,
 													   runCglClone_t runCglClone) :
   obj(obj),
-  runGenerateCuts(runGenerateCuts),
-	runCglClone(runCglClone)
+	runCglClone(runCglClone),
+  runGenerateCuts(runGenerateCuts)
 {
 }
 
@@ -40,8 +40,8 @@ CppCglCutGeneratorBase::~CppCglCutGeneratorBase()
 CppCglCutGeneratorBase::CppCglCutGeneratorBase(const CglCutGenerator & source):
     CglCutGenerator(source),
     obj(obj),
-    runGenerateCuts(runGenerateCuts),
-    runCglClone(runCglClone)
+    runCglClone(runCglClone),
+    runGenerateCuts(runGenerateCuts)
 {
 }
 
@@ -49,8 +49,8 @@ CppCglCutGeneratorBase::CppCglCutGeneratorBase(const CglCutGenerator & source):
 CppCglCutGeneratorBase::CppCglCutGeneratorBase():
     CglCutGenerator(),
     obj(obj),
-    runGenerateCuts(runGenerateCuts),
-    runCglClone(runCglClone)
+    runCglClone(runCglClone),
+    runGenerateCuts(runGenerateCuts)
 {
 }
 
