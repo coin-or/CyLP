@@ -647,8 +647,8 @@ void IClpSimplex::getBasisStatus(int* cstat, int* rstat){
 
 IClpSimplex::IClpSimplex (ClpSimplex * wholeModel,
         int numberColumns, const int * whichColumns)
+ : ClpSimplex(wholeModel, numberColumns, whichColumns)
 {
-    ClpSimplex::ClpSimplex(wholeModel, numberColumns, whichColumns);
     std::cout << "Unfinished constructor called.\n";
     _import_array();
     tempArrayExists = false;

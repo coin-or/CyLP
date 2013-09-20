@@ -68,9 +68,8 @@ PyObject* ICoinPackedMatrix::np_getVectorStarts(){
 	return Arr;
 }
 
-ICoinPackedMatrix::ICoinPackedMatrix(){
-        CoinPackedMatrix::CoinPackedMatrix();
-}
+ICoinPackedMatrix::ICoinPackedMatrix() : CoinPackedMatrix()
+{}
 
 ICoinPackedMatrix::ICoinPackedMatrix(const bool colordered,
      const int * rowIndices,
