@@ -26,14 +26,11 @@ Installation
 ============
 
 STEP 1:
-    Install CoinMP. You can get the source at
-    http://www.coin-or.org/download/source/CoinMP/. CyLP can be compiled against
-    CoinMP-1.6.0. To compile CyLP you will need a LAPACK
-    implementation and BZIP2 installed. If you are on a MAC or a linux
-    system you might already have both.
-    To compile CoinMP's source you may need to pass 'g95' to configure::
+    Install CBC (http://www.coin-or.org/download/source/Cbc/).
+    CyLP can be compiled against
+    Cbc version 2.8.5. Please go to the installation directory and run::
 
-        $ ./configure F77=/path/to/g95
+        $ ./configure
         $ make
         $ make install
 
@@ -41,7 +38,7 @@ STEP 2:
     Create an environment variable called COIN_INSTALL_DIR pointing to your
     installation of Coin. For example::
 
-        $ export COIN_INSTALL_DIR=/Users/mehdi/CoinMP-1.6.0
+        $ export COIN_INSTALL_DIR=/Users/mehdi/Cbc-2.8.5
 
 You may also add this line to your ~/.bash_rc or ~/.profile to make
 it persistent.
@@ -55,7 +52,7 @@ STEP 4 (LINUX):
      In linux you might also need to add COIN's lib directory to
      LD_LIBRARY_PATH as follows::
 
-        $ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"
+        $ export LD_LIBRARY_PATH=/path/to/Cbc-2.8.5/lib:$LD_LIBRARY_PATH"
 
 Optional step:
     If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
