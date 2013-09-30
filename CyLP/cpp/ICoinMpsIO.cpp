@@ -142,7 +142,7 @@ PyObject* ICoinMpsIO::np_getObjCoefficients(){
 	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IObjCoefficients() );
 	return Arr;
 }
-		
+
 PyObject* ICoinMpsIO::np_integerColumns(){
 	npy_intp dims = this->getNumCols();
 	_import_array();
@@ -178,16 +178,16 @@ double ICoinMpsIO::getObjectiveOffset(){
 }
 
 int ICoinMpsIO::IreadQuadraticMps(const char * filename, int checkSymmetry){
-	
-	
-	
+
+
+
 	int ret = readQuadraticMps(NULL, d_colStart, d_cols, d_elements, checkSymmetry);
-	
+
 	return ret;
 }
 
-ICoinMpsIO::ICoinMpsIO(){
-        CoinMpsIO::CoinMpsIO();
+ICoinMpsIO::ICoinMpsIO():CoinMpsIO()
+{
 	d_colStart = NULL;
 	d_cols = NULL;
 	d_elements = NULL;
@@ -225,7 +225,7 @@ ICoinPackedMatrix * ICoinMpsIO::IgetMatrixByCol() const
 
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-/* The Following part is exactly as defined in CoinMpsIO and is added 
+/* The Following part is exactly as defined in CoinMpsIO and is added
 because otherwise we will get this error:
 
 Traceback (most recent call last):

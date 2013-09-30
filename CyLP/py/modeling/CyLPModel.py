@@ -123,7 +123,6 @@ from itertools import product
 from copy import deepcopy
 from operator import mul
 import numpy as np
-import resource
 from scipy import sparse
 from scipy.sparse import identity, lil_matrix
 from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex

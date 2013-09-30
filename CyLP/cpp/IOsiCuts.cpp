@@ -22,6 +22,5 @@ CppOsiCuts::addRowCut(int size, int* indices, double* elements,
 
 
 void CppOsiCuts::eraseRowCut(int i){
-    std::cout << '+++++++++++++++++++++++++++++++++++++++++++\n';
     OsiCuts::eraseRowCut(i);
 }

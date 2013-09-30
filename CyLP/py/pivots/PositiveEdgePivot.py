@@ -116,7 +116,7 @@ class PositiveEdgePivot(PivotPythonBase):
             w = self.w.elements
             compatibility = np.zeros(s.nCols + s.nRows, dtype=np.double)
             if len(indicesToConsider) > 0:
-                s.transposeTimesSubsetAll(indicesToConsider,
+                s.transposeTimesSubsetAll(indicesToConsider.astype(np.int64),
                                           w, compatibility)
             comp_varInds = indicesToConsider[np.where(abs(
                                     compatibility[indicesToConsider]) <

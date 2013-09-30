@@ -2,7 +2,7 @@ import unittest
 import os
 import inspect
 from os.path import join
-from CyLP.cy import CySolve
+from CyLP.cy.CySolve import CySolve
 
 
 problem = os.path.join(os.path.dirname(__file__), '..', 'input',
