@@ -25,6 +25,7 @@ except:
     raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
                     'to the location of the COIN installation')
 
+
 def get_libs():
     '''
     Return a list of distinct library names used by ``dependencies``.
@@ -68,15 +69,18 @@ else:
     fileext = '.cpp'
 
 
+extra_compile_args = []
+ext_modules = []
+
 if operatingSystem == 'mac':
     extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
 elif operatingSystem == 'linux':
     extra_link_args = ['-lrt']
 else:
+    # Assuming Windows
     extra_link_args = []
+    extra_compile_args += ['/EHsc']
 
-extra_compile_args = []
-ext_modules = []
 
 ext_modules += [Extension('CyLP.cy.CyClpPrimalColumnPivotBase',
                           sources=[join(cppFilesDir,
