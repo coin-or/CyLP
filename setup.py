@@ -7,7 +7,7 @@ import numpy
 
 
 PROJECT = 'CyLP'
-VERSION = '0.2'
+VERSION = '0.2.1'
 URL = 'https://github.com/mpy/CyLP'
 AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
 DESC = 'A Python interface for CLP, CBC, and CGL'
