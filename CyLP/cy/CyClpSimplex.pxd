@@ -254,6 +254,9 @@ cdef extern from "IClpSimplex.hpp":
         void setLogLevel(int value)
         int logLevel()
 
+        bint automaticScaling()
+        void setAutomaticScaling(bint value)
+
         bint isInteger(int index)
         PyObject* getIntegerInformation()
 

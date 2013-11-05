@@ -327,6 +327,11 @@ class CyLPConstraint:
 
 
     def perform(self, opr, left=None, right=None):
+        if isinstance(left, (CyLPArray, np.matrix, np.ndarray)):
+            left = CyLPArray(np.squeeze(np.asarray(left)))
+        if isinstance(right, (CyLPArray, np.matrix, np.ndarray)):
+            right = CyLPArray(np.squeeze(np.asarray(right)))
+
         if isinstance(right, CyLPVar):
             if right.dim == 0:
                 return
@@ -766,6 +771,7 @@ class IndexFactory:
             if inds[0] > start:
                 self.constIndex[constName] = inds - nCons * np.ones(len(inds),
                                                                     np.int32)
+        self.currentConstIndex -= nCons
 
 
     def getLastConstIndex(self):

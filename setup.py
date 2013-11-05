@@ -1,9 +1,17 @@
 import os
 import sys
 from os.path import join
+import numpy
+
+
+# Setuptools seems to get confused with c++ extensions
+#try:
+#    from setuptools import setup
+#    from setuptools import Extension
+#except ImportError:
 from distutils.core import setup
 from distutils.extension import Extension
-import numpy
+
 
 
 PROJECT = 'CyLP'
@@ -14,7 +22,7 @@ DESC = 'A Python interface for CLP, CBC, and CGL'
 
 
 #Specify whether to use Cython for installation
-USECYTHON = True
+USECYTHON = False
 
 cythonFilesDir = join('CyLP', 'cy')
 cppFilesDir = join('CyLP', 'cpp')
@@ -340,4 +348,5 @@ setup(name='CyLP',
       packages=['CyLP', 'CyLP.cy', 'CyLP.py', 'CyLP.py.pivots', 'CyLP.py.modeling',
                 'CyLP.py.utils', 'CyLP.py.mip','CyLP.py.QP'],
       cmdclass=cmdclass,
-      ext_modules=ext_modules)
+      ext_modules=ext_modules,
+      install_requires=['numpy >= 1.6.4', 'scipy >= 0.12.0'])

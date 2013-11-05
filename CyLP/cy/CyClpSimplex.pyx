@@ -310,7 +310,7 @@ cdef class CyClpSimplex:
 
     property cost:
         '''
-        Return the current point.
+        Return the cost vector.
 
         :rtype: Numpy array
         '''
@@ -665,6 +665,13 @@ cdef class CyClpSimplex:
 
         def __set__(self, value):
             self.CppSelf.setLogLevel(value)
+
+    property automaticScaling:
+        def __get__(self):
+            return self.CppSelf.automaticScaling()
+
+        def __set__(self, value):
+            self.CppSelf.setAutomaticScaling(value)
 
     #############################################
     # get set
@@ -1322,22 +1329,28 @@ cdef class CyClpSimplex:
         '''
         Read an mps file. See this :ref:`modeling example <modeling-usage>`.
         '''
-        #name, ext = os.path.splitext(filename)
-        #if ext not in ['.mps', '.qps']:
-        #    print 'unrecognised extension %s' % ext
-        #    return -1
+        name, ext = os.path.splitext(filename)
+        if ext not in ['.mps', '.qps']:
+            print 'unrecognised extension %s' % ext
+            return -1
 
-        #if ext == '.mps':
-        return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
-        #else:
-        #    return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
-            #m = CyCoinMpsIO.CyCoinMpsIO()
-            #ret = m.readMps(filename)
-            #self.Hessian = m.Hessian
+        if ext == '.mps':
+            return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+        else:
+            m = CyCoinMpsIO.CyCoinMpsIO()
+            ret = m.readMps(filename)
+            self.Hessian = m.Hessian
+
+            # Since CyCoinMpsIO.readMps seems to be different from ClpModle.readMps
+            # for the moment we read the problem again
+            # FIXME: should be fixed
             #self.loadProblem(m.matrixByCol, m.variableLower, m.variableUpper,
             #                 m.objCoefficients,
             #                 m.constraintLower, m.constraintUpper)
             #return ret
+
+            return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
+
 
     def extractCyLPModel(self, fileName, keepNames=False, ignoreErrors=False):
         if self.readMps(fileName, keepNames, ignoreErrors) != 0:
