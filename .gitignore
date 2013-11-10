@@ -5,3 +5,5 @@
 *.so
 *.pyc
 build/
+MANIFEST
+CyLP.egg*

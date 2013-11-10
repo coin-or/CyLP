@@ -131,6 +131,13 @@ cdef class CyCbcModel:
         self.CppSelf.branchAndBound(doStatistics)
         return self.status
 
+    def solve(self):
+        '''
+        Call CbcMain. Solve the problem using the same parameters used by CbcSolver.
+        Equivalent to solving the model from the command line using cbc's binary.
+        '''
+        return self.CppSelf.cbcMain()
+
     property status:
         def __get__(self):
             # secondaryStatus() should be used instead of status() (??)

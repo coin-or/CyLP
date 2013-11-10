@@ -14,6 +14,7 @@
 #include <numpy/arrayobject.h>
 #include "OsiClpSolverInterface.hpp"
 #include "ICbcNode.hpp"
+//#include "CbcSolver.hpp"
 //#include "CbcCompareUser.hpp"
 
 class ICbcModel;
@@ -28,13 +29,13 @@ typedef int (*runEvery1000Nodes_t)(void *instance,
 
 class ICbcModel : public CbcModel{
 public:
-    ICbcModel(OsiClpSolverInterface&);  
+    ICbcModel(OsiClpSolverInterface&);
     PyObject * getPrimalVariableSolution();
 
     void setNodeCompare(PyObject* obj,
                            runTest_t runTest, runNewSolution_t runNewSolution,
                            runEvery1000Nodes_t runEvery1000Nodes);
-
+    int cbcMain();
 };
 
 

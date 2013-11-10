@@ -1,14 +1,15 @@
 #include "ICbcModel.hpp"
 
 #include "CbcCompareUser.hpp"
+#include "CbcSolver.hpp"
 
 PyObject* ICbcModel::getPrimalVariableSolution(){
 
     _import_array();
     npy_intp dims = this->solver()->getNumCols();
-    double* d = (double*)(this->solver()->getColSolution()); 
+    double* d = (double*)(this->solver()->getColSolution());
     PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, d );
-    
+
     return Arr;
 }
 
@@ -26,3 +27,12 @@ void ICbcModel::setNodeCompare(PyObject* obj,
 }
 
 
+int ICbcModel::cbcMain(){
+        // initialize
+        int returnCode = -1;
+        CbcMain0(*this);
+        const char* argv[] = {"ICbcModel", "-solve","-quit"};
+        // Solve ICbcModel and quit
+        returnCode = CbcMain1 (3, argv, *this);
+        return returnCode;
+}
