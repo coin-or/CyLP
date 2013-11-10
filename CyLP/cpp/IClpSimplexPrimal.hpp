@@ -1,11 +1,11 @@
 // Copyright (C) 2002, International Business Machines
 // Corporation and others.  All Rights Reserved.
 
-/* 
+/*
  Authors
- 
+
  John Forrest
- 
+
  */
 #ifndef IClpSimplexPrimal_H
 #define IClpSimplexPrimal_H
@@ -13,25 +13,23 @@
 #include "IClpSimplex.hpp"
 
 
-int ttt(int x);
-
 /** This solves LPs using the primal simplex method
- 
- It inherits from IClpSimplex.  It has no data of its own and 
- is never created - only cast from a IClpSimplex object at algorithm time. 
- 
+
+ It inherits from IClpSimplex.  It has no data of its own and
+ is never created - only cast from a IClpSimplex object at algorithm time.
+
  */
 
 class IClpSimplexPrimal : public IClpSimplex{
-	
+
 public:
-	
+
 	/**@name Description of algorithm */
 	//@{
 	/** Primal algorithm
-	 
+
 	 Method
-	 
+
      It tries to be a single phase approach with a weight of 1.0 being
      given to getting optimal and a weight of infeasibilityCost_ being
      given to getting primal feasible.  In this version I have tried to
@@ -42,81 +40,81 @@ public:
      memory and keep these explicitly.  This allows for non-linear
      costs!  I have not tested non-linear costs but will be glad
      to do something if a reasonable example is provided.
-	 
+
      The code is designed to take advantage of sparsity so arrays are
      seldom zeroed out from scratch or gone over in their entirety.
-     The only exception is a full scan to find incoming variable for 
-     Dantzig row choice.  For steepest edge we keep an updated list 
-     of dual infeasibilities (actually squares).  
+     The only exception is a full scan to find incoming variable for
+     Dantzig row choice.  For steepest edge we keep an updated list
+     of dual infeasibilities (actually squares).
      On easy problems we don't need full scan - just
      pick first reasonable.  This method has not been coded.
-	 
+
      One problem is how to tackle degeneracy and accuracy.  At present
      I am using the modification of costs which I put in OSL and which was
      extended by Gill et al.  I am still not sure whether we will also
      need explicit perturbation.
-	 
+
      The flow of primal is three while loops as follows:
-	 
+
      while (not finished) {
-	 
+
 	 while (not clean solution) {
-	 
+
 	 Factorize and/or clean up solution by changing bounds so
 	 primal feasible.  If looks finished check fake primal bounds.
 	 Repeat until status is iterating (-1) or finished (0,1,2)
-	 
+
 	 }
-	 
+
 	 while (status==-1) {
-	 
+
 	 Iterate until no pivot in or out or time to re-factorize.
-	 
+
 	 Flow is:
-	 
+
 	 choose pivot column (incoming variable).  if none then
 	 we are primal feasible so looks as if done but we need to
 	 break and check bounds etc.
-	 
+
 	 Get pivot column in tableau
-	 
+
 	 Choose outgoing row.  If we don't find one then we look
 	 primal unbounded so break and check bounds etc.  (Also the
 	 pivot tolerance is larger after any iterations so that may be
 	 reason)
-	 
+
 	 If we do find outgoing row, we may have to adjust costs to
 	 keep going forwards (anti-degeneracy).  Check pivot will be stable
 	 and if unstable throw away iteration and break to re-factorize.
 	 If minor error re-factorize after iteration.
-	 
-	 Update everything (this may involve changing bounds on 
+
+	 Update everything (this may involve changing bounds on
 	 variables to stay primal feasible.
-	 
+
 	 }
-	 
+
      }
-	 
+
      TODO's (or maybe not)
-	 
+
      At present we never check we are going forwards.  I overdid that in
      OSL so will try and make a last resort.
-	 
+
      Needs partial scan pivot in option.
-	 
+
      May need other anti-degeneracy measures, especially if we try and use
      loose tolerances as a way to solve in fewer iterations.
-	 
+
      I like idea of dynamic scaling.  This gives opportunity to decouple
      different implications of scaling for accuracy, iteration count and
      feasibility tolerance.
-	 
+
      for use of exotic parameter startFinishoptions see IClpSimplex.hpp
 	 */
-	
+
 	int primal(int ifValuesPass=0, int startFinishOptions=0);
 	//@}
-	
+
 	/**@name For advanced users */
 	//@{
 	/// Do not change infeasibility cost and always say optimal
@@ -129,23 +127,23 @@ public:
 	void exactOutgoing(bool onOff);
 	bool exactOutgoing() const;
 	//@}
-	
+
 	/**@name Functions used in primal */
 	//@{
 	/** This has the flow between re-factorizations
-	 
+
 	 Returns a code to say where decision to exit was made
 	 Problem status set to:
-	 
+
 	 -2 re-factorize
 	 -4 Looks optimal/infeasible
 	 -5 Looks unbounded
-	 +3 max iterations 
-	 
+	 +3 max iterations
+
 	 valuesOption has original value of valuesPass
 	 */
-	int whileIterating(int valuesOption); 
-	
+	int whileIterating(int valuesOption);
+
 	/** Do last half of an iteration.  This is split out so people can
 	 force incoming variable.  If solveType_ is 2 then this may
 	 re-factorize while normally it would exit to re-factorize.
@@ -158,15 +156,15 @@ public:
 	 -5 something flagged - go round again/ pivot not possible
 	 +2 looks unbounded
 	 +3 max iterations (iteration done)
-	 
+
 	 With solveType_ ==2 this should
 	 Pivot in a variable and choose an outgoing one.  Assumes primal
 	 feasible - will not go through a bound.  Returns step length in theta
 	 Returns ray in ray_
 	 */
 	int pivotResult(int ifValuesPass=0);
-	
-	
+
+
 	/** The primals are updated by the given array.
 	 Returns number of infeasibilities.
 	 After rowArray will have cost changes for use next iteration
@@ -175,7 +173,7 @@ public:
 							  double theta,
 							  double & objectiveChange,
 							  int valuesPass);
-	/** 
+	/**
 	 Row array has pivot column
 	 This chooses pivot row.
 	 Rhs array is used for distance to next bound (for speed)
@@ -188,7 +186,7 @@ public:
 				   CoinIndexedVector * spareArray,
 				   CoinIndexedVector * spareArray2,
 				   int valuesPass);
-				   
+
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	void DantzigPrimalRow(CoinIndexedVector * rowArray,
 				   CoinIndexedVector * rhsArray,
@@ -196,7 +194,7 @@ public:
 				   CoinIndexedVector * spareArray2,
 				   int valuesPass);
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	/** 
+	/**
 	 Chooses primal pivot column
 	 updateArray has cost updates (also use pivotRow_ from last iteration)
 	 Would be faster with separate region to scan
@@ -208,19 +206,19 @@ public:
 					  CoinIndexedVector * spareRow2,
 					  CoinIndexedVector * spareColumn1,
 					  CoinIndexedVector * spareColumn2);
-	
+
 	/** Checks if tentative optimal actually means unbounded in primal
 	 Returns -3 if not, 2 if is unbounded */
 	int checkUnbounded(CoinIndexedVector * ray,CoinIndexedVector * spare,
 					   double changeCost);
-	/**  Refactorizes if necessary 
+	/**  Refactorizes if necessary
 	 Checks if finished.  Updates status.
 	 lastCleaned refers to iteration at which some objective/feasibility
 	 cleaning too place.
-	 
+
 	 type - 0 initial so set up save arrays etc
 	 - 1 normal -if good update save
-	 - 2 restoring from saved 
+	 - 2 restoring from saved
 	 saveModel is normally NULL but may not be if doing Sprint
 	 */
 	void statusOfProblemInPrimal(int & lastCleaned, int type,
@@ -240,17 +238,17 @@ public:
 	 if 2 uses list.
 	 */
 	int nextSuperBasic(int superBasicType,CoinIndexedVector * columnArray);
-	
+
 	/// Create primal ray
 	void primalRay(CoinIndexedVector * rowArray);
 	/// Clears all bits and clears rowArray[1] etc
 	void clearAll();
-	
+
 	/// Sort of lexicographic resolve
 	int lexSolve();
-	
+
 	//@}
-	
+
 
 };
 #endif

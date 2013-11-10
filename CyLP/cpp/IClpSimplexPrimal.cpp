@@ -2,39 +2,39 @@
 // Corporation and others.  All Rights Reserved.
 
 /* Notes on implementation of primal simplex algorithm.
- 
+
  When primal feasible(A):
- 
+
  If dual feasible, we are optimal.  Otherwise choose an infeasible
- basic variable to enter basis from a bound (B).  We now need to find an 
+ basic variable to enter basis from a bound (B).  We now need to find an
  outgoing variable which will leave problem primal feasible so we get
  the column of the tableau corresponding to the incoming variable
  (with the correct sign depending if variable will go up or down).
- 
+
  We now perform a ratio test to determine which outgoing variable will
  preserve primal feasibility (C).  If no variable found then problem
- is unbounded (in primal sense).  If there is a variable, we then 
+ is unbounded (in primal sense).  If there is a variable, we then
  perform pivot and repeat.  Trivial?
- 
+
  -------------------------------------------
- 
+
  A) How do we get primal feasible?  All variables have fake costs
  outside their feasible region so it is trivial to declare problem
  feasible.  OSL did not have a phase 1/phase 2 approach but
  instead effectively put an extra cost on infeasible basic variables
  I am taking the same approach here, although it is generalized
  to allow for non-linear costs and dual information.
- 
+
  In OSL, this weight was changed heuristically, here at present
  it is only increased if problem looks finished.  If problem is
- feasible I check for unboundedness.  If not unbounded we 
+ feasible I check for unboundedness.  If not unbounded we
  could play with going into dual.  As long as weights increase
  any algorithm would be finite.
- 
+
  B) Which incoming variable to choose is a virtual base class.
  For difficult problems steepest edge is preferred while for
  very easy (large) problems we will need partial scan.
- 
+
  C) Sounds easy, but this is hardest part of algorithm.
  1) Instead of stopping at first choice, we may be able
  to allow that variable to go through bound and if objective
@@ -51,8 +51,8 @@
  finished we need to reset costs and try again.
  3) Degeneracy.  Gill et al helps but may not be enough.  We
  may need more.  Also it can improve speed a lot if we perturb
- the rhs and bounds significantly.  
- 
+ the rhs and bounds significantly.
+
  References:
  Forrest and Goldfarb, Steepest-edge simplex algorithms for
  linear programming - Mathematical Programming 1992
@@ -60,19 +60,19 @@
  the Optimization Subroutine Library - IBM Systems Journal 1992
  Gill, Murray, Saunders, Wright A Practical Anti-Cycling
  Procedure for Linear and Nonlinear Programming SOL report 1988
- 
- 
+
+
  TODO:
- 
+
  a) Better recovery procedures.  At present I never check on forward
- progress.  There is checkpoint/restart with reducing 
- re-factorization frequency, but this is only on singular 
+ progress.  There is checkpoint/restart with reducing
+ re-factorization frequency, but this is only on singular
  factorizations.
  b) Fast methods for large easy problems (and also the option for
  the code to automatically choose which method).
  c) We need to be able to stop in various ways for OSI - this
  is fairly easy.
- 
+
  */
 
 #include "CoinPragma.hpp"
@@ -97,19 +97,13 @@
 
 #include "CyClpSimplex_api.h"
 
-/*
-int ttt(int x){
-	import_CyClpSimplex();
-	return f1(x);
-}
-*/
-// primal 
+// primal
 int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 {
-	
+
 	/*
 	 Method
-	 
+
      It tries to be a single phase approach with a weight of 1.0 being
      given to getting optimal and a weight of infeasibilityCost_ being
      given to getting primal feasible.  In this version I have tried to
@@ -119,102 +113,102 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
      these for being above or below feasible region.  I decided to waste
      memory and keep these explicitly.  This allows for non-linear
      costs!
-	 
+
      The code is designed to take advantage of sparsity so arrays are
      seldom zeroed out from scratch or gone over in their entirety.
-     The only exception is a full scan to find incoming variable for 
-     Dantzig row choice.  For steepest edge we keep an updated list 
-     of dual infeasibilities (actually squares).  
+     The only exception is a full scan to find incoming variable for
+     Dantzig row choice.  For steepest edge we keep an updated list
+     of dual infeasibilities (actually squares).
      On easy problems we don't need full scan - just
      pick first reasonable.
-	 
+
      One problem is how to tackle degeneracy and accuracy.  At present
      I am using the modification of costs which I put in OSL and which was
      extended by Gill et al.  I am still not sure of the exact details.
-	 
+
      The flow of primal is three while loops as follows:
-	 
+
      while (not finished) {
-	 
+
 	 while (not clean solution) {
-	 
+
 	 Factorize and/or clean up solution by changing bounds so
 	 primal feasible.  If looks finished check fake primal bounds.
 	 Repeat until status is iterating (-1) or finished (0,1,2)
-	 
+
 	 }
-	 
+
 	 while (status==-1) {
-	 
+
 	 Iterate until no pivot in or out or time to re-factorize.
-	 
+
 	 Flow is:
-	 
+
 	 choose pivot column (incoming variable).  if none then
 	 we are primal feasible so looks as if done but we need to
 	 break and check bounds etc.
-	 
+
 	 Get pivot column in tableau
-	 
+
 	 Choose outgoing row.  If we don't find one then we look
 	 primal unbounded so break and check bounds etc.  (Also the
 	 pivot tolerance is larger after any iterations so that may be
 	 reason)
-	 
+
 	 If we do find outgoing row, we may have to adjust costs to
 	 keep going forwards (anti-degeneracy).  Check pivot will be stable
 	 and if unstable throw away iteration and break to re-factorize.
 	 If minor error re-factorize after iteration.
-	 
-	 Update everything (this may involve changing bounds on 
+
+	 Update everything (this may involve changing bounds on
 	 variables to stay primal feasible.
-	 
+
 	 }
-	 
+
      }
-	 
+
      At present we never check we are going forwards.  I overdid that in
      OSL so will try and make a last resort.
-	 
+
      Needs partial scan pivot in option.
-	 
+
      May need other anti-degeneracy measures, especially if we try and use
      loose tolerances as a way to solve in fewer iterations.
-	 
+
      I like idea of dynamic scaling.  This gives opportunity to decouple
      different implications of scaling for accuracy, iteration count and
      feasibility tolerance.
-	 
+
 	 */
-	 
+
 	 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	 //int listSize = numberRows() + numberColumns();
-	  
+
 	 //QP_ComplementarityList = new int[listSize];
-			
+
 	//for (int i = 0 ; i < listSize ; i++)
 	//	QP_ComplementarityList[i] = i;
-	
+
 	//QP_ComplementarityList[0] = 2;
 	//QP_ComplementarityList[2] = 0;
-	
-	
+
+
 	//QP_BanList = new int[listSize];
 	//for (int i = 0; i < listSize ; i++)
 	//	QP_BanList[i] = 0;
-		
+
 	//QP_ExistsBannedVariable = 0;
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	
-	
+
+
 	algorithm_ = +1;
 	moreSpecialOptions_ &= ~16; // clear check replaceColumn accuracy
-	
+
 	// save data
 	ClpDataSave data = saveData();
 	matrix_->refresh(this); // make sure matrix okay
-	
-	
+
+
 	// Save so can see if doing after dual
 	int initialStatus=problemStatus_;
 	int initialIterations = numberIterations_;
@@ -227,7 +221,7 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 		const CoinPackedMatrix * columnCopy = matrix();
 		const int * row = columnCopy->getIndices();
 		const CoinBigIndex * columnStart = columnCopy->getVectorStarts();
-		const int * columnLength = columnCopy->getVectorLengths(); 
+		const int * columnLength = columnCopy->getVectorLengths();
 		//const double * element = columnCopy->getElements();
 		int n=0;
 		for (int iColumn = 0;iColumn<numberColumns_;iColumn++) {
@@ -244,24 +238,24 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 							n++;
 						}
 					}
-				}   
+				}
 			}
 		}
 		printf("%d costed slacks put in basis\n",n);
 	}
 #endif
-	
-	
-	
+
+
+
 	if (!startup(ifValuesPass,startFinishOptions)) {
-		
+
 		// Set average theta
 		nonLinearCost_->setAverageTheta(1.0e3);
 		int lastCleaned=0; // last time objective or bounds cleaned up
-		
+
 		// Say no pivot has occurred (for steepest edge and updates)
 		pivotRow_=-2;
-		
+
 		// This says whether to restore things etc
 		int factorType=0;
 		if (problemStatus_<0&&perturbation_<100&&!ifValuesPass) {
@@ -291,10 +285,10 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 		// Start check for cycles
 		progress_.fillFromModel(this);
 		progress_.startCheck();
-		
-		
-		
-		
+
+
+
+
 		/*
 		 Status of problem:
 		 0 - optimal
@@ -307,18 +301,18 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 		 -5 - looks unbounded
 		 */
 		while (problemStatus_<0) {
-					
+
 			int iRow,iColumn;
 			// clear
 			for (iRow=0;iRow<4;iRow++) {
 				rowArray_[iRow]->clear();
-			}    
-			
+			}
+
 			for (iColumn=0;iColumn<2;iColumn++) {
 				columnArray_[iColumn]->clear();
-			}    
-			
-	
+			}
+
+
 			// give matrix (and model costs and bounds a chance to be
 			// refreshed (normally null)
 			matrix_->refresh(this);
@@ -331,7 +325,7 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 			}
 #endif
 
-			
+
 			// If we have done no iterations - special
 			if (lastGoodIteration_==numberIterations_&&factorType)
 				factorType=3;
@@ -348,30 +342,30 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 					printf("End small model\n");
 				}
 			}
-			
-			
-	
-			
+
+
+
+
 			// may factorize, checks if problem finished
 			statusOfProblemInPrimal(lastCleaned,factorType,&progress_,true,ifValuesPass,saveModel);
-	
-	
+
+
 			if (initialStatus==10) {
-	
-	
+
+
 				// cleanup phase
 				if(initialIterations != numberIterations_) {
 					if (numberDualInfeasibilities_>10000&&numberDualInfeasibilities_>10*initialNegDjs) {
 						// getting worse - try perturbing
 						if (perturbation_<101&&(specialOptions_&4)==0) {
-	
+
 							perturb(1);
 							matrix_->rhsOffset(this,true,false);
 							statusOfProblemInPrimal(lastCleaned,factorType,&progress_,true,ifValuesPass,saveModel);
 						}
 					}
 				} else {
-	
+
 					// save number of negative djs
 					if (!numberPrimalInfeasibilities_)
 						initialNegDjs=numberDualInfeasibilities_;
@@ -380,27 +374,27 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 						infeasibilityCost_=1.000001e10;
 				}
 			}
-			
-			
-	
+
+
+
 			// See if sprint says redo because of problems
 			if (numberDualInfeasibilities_==-776) {
 				// Need new set of variables
 				problemStatus_=-1;
-	
+
 				originalModel(saveModel);
-	
+
 				saveModel=NULL;
 				//lastSprintIteration=numberIterations_;
 				printf("End small model after\n");
 				statusOfProblemInPrimal(lastCleaned,factorType,&progress_,true,ifValuesPass,saveModel);
-			} 
-			
-	
-			
+			}
+
+
+
 			int numberSprintIterations=0;
 			int numberSprintColumns = primalColumnPivot_->numberSprintColumns(numberSprintIterations);
-	
+
 			if (problemStatus_==777) {
 				// problems so do one pass with normal
 				problemStatus_=-1;
@@ -418,12 +412,12 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 				double * weight = new double[numberColumns_];
 				int numberNegative=0;
 				double sumNegative = 0.0;
-				
+
 				// now massage weight so all basic in plus good djs
 				for (iColumn=0;iColumn<numberColumns_;iColumn++) {
 					double dj = dj_[iColumn];
 					switch(getColumnStatus(iColumn)) {
-							
+
 						case basic:
 							dj = -1.0e50;
 							numberBasic++;
@@ -458,11 +452,11 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 				<<CoinMessageEol;
 				sprintPass++;
 				lastSprintIteration=numberIterations_;
-				
-	
+
+
 				if (objectiveValue()*optimizationDirection_>lastObjectiveValue-1.0e-7&&sprintPass>5) {
 					// switch off
-	
+
 					printf("Switching off sprint\n");
 					primalColumnPivot_->switchOffSprint();
 				} else {
@@ -476,7 +470,7 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 					// FIXME: uncomment
                     saveModel = new IClpSimplex(this,numberSort,whichColumns);
 					// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					
+
 					delete [] whichColumns;
 					delete [] weight;
 					// Skip factorization
@@ -486,28 +480,28 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 					printf("Sprint with %d columns for %d iterations\n",
 						   numberSprintColumns,numberSprintIterations);
 				}
-				
-				
+
+
 			}
-			
-			
-			
+
+
+
 			// Say good factorization
 			factorType=1;
-			
+
 			// Say no pivot has occurred (for steepest edge and updates)
 			pivotRow_=-2;
-			
+
 			// exit if victory declared
 			if (problemStatus_>=0)
 				break;
-			
+
 			// test for maximum iterations
 			if (hitMaximumIterations()||(ifValuesPass==2&&firstFree_<0)) {
 				problemStatus_=3;
 				break;
 			}
-			
+
 			if (firstFree_<0) {
 				if (ifValuesPass) {
 					// end of values pass
@@ -520,7 +514,7 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 					}
 					//#define FEB_TRY
 #ifdef FEB_TRY
-					if (perturbation_<100) 
+					if (perturbation_<100)
 						perturb(0);
 #endif
 				}
@@ -561,12 +555,12 @@ int IClpSimplexPrimal::primal (int ifValuesPass , int startFinishOptions)
 /*
  Reasons to come out:
  -1 iterations etc
- -2 inaccuracy 
+ -2 inaccuracy
  -3 slight inaccuracy (and done iterations)
  -4 end of values pass and done iterations
  +0 looks optimal (might be infeasible - but we will investigate)
  +2 looks unbounded
- +3 max iterations 
+ +3 max iterations
  */
 int
 IClpSimplexPrimal::whileIterating(int valuesOption)
@@ -588,11 +582,11 @@ IClpSimplexPrimal::whileIterating(int valuesOption)
 			for (i=0;i<4;i++) {
 				if (i!=1)
 					rowArray_[i]->checkClear();
-			}    
+			}
 			for (i=0;i<2;i++) {
 				columnArray_[i]->checkClear();
 			}
-		}      
+		}
 #endif
 #if 0
 		{
@@ -653,8 +647,8 @@ IClpSimplexPrimal::whileIterating(int valuesOption)
 			// choose column to come in
 			// can use pivotRow_ to update weights
 			// pass in list of cost changes so can do row updates (rowArray_[1])
-			// NOTE rowArray_[0] is used by computeDuals which is a 
-			// slow way of getting duals but might be used 
+			// NOTE rowArray_[0] is used by computeDuals which is a
+			// slow way of getting duals but might be used
 			primalColumn(rowArray_[1],rowArray_[2],rowArray_[3],
 						 columnArray_[0],columnArray_[1]);
 		} else {
@@ -731,7 +725,7 @@ IClpSimplexPrimal::whileIterating(int valuesOption)
 			// do second half of iteration
 			returnCode = pivotResult(ifValuesPass);
 			if (returnCode<-1&&returnCode>-5) {
-				problemStatus_=-2; // 
+				problemStatus_=-2; //
 			} else if (returnCode==-5) {
 				if ((moreSpecialOptions_&16)==0&&factorization_->pivots()) {
 					moreSpecialOptions_ |= 16;
@@ -754,7 +748,7 @@ IClpSimplexPrimal::whileIterating(int valuesOption)
 				printf("** no column pivot\n");
 #endif
 			if (nonLinearCost_->numberInfeasibilities())
-				problemStatus_=-4; // might be infeasible 
+				problemStatus_=-4; // might be infeasible
 			// Force to re-factorize early next time
 			int numberPivots = factorization_->pivots();
 			forceFactorization_=CoinMin(forceFactorization_,(numberPivots+1)>>1);
@@ -762,12 +756,12 @@ IClpSimplexPrimal::whileIterating(int valuesOption)
 			break;
 		}
 	}
-	if (valuesOption>1) 
+	if (valuesOption>1)
 		columnArray_[0]->setNumElements(0);
 	return returnCode;
 }
 /* Checks if finished.  Updates status */
-void 
+void
 IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 												 ClpSimplexProgress * progress,
 												 bool doFactorization,
@@ -791,7 +785,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 		pivotRow_=-1; // say no weights update
 		changeMade_++; // say change made
 	}
-	
+
 	int saveThreshold = factorization_->sparseThreshold();
 	int tentativeStatus = problemStatus_;
 	int numberThrownOut=1; // to loop round on bad factorization in values pass
@@ -800,7 +794,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 		lastSumInfeasibility=nonLinearCost_->sumInfeasibilities();
 	int nPass=0;
 	while (numberThrownOut) {
-	
+
 		int nSlackBasic=0;
 		if (nPass) {
 			for (int i=0;i<numberRows_;i++) {
@@ -808,7 +802,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 					nSlackBasic++;
 			}
 		}
-	
+
 		nPass++;
 		if (problemStatus_>-3||problemStatus_==-4) {
 			// factorize
@@ -818,11 +812,11 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 			// This may save pivotRow_ for use
 			if (doFactorization)
 				primalColumnPivot_->saveWeights(this,1);
-	
+
 			if ((type&&doFactorization)||nSlackBasic==numberRows_) {
 				// is factorization okay?
 				int factorStatus = internalFactorize(1);
-	
+
 				if (factorStatus) {
 					if (solveType_==2+8) {
 						// say odd
@@ -833,7 +827,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 						||largestDualError_>1.0e3) {
 						// switch off dense
 						int saveDense = factorization_->denseThreshold();
-	
+
 						factorization_->setDenseThreshold(0);
 						// Go to safe
 						factorization_->pivotTolerance(0.99);
@@ -846,7 +840,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 					} else {
 						// no - restore previous basis
 						// Keep any flagged variables
-	
+
 						int i;
 						for (i=0;i<numberRows_+numberColumns_;i++) {
 							if (flagged(i))
@@ -860,14 +854,14 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 							} else if (sequenceOut_>=0&&getStatus(sequenceOut_)!=basic) {
 								setFlagged(sequenceOut_);
 							}
-	
+
 							double newTolerance = CoinMax(0.5 + 0.499*randomNumberGenerator_.randomDouble(),factorization_->pivotTolerance());
 							factorization_->pivotTolerance(newTolerance);
 						} else {
-							// Go to safe 
+							// Go to safe
 							factorization_->pivotTolerance(0.99);
 						}
-	
+
 						CoinMemcpyN(savedSolution_+numberColumns_ ,
 									numberRows_,rowActivityWork_);
 						CoinMemcpyN(savedSolution_ ,
@@ -875,7 +869,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 						// restore extra stuff
 						matrix_->generalExpanded(this,6,dummy);
 						matrix_->generalExpanded(this,5,dummy);
-	
+
 						forceFactorization_=1; // a bit drastic but ..
 						type = 2;
 						if (internalFactorize(2)!=0) {
@@ -888,11 +882,11 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 			if (problemStatus_!=-4)
 				problemStatus_=-3;
 		}
-		
+
 		// at this stage status is -3 or -5 if looks unbounded
 		// get primal and dual solutions
 		// put back original costs and then check
-		// createRim(4); // costs do not change 
+		// createRim(4); // costs do not change
 		// May need to do more if column generation
 		dummy=4;
 		matrix_->generalExpanded(this,9,dummy);
@@ -915,7 +909,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 					// restore extra stuff
 					matrix_->generalExpanded(this,6,dummy);
 					forceFactorization_=1; // a bit drastic but ..
-					// Go to safe 
+					// Go to safe
 					factorization_->pivotTolerance(0.99);
 					pivotRow_=-1; // say no weights update
 					changeMade_++; // say change made
@@ -931,7 +925,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 				}
 			}
 	}
-	
+
 	// Double check reduced costs if no action
 	if (progress->lastIterationNumber(0)==numberIterations_) {
 		if (primalColumnPivot_->looksOptimal()) {
@@ -947,10 +941,10 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 			sumDualInfeasibilities_ = 0.0;
 		}
 	}
-	
+
 	// Check if looping
 	int loop;
-	if (type!=2&&!ifValuesPass) 
+	if (type!=2&&!ifValuesPass)
 		loop = progress->looping();
 	else
 		loop=-1;
@@ -960,7 +954,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 			numberPrimalInfeasibilities_ = 0;
 			sumPrimalInfeasibilities_ = 0.0;
 		} else {
-			problemStatus_ = loop; //exit if in loop 
+			problemStatus_ = loop; //exit if in loop
 			problemStatus_ = 10; // instead - try other algorithm
 			numberPrimalInfeasibilities_ = nonLinearCost_->numberInfeasibilities();
 		}
@@ -990,7 +984,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 	//if((progressFlag_&2)!=0)
 	//problemStatus_=-1;;
 	progressFlag_ = 0; //reset progress flag
-	
+
 	handler_->message(CLP_SIMPLEX_STATUS,messages_)
     <<numberIterations_<<nonLinearCost_->feasibleReportCost();
 	handler_->printing(nonLinearCost_->numberInfeasibilities()>0)
@@ -1023,10 +1017,10 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 		memset(rowObjectiveWork_,0,numberRows_*sizeof(double));
 		int iSequence;
 		if (columnScale_)
-			for (iSequence=0;iSequence<numberColumns_;iSequence++) 
+			for (iSequence=0;iSequence<numberColumns_;iSequence++)
 				cost_[iSequence] = obj[iSequence]*direction*columnScale_[iSequence];
 		else
-			for (iSequence=0;iSequence<numberColumns_;iSequence++) 
+			for (iSequence=0;iSequence<numberColumns_;iSequence++)
 				cost_[iSequence] = obj[iSequence]*direction;
 		computeDuals(NULL);
 		int numberSame=0;
@@ -1197,7 +1191,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 				numberPrimalInfeasibilities_ = ninfeas;
 				sumPrimalInfeasibilities_ = sum;
 #ifdef COIN_DEVELOP
-				bool unflagged = 
+				bool unflagged =
 #endif
 				unflag();
 #ifdef COIN_DEVELOP
@@ -1206,7 +1200,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 #endif
 			}
 		}
-	} 
+	}
 	// had ||(type==3&&problemStatus_!=-5) -- ??? why ????
 	if ((dualFeasible()||problemStatus_==-4)&&!ifValuesPass) {
 		// see if extra helps
@@ -1225,7 +1219,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 			createRim(4);
 			nonLinearCost_->checkInfeasibilities(0.0);
 			gutsOfSolution(NULL,NULL,ifValuesPass!=0);
-			
+
 			infeasibilityCost_=1.0e100;
 			// put back original costs
 			createRim(4);
@@ -1240,7 +1234,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 				nonLinearCost_=NULL;
 				// scale
 				int i;
-				for (i=0;i<numberRows_+numberColumns_;i++) 
+				for (i=0;i<numberRows_+numberColumns_;i++)
 					cost_[i] *= 1.0e-95;
 				gutsOfSolution(NULL,NULL,ifValuesPass!=0);
 				nonLinearCost_=nonLinear;
@@ -1424,12 +1418,12 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 			} else {
 				// say unbounded
 				problemStatus_ = 2;
-			} 
+			}
 		} else {
 			// carry on
 			problemStatus_ = -1;
 			if(type==3&&problemStatus_!=-5) {
-				//bool unflagged = 
+				//bool unflagged =
 				unflag();
 				if (sumDualInfeasibilities_<1.0e-3||
 					(sumDualInfeasibilities_/static_cast<double> (numberDualInfeasibilities_))<1.0e-5||
@@ -1490,7 +1484,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 	lastGoodIteration_ = numberIterations_;
 	if (numberIterations_>lastBadIteration_+100)
 		moreSpecialOptions_ &= ~16; // clear check accuracy flag
-	if (goToDual) 
+	if (goToDual)
 		problemStatus_=10; // try dual
 	// make sure first free monotonic
 	if (firstFree_>=0&&saveFirstFree>=0) {
@@ -1499,7 +1493,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 	}
 	if (doFactorization) {
 		// restore weights (if saved) - also recompute infeasibility list
-		if (tentativeStatus>-3) 
+		if (tentativeStatus>-3)
 			primalColumnPivot_->saveWeights(this,(type <2) ? 2 : 4);
 		else
 			primalColumnPivot_->saveWeights(this,3);
@@ -1515,7 +1509,7 @@ IClpSimplexPrimal::statusOfProblemInPrimal(int & lastCleaned,int type,
 }
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-void 
+void
 IClpSimplexPrimal::primalRow(CoinIndexedVector * rowArray,
 								   CoinIndexedVector * rhsArray,
 								   CoinIndexedVector * spareArray,
@@ -1526,14 +1520,14 @@ IClpSimplexPrimal::primalRow(CoinIndexedVector * rowArray,
 	//import_CyClpSimplex();
 	//CyPostPrimalRow(static_cast<IClpSimplex *>(this));
 }
-/* 
+/*
  Row array has pivot column
  This chooses pivot row.
  For speed, we may need to go to a bucket approach when many
  variables go through bounds
  On exit rhsArray will have changes in costs of basic variables
  */
-void 
+void
 IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 								   CoinIndexedVector * rhsArray,
 								   CoinIndexedVector * spareArray,
@@ -1543,14 +1537,14 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 	double saveDj = dualIn_;
 	if (valuesPass&&objective_->type()<2) {
 		dualIn_ = cost_[sequenceIn_];
-		
+
 		double * work=rowArray->denseVector();
 		int number=rowArray->getNumElements();
 		int * which=rowArray->getIndices();
-		
+
 		int iIndex;
 		for (iIndex=0;iIndex<number;iIndex++) {
-			
+
 			int iRow = which[iIndex];
 			double alpha = work[iIndex];
 			int iPivot=pivotVariable_[iRow];
@@ -1572,11 +1566,11 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 			}
 		}
 	}
-	
+
 	// sequence stays as row number until end
 	pivotRow_=-1;
 	int numberRemaining=0;
-	
+
 	double totalThru=0.0; // for when variables flip
 	// Allow first few iterations to take tiny
 	double acceptablePivot=1.0e-1*acceptablePivot_;
@@ -1592,13 +1586,13 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 	int lastPivotRow = -1;
 	double lastPivot=0.0;
 	double lastTheta=1.0e50;
-	
+
 	// use spareArrays to put ones looked at in
 	// First one is list of candidates
 	// We could compress if we really know we won't need any more
 	// Second array has current set of pivot candidates
 	// with a backup list saved in double * part of indexed vector
-	
+
 	// pivot elements
 	double * spare;
 	// indices
@@ -1606,39 +1600,39 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 	spareArray->clear();
 	spare = spareArray->denseVector();
 	index = spareArray->getIndices();
-	
+
 	// we also need somewhere for effective rhs
 	double * rhs=rhsArray->denseVector();
 	// and we can use indices to point to alpha
 	// that way we can store fabs(alpha)
 	int * indexPoint = rhsArray->getIndices();
 	//int numberFlip=0; // Those which may change if flips
-	
+
 	/*
 	 First we get a list of possible pivots.  We can also see if the
 	 problem looks unbounded.
-	 
+
 	 At first we increase theta and see what happens.  We start
 	 theta at a reasonable guess.  If in right area then we do bit by bit.
 	 We save possible pivot candidates
-	 
+
 	 */
-	
-	// do first pass to get possibles 
+
+	// do first pass to get possibles
 	// We can also see if unbounded
-	
+
 	double * work=rowArray->denseVector();
 	int number=rowArray->getNumElements();
 	int * which=rowArray->getIndices();
-	
+
 	// we need to swap sign if coming in from ub
 	double way = directionIn_;
 	double maximumMovement;
-	if (way>0.0) 
+	if (way>0.0)
 		maximumMovement = CoinMin(1.0e30,upperIn_-valueIn_);
 	else
 		maximumMovement = CoinMin(1.0e30,valueIn_-lowerIn_);
-	
+
 	double averageTheta = nonLinearCost_->averageTheta();
 	double tentativeTheta = CoinMin(10.0*averageTheta,maximumMovement);
 	double upperTheta = maximumMovement;
@@ -1651,7 +1645,7 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 	double dualCheck = fabs(dualIn_);
 	// but make a bit more pessimistic
 	dualCheck=CoinMax(dualCheck-100.0*dualTolerance_,0.99*dualCheck);
-	
+
 	int iIndex;
 	int pivotOne=-1;
 	//#define CLP_DEBUG
@@ -1660,7 +1654,7 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 		double dj=cost_[sequenceIn_];
 		printf("cost in on %d is %g, dual in %g\n",sequenceIn_,dj,dualIn_);
 		for (iIndex=0;iIndex<number;iIndex++) {
-			
+
 			int iRow = which[iIndex];
 			double alpha = work[iIndex];
 			int iPivot=pivotVariable_[iRow];
@@ -1681,7 +1675,7 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 		double tolerance = primalTolerance_*1.002;
 #endif
 		for (iIndex=0;iIndex<number;iIndex++) {
-			
+
 			int iRow = which[iIndex];
 			double alpha = work[iIndex];
 			int iPivot=pivotVariable_[iRow];
@@ -1741,13 +1735,13 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 		}
 	}
 	totalThru=0.0;
-	
+
 	theta_=maximumMovement;
-	
+
 	bool goBackOne = false;
-	if (objective_->type()>1) 
+	if (objective_->type()>1)
 		dualIn_=saveDj;
-	
+
 	//printf("%d remain out of %d\n",numberRemaining,number);
 	int iTry=0;
 #define MAXTRY 1000
@@ -1765,36 +1759,36 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 			// Stop loop
 			iTry=MAXTRY;
 		}
-		
+
 		// first get ratio with tolerance
 		for ( ;iTry<MAXTRY;iTry++) {
-			
+
 			upperTheta=maximumMovement;
 			int iBest=-1;
 			for (iIndex=0;iIndex<numberRemaining;iIndex++) {
-				
+
 				double alpha = spare[iIndex];
 				double oldValue = rhs[iIndex];
 				double value = oldValue-upperTheta*alpha;
-				
+
 				if (value<-primalTolerance_ && alpha>=acceptablePivot) {
 					upperTheta = (oldValue+primalTolerance_)/alpha;
 					iBest=iIndex; // just in case weird numbers
 				}
 			}
-			
+
 			// now look at best in this lot
 			// But also see how infeasible small pivots will make
 			double sumInfeasibilities=0.0;
 			double bestPivot=acceptablePivot;
 			pivotRow_=-1;
 			for (iIndex=0;iIndex<numberRemaining;iIndex++) {
-				
+
 				int iRow = index[iIndex];
 				double alpha = spare[iIndex];
 				double oldValue = rhs[iIndex];
 				double value = oldValue-upperTheta*alpha;
-				
+
 				if (value<=0||iBest==iIndex) {
 					// how much would it cost to go thru and modify bound
 					double trueAlpha=way*work[indexPoint[iIndex]];
@@ -1832,14 +1826,14 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 						// say no good
 						dualIn_=0.0;
 					}
-				} 
+				}
 				break; // no point trying another loop
 			} else {
 				lastPivotRow=pivotRow_;
 				lastTheta = theta_;
 				if (bestPivot>bestEverPivot)
 					bestEverPivot=bestPivot;
-			}    
+			}
 		}
 		// can get here without pivotRow_ set but with lastPivotRow
 		if (goBackOne||(pivotRow_<0&&lastPivotRow>=0)) {
@@ -1909,7 +1903,7 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 			minimumTheta=0.0;
 		// But can't go infeasible
 		double distance;
-		if (alpha_*way>0.0) 
+		if (alpha_*way>0.0)
 			distance=valueOut_-lowerOut_;
 		else
 			distance=upperOut_-valueOut_;
@@ -1935,10 +1929,10 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 		}
 		// Need to look at all in some cases
 		if (theta_>tentativeTheta) {
-			for (iIndex=0;iIndex<number;iIndex++) 
+			for (iIndex=0;iIndex<number;iIndex++)
 				setActive(which[iIndex]);
 		}
-		if (way<0.0) 
+		if (way<0.0)
 			theta_ = - theta_;
 		double newValue = valueOut_ - theta_*alpha_;
 		// If  4 bit set - Force outgoing variables to exact bound (primal)
@@ -1975,41 +1969,41 @@ IClpSimplexPrimal::DantzigPrimalRow(CoinIndexedVector * rowArray,
 			theta_ = upperOut_ - valueOut_;
 		}
 	}
-	
+
 	double theta1 = CoinMax(theta_,1.0e-12);
 	double theta2 = numberIterations_*nonLinearCost_->averageTheta();
 	// Set average theta
 	nonLinearCost_->setAverageTheta((theta1+theta2)/(static_cast<double> (numberIterations_+1)));
 	//if (numberIterations_%1000==0)
 	//printf("average theta is %g\n",nonLinearCost_->averageTheta());
-	
+
 	// clear arrays
-	
+
 	CoinZeroN(spare,numberRemaining);
-	
+
 	// put back original bounds etc
 	CoinMemcpyN(index,numberRemaining,rhsArray->getIndices());
 	rhsArray->setNumElements(numberRemaining);
 	rhsArray->setPacked();
 	nonLinearCost_->goBackAll(rhsArray);
 	rhsArray->clear();
-	
+
 }
-/* 
+/*
  Chooses primal pivot column
  updateArray has cost updates (also use pivotRow_ from last iteration)
  Would be faster with separate region to scan
  and will have this (with square of infeasibility) when steepest
  For easy problems we can just choose one of the first columns we look at
  */
-void 
+void
 IClpSimplexPrimal::primalColumn(CoinIndexedVector * updates,
 									  CoinIndexedVector * spareRow1,
 									  CoinIndexedVector * spareRow2,
 									  CoinIndexedVector * spareColumn1,
 									  CoinIndexedVector * spareColumn2)
 {
-	
+
 	ClpMatrixBase * saveMatrix = matrix_;
 	double * saveRowScale = rowScale_;
 	if (scaledMatrix_) {
@@ -2027,9 +2021,9 @@ IClpSimplexPrimal::primalColumn(CoinIndexedVector * updates,
 		valueIn_=solution_[sequenceIn_];
 		dualIn_=dj_[sequenceIn_];
 		if (nonLinearCost_->lookBothWays()) {
-			// double check 
+			// double check
 			IClpSimplex::Status status = getStatus(sequenceIn_);
-			
+
 			switch(status) {
 				case IClpSimplex::atUpperBound:
 					if (dualIn_<0.0) {
@@ -2063,7 +2057,7 @@ IClpSimplexPrimal::primalColumn(CoinIndexedVector * updates,
 		upperIn_=upper_[sequenceIn_];
 		if (dualIn_>0.0)
 			directionIn_ = -1;
-		else 
+		else
 			directionIn_ = 1;
 	} else {
 		sequenceIn_ = -1;
@@ -2073,7 +2067,7 @@ IClpSimplexPrimal::primalColumn(CoinIndexedVector * updates,
  Returns number of infeasibilities.
  After rowArray will have list of cost changes
  */
-int 
+int
 IClpSimplexPrimal::updatePrimalsInPrimal(CoinIndexedVector * rowArray,
 											   double theta,
 											   double & objectiveChange,
@@ -2087,7 +2081,7 @@ IClpSimplexPrimal::updatePrimalsInPrimal(CoinIndexedVector * rowArray,
 	double * work=rowArray->denseVector();
 	int number=rowArray->getNumElements();
 	int * which=rowArray->getIndices();
-	
+
 	int newNumber = 0;
 	int pivotPosition = -1;
 	nonLinearCost_->setChangeInCost(0.0);
@@ -2099,7 +2093,7 @@ IClpSimplexPrimal::updatePrimalsInPrimal(CoinIndexedVector * rowArray,
 	int iIndex;
 	if (!valuesPass) {
 		for (iIndex=0;iIndex<number;iIndex++) {
-			
+
 			int iRow = which[iIndex];
 			double alpha = work[iIndex];
 			work[iIndex]=0.0;
@@ -2129,7 +2123,7 @@ IClpSimplexPrimal::updatePrimalsInPrimal(CoinIndexedVector * rowArray,
 					}
 				}
 			}
-#endif    
+#endif
 			if (active(iRow)||theta_<0.0) {
 				clearActive(iRow);
 				// But make sure one going out is feasible
@@ -2169,7 +2163,7 @@ IClpSimplexPrimal::updatePrimalsInPrimal(CoinIndexedVector * rowArray,
 	} else {
 		// values pass so look at all
 		for (iIndex=0;iIndex<number;iIndex++) {
-			
+
 			int iRow = which[iIndex];
 			double alpha = work[iIndex];
 			work[iIndex]=0.0;
@@ -2243,7 +2237,7 @@ IClpSimplexPrimal::updatePrimalsInPrimal(CoinIndexedVector * rowArray,
 	return 0;
 }
 // Perturbs problem
-void 
+void
 IClpSimplexPrimal::perturb(int type)
 {
 	if (perturbation_>100)
@@ -2331,7 +2325,7 @@ IClpSimplexPrimal::perturb(int type)
 #endif
 			}
 		}
-		if (numberNonZero) 
+		if (numberNonZero)
 			perturbation /= static_cast<double> (numberNonZero);
 		else
 			perturbation = 1.0e-1;
@@ -2356,7 +2350,7 @@ IClpSimplexPrimal::perturb(int type)
 	int number=0;
 	int iSequence;
 	for (iSequence=0;iSequence<numberRows_;iSequence++) {
-		if (getRowStatus(iSequence)==basic) 
+		if (getRowStatus(iSequence)==basic)
 			number++;
 	}
 	if (rhsScale_>100.0) {
@@ -2379,7 +2373,7 @@ IClpSimplexPrimal::perturb(int type)
 			perturbationArray_[iColumn] = randomNumberGenerator_.randomDouble();
 		}
 	}
-#endif 
+#endif
 	if (type==1) {
 		double tolerance = 100.0*primalTolerance_;
 		//double multiplier = perturbation*maximumFraction;
@@ -2428,7 +2422,7 @@ IClpSimplexPrimal::perturb(int type)
 								largestPerCent=value/(fabs(solutionValue)+1.0);
 						} else {
 							largestZero = CoinMax(largestZero,value);
-						} 
+						}
 					}
 				}
 			}
@@ -2450,32 +2444,32 @@ IClpSimplexPrimal::perturb(int type)
 					if (fabs(value)<=primalTolerance_)
 						value=0.0;
 					if (lowerValue>-1.0e20&&lowerValue)
-						lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+						lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
 					if (upperValue<1.0e20&&upperValue)
-						upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(upperValue))); 
+						upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(upperValue)));
 				} else if (value) {
 					double valueL =value *(CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
-					// get in range 
+					// get in range
 					if (valueL<=tolerance) {
 						valueL *= 10.0;
-						while (valueL<=tolerance) 
+						while (valueL<=tolerance)
 							valueL *= 10.0;
 					} else if (valueL>1.0) {
 						valueL *= 0.1;
-						while (valueL>1.0) 
+						while (valueL>1.0)
 							valueL *= 0.1;
 					}
 					if (lowerValue>-1.0e20&&lowerValue)
 						lowerValue -= valueL;
 					double valueU =value *(CoinMax(1.0e-2,1.0e-5*fabs(upperValue)));
-					// get in range 
+					// get in range
 					if (valueU<=tolerance) {
 						valueU *= 10.0;
-						while (valueU<=tolerance) 
+						while (valueU<=tolerance)
 							valueU *= 10.0;
 					} else if (valueU>1.0) {
 						valueU *= 0.1;
-						while (valueU>1.0) 
+						while (valueU>1.0)
 							valueU *= 0.1;
 					}
 					if (upperValue<1.0e20&&upperValue)
@@ -2486,13 +2480,13 @@ IClpSimplexPrimal::perturb(int type)
 					largest = CoinMax(largest,difference);
 					if (difference>fabs(lower_[i])*largestPerCent)
 						largestPerCent=fabs(difference/lower_[i]);
-				} 
+				}
 				if (upperValue!=upper_[i]) {
 					double difference = fabs(upperValue-upper_[i]);
 					largest = CoinMax(largest,difference);
 					if (difference>fabs(upper_[i])*largestPerCent)
 						largestPerCent=fabs(difference/upper_[i]);
-				} 
+				}
 				if (printOut)
 					printf("col %d lower from %g to %g, upper from %g to %g\n",
 						   i,lower_[i],lowerValue,upper_[i],upperValue);
@@ -2510,43 +2504,43 @@ IClpSimplexPrimal::perturb(int type)
 					if (fabs(value)<=primalTolerance_)
 						value=0.0;
 					if (lowerValue>-1.0e20&&lowerValue)
-						lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+						lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
 					if (upperValue<1.0e20&&upperValue)
-						upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(upperValue))); 
+						upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(upperValue)));
 				} else if (value) {
 					double valueL =value *(CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
-					// get in range 
+					// get in range
 					if (valueL<=tolerance) {
 						valueL *= 10.0;
-						while (valueL<=tolerance) 
+						while (valueL<=tolerance)
 							valueL *= 10.0;
 					} else if (valueL>1.0) {
 						valueL *= 0.1;
-						while (valueL>1.0) 
+						while (valueL>1.0)
 							valueL *= 0.1;
 					}
 					if (lowerValue>-1.0e20&&lowerValue)
 						lowerValue -= valueL;
 					double valueU =value *(CoinMax(1.0e-2,1.0e-5*fabs(upperValue)));
-					// get in range 
+					// get in range
 					if (valueU<=tolerance) {
 						valueU *= 10.0;
-						while (valueU<=tolerance) 
+						while (valueU<=tolerance)
 							valueU *= 10.0;
 					} else if (valueU>1.0) {
 						valueU *= 0.1;
-						while (valueU>1.0) 
+						while (valueU>1.0)
 							valueU *= 0.1;
 					}
 					if (upperValue<1.0e20&&upperValue)
 						upperValue += valueU;
 				}
 			} else if (upperValue>0.0) {
-				upperValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
-				lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+				upperValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
+				lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
 			} else if (upperValue<0.0) {
-				upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
-				lowerValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+				upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
+				lowerValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
 			} else {
 			}
 			if (lowerValue!=lower_[i]) {
@@ -2554,13 +2548,13 @@ IClpSimplexPrimal::perturb(int type)
 				largest = CoinMax(largest,difference);
 				if (difference>fabs(lower_[i])*largestPerCent)
 					largestPerCent=fabs(difference/lower_[i]);
-			} 
+			}
 			if (upperValue!=upper_[i]) {
 				double difference = fabs(upperValue-upper_[i]);
 				largest = CoinMax(largest,difference);
 				if (difference>fabs(upper_[i])*largestPerCent)
 					largestPerCent=fabs(difference/upper_[i]);
-			} 
+			}
 			if (printOut)
 				printf("row %d lower from %g to %g, upper from %g to %g\n",
 					   i-numberColumns_,lower_[i],lowerValue,upper_[i],upperValue);
@@ -2571,7 +2565,7 @@ IClpSimplexPrimal::perturb(int type)
 	// Clean up
 	for (i=0;i<numberColumns_+numberRows_;i++) {
 		switch(getStatus(i)) {
-				
+
 			case basic:
 				break;
 			case atUpperBound:
@@ -2618,10 +2612,10 @@ IClpSimplexPrimal::unPerturb()
 	gutsOfSolution(NULL,NULL,ifValuesPass!=0);
 	return false;
 #endif
-	
+
 }
 // Unflag all variables and return number unflagged
-int 
+int
 IClpSimplexPrimal::unflag()
 {
 	int i;
@@ -2644,7 +2638,7 @@ IClpSimplexPrimal::unflag()
 	return numberFlagged;
 }
 // Do not change infeasibility cost and always say optimal
-void 
+void
 IClpSimplexPrimal::alwaysOptimal(bool onOff)
 {
 	if (onOff)
@@ -2652,13 +2646,13 @@ IClpSimplexPrimal::alwaysOptimal(bool onOff)
 	else
 		specialOptions_ &= ~1;
 }
-bool 
+bool
 IClpSimplexPrimal::alwaysOptimal() const
 {
 	return (specialOptions_&1)!=0;
 }
 // Flatten outgoing variables i.e. - always to exact bound
-void 
+void
 IClpSimplexPrimal::exactOutgoing(bool onOff)
 {
 	if (onOff)
@@ -2666,7 +2660,7 @@ IClpSimplexPrimal::exactOutgoing(bool onOff)
 	else
 		specialOptions_ &= ~4;
 }
-bool 
+bool
 IClpSimplexPrimal::exactOutgoing() const
 {
 	return (specialOptions_&4)!=0;
@@ -2685,20 +2679,20 @@ int
 IClpSimplexPrimal::pivotResult(int ifValuesPass)
 {
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	
+
 	// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	
-	
+
+
 	bool roundAgain=true;
 	int returnCode=-1;
-	
-	
+
+
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 	//int returnCodeBack = 1000;
 	//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-// 	  
-	
-	
+//
+
+
 	// loop round if user setting and doing refactorization
 	while (roundAgain) {
 		roundAgain=false;
@@ -2717,7 +2711,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 					double * work;
 					int number;
 					int * which;
-					
+
 					int iIndex;
 					unpack(rowArray_[1],iSeq);
 					factorization_->updateColumn(rowArray_[2],rowArray_[1]);
@@ -2725,9 +2719,9 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 					work=rowArray_[1]->denseVector();
 					number=rowArray_[1]->getNumElements();
 					which=rowArray_[1]->getIndices();
-					
+
 					for (iIndex=0;iIndex<number;iIndex++) {
-						
+
 						int iRow = which[iIndex];
 						double alpha = work[iRow];
 						int iPivot=pivotVariable_[iRow];
@@ -2743,7 +2737,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 			}
 		}
 #endif
-		
+
 		// we found a pivot column
 		// update the incoming column
 		unpackPacked(rowArray_[1]);
@@ -2755,14 +2749,14 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 		// do ratio test and re-compute dj
 		primalRow(rowArray_[1],rowArray_[3],rowArray_[2],rowArray_[0],
 				  ifValuesPass);
-		
-		
-	  
+
+
+
 		//TODO: We are heading to an actual pivot. Clear the flags for the next iteration
 
 		// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-		
-		
+
+
 		//if (CyPivotIsAcceptable(static_cast<IClpSimplex *>(this)) == 0)
 		if (!isPivotAcceptable())
 			{
@@ -2771,7 +2765,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 			pivotRow_=-1;
 			break;
 			}
-			
+
 		if (ifValuesPass) {
 			saveDj=dualIn_;
 			//assert (fabs(alpha_)>=1.0e-5||(objective_->type()<2||!objective_->activated())||pivotRow_==-2);
@@ -2870,7 +2864,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 				// as packed need to find pivot row
 				//assert (rowArray_[1]->packedMode());
 				//int i;
-				
+
 				//alpha_ = rowArray_[1]->denseVector()[pivotRow_];
 				CoinAssert (fabs(alpha_)>1.0e-8);
 				double multiplier = dualIn_/alpha_;
@@ -2916,7 +2910,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 															 pivotRow_,
 															 alpha_,
 															 (moreSpecialOptions_&16)!=0);
-			
+
 			// if no pivots, bad update but reasonable alpha - take and invert
 			if (updateStatus==2&&
 				lastGoodIteration_==numberIterations_&&fabs(alpha_)>1.0e-5)
@@ -2935,7 +2929,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 					if (forceFactorization_<0)
 						forceFactorization_= maxFactor;
 					forceFactorization_ = CoinMax(1,(forceFactorization_>>1));
-				} 
+				}
 				// later we may need to unwind more e.g. fake bounds
 				if(lastGoodIteration_ != numberIterations_) {
 					clearAll();
@@ -2970,7 +2964,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 					sequenceOut_=-1;
 					returnCode = -5;
 					break;
-					
+
 				}
 			} else if (updateStatus==3) {
 				// out of memory
@@ -3020,12 +3014,12 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 				// flipping from bound to bound
 			}
 		}
-		
+
 		double oldCost = 0.0;
 		if (sequenceOut_>=0)
 			oldCost=cost_[sequenceOut_];
 		// update primal solution
-		
+
 		double objectiveChange=0.0;
 		// after this rowArray_[1] is not empty - used to update djs
 		// If pivot row >= numberRows then may be gub
@@ -3034,7 +3028,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 			pivotRow_=-1;
 		updatePrimalsInPrimal(rowArray_[1],theta_, objectiveChange,ifValuesPass);
 		pivotRow_=savePivot;
-		
+
 		double oldValue = valueIn_;
 		if (directionIn_==-1) {
 			// as if from upper bound
@@ -3077,7 +3071,7 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 			solution_[sequenceOut_]=valueOut_;
 		}
 		// change cost and bounds on incoming if primal
-		nonLinearCost_->setOne(sequenceIn_,valueIn_); 
+		nonLinearCost_->setOne(sequenceIn_,valueIn_);
 		int whatNext=housekeeping(objectiveChange);
 		//nonLinearCost_->validate();
 #if CLP_DEBUG >1
@@ -3129,11 +3123,11 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 		for (i=0;i<4;i++) {
 			if (i!=1)
 				rowArray_[i]->checkClear();
-		}    
+		}
 		for (i=0;i<2;i++) {
 			columnArray_[i]->checkClear();
-		}    
-	}      
+		}
+	}
 #endif
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -3151,14 +3145,14 @@ IClpSimplexPrimal::pivotResult(int ifValuesPass)
 	//{
 	//	std::cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 	//}
-	
+
 // 	if (returnCodeBack == -5 && returnCode != -5)
 // 		assert(0);
 //	std::cout << "return code: " << returnCode << "\n";
 	return returnCode;
 }
 // Create primal ray
-void 
+void
 IClpSimplexPrimal::primalRay(CoinIndexedVector * rowArray)
 {
 	delete [] ray_;
@@ -3195,7 +3189,7 @@ IClpSimplexPrimal::primalRay(CoinIndexedVector * rowArray)
  If type is 3 then initializes sorted list
  if 2 uses list.
  */
-int 
+int
 IClpSimplexPrimal::nextSuperBasic(int superBasicType,CoinIndexedVector * columnArray)
 {
 	if (firstFree_>=0&&superBasicType) {
@@ -3248,7 +3242,7 @@ IClpSimplexPrimal::nextSuperBasic(int superBasicType,CoinIndexedVector * columnA
 					returnValue=which[number];
 					iColumn=returnValue;
 					columnArray->setNumElements(number);
-				}      
+				}
 			} else {
 				for (;iColumn<numberRows_+numberColumns_;iColumn++) {
 					if (!flagged(iColumn)) {
@@ -3289,17 +3283,17 @@ IClpSimplexPrimal::clearAll()
 	matrix_->extendUpdated(this,rowArray_[1],1);
 	int number=rowArray_[1]->getNumElements();
 	int * which=rowArray_[1]->getIndices();
-	
+
 	int iIndex;
 	for (iIndex=0;iIndex<number;iIndex++) {
-		
+
 		int iRow = which[iIndex];
 		clearActive(iRow);
 	}
 	rowArray_[1]->clear();
 	// make sure any gub sets are clean
 	matrix_->generalExpanded(this,11,sequenceIn_);
-	
+
 }
 // Sort of lexicographic resolve
 int
@@ -3307,11 +3301,11 @@ IClpSimplexPrimal::lexSolve()
 {
 	algorithm_ = +1;
 	//specialOptions_ |= 4;
-	
+
 	// save data
 	ClpDataSave data = saveData();
 	matrix_->refresh(this); // make sure matrix okay
-	
+
 	// Save so can see if doing after dual
 	int initialStatus=problemStatus_;
 	int initialIterations = numberIterations_;
@@ -3325,7 +3319,7 @@ IClpSimplexPrimal::lexSolve()
 		const CoinPackedMatrix * columnCopy = matrix();
 		const int * row = columnCopy->getIndices();
 		const CoinBigIndex * columnStart = columnCopy->getVectorStarts();
-		const int * columnLength = columnCopy->getVectorLengths(); 
+		const int * columnLength = columnCopy->getVectorLengths();
 		//const double * element = columnCopy->getElements();
 		int n=0;
 		for (int iColumn = 0;iColumn<numberColumns_;iColumn++) {
@@ -3342,7 +3336,7 @@ IClpSimplexPrimal::lexSolve()
 							n++;
 						}
 					}
-				}   
+				}
 			}
 		}
 		printf("%d costed slacks put in basis\n",n);
@@ -3352,14 +3346,14 @@ IClpSimplexPrimal::lexSolve()
 	double * originalLower = NULL;
 	double * originalUpper = NULL;
 	if (!startup(0,0)) {
-		
+
 		// Set average theta
 		nonLinearCost_->setAverageTheta(1.0e3);
 		int lastCleaned=0; // last time objective or bounds cleaned up
-		
+
 		// Say no pivot has occurred (for steepest edge and updates)
 		pivotRow_=-2;
-		
+
 		// This says whether to restore things etc
 		int factorType=0;
 		if (problemStatus_<0&&perturbation_<100) {
@@ -3408,12 +3402,12 @@ IClpSimplexPrimal::lexSolve()
 			// clear
 			for (iRow=0;iRow<4;iRow++) {
 				rowArray_[iRow]->clear();
-			}    
-			
+			}
+
 			for (iColumn=0;iColumn<2;iColumn++) {
 				columnArray_[iColumn]->clear();
-			}    
-			
+			}
+
 			// give matrix (and model costs and bounds a chance to be
 			// refreshed (normally null)
 			matrix_->refresh(this);
@@ -3441,7 +3435,7 @@ IClpSimplexPrimal::lexSolve()
 					printf("End small model\n");
 				}
 			}
-			
+
 			// may factorize, checks if problem finished
 			statusOfProblemInPrimal(lastCleaned,factorType,&progress_,true,ifValuesPass,saveModel);
 			if (initialStatus==10) {
@@ -3473,7 +3467,7 @@ IClpSimplexPrimal::lexSolve()
 				//lastSprintIteration=numberIterations_;
 				printf("End small model after\n");
 				statusOfProblemInPrimal(lastCleaned,factorType,&progress_,true,ifValuesPass,saveModel);
-			} 
+			}
 			int numberSprintIterations=0;
 			int numberSprintColumns = primalColumnPivot_->numberSprintColumns(numberSprintIterations);
 			if (problemStatus_==777) {
@@ -3497,7 +3491,7 @@ IClpSimplexPrimal::lexSolve()
 				for (iColumn=0;iColumn<numberColumns_;iColumn++) {
 					double dj = dj_[iColumn];
 					switch(getColumnStatus(iColumn)) {
-							
+
 						case basic:
 							dj = -1.0e50;
 							numberBasic++;
@@ -3554,13 +3548,13 @@ IClpSimplexPrimal::lexSolve()
 						   numberSprintColumns,numberSprintIterations);
 				}
 			}
-			
+
 			// Say good factorization
 			factorType=1;
-			
+
 			// Say no pivot has occurred (for steepest edge and updates)
 			pivotRow_=-2;
-			
+
 			// exit if victory declared
 			if (problemStatus_>=0) {
 				if (originalCost) {
@@ -3584,7 +3578,7 @@ IClpSimplexPrimal::lexSolve()
 							} else {
 								// fix
 								cost_[i]=-1.0e10;//lower_[i]=upper_[i];
-							} 
+							}
 						} else if (getStatus(i)==basic) {
 							cost_[i] = (numberTotal-i)+randomNumberGenerator_.randomDouble()*0.5;
 						}
@@ -3609,18 +3603,18 @@ IClpSimplexPrimal::lexSolve()
 					nonLinearCost_ = new ClpNonLinearCost(this);
 					progress_.endOddState();
 					continue;
-				} else { 
+				} else {
 					printf("exiting after %d iterations\n",numberIterations_);
 					break;
 				}
 			}
-			
+
 			// test for maximum iterations
 			if (hitMaximumIterations()||(ifValuesPass==2&&firstFree_<0)) {
 				problemStatus_=3;
 				break;
 			}
-			
+
 			if (firstFree_<0) {
 				if (ifValuesPass) {
 					// end of values pass

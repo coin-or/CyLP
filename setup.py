@@ -21,11 +21,15 @@ AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
 DESC = 'A Python interface for CLP, CBC, and CGL'
 
 
-#Specify whether to use Cython for installation
-USECYTHON = False
-
 cythonFilesDir = join('CyLP', 'cy')
 cppFilesDir = join('CyLP', 'cpp')
+
+#Do "export CYLP_USE_CYTHON=" if you want to build CyLP from scratch, using Cython
+try:
+    os.environ['CYLP_USE_CYTHON']
+    USECYTHON = True
+except:
+    USECYTHON = False
 
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']

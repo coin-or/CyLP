@@ -707,12 +707,10 @@ int IClpSimplex::checkVar(int varInd){
 
 
 ICbcModel* IClpSimplex::getICbcModel(){
+    // ?
+    matrix_->setDimensions(numberRows_, numberColumns_);
+
     OsiClpSolverInterface solver1(this);
-    // ClpSolve cs;
-    // ClpSolve::PresolveType type = ClpSolve::presolveOff;
-    // cs.setPresolveType(type);
-    // solver1.setSolveOptions(cs);
-    solver1.initialSolve();
     ICbcModel*  model = new ICbcModel(solver1);
     return model;
 }
