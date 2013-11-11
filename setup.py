@@ -81,7 +81,7 @@ else:
     fileext = '.cpp'
 
 
-extra_compile_args = []
+extra_compile_args = ['-w']
 ext_modules = []
 
 if operatingSystem == 'mac':
