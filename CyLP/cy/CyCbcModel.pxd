@@ -65,6 +65,16 @@ cdef extern from "ICbcModel.hpp":
         void setLogLevel(int value)
         int logLevel()
 
+        void setAllowableFractionGap(double value)
+        double getAllowableFractionGap()
+
+        void setAllowablePercentageGap(double value)
+        double getAllowablePercentageGap()
+
+        void setAllowableGap(double value)
+        double getAllowableGap()
+
+
         CppOsiSolverInterface* solver()
 
 cdef class CyCbcModel:

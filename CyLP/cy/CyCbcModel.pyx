@@ -250,6 +250,27 @@ cdef class CyCbcModel:
         def __set__(self, value):
             self.CppSelf.setNumberThreads(value)
 
+    property allowableGap:
+        def __get__(self):
+            return self.CppSelf.getAllowableGap()
+
+        def __set__(self, value):
+            self.CppSelf.setAllowableGap(value)
+
+    property allowableFractionGap:
+        def __get__(self):
+            return self.CppSelf.getAllowableFractionGap()
+
+        def __set__(self, value):
+            self.CppSelf.setAllowableFractionGap(value)
+
+    property allowablePercentageGap:
+        def __get__(self):
+            return self.CppSelf.getAllowablePercentageGap()
+
+        def __set__(self, value):
+            self.CppSelf.setAllowablePercentageGap(value)
+
 
 
     #TODO: add access to solver: getLower, getUpper,...
