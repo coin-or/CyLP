@@ -1,8 +1,9 @@
 import os
 import sys
 from os.path import join
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup, Extension
+#from distutils.core import setup
+#from distutils.extension import Extension
 import numpy
 
 
