@@ -15,7 +15,7 @@ DESC = 'A Python interface for CLP, CBC, and CGL'
 
 
 #Specify whether to use Cython for installation
-USECYTHON = True
+USECYTHON = False
 
 cythonFilesDir = join('CyLP', 'cy')
 cppFilesDir = join('CyLP', 'cpp')
@@ -50,6 +50,7 @@ elif 'win' in operatingSystem:
     operatingSystem = 'windows'
 
 libs = get_libs()
+print libs
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
            join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
