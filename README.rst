@@ -1,3 +1,11 @@
+Important Notice
+==================
+To comply with PEP8 we decided to rename the package name from CyLP to cylp,
+which was long overdue.
+It affects the package name ONLY and a simple replace can make your program
+work with the new settings.
+Thank you for your understanding.
+
 What is cylp?
 ==============
 cylp is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
