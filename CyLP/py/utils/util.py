@@ -1,6 +1,6 @@
 import numpy as np
 from math import atan2 
-from CyLP.py import Constants
+from cylp.py import Constants
 from operator import mul
 
 def sign(x): 

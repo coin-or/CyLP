@@ -1,12 +1,12 @@
 '''
-As a part of ``CyLP.python.pivots`` it implements the positive edge
+As a part of ``cylp.python.pivots`` it implements the positive edge
 pivot selection rule.
 '''
 
 import random
 import numpy as np
-from CyLP.cy import CyCoinIndexedVector
-from CyLP.cy.CyClpSimplex import cydot
+from cylp.cy import CyCoinIndexedVector
+from cylp.cy.CyClpSimplex import cydot
 from PivotPythonBase import PivotPythonBase
 
 
@@ -18,9 +18,9 @@ class PositiveEdgePivot(PivotPythonBase):
 
     **Usage**
 
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.pivots import PositiveEdgePivot
-    >>> from CyLP.py.pivots.PositiveEdgePivot import getMpsExample
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.pivots import PositiveEdgePivot
+    >>> from cylp.py.pivots.PositiveEdgePivot import getMpsExample
     >>> # Get the path to a sample mps file
     >>> f = getMpsExample()
     >>> s = CyClpSimplex()
@@ -148,5 +148,5 @@ def getMpsExample():
     import os
     import inspect
     cylpDir = os.environ['CYLP_SOURCE_DIR']
-    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+    return os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
 

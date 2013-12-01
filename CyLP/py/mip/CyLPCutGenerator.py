@@ -1,4 +1,4 @@
-class CyLPCutGenerator:
+class cylpCutGenerator:
     '''
     Abstract base class
     '''
@@ -11,6 +11,6 @@ class CyLPCutGenerator:
         :type y: CyCbcNode
         :rtype: list
         '''
-        raise NotImplementedError('CyLPCutGenerator object must ' \
+        raise NotImplementedError('cylpCutGenerator object must ' \
                         'implement *generateCuts*')
 

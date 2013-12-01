@@ -3,7 +3,7 @@
 ==========================
 
 
-.. automodule:: CyLP.py.utils.sparseUtil
+.. automodule:: cylp.py.utils.sparseUtil
 
 ---------------------------
 :class:`csc_matrixPlus`

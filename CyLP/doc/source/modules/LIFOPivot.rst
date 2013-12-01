@@ -3,7 +3,7 @@
 :class:`LIFOPivot`
 ----------------------
 
-.. automodule:: CyLP.py.pivots.LIFOPivot
+.. automodule:: cylp.py.pivots.LIFOPivot
 
 .. autoclass:: LIFOPivot
 

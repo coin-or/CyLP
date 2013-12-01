@@ -1,7 +1,7 @@
 '''
 This module interface COIN-OR's ``CoinMpsIO``. When you call
-:func:`CyLP.cy.CyClpSimplex.readMps` then ``CoinMpsIO``'s ``readMps`` is
-called.  The main reason why CyLP interfaces this class is to be able to read
+:func:`cylp.cy.CyClpSimplex.readMps` then ``CoinMpsIO``'s ``readMps`` is
+called.  The main reason why cylp interfaces this class is to be able to read
 an ``mps`` file without creating a Simplex object. This way it is possible to
 read a QP using CoinMpsIO and work on the elements of the problem, e.g. the
 Hessian,...
@@ -10,7 +10,7 @@ Hessian,...
 
 
 from scipy import sparse
-from CyLP.py.utils.sparseUtil import csc_matrixPlus, csr_matrixPlus
+from cylp.py.utils.sparseUtil import csc_matrixPlus, csr_matrixPlus
 
 cdef class CyCoinMpsIO:
     def __cinit__(self):
@@ -23,8 +23,8 @@ cdef class CyCoinMpsIO:
         and store it.
 
         >>> import numpy as np
-        >>> from CyLP.cy import CyCoinMpsIO
-        >>> from CyLP.cy.CyCoinMpsIO import getQpsExample
+        >>> from cylp.cy import CyCoinMpsIO
+        >>> from cylp.cy.CyCoinMpsIO import getQpsExample
         >>> problem = CyCoinMpsIO()
         >>> problem.readMps(getQpsExample())
         0

@@ -8,8 +8,8 @@
     **Usage (single dimension, using CyLPModel indirectly)**
 
     >>> import numpy as np
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.modeling.CyLPModel import CyLPArray
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.modeling.CyLPModel import CyLPArray
     >>>
     >>> s = CyClpSimplex()
     >>>
@@ -54,8 +54,8 @@
       size could be faster than the indirect approach)**
 
     >>> import numpy as np
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
     >>>
     >>> model = CyLPModel()
     >>>
@@ -101,8 +101,8 @@
 
     **Usage (multi-dimensions, using CyLPModel indirectly)**
 
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.modeling.CyLPModel import CyLPArray
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.modeling.CyLPModel import CyLPArray
     >>> s = CyClpSimplex()
     >>> x = s.addVariable('x', (5, 3, 6))
     >>> s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5
@@ -125,7 +125,7 @@ from operator import mul
 import numpy as np
 from scipy import sparse
 from scipy.sparse import identity, lil_matrix
-from CyLP.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
+from cylp.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
 
 NUMBERS = (int, float, long, np.int64, np.int32, np.double)
 def isNumber(n):
@@ -136,7 +136,7 @@ def isNumber(n):
 #resource.setrlimit(resource.RLIMIT_STACK, (2**5,-1))
 #sys.setrecursionlimit(10**6)
 
-#from CyLP.py.utils.sparseUtil import sparseConcat
+#from cylp.py.utils.sparseUtil import sparseConcat
 def I(n):
     '''
     Return a sparse identity matrix of size *n*
@@ -160,7 +160,7 @@ def identitySub(var):
         return m
     return I(n)[var.indices, :]
 
-class CyLPExpr:
+class cylpExpr:
     operators = ('>=', '<=', '==', '+', '-', '*', 'u-', 'sum')
 
     def __init__(self, opr='', left='', right=''):
@@ -178,59 +178,59 @@ class CyLPExpr:
         return s
 
     def __le__(self, other):
-        v = CyLPExpr(opr="<=", right=other, left=self.expr)
+        v = cylpExpr(opr="<=", right=other, left=self.expr)
         self.expr = v
         return v
 
     def __ge__(self, other):
-        v = CyLPExpr(opr=">=", right=other, left=self.expr)
+        v = cylpExpr(opr=">=", right=other, left=self.expr)
         self.expr = v
         return v
 
     def __eq__(self, other):
-        # Check if both sides are CyLPVar, in which case a pythonic
+        # Check if both sides are cylpVar, in which case a pythonic
         # comparison is meant (for dictionary keys,...)
         if (other == None):
             return False
-        if isinstance(self, CyLPVar) and isinstance(other, CyLPVar):
+        if isinstance(self, cylpVar) and isinstance(other, cylpVar):
             return id(self) == id(other)
             #return (str(self) == str(other))
-        v = CyLPExpr(opr="==", right=other, left=self.expr)
+        v = cylpExpr(opr="==", right=other, left=self.expr)
         self.expr = v
         return v
 
     def __rmul__(self, other):
-        v = CyLPExpr(opr="*", left=other, right=self)
+        v = cylpExpr(opr="*", left=other, right=self)
         v.expr = v
         self.expr = v
         return v
 
     def __rsub__(self, other):
-        v = CyLPExpr(opr="-", left=other, right=self)
+        v = cylpExpr(opr="-", left=other, right=self)
         v.expr = v
         self.expr = v
         return v
 
     def __radd__(self, other):
-        v = CyLPExpr(opr="+", left=other, right=self)
+        v = cylpExpr(opr="+", left=other, right=self)
         v.expr = v
         self.expr = v
         return v
 
     def __neg__(self):
-        v = CyLPExpr(opr="u-", right=self)
+        v = cylpExpr(opr="u-", right=self)
         v.expr = v
         self.expr = v
         return v
 
     def getPostfix(self):
-        if isinstance(self, CyLPVar):
+        if isinstance(self, cylpVar):
             return [self]
         left = [self.left]
         right = [self.right]
-        if isinstance(self.left, CyLPExpr):
+        if isinstance(self.left, cylpExpr):
             left = self.left.getPostfix()
-        if isinstance(self.right, CyLPExpr):
+        if isinstance(self.right, cylpExpr):
             right = self.right.getPostfix()
 
         return left + right + [self.opr]
@@ -243,13 +243,13 @@ class CyLPExpr:
         tokens = self.getPostfix()
         operands = []
 
-        cons = CyLPConstraint(name)
+        cons = cylpConstraint(name)
 
         for token in tokens:
             # If an operand found
-            if type(token) != str or token not in CyLPExpr.operators:
+            if type(token) != str or token not in cylpExpr.operators:
                 operands.append(token)
-                if (isinstance(token, CyLPVar)):
+                if (isinstance(token, cylpVar)):
                     varToBeAdded = token
                     if not varToBeAdded in cons.variables:
                         cons.variables.append(varToBeAdded)
@@ -259,18 +259,18 @@ class CyLPExpr:
                 if token == 'u-':
                     right = operands.pop()
                     cons.perform(token, right=right)
-                    operands.append(CyLPExpr(token, right=right))
+                    operands.append(cylpExpr(token, right=right))
                 else:
                     right = operands.pop()
                     left = operands.pop()
                     cons.perform(token, left, right)
-                    operands.append(CyLPExpr(token, left, right))
+                    operands.append(cylpExpr(token, left, right))
 
         # If something remains in the *operands* list, it means
-        # that we have a single CyLPVar object on a line with no
+        # that we have a single cylpVar object on a line with no
         # operators operating on it. Check this situation and
         # add a 1 vector as its coefficient
-        if len(operands) == 1 and isinstance(operands[0], CyLPVar):
+        if len(operands) == 1 and isinstance(operands[0], cylpVar):
             var = operands[0]
             cons.varCoefs[var] = identitySub(var) #np.ones(var.dim)
 
@@ -281,7 +281,7 @@ class CyLPExpr:
         return cons
 
 
-class CyLPConstraint:
+class cylpConstraint:
     gid = 0
     def __init__(self, name=''):
         self.varNames = []
@@ -293,8 +293,8 @@ class CyLPConstraint:
         self.isRange = True
         self.variables = []
         if not name:
-            CyLPConstraint.gid += 1
-            name = 'R_%d' % CyLPConstraint.gid
+            cylpConstraint.gid += 1
+            name = 'R_%d' % cylpConstraint.gid
         self.name = name
 
     def __repr__(self):
@@ -316,10 +316,10 @@ class CyLPConstraint:
         '''
         Recursively multiplies all variable coefficients in *expr* by *coef*
         '''
-        if isinstance(expr, CyLPVar):
+        if isinstance(expr, cylpVar):
             self.varCoefs[expr] *= coef
             return
-        if isinstance(expr, CyLPExpr):
+        if isinstance(expr, cylpExpr):
             if expr.left == None:
                 return
             self.mul(expr.right, coef)
@@ -332,7 +332,7 @@ class CyLPConstraint:
         if isinstance(right, (CyLPArray, np.matrix, np.ndarray)):
             right = CyLPArray(np.squeeze(np.asarray(right)))
 
-        if isinstance(right, CyLPVar):
+        if isinstance(right, cylpVar):
             if right.dim == 0:
                 return
             if right.name not in self.varNames:
@@ -397,7 +397,7 @@ class CyLPConstraint:
                 if opr == '+' or opr == '-':
                     # No coefs for left op
                     self.isRange = False
-                    if isinstance(left, CyLPVar):
+                    if isinstance(left, cylpVar):
                         self.varCoefs[left] = identitySub(left)
                         self.nRows = len(left.indices)
                         if left.name not in self.varNames:
@@ -405,7 +405,7 @@ class CyLPConstraint:
                             self.parentVarDims[left.name] = left.parentDim
 
                     # No coefs for right op
-                    if isinstance(right, CyLPVar):
+                    if isinstance(right, cylpVar):
                         if right in self.varCoefs.keys():
                             self.varCoefs[right] *= -1
                         else:
@@ -430,7 +430,7 @@ class CyLPConstraint:
                                 self.parentVarDims[right.name] = \
                                                             right.parentDim
         # check if no coef for left
-        if left.__class__ == CyLPVar and (opr == '-' or opr == '+'):
+        if left.__class__ == cylpVar and (opr == '-' or opr == '+'):
             if left.dim == 0 :
                 return
             self.isRange = False
@@ -444,11 +444,11 @@ class CyLPConstraint:
                 self.parentVarDims[left.name] = left.parentDim
 
         # Coef already set for the right operand
-        if right.__class__ == CyLPExpr:
+        if right.__class__ == cylpExpr:
             if opr == '-':
                 # The expression on the right is in the form (left opr right)
                 # so the key to the coef in self.varCoefs is right.right i.e.
-                # the CyLPVar on the right
+                # the cylpVar on the right
                 #if right.right.dim == 0:
                 #    return
                 self.isRange = False
@@ -459,11 +459,11 @@ class CyLPConstraint:
 
 
         if opr in ('<=', '>=', '=='):
-            if isinstance(left, CyLPExpr) and not isinstance(right,
-                                                              CyLPExpr):
+            if isinstance(left, cylpExpr) and not isinstance(right,
+                                                              cylpExpr):
                 bound = right
-            elif isinstance(right, CyLPExpr) and not isinstance(left,
-                                                                CyLPExpr):
+            elif isinstance(right, cylpExpr) and not isinstance(left,
+                                                                cylpExpr):
                 bound = left
             else:
                 raise Exception('At least one side of a comparison sign' \
@@ -490,34 +490,34 @@ class CyLPConstraint:
                 bound = CyLPArray(right * np.ones(dim))
 
             if self.isRange:
-                if ((opr in ('>=', '==') and isinstance(left, CyLPExpr)) or
-                    (opr in ('<=', '==') and isinstance(right, CyLPExpr))):
+                if ((opr in ('>=', '==') and isinstance(left, cylpExpr)) or
+                    (opr in ('<=', '==') and isinstance(right, cylpExpr))):
                     if var.parent:
                         var.parent.lower[var.indices] = bound
                     else:
                         var.lower[var.indices] = bound
 
-                if ((opr in ('<=', '==') and isinstance(left, CyLPExpr)) or
-                    (opr in ('>=', '==') and isinstance(right, CyLPExpr))):
+                if ((opr in ('<=', '==') and isinstance(left, cylpExpr)) or
+                    (opr in ('>=', '==') and isinstance(right, cylpExpr))):
                     if var.parent:
                         var.parent.upper[var.indices] = bound
                     else:
                         var.upper[var.indices] = bound
 
             else:
-                if ((opr in ('>=', '==') and isinstance(left, CyLPExpr)) or
-                    (opr in ('<=', '==') and isinstance(right, CyLPExpr))):
+                if ((opr in ('>=', '==') and isinstance(left, cylpExpr)) or
+                    (opr in ('<=', '==') and isinstance(right, cylpExpr))):
                     self.lower = bound
                     if self.upper == None:
                         self.upper = getCoinInfinity() * np.ones(len(bound))
-                if ((opr in ('<=', '==') and isinstance(left, CyLPExpr)) or
-                    (opr in ('>=', '==') and isinstance(right, CyLPExpr))):
+                if ((opr in ('<=', '==') and isinstance(left, cylpExpr)) or
+                    (opr in ('>=', '==') and isinstance(right, cylpExpr))):
                     self.upper = bound
                     if self.lower == None:
                         self.lower = -getCoinInfinity() * np.ones(len(bound))
 
 
-class CyLPVar(CyLPExpr):
+class cylpVar(cylpExpr):
     '''
     Contains variable information such as its name, dimension,
     bounds, and whether or not it is an integer. We don't creat
@@ -564,7 +564,7 @@ class CyLPVar(CyLPExpr):
 
     def __getitem__(self, key):
         if type(key) == int:
-            newObj = CyLPVar(self.name, 1)
+            newObj = cylpVar(self.name, 1)
             newObj.indices = np.array([key], np.int32)
             newObj.parentDim = self.dim
             newObj.parent = self
@@ -576,7 +576,7 @@ class CyLPVar(CyLPExpr):
             else:
                 newObj_toInd = key.stop
 
-            newObj = CyLPVar(self.name, newObj_toInd - newObj_fromInd)
+            newObj = cylpVar(self.name, newObj_toInd - newObj_fromInd)
             newObj.parentDim = self.dim
             newObj.parent = self
             newObj.fromInd = newObj_fromInd
@@ -586,7 +586,7 @@ class CyLPVar(CyLPExpr):
             # Save parentDim for future use
             newObj.dim = len(newObj.indices)
         elif isinstance(key, (np.ndarray, list)):
-            newObj = CyLPVar(self.name, len(key))
+            newObj = cylpVar(self.name, len(key))
             newObj.parentDim = self.dim
             newObj.parent = self
             newObj.fromInd = None
@@ -607,7 +607,7 @@ class CyLPVar(CyLPExpr):
         return newObj
 
     def sum(self):
-        v = CyLPExpr(opr="sum", right=self)
+        v = cylpExpr(opr="sum", right=self)
         v.expr = v
         self.expr = v
         return v
@@ -616,7 +616,7 @@ class CyLPVar(CyLPExpr):
 class CyLPArray(np.ndarray):
     '''
     It is a tweaked Numpy array. It allows user to define objects
-    comparability to an array. If we have an instance of ``CyLPVar``
+    comparability to an array. If we have an instance of ``cylpVar``
     called ``x`` and a numpy array ``b``, then ``b >= x`` returns an array
     of the same dimension as ``b`` with all elements equal to ``False``,
     which has no sense at all. On the constrary ``CyLPArray`` will return
@@ -637,42 +637,42 @@ class CyLPArray(np.ndarray):
         return obj
 
     def __le__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__le__(self, other)
 
     def __ge__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__ge__(self, other)
 
     def __mul__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__mul__(self, other)
 
     def __rmul__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__rmul__(self, other)
 
     def __add__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__add__(self, other)
 
     def __radd__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__radd__(self, other)
 
     def __rsub__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__rsub__(self, other)
 
     def __sub__(self, other):
-        if (issubclass(other.__class__, CyLPExpr)):
+        if (issubclass(other.__class__, cylpExpr)):
             return NotImplemented
         return np.ndarray.__sub__(self, other)
 
@@ -685,7 +685,7 @@ class IndexFactory:
     **Usage**
 
     >>> import numpy as np
-    >>> from CyLP.py.modeling.CyLPModel import IndexFactory
+    >>> from cylp.py.modeling.CyLPModel import IndexFactory
     >>> i = IndexFactory()
     >>> i.addVar('x', 10)
     >>> i.addVar('y', 5)
@@ -802,7 +802,7 @@ class IndexFactory:
         return -1, -1
 
 
-from CyLP.py.utils.sparseUtil import sparseConcat, csr_matrixPlus, csc_matrixPlus
+from cylp.py.utils.sparseUtil import sparseConcat, csr_matrixPlus, csc_matrixPlus
 
 class CyLPModel(object):
     '''
@@ -825,13 +825,13 @@ class CyLPModel(object):
 
     def addVariable(self, name, dim, isInt=False):
         '''
-        Create a new instance of :py:class:`CyLPVar` using the given
+        Create a new instance of :py:class:`cylpVar` using the given
         arguments and add it to current model's variable list.
         '''
 
         if dim == 0:
             return
-        var = CyLPVar(name, dim, isInt)
+        var = cylpVar(name, dim, isInt)
         self.variables.append(var)
 
         #If mulidim, correct dim
@@ -945,7 +945,7 @@ class CyLPModel(object):
 
     @objective.setter
     def objective(self, obj):
-        if isinstance(obj, CyLPExpr):
+        if isinstance(obj, cylpExpr):
             self.objective_ = obj.evaluate()
             obj = None
             #for varName in self.allVarNames:
@@ -965,7 +965,7 @@ class CyLPModel(object):
     def addConstraint(self, cons, consName=''):
         '''
         Add constraint ``cons`` to the ``CyLPModel``. Argument ``cons`` must
-        be an expresion made using instances of :py:class:`CyLPVar`,
+        be an expresion made using instances of :py:class:`cylpVar`,
         :py:class:`CyLPArray`, Numpy matrices, or sparse matrices. It can
         use normal operators such as ``>=``, ``<=``, ``==``, ``+``, ``-``,
         ``*``.
@@ -1037,7 +1037,7 @@ class CyLPModel(object):
 
     def makeMatrices(self):
         '''
-        Makes coef matrix and rhs vector from CyLPConstraints
+        Makes coef matrix and rhs vector from cylpConstraints
         in self.constraints
         '''
         #if len(self.constraints) == 0:
@@ -1082,7 +1082,7 @@ class CyLPModel(object):
         return masterCoefMat, c_lower, c_upper, v_lower, v_upper
 
 
-class CyLPSolution:
+class cylpSolution:
 
     def __init__(self):
         self.sol = {}
@@ -1119,8 +1119,8 @@ def getCoinInfinity():
 
 
 if __name__ == '__main__':
-    from CyLP.cy import CyClpSimplex
-    from CyLP.py.modeling.CyLPModel import CyLPArray
+    from cylp.cy import CyClpSimplex
+    from cylp.py.modeling.CyLPModel import CyLPArray
     s = CyClpSimplex()
     x = s.addVariable('x', (5, 3, 6))
     s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5

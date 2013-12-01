@@ -1,18 +1,18 @@
-What is CyLP?
+What is cylp?
 ==============
-CyLP is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
-(CLP, CBC, and CGL). CyLP’s unique feature is that you can use it to alter the
+cylp is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
+(CLP, CBC, and CGL). cylp’s unique feature is that you can use it to alter the
 solution process of the solvers from within Python. For example, you may
 define cut generators, branch-and-bound strategies, and primal/dual Simplex
 pivot rules completely in Python.
 
-You may read your LP from an mps file or use the CyLP’s easy modeling
+You may read your LP from an mps file or use the cylp’s easy modeling
 facility. Please find examples in the `documentation
-<http://mpy.github.io/CyLPdoc/>`_.
+<http://mpy.github.io/cylpdoc/>`_.
 
 .. note::
 
-   CyLP interfaces a limited number of functionalities of
+   cylp interfaces a limited number of functionalities of
    COIN-OR’s solvers. If there is any particular
    class or method in CLP, CBC, and CGL that you would like to use in Python
    please don't hesitate to let us know; we will try to make the connections.
@@ -27,7 +27,7 @@ Installation
 
 STEP 1:
     Install CBC (http://www.coin-or.org/download/source/Cbc/).
-    CyLP can be compiled against
+    cylp can be compiled against
     Cbc version 2.8.5. Please go to the installation directory and run::
 
         $ ./configure
@@ -44,7 +44,7 @@ You may also add this line to your ~/.bash_rc or ~/.profile to make
 it persistent.
 
 STEP 3:
-    Install CyLP. Go to CyLP's root directory and run::
+    Install cylp. Go to cylp's root directory and run::
 
         $ python setup.py install
 
@@ -58,11 +58,11 @@ Optional step:
     If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
     you should also define::
 
-        $ export CYLP_SOURCE_DIR=/Path/to/CyLP
+        $ export CYLP_SOURCE_DIR=/Path/to/cylp
 
-Now you can use CyLP in your python code. For example::
+Now you can use cylp in your python code. For example::
 
-    >>> from CyLP.cy import CyClpSimplex
+    >>> from cylp.cy import CyClpSimplex
     >>> s = CyClpSimplex()
     >>> s.readMps('../input/netlib/adlittle.mps')
     0
@@ -71,22 +71,22 @@ Now you can use CyLP in your python code. For example::
     >>> round(s.objectiveValue, 3)
     225494.963
 
-Or simply go to CyLP and run::
+Or simply go to cylp and run::
 
     $ python -m unittest discover
 
-to run all CyLP unit tests.
+to run all cylp unit tests.
 
 
 
 Modeling Example
 ==================
 
-Here is an example of how to model with CyLP's modeling facility::
+Here is an example of how to model with cylp's modeling facility::
 
     import numpy as np
-    from CyLP.cy import CyClpSimplex
-    from CyLP.py.modeling.CyLPModel import CyLPArray
+    from cylp.cy import CyClpSimplex
+    from cylp.py.modeling.CyLPModel import CyLPArray
 
     s = CyClpSimplex()
 
@@ -120,14 +120,14 @@ Here is an example of how to model with CyLP's modeling facility::
 
 Documentation
 ===============
-You may access CyLP's documentation:
+You may access cylp's documentation:
 
-1. *Online* : Please visit http://mpy.github.io/CyLPdoc/
+1. *Online* : Please visit http://mpy.github.io/cylpdoc/
 
-2. *Offline* : To install CyLP's documentation in your repository, you need
+2. *Offline* : To install cylp's documentation in your repository, you need
    Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by
-   going to CyLP/doc and run ``make html`` or ``make latex`` and access the
-   documentation under CyLP/doc/build. You can also run ``make doctest`` to
+   going to cylp/doc and run ``make html`` or ``make latex`` and access the
+   documentation under cylp/doc/build. You can also run ``make doctest`` to
    perform all the doctest.
 
 
@@ -137,6 +137,6 @@ You may access CyLP's documentation:
 
 .. image:: https://cruel-carlota.pagodabox.com/f8efbddd4f44bb098d20dafdd0b9e897
    :alt: githalytics.com
-   :target: http://githalytics.com/mpy/CyLP
+   :target: http://githalytics.com/mpy/cylp
 
 

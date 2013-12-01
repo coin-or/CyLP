@@ -3,7 +3,7 @@ import inspect
 import os
 from os.path import join
 import numpy as np
-from CyLP.cy import CyClpSimplex
+from cylp.cy import CyClpSimplex
 from PySolve import solve
 
 

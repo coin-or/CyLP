@@ -1,7 +1,7 @@
 import scipy
 from scipy.sparse import csr_matrix
 cimport CyOsiCuts
-from CyLP.py.modeling.CyLPModel import CyLPModel
+from cylp.py.modeling.CyLPModel import CyLPModel
 cimport numpy as np
 import numpy as np
 
@@ -31,7 +31,7 @@ cdef class CyOsiCuts:
 
     def addColumnCut(self, cut, cyLpModel):
         '''
-        Add ``cut`` to cuts. ``cut`` is a CyLPExpr
+        Add ``cut`` to cuts. ``cut`` is a cylpExpr
         and ``cut.isRange`` is ``True``.
         '''
         m = CyLPModel()
@@ -55,7 +55,7 @@ cdef class CyOsiCuts:
 
     def addRowCut(self, cut, cyLpModel):
         '''
-        Add ``cut`` to cuts. ``cut`` is a CyLPExpr
+        Add ``cut`` to cuts. ``cut`` is a cylpExpr
         and ``cut.isRange`` is ``False``.
         '''
         m = CyLPModel()

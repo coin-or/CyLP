@@ -9,14 +9,14 @@ cimport cpython.ref as cpy_ref
 #from cpython.ref cimport PyObject
 from cpython cimport PyObject, Py_INCREF
 
-from CyLP.cy.CyClpPrimalColumnPivotBase cimport CyClpPrimalColumnPivotBase
-from CyLP.cy.CyClpDualRowPivotBase cimport CyClpDualRowPivotBase
-#from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
-from CyLP.cy.CyCoinModel cimport CyCoinModel, CppCoinModel
-from CyLP.cy.CyCoinPackedMatrix cimport CyCoinPackedMatrix, CppCoinPackedMatrix
-from CyLP.cy.CyCbcModel cimport CyCbcModel, CppICbcModel
-from CyLP.python.modeling.CyLPModel import CyLPModel
-from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
+from cylp.cy.CyClpPrimalColumnPivotBase cimport CyClpPrimalColumnPivotBase
+from cylp.cy.CyClpDualRowPivotBase cimport CyClpDualRowPivotBase
+#from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
+from cylp.cy.CyCoinModel cimport CyCoinModel, CppCoinModel
+from cylp.cy.CyCoinPackedMatrix cimport CyCoinPackedMatrix, CppCoinPackedMatrix
+from cylp.cy.CyCbcModel cimport CyCbcModel, CppICbcModel
+from cylp.python.modeling.CyLPModel import CyLPModel
+from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector, CppCoinIndexedVector
 
 from libcpp.string cimport string
 from libcpp.vector cimport vector

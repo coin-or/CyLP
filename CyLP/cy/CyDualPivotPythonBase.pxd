@@ -2,8 +2,8 @@ import numpy as np
 cimport numpy as np
 from CyClpDualRowPivotBase cimport *
 cimport cython.operator.dereference as deref
-from CyLP.cy cimport CyClpSimplex
-from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
+from cylp.cy cimport CyClpSimplex
+from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
 from cpython cimport Py_INCREF, Py_DECREF
 
 cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):

@@ -11,7 +11,7 @@ cdef class CyCoinPackedMatrix:
     **Usage Example**
 
     >>> import numpy as np
-    >>> from CyLP.cy import CyCoinPackedMatrix
+    >>> from cylp.cy import CyCoinPackedMatrix
     >>> rows = np.array([1, 3, 4], np.int32)
     >>> cols = np.array([0, 2, 1], np.int32)
     >>> elements = np.array([1.5, -1, 2])

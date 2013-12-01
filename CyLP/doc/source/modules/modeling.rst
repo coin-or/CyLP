@@ -1,14 +1,14 @@
 ============================
-:mod:`CyLP.py.modeling`
+:mod:`cylp.py.modeling`
 ============================
 
-.. automodule:: CyLP.py.modeling.CyLPModel
+.. automodule:: cylp.py.modeling.CyLPModel
 
 ----------------------
-:class:`CyLPVar`
+:class:`cylpVar`
 ----------------------
 
-.. autoclass:: CyLPVar
+.. autoclass:: cylpVar
 
 ----------------------
 :class:`CyLPModel`
@@ -30,5 +30,5 @@
 :class:`IndexFactory`
 -------------------------
 
-.. autoclass:: CyLP.py.modeling.CyLPModel.IndexFactory
+.. autoclass:: cylp.py.modeling.CyLPModel.IndexFactory
    :members:

@@ -3,7 +3,7 @@ from operator import itemgetter
 from random import shuffle
 from math import floor
 from PivotPythonBase import PivotPythonBase
-from CyLP.cy.CyClpSimplex import VarStatus
+from cylp.cy.CyClpSimplex import VarStatus
 
 
 class LIFOPivot(PivotPythonBase):
@@ -12,9 +12,9 @@ class LIFOPivot(PivotPythonBase):
 
     **Usage**
 
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.pivots import LIFOPivot
-    >>> from CyLP.py.pivots.LIFOPivot import getMpsExample
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.pivots import LIFOPivot
+    >>> from cylp.py.pivots.LIFOPivot import getMpsExample
     >>> # Get the path to a sample mps file
     >>> f = getMpsExample()
     >>> s = CyClpSimplex()
@@ -91,4 +91,4 @@ def getMpsExample():
     import os
     import inspect
     cylpDir = os.environ['CYLP_SOURCE_DIR']
-    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+    return os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')

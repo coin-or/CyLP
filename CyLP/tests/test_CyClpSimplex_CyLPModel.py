@@ -4,10 +4,10 @@ import os
 from os.path import join
 import numpy as np
 
-from CyLP.cy import CyClpSimplex
+from cylp.cy import CyClpSimplex
 
-from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
-from CyLP.py.utils.sparseUtil import csr_matrixPlus, csc_matrixPlus
+from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
+from cylp.py.utils.sparseUtil import csr_matrixPlus, csc_matrixPlus
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
@@ -45,7 +45,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue((abs(sol - np.array([2, 0, 1]) ) <= 10**-6).all())
 
     def test2(self):
-        'Same as test1, but use CyLP indirectly.'
+        'Same as test1, but use cylp indirectly.'
         s = CyClpSimplex()
 
         x = s.addVariable('x', 3)
@@ -228,8 +228,8 @@ class TestModel(unittest.TestCase):
                         np.array([0.2, 2, 1.1, 0, 0.9]) ) <= 10**-6).all())
 
     def test_multiDim(self):
-        from CyLP.cy import CyClpSimplex
-        from CyLP.py.modeling.CyLPModel import CyLPArray
+        from cylp.cy import CyClpSimplex
+        from cylp.py.modeling.CyLPModel import CyLPArray
         s = CyClpSimplex()
         x = s.addVariable('x', (5, 3, 6))
         s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5
@@ -244,8 +244,8 @@ class TestModel(unittest.TestCase):
         self.assertTrue(abs(sol[2, 0, 3] - 1) <= 10**-6)
 
     def test_ArrayIndexing(self):
-        from CyLP.cy import CyClpSimplex
-        from CyLP.py.modeling.CyLPModel import CyLPArray
+        from cylp.cy import CyClpSimplex
+        from cylp.py.modeling.CyLPModel import CyLPArray
         s = CyClpSimplex()
         x = s.addVariable('x', (5, 3, 6))
         s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5

@@ -1,7 +1,7 @@
 # cython: embedsignature=True
 
 
-from CyLP.cy cimport CyWolfePivot
+from cylp.cy cimport CyWolfePivot
 
 cdef class CyWolfePivot(CyClpPrimalColumnPivotBase):
 

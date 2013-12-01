@@ -1,8 +1,8 @@
 ===================================
-:mod:`CyLP.cy.CyCoinPackedMatrix`
+:mod:`cylp.cy.CyCoinPackedMatrix`
 ===================================
 
-.. automodule:: CyLP.cy.CyCoinPackedMatrix
+.. automodule:: cylp.cy.CyCoinPackedMatrix
 
 .. autoclass:: CyCoinPackedMatrix
    :members:

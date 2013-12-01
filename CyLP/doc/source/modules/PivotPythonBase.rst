@@ -2,7 +2,7 @@
 :class:`PivotPythonBase`
 -------------------------
 
-.. automodule:: CyLP.py.pivots.PivotPythonBase
+.. automodule:: cylp.py.pivots.PivotPythonBase
 
 .. autoclass:: PivotPythonBase
    :members:

@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from CyLP.py.modeling import IndexFactory
+from cylp.py.modeling import IndexFactory
 
 class TestIndexFactory(unittest.TestCase):
 

@@ -1,8 +1,8 @@
 ===========================
-:mod:`CyLP.cy.CyCoinMpsIO`
+:mod:`cylp.cy.CyCoinMpsIO`
 ===========================
 
-.. automodule:: CyLP.cy.CyCoinMpsIO
+.. automodule:: cylp.cy.CyCoinMpsIO
 
 .. autoclass:: CyCoinMpsIO
    :members:

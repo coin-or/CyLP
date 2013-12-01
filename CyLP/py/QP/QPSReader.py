@@ -1,7 +1,7 @@
 import numpy as np
 #from scipy import sparse
-from CyLP.cy import CyCoinMpsIO
-from CyLP.py.utils.sparseUtil import csr_matrixPlus
+from cylp.cy import CyCoinMpsIO
+from cylp.py.utils.sparseUtil import csr_matrixPlus
 
 
 def readQPS(inputFilename):

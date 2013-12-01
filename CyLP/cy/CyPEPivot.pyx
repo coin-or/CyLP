@@ -3,7 +3,7 @@
 
 import numpy as np
 cimport numpy as np
-from CyLP.cy cimport CyPEPivot
+from cylp.cy cimport CyPEPivot
 #from CyClpSimplex cimport CyClpSimplex
 #cimport cython.operator.dereference as deref
 

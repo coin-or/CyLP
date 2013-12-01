@@ -1,13 +1,13 @@
 # cython: embedsignature=True
 
 
-from CyLP.cy cimport CyCoinModel
+from cylp.cy cimport CyCoinModel
 
 cdef class CyCoinModel:
     '''
 
     >>> import numpy as np
-    >>> from CyLP.cy import CyCoinModel, CyClpSimplex
+    >>> from cylp.cy import CyCoinModel, CyClpSimplex
     >>> m = CyCoinModel()
     >>>
     >>> m.addVariable(3, np.array(

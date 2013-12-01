@@ -1,7 +1,7 @@
-:mod:`CyLP.cy.CyPivotPythonBase`
+:mod:`cylp.cy.CyPivotPythonBase`
 =====================================
 
-.. automodule:: CyLP.cy.CyPivotPythonBase
+.. automodule:: cylp.cy.CyPivotPythonBase
 
 .. autoclass:: CyPivotPythonBase
    :members:

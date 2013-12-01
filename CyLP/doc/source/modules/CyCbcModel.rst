@@ -1,8 +1,8 @@
 ===========================
-:mod:`CyLP.cy.CyCbcModel`
+:mod:`cylp.cy.CyCbcModel`
 ===========================
 
-.. automodule:: CyLP.cy.CyCbcModel
+.. automodule:: cylp.cy.CyCbcModel
 
 .. autoclass:: CyCbcModel
    :members:

@@ -2,10 +2,10 @@
 import numpy as np
 from numpy import random
 from scipy import sparse
-from CyLP.cy import CyClpSimplex
-from CyLP.py.modeling import CyLPArray
-from CyLP.py.utils.sparseUtil import csr_matrixPlus
-from CyLP.py.QP.QP import QP
+from cylp.cy import CyClpSimplex
+from cylp.py.modeling import CyLPArray
+from cylp.py.utils.sparseUtil import csr_matrixPlus
+from cylp.py.QP.QP import QP
 
 def getA(nRows, nCols, nnzPerCol):
     '''Return a sparse coef. matrix of a set-partitioning problem

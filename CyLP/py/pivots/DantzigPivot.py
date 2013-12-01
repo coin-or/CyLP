@@ -1,5 +1,5 @@
 '''
-As a part of ``CyLP.python.pivots`` it implements Dantzig's
+As a part of ``cylp.python.pivots`` it implements Dantzig's
 Classical Simplex pivot rule. Although it already exists in CLP,
 for testing purposes we implement one in Python.
 '''
@@ -18,9 +18,9 @@ class DantzigPivot(PivotPythonBase):
 
     **Usage**
 
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.pivots import DantzigPivot
-    >>> from CyLP.py.pivots.DantzigPivot import getMpsExample
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.pivots import DantzigPivot
+    >>> from cylp.py.pivots.DantzigPivot import getMpsExample
     >>> # Get the path to a sample mps file
     >>> f = getMpsExample()
     >>> s = CyClpSimplex()
@@ -92,7 +92,7 @@ def getMpsExample():
     import os
     import inspect
     cylpDir = os.environ['CYLP_SOURCE_DIR']
-    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+    return os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
 
 
 if __name__ == "__main__":
@@ -100,8 +100,8 @@ if __name__ == "__main__":
         import doctest
         doctest.testmod()
     else:
-        from CyLP.cy import CyClpSimplex
-        from CyLP.py.pivots import DantzigPivot
+        from cylp.cy import CyClpSimplex
+        from cylp.py.pivots import DantzigPivot
         s = CyClpSimplex()
         s.readMps(sys.argv[1])
         pivot = DantzigPivot(s)

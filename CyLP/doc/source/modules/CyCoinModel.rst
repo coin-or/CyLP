@@ -1,8 +1,8 @@
 ===========================
-:mod:`CyLP.cy.CyCoinModel`
+:mod:`cylp.cy.CyCoinModel`
 ===========================
 
-.. automodule:: CyLP.cy.CyCoinModel
+.. automodule:: cylp.cy.CyCoinModel
 
 .. autoclass:: CyCoinModel
    :members:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# CyLP Documentation documentation build configuration file, created by
+# cylp Documentation documentation build configuration file, created by
 # sphinx-quickstart on Fri Nov  4 15:54:47 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -49,7 +49,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'CyLP'
+project = u'cylp'
 copyright = u'2011, Mehdi Towhidi, Dominique Orban'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -173,7 +173,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'CyLPDocumentationdoc'
+htmlhelp_basename = 'cylpDocumentationdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -187,7 +187,7 @@ htmlhelp_basename = 'CyLPDocumentationdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'CyLPDocumentation.tex', u'CyLP Documentation Documentation',
+  ('index', 'cylpDocumentation.tex', u'cylp Documentation Documentation',
    u'Mehdi Towhidi', 'manual'),
 ]
 
@@ -220,7 +220,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'cylpdocumentation', u'CyLP Documentation Documentation',
+    ('index', 'cylpdocumentation', u'cylp Documentation Documentation',
      [u'Mehdi Towhidi'], 1)
 ]
 

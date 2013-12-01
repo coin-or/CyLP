@@ -1,11 +1,11 @@
 import numpy as np
 from operator import itemgetter
 from random import shuffle
-from CyLP.cy import CyCoinIndexedVector
+from cylp.cy import CyCoinIndexedVector
 import random
 from math import floor
-from CyLP.cy.CyClpSimplex import cydot
-from CyLP.py.pivots import PositiveEdgePivot
+from cylp.cy.CyClpSimplex import cydot
+from cylp.py.pivots import PositiveEdgePivot
 
 
 class PositiveEdgeWolfePivot(PositiveEdgePivot):

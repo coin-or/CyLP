@@ -1,8 +1,8 @@
 ===========================
-:mod:`CyLP.cy.CyClpSimplex`
+:mod:`cylp.cy.CyClpSimplex`
 ===========================
 
-.. automodule:: CyLP.cy.CyClpSimplex
+.. automodule:: cylp.cy.CyClpSimplex
 
 .. autoclass:: CyClpSimplex
    :members:

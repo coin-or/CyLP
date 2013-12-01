@@ -1,4 +1,4 @@
-from CyLP.cy.CyClpSimplex cimport CyClpSimplex, CppIClpSimplex
+from cylp.cy.CyClpSimplex cimport CyClpSimplex, CppIClpSimplex
 
 cdef extern from "ClpSimplex.hpp":
     cdef cppclass CppClpSimplex "ClpSimplex":

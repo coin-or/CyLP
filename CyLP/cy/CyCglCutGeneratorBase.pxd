@@ -1,10 +1,10 @@
 from cython.operator cimport dereference as deref
 cimport cpython.ref as cpy_ref
 from cpython.ref cimport PyObject
-from CyLP.cy cimport CyClpSimplex
-from CyLP.cy.CyOsiCuts cimport CppOsiCuts
-from CyLP.cy.CyOsiSolverInterface cimport CppOsiSolverInterface
-from CyLP.cy.CyCglTreeInfo cimport CppCglTreeInfo
+from cylp.cy cimport CyClpSimplex
+from cylp.cy.CyOsiCuts cimport CppOsiCuts
+from cylp.cy.CyOsiSolverInterface cimport CppOsiSolverInterface
+from cylp.cy.CyCglTreeInfo cimport CppCglTreeInfo
 from cpython cimport Py_INCREF, Py_DECREF
 
 #import numpy as np

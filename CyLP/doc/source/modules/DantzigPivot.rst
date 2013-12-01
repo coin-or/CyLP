@@ -2,7 +2,7 @@
 :class:`DantzigPivot`
 ------------------------
 
-.. automodule:: CyLP.py.pivots.DantzigPivot
+.. automodule:: cylp.py.pivots.DantzigPivot
 
 .. autoclass:: DantzigPivot
 

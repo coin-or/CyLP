@@ -3,8 +3,8 @@
 
 np.import_array()
 
-cimport CyLP.cy.CyClpDualRowPivotBase
-#from CyLP.cy import CyClpSimplex
+cimport cylp.cy.CyClpDualRowPivotBase
+#from cylp.cy import CyClpSimplex
 
 cdef int RunPivotRow(void *ptr):
     return (<CyClpDualRowPivotBase>(ptr)).pivotRow()

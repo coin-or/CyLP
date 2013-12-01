@@ -1,6 +1,6 @@
 from cpython.ref cimport PyObject
 cimport numpy as np
-from CyLP.cy.CyCoinPackedMatrix cimport CyCoinPackedMatrix, CppCoinPackedMatrix
+from cylp.cy.CyCoinPackedMatrix cimport CyCoinPackedMatrix, CppCoinPackedMatrix
 
 cdef extern from "ICoinMpsIO.hpp":
     cdef cppclass CppICoinMpsIO "ICoinMpsIO":

@@ -4,10 +4,10 @@ import os
 from os.path import join
 import numpy as np
 
-from CyLP.cy import CyClpSimplex
+from cylp.cy import CyClpSimplex
 
-from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
-from CyLP.py.utils.sparseUtil import csr_matrixPlus, csc_matrixPlus
+from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
+from cylp.py.utils.sparseUtil import csr_matrixPlus, csc_matrixPlus
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 

@@ -4,11 +4,11 @@ import os
 from os.path import join
 import numpy as np
 
-from CyLP.cy import CyClpSimplex
+from cylp.cy import CyClpSimplex
 
-from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
-from CyLP.py.mip import SimpleNodeCompare
-from CyLP.cy.CyCgl import CyCglGomory, CyCglClique, CyCglKnapsackCover
+from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
+from cylp.py.mip import SimpleNodeCompare
+from cylp.cy.CyCgl import CyCglGomory, CyCglClique, CyCglKnapsackCover
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 
@@ -127,8 +127,8 @@ class TestMIP(unittest.TestCase):
         self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
 
     def test_multiDim(self):
-        from CyLP.cy import CyClpSimplex
-        from CyLP.py.modeling.CyLPModel import CyLPArray
+        from cylp.cy import CyClpSimplex
+        from cylp.py.modeling.CyLPModel import CyLPArray
         s = CyClpSimplex()
         x = s.addVariable('x', (5, 3, 6))
         s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5.5
@@ -146,8 +146,8 @@ class TestMIP(unittest.TestCase):
         self.assertTrue(abs(sol_x[2, 0, 3] - 2) <= 10**-6)
 
     def test_multiDim_Cbc_solve(self):
-        from CyLP.cy import CyClpSimplex
-        from CyLP.py.modeling.CyLPModel import CyLPArray
+        from cylp.cy import CyClpSimplex
+        from cylp.py.modeling.CyLPModel import CyLPArray
         s = CyClpSimplex()
         x = s.addVariable('x', (5, 3, 6))
         s += 2 * x[2, :, 3].sum() + 3 * x[0, 1, :].sum() >= 5.5

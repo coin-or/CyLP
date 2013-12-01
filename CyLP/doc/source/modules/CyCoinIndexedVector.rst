@@ -1,8 +1,8 @@
 ===================================
-:mod:`CyLP.cy.CyCoinIndexedVector`
+:mod:`cylp.cy.CyCoinIndexedVector`
 ===================================
 
-.. automodule:: CyLP.cy.CyCoinIndexedVector
+.. automodule:: cylp.cy.CyCoinIndexedVector
 
 .. autoclass:: CyCoinIndexedVector
    :members:

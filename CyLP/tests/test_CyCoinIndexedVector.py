@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from CyLP.cy import CyCoinIndexedVector
+from cylp.cy import CyCoinIndexedVector
 
 class TestCyCoinIndexedVector(unittest.TestCase):
 

@@ -1,7 +1,7 @@
 from CyClpPrimalColumnPivotBase cimport *
 cimport cython.operator.dereference as deref
-from CyLP.cy.CyClpSimplex cimport CyClpSimplex, CppIClpSimplex
-from CyLP.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
+from cylp.cy.CyClpSimplex cimport CyClpSimplex, CppIClpSimplex
+from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
 from cpython cimport Py_INCREF, Py_DECREF
 
 cdef class CyPivotPythonBase(CyClpPrimalColumnPivotBase):

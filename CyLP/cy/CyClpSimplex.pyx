@@ -14,14 +14,14 @@ from CyWolfePivot cimport CyWolfePivot
 from CyPEPivot cimport CyPEPivot
 from CyPivotPythonBase cimport CyPivotPythonBase
 from CyDualPivotPythonBase cimport CyDualPivotPythonBase
-from CyLP.cy cimport CyClpSimplex
-from CyLP.cy cimport CyCoinModel
-from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
-from CyLP.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution
-from CyLP.py.pivots.PivotPythonBase import PivotPythonBase
-from CyLP.py.pivots.DualPivotPythonBase import DualPivotPythonBase
-from CyLP.py.modeling.CyLPModel import CyLPModel
-from CyLP.cy cimport CyCoinMpsIO
+from cylp.cy cimport CyClpSimplex
+from cylp.cy cimport CyCoinModel
+from cylp.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
+from cylp.py.modeling.CyLPModel import cylpVar, CyLPArray, cylpSolution
+from cylp.py.pivots.PivotPythonBase import PivotPythonBase
+from cylp.py.pivots.DualPivotPythonBase import DualPivotPythonBase
+from cylp.py.modeling.CyLPModel import CyLPModel
+from cylp.cy cimport CyCoinMpsIO
 
 problemStatus = ['optimal', 'primal infeasible', 'dual infeasible',
                 'stopped on iterations or time',
@@ -45,16 +45,16 @@ cdef class CyClpSimplex:
     Not all methods are available but they are being added gradually.
 
     Its constructor can create an empty object if no argument is provided.
-    However, if a :class:`CyLPModel <CyLP.py.modeling.CyLPModel>` object is
+    However, if a :class:`CyLPModel <cylp.py.modeling.CyLPModel>` object is
     given then the resulting ``CyClpSimplex`` object will be build from it.
     For an example of the latter case see
-    :mod:`CyLP's modeling tool. <CyLP.py.modeling.CyLPModel>`
+    :mod:`cylp's modeling tool. <cylp.py.modeling.CyLPModel>`
 
     .. _simple-run:
 
     **An easy example of how to read and solve an LP**
 
-    >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getMpsExample
+    >>> from cylp.cy.CyClpSimplex import CyClpSimplex, getMpsExample
     >>> s = CyClpSimplex()
     >>> f = getMpsExample()
     >>> s.readMps(f)
@@ -78,7 +78,7 @@ cdef class CyClpSimplex:
                 self.loadFromCyLPModel(cyLPModel)
             else:
                 raise TypeError('Expected a CyLPModel as an argument to ' \
-                                'CyLPSimplex constructor. Got %s' %
+                                'cylpSimplex constructor. Got %s' %
                                 cyLPModel.__class__)
 
     #def __dealloc__(self):
@@ -150,7 +150,7 @@ cdef class CyClpSimplex:
                 #       self.cyLPModel.objective.astype(np.double))
             else:
                 raise Exception('To set the objective function of ' \
-                                'CyClpSimplex set CyLPSimplex.cyLPModel ' \
+                                'CyClpSimplex set cylpSimplex.cyLPModel ' \
                                 'first.')
         def __get__(self):
             return <object>self.CppSelf.getObjective()
@@ -272,7 +272,7 @@ cdef class CyClpSimplex:
                     d[v] = ret[inds.varIndex[v]]
                     var = m.getVarByName(v)
                     if var.dims:
-                        d[v] = CyLPSolution()
+                        d[v] = cylpSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]]
@@ -280,7 +280,7 @@ cdef class CyClpSimplex:
             else:
                 names = self.variableNames
                 if names:
-                    d = CyLPSolution()
+                    d = cylpSolution()
                     for i in range(len(names)):
                         d[names[i]] = ret[i]
                     ret = d
@@ -335,7 +335,7 @@ cdef class CyClpSimplex:
                     d[v] = ret[inds.varIndex[v]]
                     var = m.getVarByName(v)
                     if var.dims:
-                        d[v] = CyLPSolution()
+                        d[v] = cylpSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]]
@@ -343,7 +343,7 @@ cdef class CyClpSimplex:
             else:
                 names = self.variableNames
                 if names:
-                    d = CyLPSolution()
+                    d = cylpSolution()
                     for i in range(len(names)):
                         d[names[i]] = ret[i]
                     ret = d
@@ -368,7 +368,7 @@ cdef class CyClpSimplex:
                 pass
                 #names = self.variableNames
                 #if names:
-                #    d = CyLPSolution()
+                #    d = cylpSolution()
                 #    for i in range(len(names)):
                 #        d[names[i]] = ret[i]
                 #    ret = d
@@ -394,7 +394,7 @@ cdef class CyClpSimplex:
                 pass
                 #names = self.variableNames
                 #if names:
-                #    d = CyLPSolution()
+                #    d = cylpSolution()
                 #    for i in range(len(names)):
                 #        d[names[i]] = ret[i]
                 #    ret = d
@@ -733,7 +733,7 @@ cdef class CyClpSimplex:
     def useCustomPrimal(self, customPrimal):
         '''
         Determines if
-        :func:`CyLP.python.pivot.PivotPythonBase.isPivotAcceptable`
+        :func:`cylp.python.pivot.PivotPythonBase.isPivotAcceptable`
         should be called just before each pivot is performed (right after the
         entering and leaving variables are obtained.
         '''
@@ -901,18 +901,18 @@ cdef class CyClpSimplex:
         '''
         Set the status of a variable.
 
-        :arg arg: Specifies the variable to change (a CyLPVar, or an index)
-        :type status: CyLPVar, int
+        :arg arg: Specifies the variable to change (a cylpVar, or an index)
+        :type status: cylpVar, int
         :arg status: 'basic', 'atUpperBound', 'atLowerBound', 'superBasic', 'fixed'
         :type status: string
 
 
         Example:
 
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex
         >>> s = CyClpSimplex()
         >>> x = s.addVariable('x', 4)
-        >>> # Using CyLPVars:
+        >>> # Using cylpVars:
         >>> s.setVariableStatus(x[1:3], 'basic')
         >>> s.getVariableStatus(x[1])
         'basic'
@@ -925,10 +925,10 @@ cdef class CyClpSimplex:
         status = CLP_variableStatusEnum[StatusToInt[status]]
         if isinstance(arg, (int, long)):
             self.CppSelf.setStatus(arg, status)
-        elif True:  # isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, cylpVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setVarStatus can be ' \
-                                'a CyLPVar only if the object is built ' \
+                                'a cylpVar only if the object is built ' \
                                 'using a CyLPModel.')
             var = arg
             model = self.cyLPModel
@@ -950,10 +950,10 @@ cdef class CyClpSimplex:
         '''
         if isinstance(arg, (int, long)):
             return IntToStatus[self.CppSelf.getStatus(arg)]
-        elif True:  # isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, cylpVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of getVarStatus can be ' \
-                                'a CyLPVar only if the object is built ' \
+                                'a cylpVar only if the object is built ' \
                                 'using a CyLPModel.')
             var = arg
             model = self.cyLPModel
@@ -983,7 +983,7 @@ cdef class CyClpSimplex:
         :arg status: 'basic', 'atUpperBound', 'atLowerBound', 'superBasic', 'fixed'
         :type status: string
 
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex
         >>> s = CyClpSimplex()
         >>> x = s.addVariable('x', 4)
         >>> s.addConstraint(0 <= x[0] + x[1] <= 1, 'const1')
@@ -1000,10 +1000,10 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             arg += self.nVariables
             self.CppSelf.setStatus(arg, status)
-        elif True:  # isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, cylpVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setVarStatus can be ' \
-                                'a CyLPVar only if the object is built ' \
+                                'a cylpVar only if the object is built ' \
                                 'using a CyLPModel.')
             model = self.cyLPModel
             inds = model.inds
@@ -1022,10 +1022,10 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             arg += self.nVariables
             return IntToStatus[self.CppSelf.getStatus(arg)]
-        elif True:  # isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, cylpVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setVarStatus can be ' \
-                                'a CyLPVar only if the object is built ' \
+                                'a cylpVar only if the object is built ' \
                                 'using a CyLPModel.')
             model = self.cyLPModel
             inds = model.inds
@@ -1080,7 +1080,7 @@ cdef class CyClpSimplex:
 
         **Usage example**
 
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getMpsExample
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex, getMpsExample
         >>> s = CyClpSimplex()
         >>> f = getMpsExample()
         >>> s.readMps(f)
@@ -1100,7 +1100,7 @@ cdef class CyClpSimplex:
 
         **Usage example**
 
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getMpsExample
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex, getMpsExample
         >>> s = CyClpSimplex()
         >>> f = getMpsExample()
         >>> s.readMps(f)
@@ -1120,7 +1120,7 @@ cdef class CyClpSimplex:
 
         **Usage example**
 
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getMpsExample
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex, getMpsExample
         >>> s = CyClpSimplex()
         >>> f = getMpsExample()
         >>> s.readMps(f)
@@ -1183,7 +1183,7 @@ cdef class CyClpSimplex:
                         mainCoef.indices, mainCoef.data)
         else:
             raise Exception('To add a constraint you must set ' \
-                            'CyLPSimplex.cyLPModel first.')
+                            'cylpSimplex.cyLPModel first.')
 
     def removeConstraint(self, name):
         '''
@@ -1195,7 +1195,7 @@ cdef class CyClpSimplex:
             #self.loadFromCyLPModel(self.cyLPModel)
         else:
             raise Exception('To remove a constraint you must set ' \
-                            'CyLPSimplex.cyLPModel first.')
+                            'cylpSimplex.cyLPModel first.')
 
     def addVariable(self, varname, dim, isInt=False):
         '''
@@ -1208,7 +1208,7 @@ cdef class CyClpSimplex:
         return var
         #else:
         #    raise Exception('To add a variable you must set ' \
-        #                    'CyLPSimplex.cyLPModel first.')
+        #                    'cylpSimplex.cyLPModel first.')
 
     def removeVariable(self, name):
         '''
@@ -1219,16 +1219,16 @@ cdef class CyClpSimplex:
             self.loadFromCyLPModel(self.cyLPModel)
         else:
             raise Exception('To remove a variable you must set ' \
-                            'CyLPSimplex.cyLPModel first.')
+                            'cylpSimplex.cyLPModel first.')
 
     def getVarByName(self, name):
         if not self.cyLPModel:
-            raise Exception('No CyLPSimplex.cyLPModel is set.')
+            raise Exception('No cylpSimplex.cyLPModel is set.')
         return self.cyLPModel.getVarByName(name)
 
     def getVarNameByIndex(self, ind):
         if not self.cyLPModel:
-            raise Exception('No CyLPSimplex.cyLPModel is set.')
+            raise Exception('No cylpSimplex.cyLPModel is set.')
         return self.cyLPModel.inds.reverseVarSearch(ind)
 
     def CLP_addConstraint(self, numberInRow,
@@ -1238,8 +1238,8 @@ cdef class CyClpSimplex:
                     rowUpper):
         '''
         Add a constraint to the problem, CLP style. See CLP documentation.
-        Not commonly used in CyLP.
-        For CyLP modeling tool see :mod:`CyLP.python.modeling.CyLPModel`.
+        Not commonly used in cylp.
+        For cylp modeling tool see :mod:`cylp.python.modeling.CyLPModel`.
         '''
         # TODO: This makes adding a row real slower,
         # but it is better than a COIN EXCEPTION!
@@ -1278,7 +1278,7 @@ cdef class CyClpSimplex:
                         objective):
         '''
         Add a variable to the problem, CLP style. See CLP documentation.
-        For CyLP modeling tool see :mod:`CyLP.python.modeling.CyLPModel`.
+        For cylp modeling tool see :mod:`cylp.python.modeling.CyLPModel`.
         '''
         # TODO: This makes adding a column real slower,
         # but it is better than a COIN EXCEPTION!
@@ -1299,7 +1299,7 @@ cdef class CyClpSimplex:
                         np.ndarray[np.double_t, ndim=1] elements):
         '''
         Add ``number`` variables at once, CLP style.
-        For CyLP modeling tool see :mod:`CyLP.python.modeling.CyLPModel`.
+        For cylp modeling tool see :mod:`cylp.python.modeling.CyLPModel`.
         '''
         self.CppSelf.addColumns(number, <double*>columnLower.data,
                                         <double*>columnUpper.data,
@@ -1316,7 +1316,7 @@ cdef class CyClpSimplex:
                         np.ndarray[np.double_t, ndim=1] elements):
         '''
         Add ``number`` constraints at once, CLP style.
-        For CyLP modeling tool see :mod:`CyLP.python.modeling.CyLPModel`.
+        For cylp modeling tool see :mod:`cylp.python.modeling.CyLPModel`.
         '''
         self.CppSelf.addRows(number, <double*>rowLower.data,
                                     <double*>rowUpper.data,
@@ -1411,7 +1411,7 @@ cdef class CyClpSimplex:
 
         **Usage Example**
 
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getMpsExample
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex, getMpsExample
         >>> s = CyClpSimplex()
         >>> f = getMpsExample()
         >>> s.readMps(f)
@@ -1506,12 +1506,12 @@ cdef class CyClpSimplex:
     def setInteger(self, arg):
         '''
         if ``arg`` is an integer: mark variable index ``arg`` as integer.
-        if ``arg`` is a :class:`CyLPVar` object: mark variable
+        if ``arg`` is a :class:`cylpVar` object: mark variable
         ``arg`` as integer. Here is an example of the latter:
 
         >>> import numpy as np
-        >>> from CyLP.cy import CyClpSimplex
-        >>> from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
+        >>> from cylp.cy import CyClpSimplex
+        >>> from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
         >>> model = CyLPModel()
         >>>
         >>> x = model.addVariable('x', 3)
@@ -1553,10 +1553,10 @@ cdef class CyClpSimplex:
 
         if isinstance(arg, (int, long)):
             self.CppSelf.setInteger(arg)
-        elif True:  # isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, cylpVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setInteger can be ' \
-                                'a CyLPVar only if the object is built ' \
+                                'a cylpVar only if the object is built ' \
                                 'using a CyLPModel.')
             var = arg
             model = self.cyLPModel
@@ -1645,7 +1645,7 @@ cdef class CyClpSimplex:
         for example:
 
         >>> import numpy as np
-        >>> from CyLP.cy.CyClpSimplex import CyClpSimplex, getModelExample
+        >>> from cylp.cy.CyClpSimplex import CyClpSimplex, getModelExample
         >>>
         >>> s = CyClpSimplex()
         >>> model = getModelExample()
@@ -1724,7 +1724,7 @@ cdef class CyClpSimplex:
         return cm
 
     #############################################
-    # CyLP and Pivoting
+    # cylp and Pivoting
     #############################################
 
     def isPivotAcceptable(self):
@@ -1847,15 +1847,15 @@ cdef class CyClpSimplex:
     def setComplement(self, var1, var2):
         '''
         Set ``var1`` as the complementary variable of ``var2``. These
-        arguments may be integers signifying indices, or CyLPVars.
+        arguments may be integers signifying indices, or cylpVars.
         '''
 
         if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
            self.CppSelf.setComplement(var1, var2)
-        elif True:  # isinstance(arg, CyLPVar):
+        elif True:  # isinstance(arg, cylpVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setInteger can be ' \
-                                'a CyLPVar only if the object is built ' \
+                                'a cylpVar only if the object is built ' \
                                 'using a CyLPModel.')
             if var1.dim != var2.dim:
                 raise Exception('Variables should have the same  ' \
@@ -1935,8 +1935,8 @@ def getModelExample():
     Return a model example to be used in doctests.
     '''
     import numpy as np
-    from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
-    from CyLP.cy import CyClpSimplex
+    from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
+    from cylp.cy import CyClpSimplex
 
     model = CyLPModel()
     x = model.addVariable('x', 3)

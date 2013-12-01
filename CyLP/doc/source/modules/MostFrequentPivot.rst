@@ -2,7 +2,7 @@
 :class:`MostFrequentPivot`
 ----------------------------
 
-.. automodule:: CyLP.py.pivots.MostFrequentPivot
+.. automodule:: cylp.py.pivots.MostFrequentPivot
 
 .. autoclass:: MostFrequentPivot
 

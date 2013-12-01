@@ -1,9 +1,9 @@
 import numpy as np
 from scipy import sparse
-from CyLP.cy import CyClpSimplex
-from CyLP.py.utils.sparseUtil import csr_matrixPlus
-from CyLP.py.modeling.CyLPModel import CyLPArray
-from CyLP.py.QP.QP import QP
+from cylp.cy import CyClpSimplex
+from cylp.py.utils.sparseUtil import csr_matrixPlus
+from cylp.py.modeling.CyLPModel import CyLPArray
+from cylp.py.QP.QP import QP
 
 class setCover:
     def __init__(self):

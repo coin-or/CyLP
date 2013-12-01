@@ -2,9 +2,9 @@ import inspect
 import os
 import unittest
 import numpy as np
-from CyLP.cy import CyClpSimplex
-from CyLP.py.utils.sparseUtil import csr_matrixPlus
-from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray, getCoinInfinity
+from cylp.cy import CyClpSimplex
+from cylp.py.utils.sparseUtil import csr_matrixPlus
+from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray, getCoinInfinity
 
 inf = getCoinInfinity()
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))

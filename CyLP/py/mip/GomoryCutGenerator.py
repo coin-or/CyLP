@@ -1,9 +1,9 @@
 import os
 import math
 import numpy as np
-from CyLP.cy import CyClpSimplex
-from CyLP.py.modeling import CyLPArray, CyLPModel
-from CyLP.py.modeling.CyLPModel import getCoinInfinity
+from cylp.cy import CyClpSimplex
+from cylp.py.modeling import CyLPArray, CyLPModel
+from cylp.py.modeling.CyLPModel import getCoinInfinity
 
 epsilon = 0.01
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     else:
         s = CyClpSimplex()
         cylpDir = os.environ['CYLP_SOURCE_DIR']
-        inputFile = os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+        inputFile = os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
         m = s.extractCyLPModel(inputFile)
         x = m.getVarByName('x')
         s.setInteger(x)

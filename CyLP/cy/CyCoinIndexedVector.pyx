@@ -7,7 +7,7 @@ cdef class CyCoinIndexedVector:
 
     **Usage**
 
-    >>> from CyLP.cy import CyCoinIndexedVector
+    >>> from cylp.cy import CyCoinIndexedVector
     >>> vector = CyCoinIndexedVector()
     >>> vector.reserve(5)
     >>> vector[3] = 4

@@ -1,8 +1,8 @@
 # cython: profile=True
 # cython: embedsignature=True
 
-cimport CyLP.cy.CyClpPrimalColumnPivotBase
-#from CyLP.cy import CyClpSimplex
+cimport cylp.cy.CyClpPrimalColumnPivotBase
+#from cylp.cy import CyClpSimplex
 
 cdef int RunPivotColumn(void *ptr, CppCoinIndexedVector* v1,
                         CppCoinIndexedVector* v2,

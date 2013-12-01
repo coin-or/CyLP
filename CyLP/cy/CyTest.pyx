@@ -1,8 +1,8 @@
 import sys
 from time import clock
-from CyLP.cy.CyClpSimplex cimport CyClpSimplex
-from CyLP.cy.CyDantzigPivot cimport CyDantzigPivot
-from CyLP.cy.CyPEPivot cimport CyPEPivot
+from cylp.cy.CyClpSimplex cimport CyClpSimplex
+from cylp.cy.CyDantzigPivot cimport CyDantzigPivot
+from cylp.cy.CyPEPivot cimport CyPEPivot
 
 
 def CySolve(fileName, method):

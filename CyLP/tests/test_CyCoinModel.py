@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from CyLP.cy import CyCoinModel, CyClpSimplex
+from cylp.cy import CyCoinModel, CyClpSimplex
 
 class TestCyCoinModel(unittest.TestCase):
 

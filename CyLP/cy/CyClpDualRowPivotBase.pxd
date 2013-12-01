@@ -1,8 +1,8 @@
 from cython.operator cimport dereference as deref
 cimport cpython.ref as cpy_ref
 from cpython.ref cimport PyObject
-from CyLP.cy cimport CyClpSimplex
-from CyLP.cy.CyCoinIndexedVector cimport CppCoinIndexedVector
+from cylp.cy cimport CyClpSimplex
+from cylp.cy.CyCoinIndexedVector cimport CppCoinIndexedVector
 import numpy as np
 cimport numpy as np
 

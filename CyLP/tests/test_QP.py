@@ -4,8 +4,8 @@ import os
 from os.path import join
 import numpy as np
 
-from CyLP.cy import CyClpSimplex
-from CyLP.py.pivots import WolfePivot 
+from cylp.cy import CyClpSimplex
+from cylp.py.pivots import WolfePivot 
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 

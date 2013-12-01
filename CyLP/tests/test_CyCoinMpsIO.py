@@ -4,8 +4,8 @@ import os
 from os.path import join
 import numpy as np
 
-from CyLP.cy import CyCoinMpsIO
-from CyLP.cy.CyCoinMpsIO import getQpsExample
+from cylp.cy import CyCoinMpsIO
+from cylp.cy.CyCoinMpsIO import getQpsExample
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 

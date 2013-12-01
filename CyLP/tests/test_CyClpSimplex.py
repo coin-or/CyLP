@@ -4,12 +4,12 @@ import os
 from os.path import join
 import numpy as np
 
-from CyLP.cy import CyClpSimplex
+from cylp.cy import CyClpSimplex
 
-from CyLP.py.pivots import PositiveEdgePivot
-from CyLP.py.pivots import LIFOPivot
-from CyLP.py.pivots import MostFrequentPivot
-from CyLP.py.pivots import DantzigPivot
+from cylp.py.pivots import PositiveEdgePivot
+from cylp.py.pivots import LIFOPivot
+from cylp.py.pivots import MostFrequentPivot
+from cylp.py.pivots import DantzigPivot
 
 currentFilePath = os.path.dirname(inspect.getfile(inspect.currentframe()))
 

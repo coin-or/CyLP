@@ -1,8 +1,8 @@
 from itertools import izip
 import random
 import numpy as np
-from CyLP.cy import CyCoinIndexedVector
-from CyLP.cy.CyClpSimplex import cydot
+from cylp.cy import CyCoinIndexedVector
+from cylp.cy.CyClpSimplex import cydot
 from PivotPythonBase import PivotPythonBase
 
 

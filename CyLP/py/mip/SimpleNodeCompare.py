@@ -1,4 +1,4 @@
-from CyLP.py.mip import NodeCompareBase
+from cylp.py.mip import NodeCompareBase
 
 class SimpleNodeCompare(NodeCompareBase):
 

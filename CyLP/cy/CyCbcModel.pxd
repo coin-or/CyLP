@@ -1,8 +1,8 @@
 cimport numpy as np
 from cpython.ref cimport PyObject
-from CyLP.cy.CyCgl cimport CyCglCutGenerator, CppCglCutGenerator
-from CyLP.cy.CyCbcNode cimport CyCbcNode, CppICbcNode
-from CyLP.cy.CyOsiSolverInterface cimport CppOsiSolverInterface, CyOsiSolverInterface
+from cylp.cy.CyCgl cimport CyCglCutGenerator, CppCglCutGenerator
+from cylp.cy.CyCbcNode cimport CyCbcNode, CppICbcNode
+from cylp.cy.CyOsiSolverInterface cimport CppOsiSolverInterface, CyOsiSolverInterface
 from cpython cimport Py_INCREF, Py_DECREF
 
 

@@ -1,5 +1,5 @@
 '''
-As a part of ``CyLP.python.pivots`` it implements Dantzig's
+As a part of ``cylp.python.pivots`` it implements Dantzig's
  Simplex dual pivot rule. Although it already exists in CLP,
 for testing purposes we implement one in Python.
 '''
@@ -10,7 +10,7 @@ from operator import itemgetter
 from random import shuffle
 from math import floor
 from DualPivotPythonBase import DualPivotPythonBase
-#from CyLP.py.pivots import DantzigPivot
+#from cylp.py.pivots import DantzigPivot
 
 
 class DualDantzigPivot(DualPivotPythonBase):
@@ -21,9 +21,9 @@ class DualDantzigPivot(DualPivotPythonBase):
 
     **Usage**
 
-    >>> from CyLP.cy import CyClpSimplex
-    >>> from CyLP.py.pivots.DualDantzigPivot import DualDantzigPivot
-    >>> from CyLP.py.pivots.DualDantzigPivot import getMpsExample
+    >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.py.pivots.DualDantzigPivot import DualDantzigPivot
+    >>> from cylp.py.pivots.DualDantzigPivot import getMpsExample
     >>> # Get the path to a sample mps file
     >>> f = getMpsExample()
     >>> s = CyClpSimplex()
@@ -103,7 +103,7 @@ def getMpsExample():
     import inspect
     import sys
     cylpDir = os.environ['CYLP_SOURCE_DIR']
-    return os.path.join(cylpDir, 'CyLP', 'input', 'p0033.mps')
+    return os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
 
 
 if __name__ == "__main__":
@@ -112,8 +112,8 @@ if __name__ == "__main__":
         import doctest
         doctest.testmod()
     else:
-        from CyLP.cy import CyClpSimplex
-        from CyLP.py.pivots import DualDantzigPivot
+        from cylp.cy import CyClpSimplex
+        from cylp.py.pivots import DualDantzigPivot
         s = CyClpSimplex()
         s.readMps(sys.argv[1])  # Returns 0 if OK
         pivot = DualDantzigPivot(s)

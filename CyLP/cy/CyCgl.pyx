@@ -1,4 +1,4 @@
-#from CyLP.cy cimport CyCgl
+#from cylp.cy cimport CyCgl
 
 
 cdef class CyCglCutGenerator:

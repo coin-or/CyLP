@@ -1,9 +1,9 @@
 # cython: embedsignature=True
 
 from itertools import izip, product
-from CyLP.py.mip import NodeCompareBase
-from CyLP.py.modeling.CyLPModel import CyLPSolution
-from CyLP.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
+from cylp.py.mip import NodeCompareBase
+from cylp.py.modeling.CyLPModel import cylpSolution
+from cylp.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
 from libcpp cimport bool
 
 
@@ -34,18 +34,18 @@ problemStatus =  ['solution', 'relaxation infeasible',
 cdef class CyCbcModel:
     '''
     Interfaces ``CbcModel``. To solve a first you create a
-    :class:`CyLP.cy.CyClpSimplex` object either
+    :class:`cylp.cy.CyClpSimplex` object either
     by reading it from an ``mps`` file using
-    :func:`CyClpSimplex.readMps() <CyLP.cy.CyClpSimplex.CyClpSimplex.readMps>`
-    or by using CyLP modeling tool
-    :mod:`CyLP.py.modeling.CyLPModel`. Then you ask the object for a
+    :func:`CyClpSimplex.readMps() <cylp.cy.CyClpSimplex.CyClpSimplex.readMps>`
+    or by using cylp modeling tool
+    :mod:`cylp.py.modeling.CyLPModel`. Then you ask the object for a
     ``CyCbcModel`` which is capable solving MIPs using B&B
 
     **Usage**
 
     >>> import numpy as np
-    >>> from CyLP.cy import CyCbcModel, CyClpSimplex
-    >>> from CyLP.py.modeling.CyLPModel import CyLPModel, CyLPArray
+    >>> from cylp.cy import CyCbcModel, CyClpSimplex
+    >>> from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
     >>> model = CyLPModel()
     >>>
     >>> x = model.addVariable('x', 3, isInt=True)
@@ -184,7 +184,7 @@ cdef class CyCbcModel:
                     d[v] = ret[inds.varIndex[v]]
                     var = m.getVarByName(v)
                     if var.dims:
-                        d[v] = CyLPSolution()
+                        d[v] = cylpSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]]
@@ -192,7 +192,7 @@ cdef class CyCbcModel:
             else:
                 names = self.clpModel.variableNames
                 if names:
-                    d = CyLPSolution()
+                    d = cylpSolution()
                     for i in range(len(names)):
                         d[names[i]] = ret[i]
                     ret = d

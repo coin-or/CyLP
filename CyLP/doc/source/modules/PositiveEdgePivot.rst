@@ -2,7 +2,7 @@
 :class:`PositiveEdgePivot`
 ----------------------------
 
-.. automodule:: CyLP.py.pivots.PositiveEdgePivot
+.. automodule:: cylp.py.pivots.PositiveEdgePivot
 
 .. autoclass:: PositiveEdgePivot 
 

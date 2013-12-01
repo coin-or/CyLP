@@ -22,8 +22,8 @@ class csc_matrixPlus(sparse.csc_matrix):
         sparse.csc_matrix.__init__(self, arg1, shape, dtype, copy)
         if fromMatrix:
             self.__dict__.update(fromMatrix.__dict__)
-        from CyLP.py.modeling import CyLPExpr as CyLPExpr 
-        self.CyLPExpr = CyLPExpr
+        from cylp.py.modeling import cylpExpr as cylpExpr 
+        self.cylpExpr = cylpExpr
 
     def __setitem__(self, (iRow, iCol), val):
         '''
@@ -32,7 +32,7 @@ class csc_matrixPlus(sparse.csc_matrix):
 
         **Usage**
 
-        >>> from CyLP.py.utils.sparseUtil import csc_matrixPlus
+        >>> from cylp.py.utils.sparseUtil import csc_matrixPlus
         >>> import numpy as np
         >>> indptr = np.array([0, 2, 3, 6])
         >>> indices = np.array([0, 2, 2, 0, 1, 2])
@@ -92,7 +92,7 @@ class csc_matrixPlus(sparse.csc_matrix):
 
         **Usage**
 
-        >>> from CyLP.py.utils.sparseUtil import csc_matrixPlus
+        >>> from cylp.py.utils.sparseUtil import csc_matrixPlus
         >>> s = csc_matrixPlus.getMatrixForTest()
         >>> s.shape
         (3, 3)
@@ -118,48 +118,48 @@ class csc_matrixPlus(sparse.csc_matrix):
         return csr_matrixPlus(sparse.csc_matrix.transpose(self))
     
     def __le__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__le__(self, other)
 
     def __ge__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__ge__(self, other)
 
     def __mul__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__mul__(self, other)
 
     def __rmul__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__rmul__(self, other)
 
     def __add__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__add__(self, other)
 
     def __radd__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__radd__(self, other)
 
     def __rsub__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__rsub__(self, other)
 
     def __sub__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csc_matrix.__sub__(self, other)
 
     @staticmethod
     def getMatrixForTest():
-        from CyLP.py.utils.sparseUtil import csr_matrixPlus
+        from cylp.py.utils.sparseUtil import csr_matrixPlus
         import numpy as np
         indptr = np.array([0, 2, 3, 6])
         indices = np.array([0, 2, 2, 0, 1, 2])
@@ -174,8 +174,8 @@ class csr_matrixPlus(sparse.csr_matrix):
         sparse.csr_matrix.__init__(self, arg1, shape, dtype, copy)
         if fromMatrix:
             self.__dict__.update(fromMatrix.__dict__)
-        from CyLP.py.modeling import CyLPExpr as CyLPExpr 
-        self.CyLPExpr = CyLPExpr
+        from cylp.py.modeling import cylpExpr as cylpExpr 
+        self.cylpExpr = cylpExpr
 
     def __setitem__(self, (iRow, iCol), val):
         '''
@@ -184,7 +184,7 @@ class csr_matrixPlus(sparse.csr_matrix):
 
         **Usage**
 
-        >>> from CyLP.py.utils.sparseUtil import csr_matrixPlus
+        >>> from cylp.py.utils.sparseUtil import csr_matrixPlus
         >>> import numpy as np
         >>> indptr = np.array([0, 2, 3, 6])
         >>> indices = np.array([0, 2, 2, 0, 1, 2])
@@ -271,7 +271,7 @@ class csr_matrixPlus(sparse.csr_matrix):
 
         **Usage**
 
-        >>> from CyLP.py.utils.sparseUtil import csr_matrixPlus
+        >>> from cylp.py.utils.sparseUtil import csr_matrixPlus
         >>> s = csr_matrixPlus.getMatrixForTest()
         >>> s.shape
         (3, 3)
@@ -297,48 +297,48 @@ class csr_matrixPlus(sparse.csr_matrix):
         return csc_matrixPlus(sparse.csr_matrix.transpose(self))
     
     def __le__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__le__(self, other)
 
     def __ge__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__ge__(self, other)
 
     def __mul__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__mul__(self, other)
 
     def __rmul__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__rmul__(self, other)
 
     def __add__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__add__(self, other)
 
     def __radd__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__radd__(self, other)
 
     def __rsub__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__rsub__(self, other)
 
     def __sub__(self, other):
-        if isinstance(other, self.CyLPExpr):
+        if isinstance(other, self.cylpExpr):
             return NotImplemented
         return sparse.csr_matrix.__sub__(self, other)
 
     @staticmethod
     def getMatrixForTest():
-        from CyLP.py.utils.sparseUtil import csr_matrixPlus
+        from cylp.py.utils.sparseUtil import csr_matrixPlus
         import numpy as np
         indptr = np.array([0, 2, 3, 6])
         indices = np.array([0, 2, 2, 0, 1, 2])
@@ -360,7 +360,7 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
     **Usage**
 
     >>> from scipy import sparse
-    >>> from CyLP.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
+    >>> from cylp.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
     >>> s1 = csc_matrixPlus.getMatrixForTest()
     >>> s2 = sparse.lil_matrix([[1,0,2],[0,5,0]])
     >>> sparseConcat(s1, s2, 'v').todense()
