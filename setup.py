@@ -15,7 +15,7 @@ from distutils.extension import Extension
 
 
 PROJECT = 'cylp'
-VERSION = '0.2.2'
+VERSION = '0.2.3'
 URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
 DESC = 'A Python interface for CLP, CBC, and CGL'
