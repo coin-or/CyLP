@@ -6,27 +6,41 @@ It affects the package name ONLY and a simple replace can make your program
 work with the new settings.
 Thank you for your understanding.
 
-What is cylp?
+
+What is CyLP?
 ==============
-cylp is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
-(CLP, CBC, and CGL). cylp’s unique feature is that you can use it to alter the
+CyLP is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
+(CLP, CBC, and CGL). CyLP’s unique feature is that you can use it to alter the
 solution process of the solvers from within Python. For example, you may
 define cut generators, branch-and-bound strategies, and primal/dual Simplex
 pivot rules completely in Python.
 
-You may read your LP from an mps file or use the cylp’s easy modeling
+You may read your LP from an mps file or use the CyLP’s easy modeling
 facility. Please find examples in the `documentation
 <http://mpy.github.io/cylpdoc/>`_.
 
 .. note::
 
-   cylp interfaces a limited number of functionalities of
+   CyLP interfaces a limited number of functionalities of
    COIN-OR’s solvers. If there is any particular
    class or method in CLP, CBC, and CGL that you would like to use in Python
    please don't hesitate to let us know; we will try to make the connections.
    Moreover, in the case that you find a bug or a mistake, we would appreciate
    it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca.
 
+
+Who uses CyLP
+==============
+CyLP is being used in a wide range of practical and research fields. Some of the users include:
+
+#. PyArt, The Python ARM Radar Toolkit, used by Atmospheric Radiation Measurement
+   (U.S. Department of energy). https://github.com/ARM-DOE/pyart
+#. Meteorological Institute University of Bonn.
+#. Sherbrooke university hospital (Centre hospitalier universitaire de Sherbrooke): CyLP is used for nurse scheduling.
+#. Maisonneuve-Rosemont hospital (L'hôpital HMR): CyLP is used for  physician scheduling with preferences.
+#. Lehigh University: CyLP is used to teach mixed-integer cuts.
+#. IBM T. J. Watson research center
+#. Saarland University, Germany
 
 
 
@@ -35,7 +49,7 @@ Installation
 
 STEP 1:
     Install CBC (http://www.coin-or.org/download/source/Cbc/).
-    cylp can be compiled against
+    CyLP can be compiled against
     Cbc version 2.8.5. Please go to the installation directory and run::
 
         $ ./configure
@@ -52,7 +66,7 @@ You may also add this line to your ~/.bash_rc or ~/.profile to make
 it persistent.
 
 STEP 3:
-    Install cylp. Go to cylp's root directory and run::
+    Install CyLP. Go to CyLP's root directory and run::
 
         $ python setup.py install
 
@@ -68,7 +82,7 @@ Optional step:
 
         $ export CYLP_SOURCE_DIR=/Path/to/cylp
 
-Now you can use cylp in your python code. For example::
+Now you can use CyLP in your python code. For example::
 
     >>> from cylp.cy import CyClpSimplex
     >>> s = CyClpSimplex()
@@ -79,18 +93,18 @@ Now you can use cylp in your python code. For example::
     >>> round(s.objectiveValue, 3)
     225494.963
 
-Or simply go to cylp and run::
+Or simply go to CyLP and run::
 
     $ python -m unittest discover
 
-to run all cylp unit tests.
+to run all CyLP unit tests.
 
 
 
 Modeling Example
 ==================
 
-Here is an example of how to model with cylp's modeling facility::
+Here is an example of how to model with CyLP's modeling facility::
 
     import numpy as np
     from cylp.cy import CyClpSimplex
@@ -128,11 +142,11 @@ Here is an example of how to model with cylp's modeling facility::
 
 Documentation
 ===============
-You may access cylp's documentation:
+You may access CyLP's documentation:
 
 1. *Online* : Please visit http://mpy.github.io/cylpdoc/
 
-2. *Offline* : To install cylp's documentation in your repository, you need
+2. *Offline* : To install CyLP's documentation in your repository, you need
    Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by
    going to cylp/doc and run ``make html`` or ``make latex`` and access the
    documentation under cylp/doc/build. You can also run ``make doctest`` to
