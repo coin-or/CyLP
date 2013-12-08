@@ -482,6 +482,22 @@ PyObject* IClpSimplex::getColUpper(){
     return Arr;
 }
 
+PyObject* IClpSimplex::getColumnScale(){
+
+    npy_intp dims = getNumCols();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE,  columnScale_);
+    return Arr;
+}
+
+PyObject* IClpSimplex::getRowScale(){
+
+    npy_intp dims = getNumRows();
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, rowScale_ );
+    return Arr;
+}
+
+
+
 PyObject* IClpSimplex::getIntegerInformation(){
     npy_intp dims = getNumCols();
     PyObject* Arr;

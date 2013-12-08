@@ -469,6 +469,24 @@ cdef class CyClpSimplex:
         def __get__(self):
             return <object>self.CppSelf.getUpper()
 
+    property variableScale:
+        '''
+        Array of variables' scale factors
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getColumnScale()
+
+    property constraintScale:
+        '''
+        Array of constraints' scale factors
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getRowScale()
+
     property integerInformation:
         '''
         A binary list of size *nVariables* that specifies whether

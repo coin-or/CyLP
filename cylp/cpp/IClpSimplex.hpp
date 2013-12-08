@@ -78,7 +78,9 @@ public:
 	PyObject * getRowLower();
 	PyObject * getRowUpper();
 	PyObject * getColLower();
-	PyObject * getColUpper();
+    PyObject * getColUpper();
+    PyObject * getColumnScale();
+    PyObject * getRowScale();
 
 
     PyObject* getLower();

@@ -223,6 +223,8 @@ cdef extern from "IClpSimplex.hpp":
         PyObject* getColLower()
         PyObject* getColUpper()
         PyObject* getObjective()
+        PyObject* getColumnScale()
+        PyObject* getRowScale()
         int writeMps(char* filename, int formatType, int numberAcross,
                      double objSense)
 
