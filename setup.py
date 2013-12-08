@@ -6,7 +6,6 @@ from setuptools import setup, Extension
 #from distutils.extension import Extension
 import numpy
 
-
 PROJECT = 'CyLP'
 VERSION = '0.1'
 URL = 'https://github.com/mpy/CyLP'
@@ -50,7 +49,6 @@ elif 'win' in operatingSystem:
     operatingSystem = 'windows'
 
 libs = get_libs()
-print libs
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
            join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
