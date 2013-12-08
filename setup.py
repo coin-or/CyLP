@@ -2,22 +2,26 @@ import os
 import sys
 from os.path import join
 import numpy
+import unicodedata
+
+#A unicode function that is compatible with Python 2 and 3
+u = lambda s: s if sys.version_info[0] > 2 else unicode(s, 'utf-8')
 
 
 # Setuptools seems to get confused with c++ extensions
-#try:
-from setuptools import setup
-from setuptools import Extension
-#except ImportError:
-#    from distutils.core import setup
-#    from distutils.extension import Extension
+try:
+    from setuptools import setup
+    from setuptools import Extension
+except ImportError:
+    from distutils.core import setup
+    from distutils.extension import Extension
 
 
 
 PROJECT = 'cylp'
 VERSION = '0.2.3.3'
 URL = 'https://github.com/mpy/cylp'
-AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
+AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
 DESC = 'A Python interface for CLP, CBC, and CGL'
 
 
@@ -53,6 +57,15 @@ def get_libs():
                     flag.startswith('-l')]
     return libs
 
+def getBdistFriendlyString(s):
+    '''
+    Solve the issue with restructuredText README
+    "ordinal not in range error" when using bdist_mpkg or bdist_wininst
+    '''
+    return unicodedata.normalize('NFKD', u(s)).encode('ascii','ignore')
+
+
+
 operatingSystem = sys.platform
 if 'linux' in operatingSystem:
     operatingSystem = 'linux'
@@ -64,7 +77,10 @@ elif 'win' in operatingSystem:
 libs = get_libs()
 #Take care of Ubuntu case
 if 'CbcSolver' not in libs:
-    libs.append('CbcSolver')
+    if operatingSystem == 'windows':
+        libs.append('libCbcSolver')
+    else:
+        libs.append('CbcSolver')
 
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
            join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
@@ -341,9 +357,9 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
                           extra_link_args=extra_link_args), ]
 
 
-s_README = open('README.rst').read()
-s_AUTHORS = open('AUTHORS').read()
-s_LICENSE = open('LICENSE').read()
+s_README = getBdistFriendlyString(open('README.rst').read())
+s_AUTHORS = u(open('AUTHORS').read())
+s_LICENSE = u(open('LICENSE').read())
 
 setup(name='cylp',
       version=VERSION,
