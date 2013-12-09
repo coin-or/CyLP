@@ -6,16 +6,16 @@ import numpy
 
 # Setuptools seems to get confused with c++ extensions
 #try:
-#    from setuptools import setup
-#    from setuptools import Extension
+from setuptools import setup
+from setuptools import Extension
 #except ImportError:
-from distutils.core import setup
-from distutils.extension import Extension
+#    from distutils.core import setup
+#    from distutils.extension import Extension
 
 
 
 PROJECT = 'cylp'
-VERSION = '0.2.2'
+VERSION = '0.2.3.3'
 URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
 DESC = 'A Python interface for CLP, CBC, and CGL'
@@ -62,6 +62,10 @@ elif 'win' in operatingSystem:
     operatingSystem = 'windows'
 
 libs = get_libs()
+#Take care of Ubuntu case
+if 'CbcSolver' not in libs:
+    libs.append('CbcSolver')
+
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
            join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
