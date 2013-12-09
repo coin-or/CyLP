@@ -1,15 +1,36 @@
+What is cylp?
+==============
+cylp is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
+(CLP, CBC, and CGL). cylp’s unique feature is that you can use it to alter the
+solution process of the solvers from within Python. For example, you may
+define cut generators, branch-and-bound strategies, and primal/dual Simplex
+pivot rules completely in Python.
+
+You may read your LP from an mps file or use the cylp’s easy modeling
+facility. Please find examples in the `documentation
+<http://mpy.github.io/cylpdoc/>`_.
+
+.. note::
+
+   cylp interfaces a limited number of functionalities of
+   COIN-OR’s solvers. If there is any particular
+   class or method in CLP, CBC, and CGL that you would like to use in Python
+   please don't hesitate to let us know; we will try to make the connections.
+   Moreover, in the case that you find a bug or a mistake, we would appreciate
+   it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca.
+
+
+
+
 Installation
 ============
 
 STEP 1:
-    Install CoinMP. You can get the source at
-    http://www.coin-or.org/download/source/CoinMP/. CyLP can be compiled against
-    CoinMP-1.6.0. To compile CyLP you will need a LAPACK
-    implementation and BZIP2 installed. If you are on a MAC or a linux
-    system you might already have both.
-    To compile CoinMP's source you may need to pass 'g95' to configure::
+    Install CBC (http://www.coin-or.org/download/source/Cbc/).
+    cylp can be compiled against
+    Cbc version 2.8.5. Please go to the installation directory and run::
 
-        $ ./configure F77=/path/to/g95
+        $ ./configure
         $ make
         $ make install
 
@@ -17,13 +38,13 @@ STEP 2:
     Create an environment variable called COIN_INSTALL_DIR pointing to your
     installation of Coin. For example::
 
-        $ export COIN_INSTALL_DIR=/Users/mehdi/CoinMP-1.6.0
+        $ export COIN_INSTALL_DIR=/Users/mehdi/Cbc-2.8.5
 
-    You may also add this line to your ~/.bash_rc or ~/.profile to make
-    it persistent.
+You may also add this line to your ~/.bash_rc or ~/.profile to make
+it persistent.
 
 STEP 3:
-    Install CyLP. Go to CyLP's root directory and run::
+    Install cylp. Go to cylp's root directory and run::
 
         $ python setup.py install
 
@@ -31,11 +52,17 @@ STEP 4 (LINUX):
      In linux you might also need to add COIN's lib directory to
      LD_LIBRARY_PATH as follows::
 
-        $ export LD_LIBRARY_PATH=/path/to/CoinMP-1.6.0/lib:$LD_LIBRARY_PATH"
+        $ export LD_LIBRARY_PATH=/path/to/Cbc-2.8.5/lib:$LD_LIBRARY_PATH"
 
-Now you can use CyLP in your python code. For example:
+Optional step:
+    If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
+    you should also define::
 
-    >>> from CyLP.cy import CyClpSimplex
+        $ export CYLP_SOURCE_DIR=/Path/to/cylp
+
+Now you can use cylp in your python code. For example::
+
+    >>> from cylp.cy import CyClpSimplex
     >>> s = CyClpSimplex()
     >>> s.readMps('../input/netlib/adlittle.mps')
     0
@@ -44,32 +71,72 @@ Now you can use CyLP in your python code. For example:
     >>> round(s.objectiveValue, 3)
     225494.963
 
-Or simply go to CyLP and run::
+Or simply go to cylp and run::
 
     $ python -m unittest discover
 
-to run all CyLP unit tests.
+to run all cylp unit tests.
 
 
 
-Usage
-=======
+Modeling Example
+==================
 
-To run the primal Simplex method on a problem in MPS format, use::
+Here is an example of how to model with cylp's modeling facility::
 
-    $ python CyLP/py/PySolve.py input/netlib/25fv47.mps d
+    import numpy as np
+    from cylp.cy import CyClpSimplex
+    from cylp.py.modeling.CyLPModel import CyLPArray
 
-or::
+    s = CyClpSimplex()
 
-    $ python CyLP/cy/CySolve.py input/netlib/25fv47.mps d
+    # Add variables
+    x = s.addVariable('x', 3)
+    y = s.addVariable('y', 2)
 
-Use `p` instead of the trailing `d` to use the positive edge pivot rule instead of Dantzig's canonical pivot rule.
+    # Create coefficients and bounds
+    A = np.matrix([[1., 2., 0],[1., 0, 1.]])
+    B = np.matrix([[1., 0, 0], [0, 0, 1.]])
+    D = np.matrix([[1., 2.],[0, 1]])
+    a = CyLPArray([5, 2.5])
+    b = CyLPArray([4.2, 3])
+    x_u= CyLPArray([2., 3.5])
+
+    # Add constraints
+    s += A * x <= a
+    s += 2 <= B * x + D * y <= b
+    s += y >= 0
+    s += 1.1 <= x[1:3] <= x_u
+
+    # Set the objective function
+    c = CyLPArray([1., -2., 3.])
+    s.objective = c * x + 2 * y.sum()
+
+    # Solve using primal Simplex
+    s.primal()
+    print s.primalVariableSolution['x']
+
 
 
 Documentation
 ===============
-You may access CyLP's documentation:
+You may access cylp's documentation:
 
-    1. *Online* : http://mpy.github.com/CyLP.
+1. *Online* : Please visit http://mpy.github.io/cylpdoc/
 
-    2. *Offline* : To install CyLP's documentation in your repository, you need Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by going to CyLP/doc and run ``make html`` or ``make latex`` and access the documentation under CyLP/doc/build. You can also run ``make doctest`` to perform all the doctest.
+2. *Offline* : To install cylp's documentation in your repository, you need
+   Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by
+   going to cylp/doc and run ``make html`` or ``make latex`` and access the
+   documentation under cylp/doc/build. You can also run ``make doctest`` to
+   perform all the doctest.
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/mpy/cylp/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
+.. image:: https://cruel-carlota.pagodabox.com/f8efbddd4f44bb098d20dafdd0b9e897
+   :alt: githalytics.com
+   :target: http://githalytics.com/mpy/cylp
+
+

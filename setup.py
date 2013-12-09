@@ -1,29 +1,42 @@
 import os
 import sys
 from os.path import join
-from setuptools import setup, Extension
-#from distutils.core import setup
-#from distutils.extension import Extension
 import numpy
 
-PROJECT = 'CyLP'
-VERSION = '0.1'
-URL = 'https://github.com/mpy/CyLP'
+
+# Setuptools seems to get confused with c++ extensions
+#try:
+#    from setuptools import setup
+#    from setuptools import Extension
+#except ImportError:
+from distutils.core import setup
+from distutils.extension import Extension
+
+
+
+PROJECT = 'cylp'
+VERSION = '0.2.2'
+URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u'mehdi.towhidi@gerad.ca'
 DESC = 'A Python interface for CLP, CBC, and CGL'
 
 
-#Specify whether to use Cython for installation
-USECYTHON = False
+cythonFilesDir = join('cylp', 'cy')
+cppFilesDir = join('cylp', 'cpp')
 
-cythonFilesDir = join('CyLP', 'cy')
-cppFilesDir = join('CyLP', 'cpp')
+#Do "export CYLP_USE_CYTHON=" if you want to build cylp from scratch, using Cython
+try:
+    os.environ['CYLP_USE_CYTHON']
+    USECYTHON = True
+except:
+    USECYTHON = False
 
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
 except:
     raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
                     'to the location of the COIN installation')
+
 
 def get_libs():
     '''
@@ -68,17 +81,20 @@ else:
     fileext = '.cpp'
 
 
+extra_compile_args = ['-w']
+ext_modules = []
+
 if operatingSystem == 'mac':
     extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
 elif operatingSystem == 'linux':
     extra_link_args = ['-lrt']
 else:
+    # Assuming Windows
     extra_link_args = []
+    extra_compile_args += ['/EHsc']
 
-extra_compile_args = []
-ext_modules = []
 
-ext_modules += [Extension('CyLP.cy.CyClpPrimalColumnPivotBase',
+ext_modules += [Extension('cylp.cy.CyClpPrimalColumnPivotBase',
                           sources=[join(cppFilesDir,
                                         'IClpPrimalColumnPivotBase.cpp'),
                           join(cythonFilesDir, 'CyClpPrimalColumnPivotBase' +
@@ -90,10 +106,10 @@ ext_modules += [Extension('CyLP.cy.CyClpPrimalColumnPivotBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyClpDualRowPivotBase',
+ext_modules += [Extension('cylp.cy.CyClpDualRowPivotBase',
                           sources=[join(cppFilesDir,
                                         'IClpDualRowPivotBase.cpp'),
-                          join(cythonFilesDir, 'CyClpDualRowPivotBase' +
+                             join(cythonFilesDir, 'CyClpDualRowPivotBase' +
                                fileext)],
                           language='c++',
                           include_dirs=includeDirs,
@@ -102,8 +118,49 @@ ext_modules += [Extension('CyLP.cy.CyClpDualRowPivotBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
+ext_modules += [Extension('cylp.cy.CyCglCutGeneratorBase',
+                          sources=[join(cppFilesDir,
+                                        'ICglCutGeneratorBase.cpp'),
+                            join(cythonFilesDir, 'CyCglCutGeneratorBase' +
+                               fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCoinIndexedVector',
+ext_modules += [Extension('cylp.cy.CyOsiCuts',
+                          sources=[join(cppFilesDir, 'IOsiCuts.cpp'),
+                            join(cythonFilesDir, 'CyOsiCuts' + fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('cylp.cy.CyOsiSolverInterface',
+                          sources=[join(cythonFilesDir, 'CyOsiSolverInterface' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('cylp.cy.CyCglTreeInfo',
+                          sources=[join(cythonFilesDir, 'CyCglTreeInfo' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
+
+ext_modules += [Extension('cylp.cy.CyCoinIndexedVector',
                           sources=[join(cppFilesDir, 'ICoinIndexedVector.cpp'),
                           join(cythonFilesDir,
                                'CyCoinIndexedVector' + fileext)],
@@ -114,7 +171,7 @@ ext_modules += [Extension('CyLP.cy.CyCoinIndexedVector',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCoinPackedMatrix',
+ext_modules += [Extension('cylp.cy.CyCoinPackedMatrix',
                           sources=[join(cppFilesDir, 'ICoinPackedMatrix.cpp'),
                           join(cythonFilesDir,
                                'CyCoinPackedMatrix' + fileext)],
@@ -125,7 +182,7 @@ ext_modules += [Extension('CyLP.cy.CyCoinPackedMatrix',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCoinModel',
+ext_modules += [Extension('cylp.cy.CyCoinModel',
                           sources=[join(cythonFilesDir,
                                         'CyCoinModel' + fileext)],
                           language='c++',
@@ -135,7 +192,7 @@ ext_modules += [Extension('CyLP.cy.CyCoinModel',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCoinMpsIO',
+ext_modules += [Extension('cylp.cy.CyCoinMpsIO',
                           sources=[join(cppFilesDir, 'ICoinMpsIO.cpp'),
                           join(cythonFilesDir, 'CyCoinMpsIO' + fileext)],
                           language='c++',
@@ -145,7 +202,7 @@ ext_modules += [Extension('CyLP.cy.CyCoinMpsIO',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCgl',
+ext_modules += [Extension('cylp.cy.CyCgl',
                           sources=[join(cythonFilesDir,
                                    'CyCgl' + fileext)],
                           language='c++',
@@ -155,7 +212,7 @@ ext_modules += [Extension('CyLP.cy.CyCgl',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCbcNode',
+ext_modules += [Extension('cylp.cy.CyCbcNode',
                           sources=[join(cppFilesDir, 'ICbcNode.cpp'),
                           join(cythonFilesDir, 'CyCbcNode' + fileext)],
                           language='c++',
@@ -165,7 +222,7 @@ ext_modules += [Extension('CyLP.cy.CyCbcNode',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyCbcModel',
+ext_modules += [Extension('cylp.cy.CyCbcModel',
                           sources=[join(cppFilesDir, 'ICbcModel.cpp'),
                                    join(cppFilesDir, 'CbcCompareUser.cpp'),
                                    join(cppFilesDir, 'ICbcNode.cpp'),
@@ -178,7 +235,7 @@ ext_modules += [Extension('CyLP.cy.CyCbcModel',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyClpSimplex',
+ext_modules += [Extension('cylp.cy.CyClpSimplex',
                           sources=[join(cppFilesDir,
                                         'IClpPrimalColumnPivotBase.cpp'),
                           join(cppFilesDir, 'IClpDualRowPivotBase.cpp'),
@@ -198,7 +255,7 @@ ext_modules += [Extension('CyLP.cy.CyClpSimplex',
                           extra_link_args=extra_link_args), ] #,
                           #pyrex_gdb=True), ]
 
-ext_modules += [Extension('CyLP.cy.CyPEPivot',
+ext_modules += [Extension('cylp.cy.CyPEPivot',
                            sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                     join(cythonFilesDir, 'CyPEPivot' + fileext)],
@@ -209,7 +266,7 @@ ext_modules += [Extension('CyLP.cy.CyPEPivot',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyWolfePivot',
+ext_modules += [Extension('cylp.cy.CyWolfePivot',
                            sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                     join(cythonFilesDir, 'CyWolfePivot' + fileext)],
@@ -220,7 +277,7 @@ ext_modules += [Extension('CyLP.cy.CyWolfePivot',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyDantzigPivot',
+ext_modules += [Extension('cylp.cy.CyDantzigPivot',
                           sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                    join(cythonFilesDir, 'CyDantzigPivot' +
@@ -232,7 +289,7 @@ ext_modules += [Extension('CyLP.cy.CyDantzigPivot',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyTest',
+ext_modules += [Extension('cylp.cy.CyTest',
                           sources=[join(cythonFilesDir, 'CyTest' + fileext)],
                           language='c++',
                           include_dirs=includeDirs,
@@ -241,7 +298,7 @@ ext_modules += [Extension('CyLP.cy.CyTest',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyPivotPythonBase',
+ext_modules += [Extension('cylp.cy.CyPivotPythonBase',
                           sources=[join(cppFilesDir,
                                          'IClpPrimalColumnPivotBase.cpp'),
                                    join(cythonFilesDir, 'CyPivotPythonBase' +
@@ -253,7 +310,7 @@ ext_modules += [Extension('CyLP.cy.CyPivotPythonBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
-ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
+ext_modules += [Extension('cylp.cy.CyDualPivotPythonBase',
                           sources=[join(cppFilesDir,
                                          'IClpDualRowPivotBase.cpp'),
                                    join(cythonFilesDir, 'CyDualPivotPythonBase' +
@@ -265,15 +322,26 @@ ext_modules += [Extension('CyLP.cy.CyDualPivotPythonBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
+ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
+                          sources=[join(cppFilesDir,
+                                        'ICglCutGeneratorBase.cpp'),
+                                    join(cppFilesDir,
+                                         'IOsiCuts.cpp'),
+                                    join(cythonFilesDir, 'CyCutGeneratorPythonBase' +
+                                        fileext)],
+                          language='c++',
+                          include_dirs=includeDirs,
+                          library_dirs=libDirs,
+                          libraries=libs,
+                          extra_compile_args=extra_compile_args,
+                          extra_link_args=extra_link_args), ]
 
-with open('README.rst') as f_README, \
-     open('AUTHORS') as f_AUTHORS, \
-     open('LICENSE') as f_LICENSE:
-     s_README = f_README.read()
-     s_AUTHORS = f_AUTHORS.read()
-     s_LICENSE = f_LICENSE.read()
 
-setup(name='CyLP',
+s_README = open('README.rst').read()
+s_AUTHORS = open('AUTHORS').read()
+s_LICENSE = open('LICENSE').read()
+
+setup(name='cylp',
       version=VERSION,
       description=DESC,
       long_description=s_README,
@@ -281,7 +349,8 @@ setup(name='CyLP',
       author_email=AUTHOR_EMAIL,
       url=URL,
       license=s_LICENSE,
-      packages=['CyLP', 'CyLP.cy', 'CyLP.py', 'CyLP.py.pivots', 'CyLP.py.modeling',
-                'CyLP.py.utils', 'CyLP.py.mip','CyLP.py.QP'],
+      packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots', 'cylp.py.modeling',
+                'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass=cmdclass,
-      ext_modules=ext_modules)
+      ext_modules=ext_modules,
+      install_requires=['numpy >= 1.6.4', 'scipy >= 0.12.0'])
