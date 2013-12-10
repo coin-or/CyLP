@@ -19,7 +19,7 @@ except ImportError:
 
 
 PROJECT = 'cylp'
-VERSION = '0.2.3.3'
+VERSION = '0.2.3.4'
 URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
 DESC = 'A Python interface for CLP, CBC, and CGL'
