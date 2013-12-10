@@ -13,7 +13,7 @@ from cylp.py.pivots.WolfePivotPE import WolfePivotPE
 from cylp.py.pivots.PositiveEdgeWolfePivot import PositiveEdgeWolfePivot
 from cylp.cy import CyCoinModel
 from cylp.py.utils.sparseUtil import I, sparseConcat
-from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray, cylpVar
+from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray, CyLPVar
 
 def getSolution(s, varGroupname):
     sol = s.getPrimalVariableSolution()
@@ -975,10 +975,10 @@ class QP:
         m = CyLPModel()
         x = m.addVariable('x', nVar)
         
-        yx1 = cylpVar('yx1', dim=0)
-        yxu = cylpVar('yxu', dim=0)
-        yx2 = cylpVar('yx2', dim=0)
-        yx3 = cylpVar('yx3', dim=0)
+        yx1 = CyLPVar('yx1', dim=0)
+        yxu = CyLPVar('yxu', dim=0)
+        yx2 = CyLPVar('yx2', dim=0)
+        yx3 = CyLPVar('yx3', dim=0)
         if nVarsWithBothBounds:
             k1 = m.addVariable('k1', nVarsWithBothBounds)
             zk1 = m.addVariable('zk1', nVarsWithBothBounds)
@@ -1039,10 +1039,10 @@ class QP:
             yb = m.addVariable('yb', nEquality)
 
         C1T = C2T = C3T = None
-        yc1 = cylpVar('yc1', dim=0)
-        ycu = cylpVar('ycu', dim=0)
-        yc2 = cylpVar('yc2', dim=0)
-        yc3 = cylpVar('yc3', dim=0)
+        yc1 = CyLPVar('yc1', dim=0)
+        ycu = CyLPVar('ycu', dim=0)
+        yc2 = CyLPVar('yc2', dim=0)
+        yc3 = CyLPVar('yc3', dim=0)
         if nConstraintsWithBothBounds:
             C1 = C[iConstraintsWithBothBounds, :]
             C1T = C1.T

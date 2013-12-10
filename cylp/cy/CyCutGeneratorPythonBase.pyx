@@ -28,7 +28,7 @@ cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
         if type(cuts) is not list:
             cuts = [cuts]
         for cut in cuts:
-            # Getting a cylpConstraint
+            # Getting a CyLPConstraint
             isRange = cut.evaluate('cut').isRange
             if isRange:
                 cycs.addColumnCut(cut, self.cyLPModel)
