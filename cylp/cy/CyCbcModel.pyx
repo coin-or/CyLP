@@ -2,7 +2,7 @@
 
 from itertools import izip, product
 from cylp.py.mip import NodeCompareBase
-from cylp.py.modeling.CyLPModel import cylpSolution
+from cylp.py.modeling.CyLPModel import CyLPSolution
 from cylp.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
 from libcpp cimport bool
 
@@ -184,7 +184,7 @@ cdef class CyCbcModel:
                     d[v] = ret[inds.varIndex[v]]
                     var = m.getVarByName(v)
                     if var.dims:
-                        d[v] = cylpSolution()
+                        d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]]
@@ -192,7 +192,7 @@ cdef class CyCbcModel:
             else:
                 names = self.clpModel.variableNames
                 if names:
-                    d = cylpSolution()
+                    d = CyLPSolution()
                     for i in range(len(names)):
                         d[names[i]] = ret[i]
                     ret = d

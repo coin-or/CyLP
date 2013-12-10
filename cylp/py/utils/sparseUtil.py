@@ -22,8 +22,8 @@ class csc_matrixPlus(sparse.csc_matrix):
         sparse.csc_matrix.__init__(self, arg1, shape, dtype, copy)
         if fromMatrix:
             self.__dict__.update(fromMatrix.__dict__)
-        from cylp.py.modeling import cylpExpr as cylpExpr 
-        self.cylpExpr = cylpExpr
+        from cylp.py.modeling import CyLPExpr as CyLPExpr 
+        self.CyLPExpr = CyLPExpr
 
     def __setitem__(self, (iRow, iCol), val):
         '''
@@ -118,42 +118,42 @@ class csc_matrixPlus(sparse.csc_matrix):
         return csr_matrixPlus(sparse.csc_matrix.transpose(self))
     
     def __le__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__le__(self, other)
 
     def __ge__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__ge__(self, other)
 
     def __mul__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__mul__(self, other)
 
     def __rmul__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__rmul__(self, other)
 
     def __add__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__add__(self, other)
 
     def __radd__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__radd__(self, other)
 
     def __rsub__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__rsub__(self, other)
 
     def __sub__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csc_matrix.__sub__(self, other)
 
@@ -174,8 +174,8 @@ class csr_matrixPlus(sparse.csr_matrix):
         sparse.csr_matrix.__init__(self, arg1, shape, dtype, copy)
         if fromMatrix:
             self.__dict__.update(fromMatrix.__dict__)
-        from cylp.py.modeling import cylpExpr as cylpExpr 
-        self.cylpExpr = cylpExpr
+        from cylp.py.modeling import CyLPExpr as CyLPExpr 
+        self.CyLPExpr = CyLPExpr
 
     def __setitem__(self, (iRow, iCol), val):
         '''
@@ -297,42 +297,42 @@ class csr_matrixPlus(sparse.csr_matrix):
         return csc_matrixPlus(sparse.csr_matrix.transpose(self))
     
     def __le__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__le__(self, other)
 
     def __ge__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__ge__(self, other)
 
     def __mul__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__mul__(self, other)
 
     def __rmul__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__rmul__(self, other)
 
     def __add__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__add__(self, other)
 
     def __radd__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__radd__(self, other)
 
     def __rsub__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__rsub__(self, other)
 
     def __sub__(self, other):
-        if isinstance(other, self.cylpExpr):
+        if isinstance(other, self.CyLPExpr):
             return NotImplemented
         return sparse.csr_matrix.__sub__(self, other)
 

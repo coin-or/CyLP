@@ -17,7 +17,7 @@ from CyDualPivotPythonBase cimport CyDualPivotPythonBase
 from cylp.cy cimport CyClpSimplex
 from cylp.cy cimport CyCoinModel
 from cylp.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
-from cylp.py.modeling.CyLPModel import cylpVar, CyLPArray, cylpSolution
+from cylp.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution
 from cylp.py.pivots.PivotPythonBase import PivotPythonBase
 from cylp.py.pivots.DualPivotPythonBase import DualPivotPythonBase
 from cylp.py.modeling.CyLPModel import CyLPModel
@@ -272,7 +272,7 @@ cdef class CyClpSimplex:
                     d[v] = ret[inds.varIndex[v]]
                     var = m.getVarByName(v)
                     if var.dims:
-                        d[v] = cylpSolution()
+                        d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]]
@@ -280,7 +280,7 @@ cdef class CyClpSimplex:
             else:
                 names = self.variableNames
                 if names:
-                    d = cylpSolution()
+                    d = CyLPSolution()
                     for i in range(len(names)):
                         d[names[i]] = ret[i]
                     ret = d
@@ -335,7 +335,7 @@ cdef class CyClpSimplex:
                     d[v] = ret[inds.varIndex[v]]
                     var = m.getVarByName(v)
                     if var.dims:
-                        d[v] = cylpSolution()
+                        d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
                             d[v][element] = ret[var.__getitem__(element).indices[0]]
@@ -343,7 +343,7 @@ cdef class CyClpSimplex:
             else:
                 names = self.variableNames
                 if names:
-                    d = cylpSolution()
+                    d = CyLPSolution()
                     for i in range(len(names)):
                         d[names[i]] = ret[i]
                     ret = d
@@ -368,7 +368,7 @@ cdef class CyClpSimplex:
                 pass
                 #names = self.variableNames
                 #if names:
-                #    d = cylpSolution()
+                #    d = CyLPSolution()
                 #    for i in range(len(names)):
                 #        d[names[i]] = ret[i]
                 #    ret = d
@@ -394,7 +394,7 @@ cdef class CyClpSimplex:
                 pass
                 #names = self.variableNames
                 #if names:
-                #    d = cylpSolution()
+                #    d = CyLPSolution()
                 #    for i in range(len(names)):
                 #        d[names[i]] = ret[i]
                 #    ret = d
@@ -901,8 +901,8 @@ cdef class CyClpSimplex:
         '''
         Set the status of a variable.
 
-        :arg arg: Specifies the variable to change (a cylpVar, or an index)
-        :type status: cylpVar, int
+        :arg arg: Specifies the variable to change (a CyLPVar, or an index)
+        :type status: CyLPVar, int
         :arg status: 'basic', 'atUpperBound', 'atLowerBound', 'superBasic', 'fixed'
         :type status: string
 
@@ -912,7 +912,7 @@ cdef class CyClpSimplex:
         >>> from cylp.cy.CyClpSimplex import CyClpSimplex
         >>> s = CyClpSimplex()
         >>> x = s.addVariable('x', 4)
-        >>> # Using cylpVars:
+        >>> # Using CyLPVars:
         >>> s.setVariableStatus(x[1:3], 'basic')
         >>> s.getVariableStatus(x[1])
         'basic'
@@ -925,10 +925,10 @@ cdef class CyClpSimplex:
         status = CLP_variableStatusEnum[StatusToInt[status]]
         if isinstance(arg, (int, long)):
             self.CppSelf.setStatus(arg, status)
-        elif True:  # isinstance(arg, cylpVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setVarStatus can be ' \
-                                'a cylpVar only if the object is built ' \
+                                'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
             var = arg
             model = self.cyLPModel
@@ -950,10 +950,10 @@ cdef class CyClpSimplex:
         '''
         if isinstance(arg, (int, long)):
             return IntToStatus[self.CppSelf.getStatus(arg)]
-        elif True:  # isinstance(arg, cylpVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of getVarStatus can be ' \
-                                'a cylpVar only if the object is built ' \
+                                'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
             var = arg
             model = self.cyLPModel
@@ -1000,10 +1000,10 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             arg += self.nVariables
             self.CppSelf.setStatus(arg, status)
-        elif True:  # isinstance(arg, cylpVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setVarStatus can be ' \
-                                'a cylpVar only if the object is built ' \
+                                'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
             model = self.cyLPModel
             inds = model.inds
@@ -1022,10 +1022,10 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             arg += self.nVariables
             return IntToStatus[self.CppSelf.getStatus(arg)]
-        elif True:  # isinstance(arg, cylpVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setVarStatus can be ' \
-                                'a cylpVar only if the object is built ' \
+                                'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
             model = self.cyLPModel
             inds = model.inds
@@ -1506,7 +1506,7 @@ cdef class CyClpSimplex:
     def setInteger(self, arg):
         '''
         if ``arg`` is an integer: mark variable index ``arg`` as integer.
-        if ``arg`` is a :class:`cylpVar` object: mark variable
+        if ``arg`` is a :class:`CyLPVar` object: mark variable
         ``arg`` as integer. Here is an example of the latter:
 
         >>> import numpy as np
@@ -1553,10 +1553,10 @@ cdef class CyClpSimplex:
 
         if isinstance(arg, (int, long)):
             self.CppSelf.setInteger(arg)
-        elif True:  # isinstance(arg, cylpVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setInteger can be ' \
-                                'a cylpVar only if the object is built ' \
+                                'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
             var = arg
             model = self.cyLPModel
@@ -1847,15 +1847,15 @@ cdef class CyClpSimplex:
     def setComplement(self, var1, var2):
         '''
         Set ``var1`` as the complementary variable of ``var2``. These
-        arguments may be integers signifying indices, or cylpVars.
+        arguments may be integers signifying indices, or CyLPVars.
         '''
 
         if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
            self.CppSelf.setComplement(var1, var2)
-        elif True:  # isinstance(arg, cylpVar):
+        elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel == None:
                 raise Exception('The argument of setInteger can be ' \
-                                'a cylpVar only if the object is built ' \
+                                'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
             if var1.dim != var2.dim:
                 raise Exception('Variables should have the same  ' \
