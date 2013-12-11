@@ -5,10 +5,10 @@
 .. automodule:: cylp.py.modeling.CyLPModel
 
 ----------------------
-:class:`cylpVar`
+:class:`CyLPVar`
 ----------------------
 
-.. autoclass:: cylpVar
+.. autoclass:: CyLPVar
 
 ----------------------
 :class:`CyLPModel`

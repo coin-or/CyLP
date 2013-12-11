@@ -31,7 +31,7 @@ cdef class CyOsiCuts:
 
     def addColumnCut(self, cut, cyLpModel):
         '''
-        Add ``cut`` to cuts. ``cut`` is a cylpExpr
+        Add ``cut`` to cuts. ``cut`` is a CyLPExpr
         and ``cut.isRange`` is ``True``.
         '''
         m = CyLPModel()
@@ -55,7 +55,7 @@ cdef class CyOsiCuts:
 
     def addRowCut(self, cut, cyLpModel):
         '''
-        Add ``cut`` to cuts. ``cut`` is a cylpExpr
+        Add ``cut`` to cuts. ``cut`` is a CyLPExpr
         and ``cut.isRange`` is ``False``.
         '''
         m = CyLPModel()
