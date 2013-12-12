@@ -12,9 +12,11 @@ u = lambda s: s if sys.version_info[0] > 2 else unicode(s, 'utf-8')
 try:
     from setuptools import setup
     from setuptools import Extension
+    from setuptools.command.install import install
 except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
+    from distutils.command.install import install
 
 
 
@@ -361,6 +363,24 @@ s_README = getBdistFriendlyString(open('README.rst').read())
 s_AUTHORS = u(open('AUTHORS').read())
 s_LICENSE = u(open('LICENSE').read())
 
+
+class customInstall(install):
+    '''
+    Take care of adding std:: to isspace in Cython-generated files.
+    This is currently an issue for Mac OS Mavericks.
+    '''
+    def run(self):
+        install.run(self)
+        if USECYTHON and operatingSystem in ('linux', 'mac'):
+            currentDir = os.path.dirname(os.path.realpath(__file__))
+            # Add std:: to all occurrences of isspace
+            # No lookbehind in sed (probably should use awk)
+            print 'post processing...'
+            os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/(isspace/(std::isspace/g' ''' % currentDir)
+            os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/ isspace/ std::isspace/g' ''' % currentDir)
+
+cmdclass['install'] = customInstall
+
 setup(name='cylp',
       version=VERSION,
       description=DESC,
@@ -373,4 +393,4 @@ setup(name='cylp',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass=cmdclass,
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.6.0', 'scipy >= 0.12.0'])
+      install_requires=['numpy >= 1.6.0', 'scipy >= 0.10.0'])
