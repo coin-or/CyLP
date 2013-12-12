@@ -21,7 +21,7 @@ except ImportError:
 
 
 PROJECT = 'cylp'
-VERSION = '0.2.3.5'
+VERSION = '0.2.3.6'
 URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
 DESC = 'A Python interface for CLP, CBC, and CGL'
@@ -370,14 +370,15 @@ class customInstall(install):
     This is currently an issue for Mac OS Mavericks.
     '''
     def run(self):
-        install.run(self)
-        if USECYTHON and operatingSystem in ('linux', 'mac'):
-            currentDir = os.path.dirname(os.path.realpath(__file__))
+        currentDir = os.path.dirname(os.path.realpath(__file__))
+        if not USECYTHON and operatingSystem == 'mac':
             # Add std:: to all occurrences of isspace
             # No lookbehind in sed (probably should use awk)
-            print 'post processing...'
             os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/(isspace/(std::isspace/g' ''' % currentDir)
             os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/ isspace/ std::isspace/g' ''' % currentDir)
+
+        install.run(self)
+
 
 cmdclass['install'] = customInstall
 
@@ -393,4 +394,4 @@ setup(name='cylp',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass=cmdclass,
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.6.0', 'scipy >= 0.10.0'])
+      install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'])
