@@ -373,4 +373,4 @@ setup(name='cylp',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass=cmdclass,
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.6.4', 'scipy >= 0.12.0'])
+      install_requires=['numpy >= 1.6.0', 'scipy >= 0.12.0'])
