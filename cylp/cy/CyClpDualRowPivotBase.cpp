@@ -5849,7 +5849,7 @@ __pyx_buffmt_parse_array(__Pyx_BufFmt_Context* ctx, const char** tsp)
     }
     if (__Pyx_BufFmt_ProcessTypeChunk(ctx) == -1) return NULL;
     while (*ts && *ts != ')') {
-        if (isspace(*ts))
+        if (std::isspace(*ts))
             continue;
         number = __Pyx_BufFmt_ExpectNumber(&ts);
         if (number == -1) return NULL;

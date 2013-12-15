@@ -5,9 +5,9 @@ from cylp.cy import CyClpSimplex
 from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray
 
 
-class TestMIP(unittest.TestCase):
+class TestIO(unittest.TestCase):
 
-    def test_isInt(self):
+    def test_write(self):
         self.model = CyLPModel()
         model = self.model
 

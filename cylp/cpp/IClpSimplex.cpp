@@ -731,6 +731,22 @@ ICbcModel* IClpSimplex::getICbcModel(){
     return model;
 }
 
+void  IClpSimplex::writeLp(const char *filename,
+                       const char *extension,
+                       double epsilon,
+                       int numberAcross,
+                       int decimals,
+                       double objSense,
+                       bool useRowNames)
+    {
+    matrix_->setDimensions(numberRows_, numberColumns_);
+
+    OsiClpSolverInterface solver1(this);
+    solver1.writeLp(filename, extension, epsilon, numberAcross, decimals, objSense, useRowNames);
+    return ;
+
+    }
+
 
 
 //Get a column of the tableau

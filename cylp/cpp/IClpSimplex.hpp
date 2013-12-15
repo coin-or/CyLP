@@ -190,6 +190,13 @@ public:
         }
 
     ICbcModel* getICbcModel();
+    void writeLp(const char *filename,
+                       const char *extension = "lp",
+                       double epsilon = 1e-5,
+                       int numberAcross = 10,
+                       int decimals = 5,
+                       double objSense = 0.0,
+                       bool useRowNames = true);
 
     void setBasisStatus(const int* cstat, const int* rstat);
     void getBasisStatus(int* cstat, int* rstat);

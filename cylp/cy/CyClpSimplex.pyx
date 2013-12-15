@@ -1636,9 +1636,34 @@ cdef class CyClpSimplex:
                 coninds = inds.constIndex[con.name]
                 for i in xrange(con.nRows):
                     self.setConstraintName(coninds[i], con.mpsNames[i])
-
         return self.CppSelf.writeMps(filename, formatType, numberAcross,
                                      objSense)
+
+    def writeLp(self, filename, extension="", epsilon=10**-5, numberAcross=10,
+                        decimals=5, objSense=0.0, useRowNames=1):
+        try:
+            f = open(filename, 'w')
+            f.close()
+        except:
+            raise Exception('No write access for %s or an intermediate \
+                            directory does not exist.' % filename)
+
+        m = self.cyLPModel
+        if m:
+            inds = m.inds
+            for var in m.variables:
+                varinds = inds.varIndex[var.name]
+                for i in xrange(var.dim):
+                    self.setVariableName(varinds[i], var.mpsNames[i])
+
+            for con in m.constraints:
+                coninds = inds.constIndex[con.name]
+                for i in xrange(con.nRows):
+                    self.setConstraintName(coninds[i], con.mpsNames[i])
+        self.CppSelf.writeLp(filename, extension, epsilon, numberAcross, decimals, objSense, useRowNames)
+
+    def readLp(self, char *filename, epsilon=10**-5):
+        return self.CppSelf.readLp(filename, epsilon)
 
     def updateColumnFT(self, CyCoinIndexedVector spare, CyCoinIndexedVector updatedColumn):
         return self.CppSelf.updateColumnFT(spare.CppSelf, updatedColumn.CppSelf)

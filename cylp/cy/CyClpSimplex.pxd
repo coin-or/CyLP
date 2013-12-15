@@ -227,6 +227,7 @@ cdef extern from "IClpSimplex.hpp":
         PyObject* getRowScale()
         int writeMps(char* filename, int formatType, int numberAcross,
                      double objSense)
+        int readLp(char *filename, double epsilon)
 
         void setVariableName(int varInd, char* name)
         void setConstraintName(int constInd, char* name)
@@ -246,6 +247,10 @@ cdef extern from "IClpSimplex.hpp":
                             PyObject* w_ind)
 
         CppICbcModel* getICbcModel()
+        void writeLp(char *filename, char *extension,
+                       double epsilon, int numberAcross,
+                       int decimals, double objSense,
+                       bint useRowNames)
 
         void setMaxNumIteration(int m)
 
