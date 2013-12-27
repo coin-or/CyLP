@@ -18,8 +18,6 @@ except ImportError:
     from distutils.extension import Extension
     from distutils.command.install import install
 
-
-
 PROJECT = 'cylp'
 VERSION = '0.2.3.7'
 URL = 'https://github.com/mpy/cylp'
@@ -43,6 +41,7 @@ except:
     raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
                     'to the location of the COIN installation')
 
+USECYTHON = True
 
 def get_libs():
     '''
@@ -394,4 +393,5 @@ setup(name='cylp',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass=cmdclass,
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'])
+      install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'],
+      zip_safe = False)
