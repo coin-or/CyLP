@@ -41,8 +41,6 @@ except:
     raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
                     'to the location of the COIN installation')
 
-USECYTHON = True
-
 def get_libs():
     '''
     Return a list of distinct library names used by ``dependencies``.
