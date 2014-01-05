@@ -6275,7 +6275,7 @@ static int __Pyx_Print(PyObject* f, PyObject *arg_tuple, int newline) {
             char *s = PyString_AsString(v);
             Py_ssize_t len = PyString_Size(v);
             if (len > 0 &&
-                std::isspace(Py_CHARMASK(s[len-1])) &&
+                isspace(Py_CHARMASK(s[len-1])) &&
                 s[len-1] != ' ')
                     PyFile_SoftSpace(f, 0);
         }
