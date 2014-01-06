@@ -155,6 +155,17 @@ cdef class CyClpSimplex:
         def __get__(self):
             return <object>self.CppSelf.getObjective()
 
+    property objectiveCoefficients:
+        '''
+        An alternative to self.objective, with a more meaningful name
+        in a more general context. Sets and gets a numpy array.
+        '''
+        def __set__(self, coef):
+            self.objective = coef
+
+        def __get__(self):
+            return self.objective
+
     property iteration:
         '''
         Number of iterations.
@@ -414,6 +425,16 @@ cdef class CyClpSimplex:
 
     cpdef getReducedCosts(self):
         return <object>self.CppSelf.getReducedCosts()
+
+    property objectiveOffset:
+        '''
+        The constant value in the objective function. A float.
+        '''
+        def __get__(self):
+            return self.CppSelf.objectiveOffset()
+
+        def __set__(self, value):
+            self.CppSelf.setObjectiveOffset(value)
 
     property variablesUpper:
         '''
