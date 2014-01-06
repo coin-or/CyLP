@@ -19,7 +19,7 @@ except ImportError:
     from distutils.command.install import install
 
 PROJECT = 'cylp'
-VERSION = '0.2.3.7'
+VERSION = '0.7.0'
 URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
 DESC = 'A Python interface for CLP, CBC, and CGL'
