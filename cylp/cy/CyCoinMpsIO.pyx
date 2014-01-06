@@ -8,8 +8,9 @@ Hessian,...
 '''
 # cython: embedsignature=True
 
-
+import numpy as np
 from scipy import sparse
+from scipy.sparse import identity, dia_matrix
 from cylp.py.utils.sparseUtil import csc_matrixPlus, csr_matrixPlus
 
 cdef class CyCoinMpsIO:
@@ -36,10 +37,10 @@ cdef class CyCoinMpsIO:
         >>> [chr(i) for i in signs] == problem.nConstraints * ['G']
         True
         >>> c = problem.matrixByRow
-        >>> (abs(c.elements - 
+        >>> (abs(c.elements -
         ...     np.array([-1., -1., -1., -1., -1.,  10.,  10.,  -3.,
         ...                5., 4.,  -8., 1., -2., -5., 3., 8., -1., 2.,
-        ...                5., -3.,  -4.,  -2., 3., -5., 1.])) < 
+        ...                5., -3.,  -4.,  -2., 3., -5., 1.])) <
         ...                            10 ** -8).all()
         True
         >>> (c.indices ==
@@ -58,7 +59,7 @@ cdef class CyCoinMpsIO:
         ...            [-24908., 41818., -3466., -9828., -372.],
         ...            [-2026., -3466., 3510., 2178., -348.],
         ...            [3896., -9828., 2178., 3030., -44.],
-        ...            [658., -372., -348., -44., 54.]])) < 
+        ...            [658., -372., -348., -44., 54.]])) <
         ...                            10 ** -8).all()
         True
 
@@ -71,29 +72,11 @@ cdef class CyCoinMpsIO:
             el = self.QPElements
 
             n = self.nVariables
-
-            #Hessian = csc_matrixPlus((el,col,start), shape=(n, n))
-
-            ### To make a csc Hessian symmetric
-            #n = self.getNumCols()
-
-            #for j in range(n):
-            #   for i in range(Hessian.indptr[j],Hessian.indptr[j+1]):
-            #       iRow = Hessian.indices[i]
-            #       Hessian[j, iRow] = Hessian[iRow, j]
-            #print Hessian.todense()
+            m = self.nConstraints
 
             Hessian = csr_matrixPlus((el, col, start), shape=(n, n))
-            
-            m = self.nConstraints
-            
-#            for i in xrange(n):
-#                for j in xrange(Hessian.indptr[i], Hessian.indptr[i + 1]):
-#                    jCol = Hessian.indices[j]
-#                    Hessian[jCol, i] = Hessian[i, jCol]
-            Hessian = Hessian + Hessian.T
-            for i in xrange(n):
-                Hessian[i, i] /= 2
+            # Fill the other half of the symmetric Hessian
+            Hessian = Hessian + Hessian.T - dia_matrix((Hessian.diagonal(),[0]), shape=(n, n))
             self.Hessian = Hessian
 
         return ret
