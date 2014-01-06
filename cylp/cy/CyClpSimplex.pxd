@@ -261,6 +261,9 @@ cdef extern from "IClpSimplex.hpp":
         void setLogLevel(int value)
         int logLevel()
 
+        void setObjectiveOffset(double value)
+        double objectiveOffset()
+
         bint automaticScaling()
         void setAutomaticScaling(bint value)
 
