@@ -951,7 +951,8 @@ class CyLPModel(object):
             #for varName in self.allVarNames:
             for varName in self.varNames:
                 v_coef = self.generateVarObjCoef(varName)
-                obj = sparseConcat(obj, v_coef, how='h')
+                obj = sparseConcat(obj, v_coef, how='h').todense()
+                obj = np.squeeze(np.asarray(obj))
         self.objective_ = obj
 
     def __iadd__(self, cons):
