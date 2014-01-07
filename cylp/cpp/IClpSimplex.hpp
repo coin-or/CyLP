@@ -166,6 +166,15 @@ public:
     inline void setRowUpperArray(double *ru){rowUpper_ = ru;}
     inline void setRowLowerArray(double *rl){rowLower_ = rl;}
 
+    inline void setColumnUpperSubset(int n, int *indicesOfIndices, int *indices, double* values){
+        for (int i = 0 ; i < n ; i++)
+            setColumnUpper(indices[indicesOfIndices[i]], values[indicesOfIndices[i]]);
+    }
+    inline void setColumnLowerSubset(int n, int *indicesOfIndices, int *indices, double* values){
+        for (int i = 0 ; i < n ; i++)
+            setColumnLower(indices[indicesOfIndices[i]], values[indicesOfIndices[i]]);
+    }
+
     inline void setObjectiveArray(double *o, int numberColumns)
     {
     if (objective_)

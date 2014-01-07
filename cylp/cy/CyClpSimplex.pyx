@@ -1087,6 +1087,28 @@ cdef class CyClpSimplex:
     def setColumnLowerArray(self, np.ndarray[np.double_t, ndim=1] columnLower):
         self.CppSelf.setColumnLowerArray(<double*>columnLower.data)
 
+    def setColumnLowerSubset(self, np.ndarray[np.int32_t, ndim=1] indicesOfIndices,
+                                   np.ndarray[np.int32_t, ndim=1] indices,
+                                   np.ndarray[np.double_t, ndim=1] columnLower):
+        '''
+        This method is defined for a very specific purpose.
+        It's only to be used to speed up self.addConstraint()
+        '''
+        self.CppSelf.setColumnLowerSubset(len(indicesOfIndices), <int*> indicesOfIndices.data,
+                                          <int*> indices.data,
+                                          <double*>columnLower.data)
+
+    def setColumnUpperSubset(self, np.ndarray[np.int32_t, ndim=1] indicesOfIndices,
+                                   np.ndarray[np.int32_t, ndim=1] indices,
+                                   np.ndarray[np.double_t, ndim=1] columnUpper):
+        '''
+        This method is defined for a very specific purpose.
+        It's only to be used to speed up self.addConstraint()
+        '''
+        self.CppSelf.setColumnUpperSubset(len(indicesOfIndices), <int*> indicesOfIndices.data,
+                                          <int*> indices.data,
+                                          <double*>columnUpper.data)
+
     def setRowUpperArray(self, np.ndarray[np.double_t, ndim=1] rowUpper):
         self.CppSelf.setRowUpperArray(<double*>rowUpper.data)
 
@@ -1188,11 +1210,11 @@ cdef class CyClpSimplex:
             nConsBefore = m.nCons
             c = m.addConstraint(cons, name)
 
-            # If the dimension is changing, load from scartch
+            # If the dimension is changing, load from scratch
             if nConsBefore == 0 or m.nVars - nVarsBefore != 0:
                 self.loadFromCyLPModel(self.cyLPModel)
 
-            # If the constraing to be added is just a variable range
+            # If the constraint to be added is just a variable range
             elif c.isRange:
                 var = c.variables[0]
                 dim = var.parentDim
@@ -1201,9 +1223,16 @@ cdef class CyClpSimplex:
                 lb = var.parent.lower if var.parent else var.lower
                 ub = var.parent.upper if var.parent else var.upper
 
-                for i in var.indices:
-                    self.setColumnLower(varinds[i], lb[i])
-                    self.setColumnUpper(varinds[i], ub[i])
+                #if len(var.indices != 0 :
+                self.setColumnLowerSubset(var.indices,
+                                              varinds,
+                                              lb)
+                self.setColumnUpperSubset(var.indices,
+                                              varinds,
+                                              ub)
+                #for i in var.indices:
+                #    self.setColumnLower(varinds[i], lb[i])
+                #    self.setColumnUpper(varinds[i], ub[i])
 
             # If the constraint is a "real" constraint, but no
             # dimension changes required

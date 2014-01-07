@@ -544,10 +544,10 @@ class CyLPVar(CyLPExpr):
         self.lower = -getCoinInfinity() * np.ones(dim)
         self.upper = getCoinInfinity() * np.ones(dim)
 
-        self.indices = range(dim)
+        self.indices = np.arange(dim, dtype=np.int32)
         self.fromInd = self.toInd = None
         if fromInd and toInd:
-            self.indices = range(fromInd, toInd)
+            self.indices = np.arange(fromInd, toInd, dtype=np.int32)
             self.formInd = fromInd
             self.toInd = toInd
 

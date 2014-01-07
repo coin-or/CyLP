@@ -213,6 +213,8 @@ cdef extern from "IClpSimplex.hpp":
 
         void setColumnUpperArray(double* columnUpper)
         void setColumnLowerArray(double* columnLower)
+        void setColumnUpperSubset(int n, int* indOfind, int *indices, double* values)
+        void setColumnLowerSubset(int n, int* indOfind, int *indices, double* values)
         void setRowUpperArray(double* rowUpper)
         void setRowLowerArray(double* rowLower)
         void setObjectiveArray(double* objective, int numberColumns)

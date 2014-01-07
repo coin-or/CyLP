@@ -34,7 +34,6 @@ class TestModeling(unittest.TestCase):
 
         k = m.addVariable('k', 2)
 
-
         m.addConstraint(x >= 0)
 
         m.addConstraint(A * x <= b)
@@ -42,6 +41,31 @@ class TestModeling(unittest.TestCase):
         m.addConstraint(z >= 0)
 
         m.objective = x.sum() + z.sum() + k.sum()
+
+    def test_variableBoundSubset(self):
+        m = self.model
+        x = self.x
+        y = m.addVariable('y', 4)
+        z = m.addVariable('z', 5)
+        A = self.A
+        b = self.b
+
+        k = m.addVariable('k', 2)
+
+        s = CyClpSimplex(m)
+
+        s.setColumnLowerSubset(np.array([1, 2], np.int32), np.array([3, 5, 8],
+                                        np.int32), np.array([3.2, 3.1, 2.2]))
+        self.assertTrue(s.variablesLower[3] != 3.2)
+        self.assertTrue(s.variablesLower[5] == 3.1)
+        self.assertTrue(s.variablesLower[8] == 2.2)
+
+        s.setColumnUpperSubset(np.array([0, 2], np.int32), np.array([0, 4, 10],
+                              np.int32), np.array([3.2, 3.1, 2.2]))
+        self.assertTrue(s.variablesUpper[0] == 3.2)
+        self.assertTrue(s.variablesUpper[4] != 3.1)
+        self.assertTrue(s.variablesUpper[10] == 2.2)
+
 
 
     def test_bound1(self):
