@@ -26,6 +26,7 @@ typedef int (*varSelCriteria_t)(void *instance, int varInd);
 
 class IClpSimplex : public ClpSimplex{
 public:
+    ClpPresolve pinfo;
     IClpSimplex(const ClpSimplex &rhs,PyObject *obj,
                             runIsPivotAcceptable_t runPivotRow,
                             varSelCriteria_t RunVarSelCriteria,
@@ -150,6 +151,21 @@ public:
                                  CoinIndexedVector * z);
 
     IClpSimplex*	preSolve(IClpSimplex* si,
+                              double feasibilityTolerance=0.0,
+                              bool keepIntegers=true,
+                              int numberPasses=5,
+                              bool dropNames=false,
+                              bool doRowObjective=false);
+    void postSolve(bool updateStatus=true);
+
+    int dualWithPresolve(IClpSimplex* si,
+                              double feasibilityTolerance=0.0,
+                              bool keepIntegers=true,
+                              int numberPasses=5,
+                              bool dropNames=false,
+                              bool doRowObjective=false);
+
+    int primalWithPresolve(IClpSimplex* si,
                               double feasibilityTolerance=0.0,
                               bool keepIntegers=true,
                               int numberPasses=5,

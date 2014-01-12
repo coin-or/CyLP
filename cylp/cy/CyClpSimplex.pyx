@@ -1198,7 +1198,7 @@ cdef class CyClpSimplex:
         self.addConstraint(cons)
         return self
 
-    def addConstraint(self, cons, name=''):
+    def addConstraint(self, cons, name='', addMpsNames=True):
         '''
         Adds constraints ``cons``  to the problem. Example for the value
         of ``cons`` is ``0 <= A * x <= b`` where ``A`` is a Numpy matrix and
@@ -1208,7 +1208,7 @@ cdef class CyClpSimplex:
             m = self.cyLPModel
             nVarsBefore = m.nVars
             nConsBefore = m.nCons
-            c = m.addConstraint(cons, name)
+            c = m.addConstraint(cons, name, addMpsNames)
 
             # If the dimension is changing, load from scratch
             if nConsBefore == 0 or m.nVars - nVarsBefore != 0:
@@ -1457,7 +1457,7 @@ cdef class CyClpSimplex:
                 sf = sf | startFinishOptionsDic[option]
         return sf
 
-    def primal(self, ifValuesPass=0, startFinishOptions=0):
+    def primal(self, ifValuesPass=0, startFinishOptions=0, presolve=False):
         '''
         Solve the problem using the primal simplex algorithm.
         See this :ref:`usage example <simple-run>`.
@@ -1470,10 +1470,13 @@ cdef class CyClpSimplex:
         So one might call ``self.primal(startFinishOptions='sx')``
         '''
         sf = self._extractStartFinish(startFinishOptions)
-        return problemStatus[self.CppSelf.primal(
+        if presolve:
+            return self.primalWithPresolve()
+        else:
+            return problemStatus[self.CppSelf.primal(
                              ifValuesPass, sf)]
 
-    def dual(self, ifValuesPass=0, startFinishOptions=0):
+    def dual(self, ifValuesPass=0, startFinishOptions=0, presolve=False):
         '''
         Runs CLP dual simplex.
 
@@ -1489,7 +1492,10 @@ cdef class CyClpSimplex:
 
         '''
         sf = self._extractStartFinish(startFinishOptions)
-        return problemStatus[self.CppSelf.dual(
+        if presolve:
+            return self.dualWithPresolve()
+        else:
+            return problemStatus[self.CppSelf.dual(
                             ifValuesPass, sf)]
 
     def setPerturbation(self, value):
@@ -1660,11 +1666,41 @@ cdef class CyClpSimplex:
         cdef CppIClpSimplex* model = self.CppSelf.preSolve(self.CppSelf,
                                 feasibilityTolerance, keepIntegers,
                                 numberPasses, dropNames, doRowObjective)
+        s = CyClpSimplex()
         if model == NULL:
             print "Presolve says problem infeasible."
-            return
+            return s
 
-        self.setCppSelf(model)
+        s.setCppSelf(model)
+        return s
+        #self.setCppSelf(model)
+
+    def postSolve(self, updateStatus=True):
+        self.CppSelf.postSolve(updateStatus)
+
+    def dualWithPresolve(self, feasibilityTolerance=0.0,
+                 keepIntegers=0, numberPasses=5,
+                 dropNames=0, doRowObjective=0):
+        ret = self.CppSelf.dualWithPresolve(self.CppSelf,
+                                feasibilityTolerance, keepIntegers,
+                                numberPasses, dropNames, doRowObjective)
+        if ret == -2000:
+            print "Presolve says problem infeasible."
+            return -2000
+
+        return problemStatus[ret]
+
+    def primalWithPresolve(self, feasibilityTolerance=0.0,
+                 keepIntegers=0, numberPasses=5,
+                 dropNames=0, doRowObjective=0):
+        ret = self.CppSelf.primalWithPresolve(self.CppSelf,
+                                feasibilityTolerance, keepIntegers,
+                                numberPasses, dropNames, doRowObjective)
+        if ret == -2000:
+            print "Presolve says problem infeasible."
+            return -2000
+
+        return problemStatus[ret]
 
     def writeMps(self, filename, formatType=0, numberAcross=2, objSense=0):
         try:

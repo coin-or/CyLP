@@ -271,6 +271,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
     }
     return maxInd;
 }
+
+
 int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* whr, double weight){
     //_import_array();
     if (!PyArray_Check(arr) || !PyArray_Check(whr)){
@@ -615,6 +617,7 @@ IClpSimplex::IClpSimplex(PyObject *obj_arg, runIsPivotAcceptable_t runIsPivotAcc
     varSelCriteria = runVarSelCriteria;
     customPrimal = 0;
     createStatus();
+    pinfo = ClpPresolve();
 
     tempRow = NULL;
     tempRow_vector = NULL;
@@ -672,6 +675,7 @@ IClpSimplex::IClpSimplex (ClpSimplex * wholeModel,
 
     QP_ComplementarityList = NULL;
     QP_BanList = NULL;//new int[nvars];
+    pinfo = ClpPresolve();
 }
 
 
@@ -995,7 +999,6 @@ IClpSimplex::IClpSimplex(const ClpSimplex &rhs,PyObject *obj,
     QP_BanList(NULL),
     QP_ComplementarityList(NULL)
 {
-
 }
 
 
@@ -1008,17 +1011,68 @@ IClpSimplex* IClpSimplex::preSolve(IClpSimplex* si,
         bool dropNames,
         bool doRowObjective)
 {
-    ClpPresolve pinfo;
+    //ClpPresolve pinfo;
     ClpSimplex* s = pinfo.presolvedModel(*si,feasibilityTolerance,
                             keepIntegers, numberPasses, dropNames, doRowObjective);
     if (s)
         {
         IClpSimplex* ret = new IClpSimplex(*s, si->obj, si->runIsPivotAcceptable, si->varSelCriteria, si->customPrimal);
-
+        //ret->pinfo = pinfo;
+        //pinfo.postsolve();
         return ret;
         }
 
     return NULL;
+}
+
+void IClpSimplex::postSolve(bool updateStatus){
+    pinfo.postsolve(updateStatus);
+}
+
+
+int IClpSimplex::dualWithPresolve(IClpSimplex* si,
+        double feasibilityTolerance,
+        bool keepIntegers,
+        int numberPasses,
+        bool dropNames,
+        bool doRowObjective)
+{
+    ClpPresolve pinfoTemp;
+    ClpSimplex* s = pinfoTemp.presolvedModel(*si,feasibilityTolerance,
+                            keepIntegers, numberPasses, dropNames, doRowObjective);
+    if (s)
+        {
+        int ret = s->dual();
+        pinfoTemp.postsolve();
+        delete s;
+        checkSolution();
+        dual();
+        return ret;
+        }
+    return -2000;
+}
+
+
+int IClpSimplex::primalWithPresolve(IClpSimplex* si,
+        double feasibilityTolerance,
+        bool keepIntegers,
+        int numberPasses,
+        bool dropNames,
+        bool doRowObjective)
+{
+    ClpPresolve pinfoTemp;
+    ClpSimplex* s = pinfoTemp.presolvedModel(*si,feasibilityTolerance,
+                            keepIntegers, numberPasses, dropNames, doRowObjective);
+    if (s)
+        {
+        int ret = s->primal();
+        pinfoTemp.postsolve();
+        delete s;
+        checkSolution();
+        primal();
+        return ret;
+        }
+    return -2000;
 }
 
 

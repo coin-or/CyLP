@@ -963,7 +963,7 @@ class CyLPModel(object):
         self.addConstraint(cons)
         return self
 
-    def addConstraint(self, cons, consName=''):
+    def addConstraint(self, cons, consName='', addMpsNames=True):
         '''
         Add constraint ``cons`` to the ``CyLPModel``. Argument ``cons`` must
         be an expresion made using instances of :py:class:`CyLPVar`,
@@ -982,9 +982,10 @@ class CyLPModel(object):
                 self.inds.addConst(c.name, c.nRows)
             self.nCons += c.nRows
 
-        c.mpsNames = []
-        for i in xrange(c.nRows):
-            c.mpsNames.append('%s_%s' % (c.name, str(i)))
+        if addMpsNames:
+            c.mpsNames = []
+            for i in xrange(c.nRows):
+                c.mpsNames.append('%s_%s' % (c.name, str(i)))
 
 
         #self.makeMatrices()

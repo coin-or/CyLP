@@ -197,6 +197,19 @@ cdef extern from "IClpSimplex.hpp":
                               int numberPasses,
                               bint dropNames,
                               bint doRowObjective)
+        void postSolve(bint updateStatus)
+        int dualWithPresolve(CppIClpSimplex* si,
+                              double feasibilityTolerance,
+                              bint keepIntegers,
+                              int numberPasses,
+                              bint dropNames,
+                              bint doRowObjective)
+        int primalWithPresolve(CppIClpSimplex* si,
+                              double feasibilityTolerance,
+                              bint keepIntegers,
+                              int numberPasses,
+                              bint dropNames,
+                              bint doRowObjective)
 
         int loadProblem(CppCoinModel * modelObject, int tryPlusMinusOne)
         void loadProblem(CppCoinPackedMatrix* matrix,
