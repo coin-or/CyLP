@@ -19,7 +19,7 @@ except ImportError:
     from distutils.command.install import install
 
 PROJECT = 'cylp'
-VERSION = '0.7.0'
+VERSION = '0.7.1'
 URL = 'https://github.com/mpy/cylp'
 AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
 DESC = 'A Python interface for CLP, CBC, and CGL'
@@ -104,7 +104,7 @@ extra_compile_args = ['-w']
 ext_modules = []
 
 if operatingSystem == 'mac':
-    extra_link_args = ['-Wl,-framework', '-Wl,Accelerate']
+    extra_link_args = ['-Wl,-framework', '-Wl,Accelerate', '-headerpad_max_install_names']
 elif operatingSystem == 'linux':
     extra_link_args = ['-lrt']
 else:
@@ -369,15 +369,24 @@ class customInstall(install):
     def run(self):
         currentDir = os.path.dirname(os.path.realpath(__file__))
         if not USECYTHON and operatingSystem == 'mac':
-            # Add std:: to all occurrences of isspace
-            # No lookbehind in sed (probably should use awk)
-            os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/(isspace/(std::isspace/g' ''' % currentDir)
-            os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/ isspace/ std::isspace/g' ''' % currentDir)
+            # If std::isspace is not already replaced
+            if os.system('grep -rI "std::isspace" cylp/cy/*.cpp'):
+                os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/isspace/std::isspace/g' ''' % currentDir)
+
+        if operatingSystem == 'mac':
+            from fixBinaries import platform_dir
+            extra_files.append(join('cbclibs', platform_dir, '*.dylib'))
 
         install.run(self)
 
+        if operatingSystem == 'mac':
+            from fixBinaries import fixAll
+            fixAll()
+
 
 cmdclass['install'] = customInstall
+
+extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h']
 
 setup(name='cylp',
       version=VERSION,
@@ -392,4 +401,5 @@ setup(name='cylp',
       cmdclass=cmdclass,
       ext_modules=ext_modules,
       install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'],
-      zip_safe = False)
+      zip_safe = False,
+      package_data={"cylp": extra_files})
