@@ -955,6 +955,9 @@ class CyLPModel(object):
                 obj = np.squeeze(np.asarray(obj))
         self.objective_ = obj
 
+    def evaluateAt(self, x0):
+        return np.dot(self.objective, x0)
+
     def __iadd__(self, cons):
         '''
         Call :meth:`addConstraint`. The only difference is that

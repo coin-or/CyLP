@@ -1834,6 +1834,22 @@ cdef class CyClpSimplex:
         if cyLPModel.objective != None:
             self.objective = cyLPModel.objective
 
+    def evaluateAt(self, x0):
+        '''
+        Evaluate the objective function at x0
+        '''
+        if self.Hessian != None:
+            return (np.dot(self.objectiveCoefficients, x0) +
+                    0.5 * np.dot(x0, self.Hessian.dot(x0)) - self.objectiveOffset)
+        else:
+            return np.dot(self.objectiveCoefficients, x0) - self.objectiveOffset
+
+    def gradientAt(self, x0):
+        if self.Hessian != None:
+            return self.objectiveCoefficients + self.Hessian * x0
+        else:
+            return self.objectiveCoefficients
+
 
     #############################################
     # Integer Programming
