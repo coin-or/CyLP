@@ -64,7 +64,7 @@ cdef extern from "IClpSimplex.hpp":
         CppCoinPackedMatrix* getMatrix()
         int primal(int ifValuesPass, int startFinishOptions)
         int dual(int ifValuesPass, int startFinishOptions)
-        int initialSolve()
+        int initialSolve(int presolveType)
         int initialPrimalSolve()
         int initialDualSolve()
         void setPerturbation(int value)

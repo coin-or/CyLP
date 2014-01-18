@@ -33,6 +33,7 @@ public:
                             int useCustomPrimal, int scalingMode=-1 );
 	IClpSimplex(PyObject *obj, runIsPivotAcceptable_t runPivotRow,
                 varSelCriteria_t RunVarSelCriteria );
+    int initialSolve(int preSolveType=ClpSolve::presolveOn);
 	// For initializing instances that are build using ClpSimplex consructor (NOT IClpSimplex)
     void setCriteria(varSelCriteria_t vsc);
 
@@ -88,6 +89,8 @@ public:
     PyObject* getUpper();
 
     PyObject* getIntegerInformation();
+
+
 
 
 	void getBInvACol(int col, double* vec);

@@ -1075,6 +1075,12 @@ int IClpSimplex::primalWithPresolve(IClpSimplex* si,
     return -2000;
 }
 
+int IClpSimplex::initialSolve(int preSolveType){
+    ClpSolve options;
+    options.setPresolveType(static_cast<ClpSolve::PresolveType>(preSolveType));
+    return ClpSimplex::initialSolve(options);
+}
+
 
 int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
 {

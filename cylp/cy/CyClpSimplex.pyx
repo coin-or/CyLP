@@ -1134,7 +1134,7 @@ cdef class CyClpSimplex:
     # CLP Methods
     #############################################
 
-    def initialSolve(self):
+    def initialSolve(self, presolve='on'):
         '''
         Run CLP's initialSolve. It does a presolve and uses primal or dual
         Simplex to solve a problem.
@@ -1152,7 +1152,8 @@ cdef class CyClpSimplex:
         2520.5717
 
         '''
-        return problemStatus[self.CppSelf.initialSolve()]
+        presolve = 0 if presolve == 'on' and self.Hessian == None else 1
+        return problemStatus[self.CppSelf.initialSolve(presolve)]
 
     def initialPrimalSolve(self):
         '''
