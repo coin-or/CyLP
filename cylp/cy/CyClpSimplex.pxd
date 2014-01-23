@@ -282,6 +282,9 @@ cdef extern from "IClpSimplex.hpp":
         bint automaticScaling()
         void setAutomaticScaling(bint value)
 
+        void scaling(int mode)
+        int scalingFlag()
+
         bint isInteger(int index)
         PyObject* getIntegerInformation()
 

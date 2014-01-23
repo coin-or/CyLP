@@ -712,6 +712,12 @@ cdef class CyClpSimplex:
         def __set__(self, value):
             self.CppSelf.setAutomaticScaling(value)
 
+    property scaling:
+        def __get__(self):
+            return self.CppSelf.scalingFlag()
+        def __set__(self, mode):
+            self.CppSelf.scaling(mode)
+
     #############################################
     # get set
     #############################################
