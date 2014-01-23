@@ -22,8 +22,9 @@ class csc_matrixPlus(sparse.csc_matrix):
         sparse.csc_matrix.__init__(self, arg1, shape, dtype, copy)
         if fromMatrix:
             self.__dict__.update(fromMatrix.__dict__)
-        from cylp.py.modeling import CyLPExpr as CyLPExpr 
+        from cylp.py.modeling import CyLPExpr as CyLPExpr
         self.CyLPExpr = CyLPExpr
+        self.rowScaleFactor = self.colScaleFactor = None
 
     def __setitem__(self, (iRow, iCol), val):
         '''
@@ -47,7 +48,7 @@ class csc_matrixPlus(sparse.csc_matrix):
         '''
         if not isinstance(val, (int, long, float)):
             return sparse.csc_matrix.__setitem__(self, (iRow, iCol), val)
-            
+
         nCols = self.shape[1]
 
         #update shape if nec.
@@ -106,17 +107,71 @@ class csc_matrixPlus(sparse.csc_matrix):
         a = np.array(nCol * [nElement], dtype=np.int32)
         self.indptr = np.concatenate((self.indptr, a), axis=0)
         self._shape = (self._shape[0], self.shape[1] + nCol)
-    
+
     def __getitem__(self, key):
         ret = sparse.csc_matrix.__getitem__(self, key)
         if isinstance(ret, (int, long, float)):
             return ret
         return csc_matrixPlus(ret)
-    
-    @property 
+
+    def row_scale(self, scaleFactor=None):
+        data = self.data
+        m = self.tocoo()
+        irow, jcol = m.row, m.col
+        if scaleFactor != None:
+            data /= scaleFactor[irow]
+            self.rowScaleFactor = scaleFactor
+            return scaleFactor
+
+        rowScaleFactor = np.zeros(self.shape[0], dtype=np.float)
+        for k in range(len(data)):
+            row = irow[k]
+            val = abs(data[k])
+            rowScaleFactor[row] = max(rowScaleFactor[row], val)
+        rowScaleFactor[rowScaleFactor == 0.0] = 1.0
+        data /= rowScaleFactor[irow]
+        self.rowScaleFactor = rowScaleFactor
+        return rowScaleFactor
+
+
+    def col_scale(self, scaleFactor=None):
+        data = self.data
+        m = self.tocoo()
+        irow, jcol = m.row, m.col
+        if scaleFactor != None:
+            data /= scaleFactor[jcol]
+            self.colScaleFactor = scaleFactor
+            return scaleFactor
+
+        colScaleFactor = np.zeros(self.shape[1], dtype=np.float)
+
+        for k in range(len(data)):
+            col = jcol[k]
+            val = abs(data[k])
+            colScaleFactor[col] = max(colScaleFactor[col], val)
+        colScaleFactor[colScaleFactor == 0.0] = 1.0
+        data /= colScaleFactor[jcol]
+        self.colScaleFactor = colScaleFactor
+        return colScaleFactor
+
+    def col_unscale(self, scaleFactor=None):
+        if scaleFactor == None:
+            scaleFactor = self.colScaleFactor
+        if scaleFactor != None:
+            jcol = self.tocoo().col
+            self.data *= scaleFactor[jcol]
+
+    def row_unscale(self, scaleFactor=None):
+        if scaleFactor == None:
+            scaleFactor = self.rowScaleFactor
+        if scaleFactor != None:
+            irow = self.tocoo().row
+            self.data *= scaleFactor[irow]
+
+    @property
     def T(self):
         return csr_matrixPlus(sparse.csc_matrix.transpose(self))
-    
+
     def __le__(self, other):
         if isinstance(other, self.CyLPExpr):
             return NotImplemented
@@ -174,8 +229,9 @@ class csr_matrixPlus(sparse.csr_matrix):
         sparse.csr_matrix.__init__(self, arg1, shape, dtype, copy)
         if fromMatrix:
             self.__dict__.update(fromMatrix.__dict__)
-        from cylp.py.modeling import CyLPExpr as CyLPExpr 
+        from cylp.py.modeling import CyLPExpr as CyLPExpr
         self.CyLPExpr = CyLPExpr
+        self.rowScaleFactor = self.colScaleFactor = None
 
     def __setitem__(self, (iRow, iCol), val):
         '''
@@ -202,16 +258,16 @@ class csr_matrixPlus(sparse.csr_matrix):
         '''
         if not isinstance(val, (int, long, float)):
             return sparse.csr_matrix.__setitem__(self, (iRow, iCol), val)
-        
+
         nRows = self.shape[0]
         nCols = self.shape[1]
-        
+
         l = self.tolil()
-        
+
         if iCol >= nCols:
             l._shape = (nRows, iCol + 1)
             nCols = iCol + 1
-        
+
         if iRow >= nRows:
             l._shape = (iRow + 1, nCols)
             nRowsToAdd = iRow + 1 - nRows
@@ -221,7 +277,7 @@ class csr_matrixPlus(sparse.csr_matrix):
 
         l[iRow, iCol] = val
         s = csr_matrixPlus(l)
-        
+
         self._nnz = s.nnz
         self._shape = s._shape
         self.indices = s.indices
@@ -292,10 +348,65 @@ class csr_matrixPlus(sparse.csr_matrix):
             return ret
         return csr_matrixPlus(ret)
 
-    @property 
+    def row_scale(self, scaleFactor=None):
+        data = self.data
+        m = self.tocoo()
+        irow, jcol = m.row, m.col
+        if scaleFactor != None:
+            data /= scaleFactor[irow]
+            self.rowScaleFactor = scaleFactor
+            return scaleFactor
+
+        rowScaleFactor = np.zeros(self.shape[0], dtype=np.float)
+        for k in range(len(data)):
+            row = irow[k]
+            val = abs(data[k])
+            rowScaleFactor[row] = max(rowScaleFactor[row], val)
+        rowScaleFactor[rowScaleFactor == 0.0] = 1.0
+        data /= rowScaleFactor[irow]
+        self.rowScaleFactor = rowScaleFactor
+        return rowScaleFactor
+
+
+    def col_scale(self, scaleFactor=None):
+        data = self.data
+        m = self.tocoo()
+        irow, jcol = m.row, m.col
+        if scaleFactor != None:
+            data /= scaleFactor[jcol]
+            self.colScaleFactor = scaleFactor
+            return scaleFactor
+
+        colScaleFactor = np.zeros(self.shape[1], dtype=np.float)
+
+        for k in range(len(data)):
+            col = jcol[k]
+            val = abs(data[k])
+            colScaleFactor[col] = max(colScaleFactor[col], val)
+        colScaleFactor[colScaleFactor == 0.0] = 1.0
+        data /= colScaleFactor[jcol]
+        self.colScaleFactor = colScaleFactor
+        return colScaleFactor
+
+    def col_unscale(self, scaleFactor=None):
+        if scaleFactor == None:
+            scaleFactor = self.colScaleFactor
+        if scaleFactor != None:
+            jcol = self.tocoo().col
+            self.data *= scaleFactor[jcol]
+
+    def row_unscale(self, scaleFactor=None):
+        if scaleFactor == None:
+            scaleFactor = self.rowScaleFactor
+        if scaleFactor != None:
+            irow = self.tocoo().row
+            self.data *= scaleFactor[irow]
+
+
+    @property
     def T(self):
         return csc_matrixPlus(sparse.csr_matrix.transpose(self))
-    
+
     def __le__(self, other):
         if isinstance(other, self.CyLPExpr):
             return NotImplemented
@@ -351,9 +462,9 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
     Concatenate two sparse matrices, ``a`` and ``b``, horizontally if
     ``how = 'h'``, and vertically if ``how = 'v'``.
     Add zero rows and columns if dimensions don't align.
-    ``v_offset`` specifies how to align ``b`` along side ``a``. The 
+    ``v_offset`` specifies how to align ``b`` along side ``a``. The
     value of ``v_offset`` will be added to each row index of ``b``.
-    ``v_offset=-1`` means that we want the greatest possible offset without 
+    ``v_offset=-1`` means that we want the greatest possible offset without
     changeing the dimensions.
     ``h_offset`` is a similar argument but to specify horizontal offset.
 
@@ -415,7 +526,7 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
         if h_offset == -1:
             assert(a.shape[1] > b.shape[1])
             h_offset = a.shape[1] - b.shape[1]
-        
+
         assert(v_offset >= 0)
 
         row = np.concatenate((a.row, b.row + (a.shape[0] + v_offset)), axis=0)
