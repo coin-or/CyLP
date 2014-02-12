@@ -660,7 +660,7 @@ cdef class CyClpSimplex:
 
     property Hessian:
         def __get__(self):
-            return self.Hessian
+            return self._Hessian
 
         def __set__(self, mat):
             m = None
@@ -678,6 +678,7 @@ cdef class CyClpSimplex:
                 if coinMat.minorDim < n:
                     for i in xrange(n - coinMat.majorDim):
                         coinMat.appendRow()
+                self._Hessian = m
             self.loadQuadraticObjective(coinMat)
 
     property dualTolerance:
@@ -1414,7 +1415,7 @@ cdef class CyClpSimplex:
         else:
             m = CyCoinMpsIO.CyCoinMpsIO()
             ret = m.readMps(filename)
-            self.Hessian = m.Hessian
+            self._Hessian = m.Hessian
 
             # Since CyCoinMpsIO.readMps seems to be different from ClpModle.readMps
             # for the moment we read the problem again

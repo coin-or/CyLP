@@ -299,7 +299,7 @@ cdef class CyClpSimplex:
     cdef CyCoinModel coinModel
     cdef object cyLPModel
     cdef CyCbcModel cbcModel
-    cdef object Hessian
+    cdef object _Hessian
 
     #cdef void prepareForCython(self, int useCustomPrimal)
     cdef setCppSelf(self,  CppIClpSimplex* s)

@@ -1,5 +1,6 @@
 import os
 import sys
+import platform
 from os.path import join
 import numpy
 import unicodedata
@@ -70,6 +71,8 @@ if 'linux' in operatingSystem:
     operatingSystem = 'linux'
 elif 'darwin' in operatingSystem:
     operatingSystem = 'mac'
+    mac_ver = platform.mac_ver()[0]
+
 elif 'win' in operatingSystem:
     operatingSystem = 'windows'
 
@@ -368,7 +371,7 @@ class customInstall(install):
     '''
     def run(self):
         currentDir = os.path.dirname(os.path.realpath(__file__))
-        if not USECYTHON and operatingSystem == 'mac':
+        if operatingSystem == 'mac' and mac_ver[:4] == '10.9':
             # If std::isspace is not already replaced
             if os.system('grep -rI "std::isspace" cylp/cy/*.cpp'):
                 os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/isspace/std::isspace/g' ''' % currentDir)
