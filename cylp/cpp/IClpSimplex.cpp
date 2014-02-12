@@ -472,14 +472,14 @@ PyObject* IClpSimplex::getLower(){
 
 PyObject* IClpSimplex::getColLower(){
 
-    npy_intp dims = getNumCols() + getNumRows();
+    npy_intp dims = getNumCols();
     PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnLower() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getColUpper(){
 
-    npy_intp dims = getNumCols() + getNumRows();
+    npy_intp dims = getNumCols();
     PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnUpper() );
     return Arr;
 }
