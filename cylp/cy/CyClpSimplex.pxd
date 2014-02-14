@@ -268,6 +268,7 @@ cdef extern from "IClpSimplex.hpp":
                        bint useRowNames)
 
         void setMaxNumIteration(int m)
+        int maximumIterations()
 
         #Osi
         void setBasisStatus(int* cstat, int* rstat)
@@ -284,6 +285,11 @@ cdef extern from "IClpSimplex.hpp":
 
         void scaling(int mode)
         int scalingFlag()
+
+        void setInfeasibilityCost(double value)
+        double infeasibilityCost()
+
+        int numberPrimalInfeasibilities()
 
         bint isInteger(int index)
         PyObject* getIntegerInformation()

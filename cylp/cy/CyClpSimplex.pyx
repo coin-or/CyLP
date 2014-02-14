@@ -212,6 +212,13 @@ cdef class CyClpSimplex:
             return csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
                              shape=(self.nConstraints, self.nVariables))
 
+        def __set__(self, sparseMatrix):
+            try:
+                m = sparseMatrix.tocoo()
+            except:
+                raise Exception('coefMatrix must be a scipy sparse matrix.')
+            self.matrix = CyCoinPackedMatrix(True, m.row, m.col, m.data)
+
     property matrix:
         '''
         The coefficient matrix. A CyCoinPackedMatrix.
@@ -221,6 +228,9 @@ cdef class CyClpSimplex:
             mat = CyCoinPackedMatrix()
             mat.CppSelf = cppMat
             return mat
+
+        def __set__(self, cyCoinPackedMatrix):
+            self.replaceMatrix(cyCoinPackedMatrix, True)
 
     property constraints:
         '''
@@ -445,6 +455,9 @@ cdef class CyClpSimplex:
         def __get__(self):
             return <object>self.CppSelf.getColUpper()
 
+        def __set__(self, upperArray):
+            self.setColumnUpperArray(upperArray)
+
     property variablesLower:
         '''
         Variables lower bounds
@@ -453,6 +466,9 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             return <object>self.CppSelf.getColLower()
+
+        def __set__(self, lowerArray):
+            self.setColumnLowerArray(lowerArray)
 
     property constraintsUpper:
         '''
@@ -463,6 +479,9 @@ cdef class CyClpSimplex:
         def __get__(self):
             return <object>self.CppSelf.getRowUpper()
 
+        def __set__(self, upperArray):
+            self.setRowUpperArray(upperArray)
+
     property constraintsLower:
         '''
         Constraints lower bounds
@@ -471,6 +490,9 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             return <object>self.CppSelf.getRowLower()
+
+        def __set__(self, lowerArray):
+            self.setRowLowerArray(lowerArray)
 
     property lower:
         '''
@@ -696,6 +718,9 @@ cdef class CyClpSimplex:
            self.CppSelf.setPrimalTolerance(value)
 
     property maxNumIteration:
+        def __get__(self):
+            return self.CppSelf.maximumIterations()
+
         def __set__(self, value):
            self.CppSelf.setMaxNumIteration(value)
 
@@ -718,6 +743,17 @@ cdef class CyClpSimplex:
             return self.CppSelf.scalingFlag()
         def __set__(self, mode):
             self.CppSelf.scaling(mode)
+
+    property infeasibilityCost:
+        def __get__(self):
+            return self.CppSelf.infeasibilityCost()
+        def __set__(self, value):
+            self.CppSelf.setInfeasibilityCost(value)
+
+
+    property numberPrimalInfeasibilities:
+        def __get__(self):
+            return self.CppSelf.numberPrimalInfeasibilities()
 
     #############################################
     # get set
