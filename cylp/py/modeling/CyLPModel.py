@@ -951,8 +951,8 @@ class CyLPModel(object):
             #for varName in self.allVarNames:
             for varName in self.varNames:
                 v_coef = self.generateVarObjCoef(varName)
-                obj = sparseConcat(obj, v_coef, how='h').todense()
-                obj = np.squeeze(np.asarray(obj))
+                obj = sparseConcat(obj, v_coef, how='h')
+            obj = np.squeeze(np.asarray(obj.todense()))
         self.objective_ = obj
 
     def evaluateAt(self, x0):
