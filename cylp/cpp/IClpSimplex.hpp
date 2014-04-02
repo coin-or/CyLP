@@ -194,6 +194,15 @@ public:
             setColumnLower(indices[indicesOfIndices[i]], values[indicesOfIndices[i]]);
     }
 
+    inline void setColumnUpperFirstElements(int n, double* values){
+        for (int i = 0 ; i < n ; i++)
+            setColumnUpper(i, values[i]);
+    }
+    inline void setColumnLowerFirstElements(int n, double* values){
+        for (int i = 0 ; i < n ; i++)
+            setColumnLower(i, values[i]);
+    }
+
     inline void setObjectiveArray(double *o, int numberColumns)
     {
     if (objective_)

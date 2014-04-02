@@ -456,7 +456,7 @@ cdef class CyClpSimplex:
             return <object>self.CppSelf.getColUpper()
 
         def __set__(self, upperArray):
-            self.setColumnUpperArray(upperArray)
+            self.setColumnUpperFirstElements(upperArray)
 
     property variablesLower:
         '''
@@ -468,7 +468,7 @@ cdef class CyClpSimplex:
             return <object>self.CppSelf.getColLower()
 
         def __set__(self, lowerArray):
-            self.setColumnLowerArray(lowerArray)
+            self.setColumnLowerFirstElements(lowerArray)
 
     property constraintsUpper:
         '''
@@ -1125,10 +1125,32 @@ cdef class CyClpSimplex:
 
 
     def setColumnUpperArray(self, np.ndarray[np.double_t, ndim=1] columnUpper):
+        '''
+        columnUpper should have n+m elements. The method only does
+        a pointer assignment. If you only want to set the first n
+        elements use setColumnUpperFirstElements().
+        '''
         self.CppSelf.setColumnUpperArray(<double*>columnUpper.data)
 
+    def setColumnUpperFirstElements(self, np.ndarray[np.double_t, ndim=1] columnUpper):
+        '''
+        Run a loop in C++ and set the first n elements of variables' upperbounds
+        '''
+        self.CppSelf.setColumnUpperFirstElements(len(columnUpper), <double*>columnUpper.data)
+
     def setColumnLowerArray(self, np.ndarray[np.double_t, ndim=1] columnLower):
+        '''
+        columnLower should have n+m elements. The method only does
+        a pointer assignment. If you only want to set the first n
+        elements use setColumnLowerFirstElements().
+        '''
         self.CppSelf.setColumnLowerArray(<double*>columnLower.data)
+
+    def setColumnLowerFirstElements(self, np.ndarray[np.double_t, ndim=1] columnLower):
+        '''
+        Run a loop in C++ and set the first n elements of variables' lowerbounds
+        '''
+        self.CppSelf.setColumnLowerFirstElements(len(columnLower), <double*>columnLower.data)
 
     def setColumnLowerSubset(self, np.ndarray[np.int32_t, ndim=1] indicesOfIndices,
                                    np.ndarray[np.int32_t, ndim=1] indices,
