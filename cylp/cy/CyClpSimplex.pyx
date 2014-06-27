@@ -23,6 +23,9 @@ from cylp.py.pivots.DualPivotPythonBase import DualPivotPythonBase
 from cylp.py.modeling.CyLPModel import CyLPModel
 from cylp.cy cimport CyCoinMpsIO
 
+# Initialize numpy
+np.import_array()
+
 problemStatus = ['optimal', 'primal infeasible', 'dual infeasible',
                 'stopped on iterations or time',
                 'stopped due to errors',
@@ -1194,6 +1197,13 @@ cdef class CyClpSimplex:
 
     cdef double* dualRowSolution(self):
         return self.CppSelf.dualRowSolution()
+
+    def CLP_dualConstraintSolution(self):
+        cdef np.npy_intp shape[1]
+        shape[0] = <np.npy_intp> self.nConstraints
+        ndarray = np.PyArray_SimpleNewFromData(1, shape,
+                                               np.NPY_DOUBLE, <void*> self.dualRowSolution())
+        return ndarray
 
     #############################################
     # CLP Methods
