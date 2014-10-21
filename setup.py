@@ -39,8 +39,15 @@ except:
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
 except:
-    raise Exception('Please set the environment variable COIN_INSTALL_DIR ' +
-                    'to the location of the COIN installation')
+    from subprocess import check_output
+    from os.path import abspath, dirname
+
+    try:
+        location = dirname(check_output(['which', 'clp']).strip())
+        CoinDir = abspath(join(location, ".."))
+    except:
+        raise Exception('Please set the environment variable COIN_INSTALL_DIR'
+                        ' to the location of the COIN installation')
 
 def get_libs():
     '''
