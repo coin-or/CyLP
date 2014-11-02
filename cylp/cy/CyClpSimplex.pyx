@@ -762,7 +762,7 @@ cdef class CyClpSimplex:
         def __get__(self):
             return ['ignore', 'min', 'max'][int(self.CppSelf.optimizationDirection())]
         def __set__(self, value):
-            self.CppSelf.setOptimizationDirection(float(['ignore', 'min', 'max'].index(value)))
+            self.CppSelf.setOptimizationDirection({'ignore':0., 'min':1., 'max':-1.}[value])
 
     #############################################
     # get set

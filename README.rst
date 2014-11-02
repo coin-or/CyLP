@@ -17,7 +17,7 @@ pivot rules completely in Python.
 
 You may read your LP from an mps file or use the CyLP’s easy modeling
 facility. Please find examples in the `documentation
-<http://mpy.github.io/cylpdoc/>`_.
+<http://mpy.github.io/CyLPdoc/>`_.
 
 .. note::
 
