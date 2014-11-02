@@ -171,7 +171,7 @@ Documentation
 ===============
 You may access CyLP's documentation:
 
-1. *Online* : Please visit http://mpy.github.io/cylpdoc/
+1. *Online* : Please visit http://mpy.github.io/CyLPdoc/
 
 2. *Offline* : To install CyLP's documentation in your repository, you need
    Sphinx (http://sphinx.pocoo.org/). You can generate the documentation by
@@ -187,5 +187,3 @@ You may access CyLP's documentation:
 .. image:: https://cruel-carlota.pagodabox.com/f8efbddd4f44bb098d20dafdd0b9e897
    :alt: githalytics.com
    :target: http://githalytics.com/mpy/cylp
-
-
