@@ -47,6 +47,33 @@ CyLP is being used in a wide range of practical and research fields. Some of the
 Installation
 ============
 
+The easiest way to install CyLP is by using the binaries. If that's not
+possible you may always compile it from source.
+
+Requirements
+--------------
+
+CyLP needs Numpy (www.numpy.org) and Scipy (www.scipy.org). If you wish to install CyLP from source, you will also need to compile Cbc. Details of this process is given below.
+
+Binary Installation
+----------------------
+
+If you have setuptools installed you may run::
+
+    $ easy_install cylp
+
+If a binary is available for your architecture it will be installed. Otherwise
+you will see an error telling you to specify where to find a Cbc installation.
+That's because easy_install is trying to compile the source. In this case
+you'll have to compile Cbc and set and environment variable to point to it
+before calling easy_install again. The details are given in the `Installing
+from source`_ section.
+
+
+
+Installing from source
+========================
+
 STEP 1:
     Install CBC (http://www.coin-or.org/download/source/Cbc/).
     CyLP can be compiled against
