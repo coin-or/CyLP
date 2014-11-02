@@ -758,6 +758,12 @@ cdef class CyClpSimplex:
         def __get__(self):
             return self.CppSelf.numberPrimalInfeasibilities()
 
+    property optimizationDirection:
+        def __get__(self):
+            return ['ignore', 'min', 'max'][int(self.CppSelf.optimizationDirection())]
+        def __set__(self, value):
+            self.CppSelf.setOptimizationDirection(float(['ignore', 'min', 'max'].index(value)))
+
     #############################################
     # get set
     #############################################

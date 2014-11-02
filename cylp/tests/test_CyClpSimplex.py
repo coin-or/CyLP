@@ -55,6 +55,12 @@ class TestCyClpSimplex(unittest.TestCase):
         self.s.initialDualSolve()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
+    def test_direction(self):
+        self.assertEqual(self.s.optimizationDirection, 'min')
+        self.s.optimizationDirection = 'max'
+        self.assertEqual(self.s.optimizationDirection, 'max')
+
+
 
 if __name__ == '__main__':
     unittest.main()

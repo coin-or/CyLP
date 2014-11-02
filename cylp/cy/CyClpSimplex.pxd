@@ -296,6 +296,9 @@ cdef extern from "IClpSimplex.hpp":
         bint isInteger(int index)
         PyObject* getIntegerInformation()
 
+        double optimizationDirection()
+        void setOptimizationDirection(double value)
+
 cdef class CyClpSimplex:
     '''
     This is the documentation of CyClpSimpelx in the pyx class
