@@ -152,7 +152,7 @@ def identitySub(var):
     for ``var``.
     '''
     n = var.dim
-    if var.parent != None:
+    if var.parent is not None:
         n = var.parent.dim
     if var.dim == 1:
         m = lil_matrix((1, n))
@@ -190,7 +190,7 @@ class CyLPExpr:
     def __eq__(self, other):
         # Check if both sides are CyLPVar, in which case a pythonic
         # comparison is meant (for dictionary keys,...)
-        if (other == None):
+        if (other is None):
             return False
         if isinstance(self, CyLPVar) and isinstance(other, CyLPVar):
             return id(self) == id(other)
@@ -320,7 +320,7 @@ class CyLPConstraint:
             self.varCoefs[expr] *= coef
             return
         if isinstance(expr, CyLPExpr):
-            if expr.left == None:
+            if expr.left is None:
                 return
             self.mul(expr.right, coef)
             self.mul(expr.left, coef)
@@ -347,7 +347,7 @@ class CyLPConstraint:
                 self.isRange = False
             elif opr == 'sum':
                 n = right.dim
-                if right.parent != None:
+                if right.parent is not None:
                     n = right.parent.dim
                 self.varCoefs[right] = sparse.lil_matrix((1, n))
                 self.varCoefs[right][0, right.indices] = np.ones(len(right.indices))
@@ -369,7 +369,7 @@ class CyLPConstraint:
                         coef = left * identitySub(right)
                         self.nRows = len(right.indices)
                     else:
-                        if left == None:
+                        if left is None:
                             return
                         if right.dim != left.shape[-1]:
                             raise Exception("Coefficient:\n%s\n has %d" \
@@ -385,7 +385,7 @@ class CyLPConstraint:
                                             " expected %d"
                                         % (left, left.shape[0], self.nRows))
                         self.nRows = nr
-                        if right.parent == None:
+                        if right.parent is None:
                             coef = deepcopy(left)
                         else:
                             coef = sparse.lil_matrix((nr, right.parent.dim))
@@ -508,12 +508,12 @@ class CyLPConstraint:
                 if ((opr in ('>=', '==') and isinstance(left, CyLPExpr)) or
                     (opr in ('<=', '==') and isinstance(right, CyLPExpr))):
                     self.lower = bound
-                    if self.upper == None:
+                    if self.upper is None:
                         self.upper = getCoinInfinity() * np.ones(len(bound))
                 if ((opr in ('<=', '==') and isinstance(left, CyLPExpr)) or
                     (opr in ('>=', '==') and isinstance(right, CyLPExpr))):
                     self.upper = bound
-                    if self.lower == None:
+                    if self.lower is None:
                         self.lower = -getCoinInfinity() * np.ones(len(bound))
 
 
@@ -555,7 +555,7 @@ class CyLPVar(CyLPExpr):
         s = self.name
         if self.fromInd and self.toInd:
             s += '[%d:%d]' % (self.fromInd, self.toInd)
-        elif self.parent != None and len(self.indices) == 1:
+        elif self.parent is not None and len(self.indices) == 1:
             s += '[%d]' % self.indices
         return s
 
@@ -1059,7 +1059,7 @@ class CyLPModel(object):
             for varName in self.varNames:# self.pvdims.keys():#self.allVarNames:
                 vmat = self.generateVarMatrix(varName)
 
-                if vmat == None:
+                if vmat is None:
                     vmat = csc_matrixPlus((self.nCons, self.pvdims[varName]))
                 masterCoefMat = sparseConcat(masterCoefMat, vmat, 'h')
 
@@ -1083,7 +1083,7 @@ class CyLPModel(object):
 
                 #v_lower = np.concatenate((v_lower, v.lower), axis=0)
                 #v_upper = np.concatenate((v_upper, v.upper), axis=0)
-        #if masterCoefMat != None:
+        #if masterCoefMat is not None:
         return masterCoefMat, c_lower, c_upper, v_lower, v_upper
 
 

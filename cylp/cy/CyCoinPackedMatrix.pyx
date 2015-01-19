@@ -27,7 +27,7 @@ cdef class CyCoinPackedMatrix:
                         np.ndarray[np.int32_t, ndim=1] rowIndices=None,
                         np.ndarray[np.int32_t, ndim=1] colIndices=None,
                         np.ndarray[np.double_t, ndim=1] elements=None):
-        if rowIndices == None:
+        if rowIndices is None:
             self.CppSelf = new_CppCoinPackedMatrix()
         else:
             self.CppSelf = new CppCoinPackedMatrix(colOrdered,

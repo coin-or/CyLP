@@ -54,7 +54,7 @@ class GomoryCutGenerator:
             basicVarInd = bv[rowInd]
             if basicVarInd < clpModel.nVariables and intInds[basicVarInd] and not rhsIsInt[rowInd]:
                 coef, b = gomoryCut(clpModel, rowInd)
-                if b != None:
+                if b is not None:
                     #print 'Adding cut: ', coef, '>=', b
                     expr = CyLPArray(coef) * x >= b
                     cuts.append(expr)

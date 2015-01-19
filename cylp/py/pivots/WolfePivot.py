@@ -21,7 +21,7 @@ class WolfePivot(PivotPythonBase):
         s = self.clpModel
 
         # If objective function linear proceed as normal
-#        if s.Hessian == None:
+#        if s.Hessian is None:
         rc = s.reducedCosts
         #tol = s.dualTolerance
         tol = 0
