@@ -1017,7 +1017,7 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             self.CppSelf.setStatus(arg, status)
         elif True:  # isinstance(arg, CyLPVar):
-            if self.cyLPModel == None:
+            if self.cyLPModel is None:
                 raise Exception('The argument of setVarStatus can be ' \
                                 'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
@@ -1042,7 +1042,7 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             return IntToStatus[self.CppSelf.getStatus(arg)]
         elif True:  # isinstance(arg, CyLPVar):
-            if self.cyLPModel == None:
+            if self.cyLPModel is None:
                 raise Exception('The argument of getVarStatus can be ' \
                                 'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
@@ -1092,7 +1092,7 @@ cdef class CyClpSimplex:
             arg += self.nVariables
             self.CppSelf.setStatus(arg, status)
         elif True:  # isinstance(arg, CyLPVar):
-            if self.cyLPModel == None:
+            if self.cyLPModel is None:
                 raise Exception('The argument of setVarStatus can be ' \
                                 'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
@@ -1114,7 +1114,7 @@ cdef class CyClpSimplex:
             arg += self.nVariables
             return IntToStatus[self.CppSelf.getStatus(arg)]
         elif True:  # isinstance(arg, CyLPVar):
-            if self.cyLPModel == None:
+            if self.cyLPModel is None:
                 raise Exception('The argument of setVarStatus can be ' \
                                 'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
@@ -1233,7 +1233,7 @@ cdef class CyClpSimplex:
         2520.5717
 
         '''
-        presolve = 0 if presolve == 'on' and self.Hessian == None else 1
+        presolve = 0 if presolve == 'on' and self.Hessian is None else 1
         return problemStatus[self.CppSelf.initialSolve(presolve)]
 
     def initialPrimalSolve(self):
@@ -1710,7 +1710,7 @@ cdef class CyClpSimplex:
         if isinstance(arg, (int, long)):
             self.CppSelf.setInteger(arg)
         elif True:  # isinstance(arg, CyLPVar):
-            if self.cyLPModel == None:
+            if self.cyLPModel is None:
                 raise Exception('The argument of setInteger can be ' \
                                 'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')
@@ -1880,7 +1880,7 @@ cdef class CyClpSimplex:
             return
 
         self.resize(m, n)
-        if mat != None:
+        if mat is not None:
             if not isinstance(mat, sparse.coo_matrix):
                 mat = mat.tocoo()
 
@@ -1913,21 +1913,21 @@ cdef class CyClpSimplex:
             curVarInd += var.dim
 
 
-        if cyLPModel.objective != None:
+        if cyLPModel.objective is not None:
             self.objective = cyLPModel.objective
 
     def evaluateAt(self, x0):
         '''
         Evaluate the objective function at x0
         '''
-        if self.Hessian != None:
+        if self.Hessian is not None:
             return (np.dot(self.objectiveCoefficients, x0) +
                     0.5 * np.dot(x0, self.Hessian.dot(x0)) - self.objectiveOffset)
         else:
             return np.dot(self.objectiveCoefficients, x0) - self.objectiveOffset
 
     def gradientAt(self, x0):
-        if self.Hessian != None:
+        if self.Hessian is not None:
             return self.objectiveCoefficients + self.Hessian * x0
         else:
             return self.objectiveCoefficients
@@ -2080,7 +2080,7 @@ cdef class CyClpSimplex:
         if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
            self.CppSelf.setComplement(var1, var2)
         elif True:  # isinstance(arg, CyLPVar):
-            if self.cyLPModel == None:
+            if self.cyLPModel is None:
                 raise Exception('The argument of setInteger can be ' \
                                 'a CyLPVar only if the object is built ' \
                                 'using a CyLPModel.')

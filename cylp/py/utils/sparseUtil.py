@@ -118,7 +118,7 @@ class csc_matrixPlus(sparse.csc_matrix):
         data = self.data
         m = self.tocoo()
         irow, jcol = m.row, m.col
-        if scaleFactor != None:
+        if scaleFactor is not None:
             data /= scaleFactor[irow]
             self.rowScaleFactor = scaleFactor
             return scaleFactor
@@ -138,7 +138,7 @@ class csc_matrixPlus(sparse.csc_matrix):
         data = self.data
         m = self.tocoo()
         irow, jcol = m.row, m.col
-        if scaleFactor != None:
+        if scaleFactor is not None:
             data /= scaleFactor[jcol]
             self.colScaleFactor = scaleFactor
             return scaleFactor
@@ -155,16 +155,16 @@ class csc_matrixPlus(sparse.csc_matrix):
         return colScaleFactor
 
     def col_unscale(self, scaleFactor=None):
-        if scaleFactor == None:
+        if scaleFactor is None:
             scaleFactor = self.colScaleFactor
-        if scaleFactor != None:
+        if scaleFactor is not None:
             jcol = self.tocoo().col
             self.data *= scaleFactor[jcol]
 
     def row_unscale(self, scaleFactor=None):
-        if scaleFactor == None:
+        if scaleFactor is None:
             scaleFactor = self.rowScaleFactor
-        if scaleFactor != None:
+        if scaleFactor is not None:
             irow = self.tocoo().row
             self.data *= scaleFactor[irow]
 
@@ -352,7 +352,7 @@ class csr_matrixPlus(sparse.csr_matrix):
         data = self.data
         m = self.tocoo()
         irow, jcol = m.row, m.col
-        if scaleFactor != None:
+        if scaleFactor is not None:
             data /= scaleFactor[irow]
             self.rowScaleFactor = scaleFactor
             return scaleFactor
@@ -372,7 +372,7 @@ class csr_matrixPlus(sparse.csr_matrix):
         data = self.data
         m = self.tocoo()
         irow, jcol = m.row, m.col
-        if scaleFactor != None:
+        if scaleFactor is not None:
             data /= scaleFactor[jcol]
             self.colScaleFactor = scaleFactor
             return scaleFactor
@@ -389,16 +389,16 @@ class csr_matrixPlus(sparse.csr_matrix):
         return colScaleFactor
 
     def col_unscale(self, scaleFactor=None):
-        if scaleFactor == None:
+        if scaleFactor is None:
             scaleFactor = self.colScaleFactor
-        if scaleFactor != None:
+        if scaleFactor is not None:
             jcol = self.tocoo().col
             self.data *= scaleFactor[jcol]
 
     def row_unscale(self, scaleFactor=None):
-        if scaleFactor == None:
+        if scaleFactor is None:
             scaleFactor = self.rowScaleFactor
-        if scaleFactor != None:
+        if scaleFactor is not None:
             irow = self.tocoo().row
             self.data *= scaleFactor[irow]
 
@@ -495,11 +495,11 @@ def sparseConcat(a, b, how, v_offset=0, h_offset=0):
     True
 
     '''
-    if a == None:
-        if b == None:
+    if a is None:
+        if b is None:
             return None
         return csr_matrixPlus(b)
-    if b == None:
+    if b is None:
         return csr_matrixPlus(a)
     assert(h_offset >= -1 and v_offset >= -1)
 
