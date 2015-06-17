@@ -74,6 +74,10 @@ cdef extern from "ICbcModel.hpp":
         void setAllowableGap(double value)
         double getAllowableGap()
 
+        bint setMaximumSolutions(int value)
+        int getMaximumSolutions()
+        bint setMaximumSeconds(double value)
+        double getMaximumSeconds()
 
         CppOsiSolverInterface* solver()
 

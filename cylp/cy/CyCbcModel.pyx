@@ -271,6 +271,19 @@ cdef class CyCbcModel:
         def __set__(self, value):
             self.CppSelf.setAllowablePercentageGap(value)
 
+    property maximumSolutions:
+        def __get__(self):
+            return self.CppSelf.getMaximumSolutions()
+
+        def __set__(self, value):
+            self.CppSelf.setMaximumSolutions(value)
+
+    property maximumSeconds:
+        def __get__(self):
+            return self.CppSelf.getMaximumSeconds()
+
+        def __set__(self, value):
+            self.CppSelf.setMaximumSeconds(value)
 
 
     #TODO: add access to solver: getLower, getUpper,...
