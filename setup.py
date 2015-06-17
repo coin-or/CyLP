@@ -378,7 +378,8 @@ class customInstall(install):
     '''
     def run(self):
         currentDir = os.path.dirname(os.path.realpath(__file__))
-        if operatingSystem == 'mac' and mac_ver[:4] == '10.9':
+        from distutils.version import LooseVersion
+        if operatingSystem == 'mac' and LooseVersion(mac_ver) >= LooseVersion('10.9'):
             # If std::isspace is not already replaced
             if os.system('grep -rI "std::isspace" cylp/cy/*.cpp'):
                 os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/isspace/std::isspace/g' ''' % currentDir)
