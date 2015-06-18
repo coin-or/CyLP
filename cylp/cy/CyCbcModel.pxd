@@ -76,9 +76,7 @@ cdef extern from "ICbcModel.hpp":
 
         bint setMaximumSolutions(int value)
         int getMaximumSolutions()
-        bint setMaximumSeconds(double value)
-        double getMaximumSeconds()
-
+        
         CppOsiSolverInterface* solver()
 
 cdef class CyCbcModel:
