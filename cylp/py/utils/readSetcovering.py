@@ -55,8 +55,8 @@ class setCover:
             while len(self.costs) != self.nCols:
                 self.costs += [float(k) for k in lines[i].split()]
                 i += 1
-            
-            
+
+
             self.cols = []
             j = i
             while len(self.cols) != self.nCols:
@@ -77,12 +77,12 @@ class setCover:
         A = self.A
         c = self.c
         s = CyClpSimplex()
-        
+
         x = s.addVariable('x', self.nCols)
 
         s += A * x >= 1
         s += 0 <= x <= 1
-        
+
         s.objective = c * x
 
         return s
@@ -92,14 +92,14 @@ class setCover:
         A = self.A
         c = self.c
         s = CyClpSimplex()
-        
+
         x = s.addVariable('x', self.nCols)
         if addW:
             w = s.addVariable('w', self.nCols)
-        
+
         s += A * x >= 1
         n = self.nCols
-        
+
         if not addW:
             s += 0 <= x <= 1
         else:
@@ -109,7 +109,7 @@ class setCover:
 ##        s += -1 <= x <= 1
 
         s.objective = c * x
-       
+
         if addW:
             G = sparse.lil_matrix((2*n, 2*n))
             for i in xrange(n/2, n): #xrange(n-1):
@@ -120,19 +120,19 @@ class setCover:
             for i in xrange(n/2, n): #xrange(n-1):
                 G[i, i] = 1
 
-    
+
         s.Hessian = G
         return s
-         
+
     @property
     def A(self):
         a = sparse.lil_matrix((self.nRows, self.nCols))
         for nCol in xrange(self.nCols):
             for nRow in self.cols[nCol]:
                 a[nRow, nCol] = 1
-            
+
         return csr_matrixPlus(a)
-    
+
     @property
     def c(self):
         return CyLPArray(self.costs)
@@ -140,7 +140,7 @@ class setCover:
 ##        print(self.nRows, self.nCols)
 ##        for nCol in xrange(self.nCols):
 ##            c[nCol] = self.costs[nCol]
-##            
+##
 ##        return c
 
     @property
