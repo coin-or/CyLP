@@ -1,3 +1,11 @@
+from __future__ import print_function
+
+# Python 3 does not have long, only int
+try:
+    long
+except NameError:
+    long = int
+
 import numpy as np
 from math import atan2
 from cylp.py import Constants

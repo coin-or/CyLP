@@ -11,6 +11,12 @@ regardless of their dimension alignments. Fills with zeros where necessary.
 
 '''
 
+# Python 3 does not have long, only int
+try:
+    long
+except NameError:
+    long = int
+
 from scipy import sparse
 import numpy as np
 

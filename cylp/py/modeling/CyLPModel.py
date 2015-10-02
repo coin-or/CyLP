@@ -120,6 +120,12 @@
 '''
 
 from __future__ import print_function
+# Python 3 does not have long, only int
+try:
+    long
+except NameError:
+    long = int
+
 from itertools import product
 from copy import deepcopy
 from operator import mul
