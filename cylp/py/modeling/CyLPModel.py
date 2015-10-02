@@ -120,6 +120,8 @@
 '''
 
 from __future__ import print_function
+from functools import reduce
+
 # Python 3 does not have long, only int
 try:
     long
