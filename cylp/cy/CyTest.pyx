@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from time import clock
 from cylp.cy.CyClpSimplex cimport CyClpSimplex
@@ -22,5 +23,5 @@ def CySolve(fileName, method):
 
     start = clock()
     s.primal()
-    print 'Exec time: ',  clock() - start
+    print('Exec time: ',  clock() - start)
     return s.objectiveValue

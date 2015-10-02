@@ -200,6 +200,6 @@ if __name__ == '__main__':
     inds = getMultiDimMatrixIndex([i1, i2, i3])
 
     for i in inds:
-        print getTupleIndex(i, (5, 6, 7)), i
-    
-    print getTupleIndex(8, 8)
+        print(getTupleIndex(i, (5, 6, 7)), i)
+
+    print(getTupleIndex(8, 8))

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import QP
 import numpy as np
 import Constants
@@ -125,9 +126,9 @@ class GQP(QP.QP):
             # Make sure that Q2 and J2 are alright
             if (abs((self.L.T * self.J2).T * Q1) > 0.1).any() or \
                 (abs(Q1.T * (self.L.T * self.J2)) > 0.1).any():
-                #print "post1" , abs((self.L.T * self.J2).T * Q1)
-                #print abs(Q1.T * (self.L.T * self.J2))
-                #print "--"
+                #print("post1" , abs((self.L.T * self.J2).T * Q1))
+                #print(abs(Q1.T * (self.L.T * self.J2)))
+                #print("--")
                 ret = False
 
             # Make sure that R is OK and N_star IS the pseudo-inverse of N
@@ -135,8 +136,8 @@ class GQP(QP.QP):
             iden = np.matrix(np.identity(self.q, float))
 
             if (abs(N_star_N) - iden > 0.5).any():
-                #print "post2" , abs(N_star_N) - iden
-                #print "--"
+                #print("post2" , abs(N_star_N) - iden)
+                #print("--")
                 ret = False
         return ret
 
@@ -247,12 +248,12 @@ class GQP(QP.QP):
         while True:
             iteration += 1
             if verbose:
-                print '-----------------------------------------'
-                print 'iteration = ', iteration
+                print('-----------------------------------------')
+                print('iteration = ', iteration)
 
-                #print "obj value=" , f
-                print "active set:"
-                print self.A
+                #print("obj value=" , f)
+                print("active set:")
+                print(self.A)
             p = self.getMostViolatedConst(self.x)
 
             if p == -1:
@@ -296,7 +297,7 @@ class GQP(QP.QP):
                     return 'infeasible', -1, -1
                 elif t2 == -1:
                     if verbose:
-                        print "taking a partial step_1"
+                        print("taking a partial step_1")
                     uPlus += t * dual_dir
                     #we'll not use Q_tilde here. It is used in the PAS method.
                     uPlus, Q_tilde = self.removeConstraint(k, uPlus)
@@ -309,15 +310,15 @@ class GQP(QP.QP):
 
                 if abs(t - t2) <= Constants.EPSILON:
                     if verbose:
-                        print "taking a full step "
-                        print 'blocking constriant : ', p
+                        print("taking a full step ")
+                        print('blocking constriant : ', p)
                     self.u = uPlus
                     self.addConstraint(p)
                     #We took the full step, going back to step 1
                     break
                 else:
                     if verbose:
-                        print "taking a partial step_2"
+                        print("taking a partial step_2")
                     #t == t1
                     uPlus, Q_tilde = self.removeConstraint(k, uPlus)
                     continue

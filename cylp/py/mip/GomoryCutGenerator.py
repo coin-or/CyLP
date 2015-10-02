@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import math
 import numpy as np
@@ -55,7 +56,7 @@ class GomoryCutGenerator:
             if basicVarInd < clpModel.nVariables and intInds[basicVarInd] and not rhsIsInt[rowInd]:
                 coef, b = gomoryCut(clpModel, rowInd)
                 if b is not None:
-                    #print 'Adding cut: ', coef, '>=', b
+                    #print('Adding cut: ', coef, '>=', b)
                     expr = CyLPArray(coef) * x >= b
                     cuts.append(expr)
         return cuts
@@ -93,5 +94,5 @@ if __name__ == '__main__':
 
     cbcModel.branchAndBound()
 
-    print cbcModel.primalVariableSolution
+    print(cbcModel.primalVariableSolution)
 

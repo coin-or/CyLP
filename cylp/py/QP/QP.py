@@ -1,5 +1,6 @@
 #UNDER DEVELOPMENT AND TEST
 
+from __future__ import print_function
 import sys
 import cProfile
 import inspect
@@ -125,23 +126,23 @@ class QP:
         nInEquality = self.nInEquality
 
 #        if nEquality:
-#            print 'A'
-#            print A.todense()
-#            print b
+#            print('A')
+#            print(A.todense())
+#            print(b)
 #
 #        if nInEquality:
-#            print 'C'
-#            print C.todense()
-#            print c_low
-#            print c_up
 #        
-#        print 'Hessian'
-#        print G.todense()
 #    
-#        print 'c'
-#        print c
        
         iVarsWithJustUpperBound = [i for i in xrange(nVar) 
+#            print(C')
+#            print(C.todense())
+#            print(c_low)
+#            print(c_up)
+#        print('Hessian')
+#        print(G.todense())
+#        print('c')
+#        print(c)
                             if x_up[i] < infinity and x_low[i] <= -infinity]
         nVarsWithJustUpperBound = len(iVarsWithJustUpperBound)
 
@@ -174,13 +175,13 @@ class QP:
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
         
-#        print '<=C<=', len(iConstraintsWithBothBounds)
-#        print 'C<=', len(iConstraintsWithJustUpperBound)
-#        print '<=C', len(iConstraintsWithJustLowerBound)
-#        print '<=x<=', len(iVarsWithBothBounds)
-#        print 'x<=', len(iVarsWithJustUpperBound)
-#        print '<=x', len(iVarsWithJustLowerBound)
-#        print 'free x', len(iFreeVars)
+#        print('<=C<=', len(iConstraintsWithBothBounds))
+#        print('C<=', len(iConstraintsWithJustUpperBound))
+#        print('<=C', len(iConstraintsWithJustLowerBound))
+#        print('<=x<=', len(iVarsWithBothBounds))
+#        print('x<=', len(iVarsWithJustUpperBound))
+#        print('<=x', len(iVarsWithJustLowerBound))
+#        print('free x', len(iFreeVars))
         #st = 'n, m, =, <c<, c<, <c, <x<, x<, <x, freeVar\n'
 
 
@@ -290,12 +291,12 @@ class QP:
 #        for sec in xrange(divs):
 #            for i in xrange(mmm.shape[0]):
 #                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
-#                    print str(int(round(mmm[i, j], 1))).rjust(4),
-#                print
-#            print '...'
-#        
-#        print c_rhs
-        
+#                    print(str(int(round(mmm[i, j], 1))).rjust(4),)
+#                print()
+#            print('...')
+#
+#        print(c_rhs)
+
         assert(C.shape[0] == len(c_rhs))
         self.A = C
         self.b = c_rhs
@@ -330,11 +331,11 @@ class QP:
         b = CyLPArray(self.b)
         c = CyLPArray(self.c) 
         G = self.G
-        
-#        print 'A\n', A.todense()
-#        print 'b\n', b
-#        print 'c\n', c
-#        print 'G\n', G.todense()
+
+#        print('A\n', A.todense())
+#        print('b\n', b)
+#        print('c\n', c)
+#        print('G\n', G.todense())
 #
 
         
@@ -360,32 +361,32 @@ class QP:
         y = s.addVariable('y', self.nEquality)
        
         #from numpy import linalg as LA
-        #print 'cond:', LA.cond(G[:nx, :nx].todense())
-        #print 'G nnz:', G.nnz, G.nnz / float(nx*nx)
-        #print 'A nnz:', A.nnz, A.nnz / float(A.shape[0] * A.shape[1])
+        #print('cond:', LA.cond(G[:nx, :nx].todense()))
+        #print('G nnz:', G.nnz, G.nnz / float(nx*nx))
+        #print('A nnz:', A.nnz, A.nnz / float(A.shape[0] * A.shape[1]))
 
-        #print G.todense()
+        #print(G.todense())
         minDiag = min(G[i, i] for i in xrange(nx))    
         delta =  max(10**-8, 0.01 * max(1.0**-4, minDiag))
         G = G + delta * I(nVar)
-        #print G.todense()
+        #print(G.todense())
         
-#        print 'G'
-#        print G.todense()
+#        print('G')
+#        print(G.todense())
 #
-#        print 'A'
-#        print A.todense()
+#        print('A')
+#        print(A.todense())
 #
-#        print 'A.T'
-#        print A.T.todense()
+#        print('A.T')
+#        print(A.T.todense())
 #
-#        print 'A.T[:nx, :]'
-#        print A.T[:nx, :].todense()
+#        print('A.T[:nx, :]')
+#        print(A.T[:nx, :].todense())
 #
-#        print 'A.T[nx:, :]'
-#        print A.T[nx:, :].todense()
+#        print('A.T[nx:, :]')
+#        print(A.T[nx:, :].todense())
 #   
-#        print nx
+#        print(nx)
 
         s += G[:nx, :] * x - A.T[:nx, :] * y + sp[:nx] - sm[:nx] == -c[:nx]
         if nSlacks:
@@ -411,8 +412,8 @@ class QP:
         
         if nSlacks:
             p.setComplement(m, x[nx:], z)
-        #print 'comp list:\n', p.complementarityList
-        
+        #print('comp list:\n', p.complementarityList)
+
         s.setPivotMethod(p)
         timeToMake = clock() - start
         start = clock()
@@ -420,14 +421,14 @@ class QP:
         timeToSolve = clock() - start
 
         self.writeReport('qpout', s, timeToMake, timeToSolve, method, p)
-        
-        print 'x'
-        print s.primalVariableSolution['x']
-#        print 'z'
-#        print s.primalVariableSolution['z']
-#        print 'y'
-#        print s.primalVariableSolution['y']
-#        
+
+        print('x')
+        print(s.primalVariableSolution['x'])
+#        print('z')
+#        print(s.primalVariableSolution['z'])
+#        print('y')
+#        print(s.primalVariableSolution['y'])
+#
 #        nx = self.nOriginalVar
 #        x = np.matrix(s.primalVariableSolution['x']).T
 #        y = np.matrix(s.primalVariableSolution['y']).T
@@ -435,21 +436,21 @@ class QP:
 #        #x = x[:nx]
 #        #G = self.G[:nx, :nx]
 #        c = np.matrix(self.c).T
-#        print c
-#        print np.zeros((3, 1))
+#        print(c)
+#        print(np.zeros((3, 1))))
 #        c = np.concatenate((c, np.zeros((5, 1))), axis=0)
-#        print c
+#        print(c)
 #
-#        print 'A*x = '
-#        print A * x
-#        print 'G * x + c'
-#        print G * x + c
-#        print 'A.T * y'
-#        print A.T * y
+#        print('A*x = ')
+#        print(A * x)
+#        print('G * x + c')
+#        print(G * x + c)
+#        print('A.T * y')
+#        print(A.T * y)
 #
-#        print G[:nx, :] * x - A.T[:nx, :] * y
-#        print -A.T[nx:, :] * y - z
-#        #print G * x + c - A.T * y - z  
+#        print(G[:nx, :] * x - A.T[:nx, :] * y)
+#        print(-A.T[nx:, :] * y - z)
+#        #print(G * x + c - A.T * y - z)
         return
 
 #        m = CyLPModel()
@@ -483,7 +484,7 @@ class QP:
 #            p = WolfePivotPE(s)
 #        
 #        p.setComplement(m, x[nx:], z)
-#        #print 'comp list:\n', p.complementarityList
+#        #print('comp list:\n', p.complementarityList)
 #        
 #        s.setPivotMethod(p)
 ##        timeToMake = clock() - start
@@ -496,20 +497,20 @@ class QP:
         #s.initialPrimalSolve()
         if method == 'wp':
             total = p.compCount + p.nonCompCount
-            print 'comp : %g ' % (p.compCount / float(total))
-            print 'comp rejection : %g' % (p.compRej / float(p.compCount))
-        #print s.primalVariableSolution 
-        print 'OBJ:', s.objectiveValue 
+            print('comp : %g ' % (p.compCount / float(total)))
+            print('comp rejection : %g' % (p.compRej / float(p.compCount)))
+        #print(s.primalVariableSolution)
+        print('OBJ:', s.objectiveValue)
         x = np.matrix(s.primalVariableSolution['x']).T
-        #print A * x - np.matrix(b).T
-        print 'objective:'
+        #print(A * x - np.matrix(b).T)
+        print('objective:')
         x = x[:nx]
         G = G[:nx, :nx]
         qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
-        print qobj 
-        print s.primalVariableSolution
+        print(qobj)
+        print(s.primalVariableSolution)
 
-#        print s.iteration
+#        print(s.iteration)
 #        f = open('qpout', 'a')
 #        st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
 #                str(round(s.objectiveValue, 5)).ljust(8), 
@@ -819,10 +820,10 @@ class QP:
         #adding -A^Ty_A
         for i in range(A.shape[0]):
             rowi = -A.getrow(i).tocoo()
-            #print 'rowi : '
-            #print rowi.col
+            #print('rowi : ')
+            #print(rowi.col)
             cols = rowi.col + IndexFactory.constIndex['Gx=-c'][0]
-            #print cols
+            #print(cols)
             model.addVariable(rowi.nnz, np.array(cols, np.int32),
                             np.array(rowi.data, 'd'), -infinity, infinity, 0)
         IndexFactory.addVar('y_A', A.shape[0])
@@ -873,18 +874,18 @@ class QP:
 
         st = clock()
         s.primal()
-        print "CLP time : %g seconds" % (clock() - st)
+        print("CLP time : %g seconds" % (clock() - st))
 
         x = s.getPrimalVariableSolution()
-        print "sol = "
+        print("sol = ")
         x = x[:nVar]
-        #print x
+        #print(x)
         G = G.todense()
-        #print G.shape
-        #print x * G
-        #print c
-        #print x
-        print 0.5 * x * (x * G).T + np.dot(c, x) - self.objectiveOffset
+        #print(G.shape)
+        #print(x * G)
+        #print(c)
+        #print(x)
+        print(0.5 * x * (x * G).T + np.dot(c, x) - self.objectiveOffset)
 
         return
 
@@ -909,19 +910,19 @@ class QP:
         nEquality = self.nEquality
         nInEquality = self.nInEquality
 
-#        print 'A'
-#        print A
-#        print b
+#        print('A')
+#        print(A)
+#        print(b)
 #
-#        print 'C'
-#        print C
-#        print c_low
-#        print c_up
-#        print 'Hessian'
-#        print G
-#    
-#        print 'c'
-#        print c
+#        print('C')
+#        print(C)
+#        print(c_low)
+#        print(c_up)
+#        print('Hessian')
+#        print(G)
+#
+#        print('c')
+#        print(c)
        
         iVarsWithJustUpperBound = [i for i in xrange(nVar) 
                             if x_up[i] < infinity and x_low[i] <= -infinity]
@@ -951,25 +952,25 @@ class QP:
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
 
-#        print '____________________________________________'
-#        print x_up
-#        print x_low
+#        print('____________________________________________')
+#        print(x_up)
+#        print(x_low)
 #
-#        print c_low
-#        print c_up
+#        print(c_low)
+#        print(c_up)
 #
-#        print C.todense()
-#        print iConstraintsWithBothBounds
-#        print iConstraintsWithJustLowerBound
-#        print iConstraintsWithJustUpperBound
-#        
-#        print 'vars'
-#        print iVarsWithBothBounds
-#        print iVarsWithJustLowerBound
-#        print iVarsWithJustUpperBound
-#        print '____________________________________________'
-        
-        
+#        print(C.todense())
+#        print(iConstraintsWithBothBounds)
+#        print(iConstraintsWithJustLowerBound)
+#        print(iConstraintsWithJustUpperBound)
+#
+#        print('vars')
+#        print(iVarsWithBothBounds)
+#        print(iVarsWithJustLowerBound)
+#        print(iVarsWithJustUpperBound)
+#        print('____________________________________________')
+
+
         In = I(nVar)
         
         m = CyLPModel()
@@ -1208,8 +1209,8 @@ class QP:
         
         s = CyClpSimplex(m)
         ###s.setComplement(x, z)
-        #print m.inds
-        #s.writeMps('/Users/mehdi/Desktop/test.mps') 
+        #print(m.inds)
+        #s.writeMps('/Users/mehdi/Desktop/test.mps')
         #s.useCustomPrimal(True)
        
 
@@ -1239,8 +1240,8 @@ class QP:
             
         if nVarsWithJustLowerBound:
             p.setComplement(m, k3, zk3)
-            
-        #print p.complementarityList
+
+        #print(p.complementarityList)
         s.setPivotMethod(p)
         timeToMake = clock() - start
         start = clock()
@@ -1249,15 +1250,15 @@ class QP:
         #s.initialPrimalSolve()
         if method == 'wp':
             total = p.compCount + p.nonCompCount
-            print 'comp : %g ' % (p.compCount / float(total))
-            print 'comp rejection : %g' % (p.compRej / float(total))
-        #print s.primalVariableSolution 
-        print 'OBJ:', s.objectiveValue 
+            print('comp : %g ' % (p.compCount / float(total)))
+            print('comp rejection : %g' % (p.compRej / float(total)))
+        #print(s.primalVariableSolution)
+        print('OBJ:', s.objectiveValue)
         x = np.matrix(s.primalVariableSolution['x']).T
-        print 'objective:'
+        print('objective:')
         qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
-       
-        print s.iteration
+
+        print(s.iteration)
         f = open('qpout', 'a')
         st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
                 str(round(s.objectiveValue, 5)).ljust(8), 
@@ -1268,58 +1269,58 @@ class QP:
         f.write(st)
         f.close()
 
-#        print checkComp(s.primalVariableSolution['k1'], 
-#                        s.primalVariableSolution['zk1'])
+#        print(checkComp(s.primalVariableSolution['k1'],
+#                        s.primalVariableSolution['zk1']))
 #
-#        print checkComp(s.primalVariableSolution['ku'], 
-#                        s.primalVariableSolution['zku'])
+#        print(checkComp(s.primalVariableSolution['ku'],
+#                        s.primalVariableSolution['zku']))
 
-#        print 'A:'
-#        print A
-#        print 'x'
-#        print x
-#        print 'Ax:'
-#        print A * x
-#        print 'b'
-#        print b
+#        print('A:')
+#        print(A)
+#        print('x')
+#        print(x)
+#        print('Ax:')
+#        print(A * x)
+#        print('b')
+#        print(b)
 #        y = np.matrix(s.primalVariableSolution['yb']).T
 #        #yx1 = s.primalVariableSolution['yx1']
 #
-#        print A.shape
-#        print ((A * x).T - b < 10 ** -5).all() 
-#      
-#        print 'opt'
-#        print G.todense()
-#        print np.linalg.eigvals(G.todense())
-#        print G * x - A.T * y + np.matrix(c).T 
+#        print(A.shape)
+#        print(((A * x).T - b < 10 ** -5).all())
+#
+#        print('opt')
+#        print(G.todense())
+#        print(np.linalg.eigvals(G.todense()))
+#        print(G * x - A.T * y + np.matrix(c).T)
 #        x = s.primalVariableSolution['x']
 #         
 #        for i in xrange(nVar):
 #            if x[i] > x_up[i] + 10**-10 or x[i] < x_low[i] - 10**-10:
-#                print i, 'INFEASIBLE', x_low[i] , x[i], x_up[i], x[i] > x_up[i], x[i] < x_low[i]
-        
-        #print 'Cx'
-        #print C * x
-        #print 'g3'
-        #print s.primalVariableSolution['g3']
-        #print 'Cx - g3'
-        #print C * x - np.matrix(s.primalVariableSolution['g3']).T 
-        #print 'optimality:'
-        #print -c
+#                print(i, 'INFEASIBLE', x_low[i] , x[i], x_up[i], x[i] > x_up[i], x[i] < x_low[i])
+
+        #print('Cx')
+        #print(C * x)
+        #print('g3')
+        #print(s.primalVariableSolution['g3'])
+        #print('Cx - g3')
+        #print(C * x - np.matrix(s.primalVariableSolution['g3']).T)
+        #print('optimality:')
+        #print(-c)
         #y =  s.primalVariableSolution['yc3']
-        #print G*x
-        #print C.T * y
-        #print 'opt:'
-        #print (G * x).T - C.T * y + c
-        
-#        print '-------------------------------------------------------'
+        #print(G*x)
+        #print(C.T * y)
+        #print('opt:')
+        #print((G * x).T - C.T * y + c)
+
+#        print('-------------------------------------------------------')
 #        x = np.matrix([[1, 2, -1, 3, -4]]).T
-#        print 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
-#        print 'Cx'
-#        print C * x
-#        print 'Cx - c_low'
-#        print C * x - np.matrix(c_low).T
-        
+#        print(0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
+#        print('Cx')
+#        print(C * x)
+#        print('Cx - c_low')
+#        print(C * x - np.matrix(c_low).T)
+
 
         return
         m.addConstraint(z >= 0)
@@ -1333,7 +1334,7 @@ class QP:
         if nInEquality > 0 :
             c_low = CyLPArray(c_low)
             c_up = CyLPArray(c_up)
-            print C
+            print(C)
             #c_low *= -1
             #m.addConstraint(c_low <= C * x <= c_up)
             #ss = m.addVariable('ss', 1)
@@ -1358,12 +1359,12 @@ class QP:
             else:
                 m.addConstraint(G * x - A.T * y - C.T * u - z == -c)
         elif nInEquality > 0:
-#            print G.shape
-#            print x.dim
-#            print C.T
-#            print u.dim
-#            print c.shape
-#            print z.dim
+#            print(G.shape)
+#            print(x.dim)
+#            print(C.T)
+#            print(u.dim)
+#            print(c.shape)
+#            print(z.dim)
             m.addConstraint(G * x - z - C.T * u + sp - sm == -c)  #- C.T * u - z 
         
         m.objective = sm + sp
@@ -1378,8 +1379,8 @@ class QP:
         
         s.primal()
         #s.initialPrimalSolve()
-        print s.primalVariableSolution 
-        print s.objectiveValue 
+        print(s.primalVariableSolution)
+        print(s.objectiveValue)
         return
 
         varIndexDic = {}
@@ -1545,10 +1546,10 @@ class QP:
         #adding -A^Ty_A
         for i in range(A.shape[0]):
             rowi = -A.getrow(i).tocoo()
-            #print 'rowi : '
-            #print rowi.col
+            #print('rowi : ')
+            #print(rowi.col)
             cols = rowi.col + IndexFactory.constIndex['Gx=-c'][0]
-            #print cols
+            #print(cols)
             model.addVariable(rowi.nnz, np.array(cols, np.int32),
                             np.array(rowi.data, 'd'), -infinity, infinity, 0)
         IndexFactory.addVar('y_A', A.shape[0])
@@ -1599,43 +1600,43 @@ class QP:
 
         st = clock()
         s.primal()
-        print "CLP time : %g seconds" % (clock() - st)
+        print("CLP time : %g seconds" % (clock() - st))
 
         x = s.getPrimalVariableSolution()
-        print "sol = "
+        print("sol = ")
         x = x[:nVar]
-        #print x
+        #print(x)
         G = G.todense()
-        print 0.5 * x * (x * G).T + np.dot(c, x) - self.objectiveOffset
+        print(0.5 * x * (x * G).T + np.dot(c, x) - self.objectiveOffset
         return
 
-        print 'feasibility'
-        print getSolution(s, 'z')
-        print getSolution(s, 'y_A')
-        #print (s.getPrimalSolution()[:nVar] * G).T
-        #print '*****'
-        #print  (s.getPrimalSolution()[:nVar] * G).T + getSolution(s, 's^+') -\
+        print('feasibility')
+        print(getSolution(s, 'z'))
+        print(getSolution(s, 'y_A'))
+        #print((s.getPrimalSolution()[:nVar] * G).T)
+        #print('*****')
+        #print((s.getPrimalSolution()[:nVar] * G).T + getSolution(s, 's^+') -\
         #               getSolution(s, 's^-') -
         #               (getSolution(s, 'y_A') * A)[:nVar] - \
-        #               getSolution(s, 'z')[:nVar] #+ np.dot(c, x)
-        print '-c'
-        print -c
-        print getSolution(s, 'z')
-        #print getSolution(s, 'y_A') * A + getSolution(s, 'z')
-        print 's^+'
-        print getSolution(s, 's^+')
-        print 's^-'
-        print getSolution(s, 's^-')
+        #               getSolution(s, 'z')[:nVar] #+ np.dot(c, x))
+        print('-c')
+        print(-c)
+        print(getSolution(s, 'z'))
+        #print(getSolution(s, 'y_A') * A + getSolution(s, 'z'))
+        print('s^+')
+        print(getSolution(s, 's^+'))
+        print('s^-')
+        print(getSolution(s, 's^-'))
 
         x = s.getPrimalVariableSolution()
-        print "sol = "
-        print x
+        print("sol = ")
+        print(x)
         G = G.todense()
-        print G.shape
-        print x * G
-        print c
-        print x
-        print 0.5 * x * (x * G).T + np.dot(c, x)
+        print(G.shape)
+        print(x * G)
+        print(c)
+        print(x)
+        print(0.5 * x * (x * G).T + np.dot(c, x))
 
 
 def getStat():
@@ -1663,9 +1664,9 @@ def QPTest():
         qp.Wolfe(sys.argv[2])
     else:
         qp.Wolfe()
-    print 'took %g seconds to read the problem' % r
-    print 'took %g seconds to solve the problem' % (clock() - start)
-    print "done"
+    print('took %g seconds to read the problem' % r)
+    print('took %g seconds to solve the problem' % (clock() - start))
+    print("done")
 
 import sys
 if __name__ == '__main__':

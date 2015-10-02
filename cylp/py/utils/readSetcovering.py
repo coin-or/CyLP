@@ -1,3 +1,4 @@
+from __future__ import print_function
 import numpy as np
 from scipy import sparse
 from cylp.cy import CyClpSimplex
@@ -30,8 +31,8 @@ class setCover:
                 tokens = line.split()
                 self.cols.append([int(i)-1 for i in tokens[2:]])
                 self.costs.append(float(tokens[0]))
-        
-        print self.nRows, self.nCols
+
+        print(self.nRows, self.nCols)
 
     def readBalas(self, filename):
         '''
@@ -68,9 +69,9 @@ class setCover:
                 while len(self.cols[-1]) != nnz:
                     self.cols[-1] += [int(i)-1 for i in lines[j].split()]
                     j += 1
-        print self.nRows, self.nCols
-        
-    
+        print(self.nRows, self.nCols)
+
+
     @property
     def model(self):
         A = self.A
@@ -136,7 +137,7 @@ class setCover:
     def c(self):
         return CyLPArray(self.costs)
 ##        c = np.empty((self.nCols,), np.double)
-##        print self.nRows, self.nCols
+##        print(self.nRows, self.nCols)
 ##        for nCol in xrange(self.nCols):
 ##            c[nCol] = self.costs[nCol]
 ##            
@@ -149,9 +150,9 @@ class setCover:
 ##        qp = QP()
 ##        qp.fromQps('/Users/mehdi/Documents/work/benchmarks/qp/CVXQP3_M.SIF')
 ##        #mm = qp.G[:n, :n].todense()
-##        #print (mm == mm.T).all()
+##        #print((mm == mm.T).all())
 ##        #l = np.linalg.eigvals(mm)
-##        #print min(l)
+##        #print(min(l))
 ##        G = sparse.lil_matrix((2*n, 2*n))
 ####        G[n/2:n, n/2:n] = qp.G[n/2:n, n/2:n]
 ####        k = 10
@@ -194,4 +195,4 @@ m.writeMps(of)
 
 #m.primal()
 #sol = m.primalVariableSolution['x']
-#print [s.cols[i] for i in range(s.nCols) if sol[i] == 1]
+#print([s.cols[i] for i in range(s.nCols) if sol[i] == 1])

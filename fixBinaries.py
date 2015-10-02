@@ -2,6 +2,7 @@
 This module contains code that copies CBC libraries into CyLP's source,
 and make CyLP binaries' refernces to them relative.
 '''
+from __future__ import print_function
 import distutils.util
 import sys
 import os
@@ -32,10 +33,10 @@ def fixBinary(file):
 		install_name_tool(file, lib_origin_path, join(relative_path, lib))
 
 def copy_in_cbc_libs():
-	print 'Copying CBC libs into CyLP...'
+	print('Copying CBC libs into CyLP...')
 	dest_dir = join('cylp', 'cbclibs', platform_dir)
 	if not exists(dest_dir):
-		print 'Creating',  dest_dir
+		print('Creating',  dest_dir)
 		makedirs(dest_dir)
 	os.system('cp %s %s' % (join(cbc_libs_dir, '*.dylib'), dest_dir))
 
@@ -44,7 +45,7 @@ def fixAll():
     for file in os.listdir(cylp_libs_dir):
     	if file.endswith('so'):
     		fullpath = join(cylp_libs_dir, file)
-    		print 'Fixing %s...' % fullpath
+                print('Fixing %s...' % fullpath)
     		fixBinary(fullpath)
 
 

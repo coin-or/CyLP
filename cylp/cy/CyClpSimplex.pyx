@@ -1,6 +1,7 @@
 # cython: profile=True
 # cython: embedsignature=True
 
+from __future__ import print_function
 
 from exceptions import TypeError
 import inspect
@@ -1481,7 +1482,7 @@ cdef class CyClpSimplex:
         '''
         name, ext = os.path.splitext(filename)
         if ext not in ['.mps', '.qps']:
-            print 'unrecognised extension %s' % ext
+            print('unrecognised extension %s' % ext)
             return -1
 
         if ext == '.mps':
@@ -1750,7 +1751,7 @@ cdef class CyClpSimplex:
                                 numberPasses, dropNames, doRowObjective)
         s = CyClpSimplex()
         if model == NULL:
-            print "Presolve says problem infeasible."
+            print("Presolve says problem infeasible.")
             return s
 
         s.setCppSelf(model)
@@ -1767,7 +1768,7 @@ cdef class CyClpSimplex:
                                 feasibilityTolerance, keepIntegers,
                                 numberPasses, dropNames, doRowObjective)
         if ret == -2000:
-            print "Presolve says problem infeasible."
+            print("Presolve says problem infeasible.")
             return -2000
 
         return problemStatus[ret]
@@ -1779,7 +1780,7 @@ cdef class CyClpSimplex:
                                 feasibilityTolerance, keepIntegers,
                                 numberPasses, dropNames, doRowObjective)
         if ret == -2000:
-            print "Presolve says problem infeasible."
+            print("Presolve says problem infeasible.")
             return -2000
 
         return problemStatus[ret]
@@ -2110,7 +2111,7 @@ cdef class CyClpSimplex:
 #        #When you create LP using CoinModel getComplementarityList
 #        #cannot return with the right size
 #        #cl = self.getComplementarityList()
-#        #print var1, var2, len(cl)
+#        #print(var1, var2, len(cl))
 #        #cl[var1], cl[var2] = var2, var1
 #        self.CppSelf.setComplement(var1, var2)
 

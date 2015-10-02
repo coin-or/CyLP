@@ -1,3 +1,4 @@
+from __future__ impor print_function
 #import random
 import numpy as np
 from numpy import random
@@ -126,7 +127,7 @@ class QPGen:
         c = -(G * x_star - A.T * y_star - z_star)
         
         obj = 0.5 * ((x_star.T * G) * x_star) + c.T * x_star
-        print obj 
+        print(obj)
 
         c = CyLPArray((c.T)[0])
         
@@ -151,7 +152,7 @@ class QPGen:
         filename = 'qp_%d_%d_%d_%d_%d_%s.qps' % (self.n, self.m, self.HesCond, 
                                    self.nnzPerCol, self.costRange, self.signs)
         filename = 'tests/' + filename
-        print 'writing to %s.' % filename
+        print('writing to %s.' % filename)
         self.model.writeMps(filename)
 
 
@@ -160,8 +161,8 @@ if __name__ == '__main__':
     import cProfile
     import sys
     n, m = int(sys.argv[1]), int(sys.argv[2])
-    print m
-    print m/10
+    print(m)
+    print(m/10)
     qp = QPGen(n, m, 1, m/10, 10000, 'G')
     qp.writeToFile()
     

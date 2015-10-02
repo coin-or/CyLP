@@ -247,7 +247,7 @@ class csr_matrixPlus(sparse.csr_matrix):
         >>> data = np.array([1, 2, 3, 4, 5, 6])
         >>> s = csr_matrixPlus((data, indices, indptr), shape=(3, 3))
         >>> s[5,2] = 11
-        >>> print s.todense()
+        >>> print(s.todense())
         [[ 1  0  2]
          [ 0  0  3]
          [ 4  5  6]

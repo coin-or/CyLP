@@ -4,6 +4,7 @@ As a part of ``cylp.python.pivots`` it implements Dantzig's
 for testing purposes we implement one in Python.
 '''
 
+from __future__ import print_function
 import sys
 import numpy as np
 from operator import itemgetter
@@ -107,7 +108,7 @@ def getMpsExample():
 
 
 if __name__ == "__main__":
-    print sys.argv
+    print(sys.argv)
     if len(sys.argv) == 1:
         import doctest
         doctest.testmod()

@@ -1,3 +1,4 @@
+from __future__ import print_function
 from itertools import izip
 import numpy as np
 from .PivotPythonBase import PivotPythonBase
@@ -72,13 +73,13 @@ class WolfePivot(PivotPythonBase):
 
         if s.CLP_getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:
-            #print colInd , ' flagged'
+            #print(colInd , ' flagged')
             #self.banList[colInd] = 1
-            #print 'banning %d' % colInd
-            #print self.notBanned
+            #print('banning %d' % colInd)
+            #print(self.notBanned)
             #self.banList = np.concatenate((self.banList, [colInd]))
             self.notBanned[colInd] = False
-            #print self.notBanned
+            #print(self.notBanned)
             #s.setFlagged(colInd)
             return 0
 
