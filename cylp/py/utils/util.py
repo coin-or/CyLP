@@ -1,13 +1,13 @@
 import numpy as np
-from math import atan2 
+from math import atan2
 from cylp.py import Constants
 from operator import mul
 
-def sign(x): 
-    if x > 0 or (x == 0 and atan2(x, -1.) > 0.): 
-        return 1 
-    else: 
-        return -1 
+def sign(x):
+    if x > 0 or (x == 0 and atan2(x, -1.) > 0.):
+        return 1
+    else:
+        return -1
 
 def get_cs(w1, w2):
     omega = float(sign(w1) * (w1**2 + w2**2)**0.5)
@@ -196,7 +196,7 @@ if __name__ == '__main__':
     #i3 = Ind(slice(2, 5), 7)
     i3 = Ind(np.array([1, 4, 6]), 7)
 
-    
+
     inds = getMultiDimMatrixIndex([i1, i2, i3])
 
     for i in inds:
