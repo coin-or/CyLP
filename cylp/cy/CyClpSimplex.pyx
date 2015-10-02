@@ -1,3 +1,4 @@
+# cython: c_string_type=str, c_string_encoding=ascii
 # cython: profile=True
 # cython: embedsignature=True
 
@@ -1478,17 +1479,18 @@ cdef class CyClpSimplex:
                                     <int*>columns.data,
                                     <double*>elements.data)
 
-    cpdef int readMps(self, char* filename, int keepNames=False,
+    cpdef int readMps(self, filename, int keepNames=False,
             int ignoreErrors=False) except *:
         '''
         Read an mps file. See this :ref:`modeling example <modeling-usage>`.
         '''
+        filename = filename.encode('ascii')
         name, ext = os.path.splitext(filename)
-        if ext not in ['.mps', '.qps']:
+        if ext not in [b'.mps', b'.qps']:
             print('unrecognised extension %s' % ext)
             return -1
 
-        if ext == '.mps':
+        if ext == b'.mps':
             return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
         else:
             m = CyCoinMpsIO.CyCoinMpsIO()
