@@ -43,7 +43,8 @@ except:
     from os.path import abspath, dirname
 
     try:
-        location = dirname(check_output(['which', 'clp']).strip())
+        location = dirname(
+            check_output(['which', 'clp']).strip()).decode('utf-8')
         CoinDir = abspath(join(location, ".."))
     except:
         raise Exception('Please set the environment variable COIN_INSTALL_DIR'
