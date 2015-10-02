@@ -906,7 +906,7 @@ class CyLPModel(object):
             if name in c.varNames:
                 c.varNames.remove(name)
                 del c.parentVarDims[name]
-                for v in c.varCoefs.keys():
+                for v in list(c.varCoefs.keys()):
                     if v.name == name:
                         del c.varCoefs[v]
 
