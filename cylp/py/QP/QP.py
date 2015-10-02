@@ -30,7 +30,7 @@ def getSolution(s, varGroupname):
 #    return csc_matrixPlus(sparse.eye(n, n))
 
 def checkComp(x, y):
-    for i in xrange(len(x)):
+    for i in range(len(x)):
         if x[i] != 0 and y[i] != 0:
             return i
     return -1
@@ -131,47 +131,47 @@ class QP:
 #            print(b)
 #
 #        if nInEquality:
-#        
-#    
-       
-        iVarsWithJustUpperBound = [i for i in xrange(nVar) 
 #            print(C')
 #            print(C.todense())
 #            print(c_low)
 #            print(c_up)
+#
 #        print('Hessian')
 #        print(G.todense())
+#
 #        print('c')
 #        print(c)
+
+        iVarsWithJustUpperBound = [i for i in range(nVar)
                             if x_up[i] < infinity and x_low[i] <= -infinity]
         nVarsWithJustUpperBound = len(iVarsWithJustUpperBound)
 
-        iVarsWithJustLowerBound = [i for i in xrange(nVar) 
+        iVarsWithJustLowerBound = [i for i in range(nVar)
                             if x_low[i] > -infinity and x_up[i] >= infinity]
         nVarsWithJustLowerBound = len(iVarsWithJustLowerBound)
-        
+
         iVarsWithBothBounds = \
-                [i for i in xrange(nVar) 
+                [i for i in range(nVar)
                         if x_low[i] > -infinity and x_up[i] < infinity]
         nVarsWithBothBounds = len(iVarsWithBothBounds)
 
         iFreeVars = \
-                [i for i in xrange(nVar) 
+                [i for i in range(nVar)
                         if x_low[i] <= -infinity and x_up[i] >= infinity]
         nFreeVars = len(iFreeVars)
 
         iConstraintsWithBothBounds = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] < infinity and c_low[i] > -infinity]
         nConstraintsWithBothBounds = len(iConstraintsWithBothBounds)
 
         iConstraintsWithJustUpperBound = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] < infinity and c_low[i] <= -infinity]
         nConstraintsWithJustUpperBound = len(iConstraintsWithJustUpperBound)
 
         iConstraintsWithJustLowerBound = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
 
@@ -288,9 +288,9 @@ class QP:
 #        cols = mmm.shape[1]
 #        divs = int(ceil(cols / float(secSize)))
 #
-#        for sec in xrange(divs):
-#            for i in xrange(mmm.shape[0]):
-#                for j in xrange(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
+#        for sec in range(divs):
+#            for i in range(mmm.shape[0]):
+#                for j in range(sec * secSize, min((sec+1) * secSize, mmm.shape[1])):
 #                    print(str(int(round(mmm[i, j], 1))).rjust(4),)
 #                print()
 #            print('...')
@@ -366,7 +366,7 @@ class QP:
         #print('A nnz:', A.nnz, A.nnz / float(A.shape[0] * A.shape[1]))
 
         #print(G.todense())
-        minDiag = min(G[i, i] for i in xrange(nx))    
+        minDiag = min(G[i, i] for i in range(nx))
         delta =  max(10**-8, 0.01 * max(1.0**-4, minDiag))
         G = G + delta * I(nVar)
         #print(G.todense())
@@ -588,7 +588,7 @@ class QP:
         s = CyClpSimplex()
         model = CyCoinModel()
 
-        inds = xrange(nVar)
+        inds = range(nVar)
 
         # Convert G and A to sparse matrices (coo) if they're not already
 #       if type(G) == np.matrixlib.defmatrix.matrix:
@@ -608,30 +608,30 @@ class QP:
 
         #i for indices, n for size of the set
         iVarsWithUpperBound = \
-                [i for i in xrange(len(x_up)) if x_up[i] < infinity]
+                [i for i in range(len(x_up)) if x_up[i] < infinity]
         nVarsWithUpperBound = len(iVarsWithUpperBound)
-        
+
         iVarsWithLowerBound = \
-                [i for i in xrange(len(x_low)) if x_low[i] > -infinity]
+                [i for i in range(len(x_low)) if x_low[i] > -infinity]
         nVarsWithLowerBound = len(iVarsWithLowerBound)
-        
+
         iVarsWithBothBounds = \
-                [i for i in xrange(len(x_low)) if 
+                [i for i in range(len(x_low)) if
                  x_low[i] > -infinity and x_low[i] < infinity]
         nVarsWithBothBounds = len(iVarsWithBothBounds)
 
         iConstraintsWithBothBounds = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] < infinity and c_low[i] > -infinity]
         nConstraintsWithBothBounds = len(iConstraintsWithBothBounds)
 
         iConstraintsWithJustUpperBound = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] < infinity and c_low[i] <= -infinity]
         nConstraintsWithJustUpperBound = len(iConstraintsWithJustUpperBound)
 
         iConstraintsWithJustLowerBound = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
 
@@ -923,32 +923,32 @@ class QP:
 #
 #        print('c')
 #        print(c)
-       
-        iVarsWithJustUpperBound = [i for i in xrange(nVar) 
+
+        iVarsWithJustUpperBound = [i for i in range(nVar)
                             if x_up[i] < infinity and x_low[i] <= -infinity]
         nVarsWithJustUpperBound = len(iVarsWithJustUpperBound)
 
-        iVarsWithJustLowerBound = [i for i in xrange(nVar) 
+        iVarsWithJustLowerBound = [i for i in range(nVar)
                             if x_low[i] > -infinity and x_up[i] >= infinity]
         nVarsWithJustLowerBound = len(iVarsWithJustLowerBound)
-        
+
         iVarsWithBothBounds = \
-                [i for i in xrange(nVar) 
+                [i for i in range(nVar)
                         if x_low[i] > -infinity and x_up[i] < infinity]
         nVarsWithBothBounds = len(iVarsWithBothBounds)
 
         iConstraintsWithBothBounds = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] < infinity and c_low[i] > -infinity]
         nConstraintsWithBothBounds = len(iConstraintsWithBothBounds)
 
         iConstraintsWithJustUpperBound = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] < infinity and c_low[i] <= -infinity]
         nConstraintsWithJustUpperBound = len(iConstraintsWithJustUpperBound)
 
         iConstraintsWithJustLowerBound = \
-                [i for i in xrange(nInEquality)
+                [i for i in range(nInEquality)
                         if c_up[i] >= infinity and c_low[i] > -infinity]
         nConstraintsWithJustLowerBound = len(iConstraintsWithJustLowerBound)
 
@@ -1294,8 +1294,8 @@ class QP:
 #        print(np.linalg.eigvals(G.todense()))
 #        print(G * x - A.T * y + np.matrix(c).T)
 #        x = s.primalVariableSolution['x']
-#         
-#        for i in xrange(nVar):
+#
+#        for i in range(nVar):
 #            if x[i] > x_up[i] + 10**-10 or x[i] < x_low[i] - 10**-10:
 #                print(i, 'INFEASIBLE', x_low[i] , x[i], x_up[i], x[i] > x_up[i], x[i] < x_low[i])
 

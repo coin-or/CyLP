@@ -128,10 +128,10 @@ class WolfePivotPE(PivotPythonBase):
                     count = 0
                     #randinds = np.random.randint(len(comp_varInds), size=10)
                     nn = 15
-#                    for i in xrange(random.randint(0,
+#                    for i in range(random.randint(0,
 #                                    len(comp_varInds)),
 #                                    min(nn, len(comp_varInds))):
-                    for i in xrange(min(nn, len(comp_varInds))):
+                    for i in range(min(nn, len(comp_varInds))):
                     #for i in randinds:
                         ind = comp_varInds[i]
                         if (s.CLP_getVarStatus(cl[ind]) != 1 and
@@ -180,7 +180,7 @@ class WolfePivotPE(PivotPythonBase):
         #    self.numberOfIncompSinceLastUpdate += 1
 
 #
-#        for i in xrange(s.nConstraints):
+#        for i in range(s.nConstraints):
 #            print(s.getVarNameByIndex(s.getPivotVariable()[i]),)
 #        print()
 

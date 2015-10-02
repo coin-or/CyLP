@@ -61,7 +61,7 @@ class csc_matrixPlus(sparse.csc_matrix):
                     self.data[i] = val
                     return
             #If we reach here it means that index does NOT exist
-            for i in xrange(iCol + 1, nCols + 1):
+            for i in range(iCol + 1, nCols + 1):
                 self.indptr[i] += 1
             indexOfElement = self.indptr[iCol + 1] - 1
             #If indices is empty
@@ -297,7 +297,7 @@ class csr_matrixPlus(sparse.csr_matrix):
                     self.data[i] = val
                     return
             #if we reach here it means that index does NOT exist
-            for i in xrange(iRow + 1, nRows + 1):
+            for i in range(iRow + 1, nRows + 1):
                 self.indptr[i] += 1
             indexOfElement = self.indptr[iRow + 1] - 1
             # If indices is empty

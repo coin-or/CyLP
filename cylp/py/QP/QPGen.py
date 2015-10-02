@@ -15,13 +15,13 @@ def getA(nRows, nCols, nnzPerCol):
     '''
     A = sparse.lil_matrix((nRows, nCols))
     solCols = []
-    for nRow in xrange(nRows):
+    for nRow in range(nRows):
         nCol = random.randint(0, nCols-1)
         A[nRow, nCol] = 1
         solCols.append(nCol)
-   
-    for nCol in [j for j in xrange(nCols) if j not in solCols]:
-        for i in xrange(nnzPerCol):
+
+    for nCol in [j for j in range(nCols) if j not in solCols]:
+        for i in range(nnzPerCol):
             #if random.randint(0, 1):
                 A[random.randint(0, nRows-1), nCol] = 1
             #else:
@@ -32,7 +32,7 @@ def getA(nRows, nCols, nnzPerCol):
 def getG(nCols):
     n = nCols
     G = sparse.lil_matrix((n, n))
-    for i in xrange(0, n-1):
+    for i in range(0, n-1):
         G[i, i] = 1
         #G[i+1, i] = -0.2
         #G[i, i+1] = -0.2
@@ -109,7 +109,7 @@ class QPGen:
         s = CyClpSimplex()
 
         iNonZero = set(random.randint(n, size=self.nnzPerCol))
-        iZero = [i for i in xrange(n) if i not in iNonZero]
+        iZero = [i for i in range(n) if i not in iNonZero]
         x_star = np.matrix(np.zeros((n, 1)))
         z_star = np.matrix(np.zeros((n, 1)))
 

@@ -167,7 +167,7 @@ def getMultiDimMatrixIndex(inds, res=[]):
     l = []
     for i in r:
         prod = i
-        for k in xrange(1, n):
+        for k in range(1, n):
             prod *= inds[k].dim
         rest = getMultiDimMatrixIndex(inds[1:], res)
         l += res + [prod + rs for rs in rest]
@@ -183,7 +183,7 @@ def getTupleIndex(ind, dims):
         return [ind]
     #return getTupleIndex(ind / dims[-1], dims[:-1]) + [ind % dims[-1]]
     ret = []
-    for i in xrange(n):
+    for i in range(n):
         d = dims[n - i - 1]
         ret.insert(0, ind % d)
         ind /= d

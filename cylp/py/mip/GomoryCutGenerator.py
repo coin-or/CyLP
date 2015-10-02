@@ -51,7 +51,7 @@ class GomoryCutGenerator:
         rhsIsInt = map(isInt, rhs)
 
         cuts = []
-        for rowInd in xrange(s.nConstraints):
+        for rowInd in range(s.nConstraints):
             basicVarInd = bv[rowInd]
             if basicVarInd < clpModel.nVariables and intInds[basicVarInd] and not rhsIsInt[rowInd]:
                 coef, b = gomoryCut(clpModel, rowInd)

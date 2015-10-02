@@ -71,7 +71,7 @@ class MostFrequentPivot(PivotPythonBase):
         '''
         self.frequencies[i] += 1
         self.priorityList.remove(i)
-        for j in xrange(self.dim):
+        for j in range(self.dim):
             if self.frequencies[i] >= self.frequencies[self.priorityList[j]]:
                 self.priorityList.insert(j, i)
                 return

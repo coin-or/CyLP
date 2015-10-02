@@ -112,12 +112,12 @@ class setCover:
 
         if addW:
             G = sparse.lil_matrix((2*n, 2*n))
-            for i in xrange(n/2, n): #xrange(n-1):
+            for i in range(n/2, n): #range(n-1):
                 G[i, i] = 1
             G[2*n-1, 2*n-1] = 10**-10
         else:
             G = sparse.lil_matrix((n, n))
-            for i in xrange(n/2, n): #xrange(n-1):
+            for i in range(n/2, n): #range(n-1):
                 G[i, i] = 1
 
 
@@ -127,7 +127,7 @@ class setCover:
     @property
     def A(self):
         a = sparse.lil_matrix((self.nRows, self.nCols))
-        for nCol in xrange(self.nCols):
+        for nCol in range(self.nCols):
             for nRow in self.cols[nCol]:
                 a[nRow, nCol] = 1
 
@@ -138,7 +138,7 @@ class setCover:
         return CyLPArray(self.costs)
 ##        c = np.empty((self.nCols,), np.double)
 ##        print(self.nRows, self.nCols)
-##        for nCol in xrange(self.nCols):
+##        for nCol in range(self.nCols):
 ##            c[nCol] = self.costs[nCol]
 ##
 ##        return c
@@ -165,7 +165,7 @@ class setCover:
 
         #n *= 2
         G = sparse.lil_matrix((2*n, 2*n))
-        for i in xrange(n/2, n): #xrange(n-1):
+        for i in range(n/2, n): #range(n-1):
             G[i, i] = 1
             #G[i+1, i] = -0.2
             #G[i, i+1] = -0.2
