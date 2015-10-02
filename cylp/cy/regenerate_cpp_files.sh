@@ -1,0 +1,23 @@
+cython --cplus CyCbcModel.pyx
+cython --cplus CyCbcNode.pyx
+cython --cplus CyCglCutGeneratorBase.pyx
+cython --cplus CyCgl.pyx
+cython --cplus CyCglTreeInfo.pyx
+cython --cplus CyClpDualRowPivotBase.pyx
+cython --cplus CyClpPrimalColumnPivotBase.pyx
+#cython --cplus CyClpPrimalColumnSteepest.pyx
+cython --cplus CyClpSimplex.pyx
+cython --cplus CyCoinIndexedVector.pyx
+cython --cplus CyCoinModel.pyx
+cython --cplus CyCoinMpsIO.pyx
+cython --cplus CyCoinPackedMatrix.pyx
+cython --cplus CyCutGeneratorPythonBase.pyx
+cython --cplus CyDantzigPivot.pyx
+cython --cplus CyDualPivotPythonBase.pyx
+cython --cplus CyOsiCuts.pyx
+cython --cplus CyOsiSolverInterface.pyx
+cython --cplus CyPEPivot.pyx
+cython --cplus CyPivotPythonBase.pyx
+cython --cplus CyTest.pyx
+cython --cplus CyWolfePivot.pyx
+
