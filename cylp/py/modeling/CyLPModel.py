@@ -214,14 +214,32 @@ class CyLPExpr:
         self.expr = v
         return v
 
+    def __mul__(self, other):
+        v = CyLPExpr(opr="*", left=self, right=other)
+        v.expr = v
+        self.expr = v
+        return v
+
     def __rsub__(self, other):
         v = CyLPExpr(opr="-", left=other, right=self)
         v.expr = v
         self.expr = v
         return v
 
+    def __sub__(self, other):
+        v = CyLPExpr(opr="-", left=self, right=other)
+        v.expr = v
+        self.expr = v
+        return v
+
     def __radd__(self, other):
         v = CyLPExpr(opr="+", left=other, right=self)
+        v.expr = v
+        self.expr = v
+        return v
+
+    def __add__(self, other):
+        v = CyLPExpr(opr="+", left=self, right=other)
         v.expr = v
         self.expr = v
         return v
