@@ -26,7 +26,7 @@ class csc_matrixPlus(sparse.csc_matrix):
         self.CyLPExpr = CyLPExpr
         self.rowScaleFactor = self.colScaleFactor = None
 
-    def __setitem__(self, (iRow, iCol), val):
+    def __setitem__(self, location, val):
         '''
         Set the item in row ``i`` and column ``j`` to ``val``.
         Increases matrix's size if necessary
@@ -46,6 +46,7 @@ class csc_matrixPlus(sparse.csc_matrix):
                 [ 2,  3,  6,  0,  0, 11]])
 
         '''
+        iRow, iCol = location
         if not isinstance(val, (int, long, float)):
             return sparse.csc_matrix.__setitem__(self, (iRow, iCol), val)
 
@@ -233,7 +234,7 @@ class csr_matrixPlus(sparse.csr_matrix):
         self.CyLPExpr = CyLPExpr
         self.rowScaleFactor = self.colScaleFactor = None
 
-    def __setitem__(self, (iRow, iCol), val):
+    def __setitem__(self, location, val):
         '''
         Sets the item in row ``i`` and col ``j`` to ``val``.
         Increases matrix's ``shape[1]`` if necessary
@@ -256,6 +257,7 @@ class csr_matrixPlus(sparse.csr_matrix):
          [ 0  0 11]]
 
         '''
+        iRow, iCol = location
         if not isinstance(val, (int, long, float)):
             return sparse.csr_matrix.__setitem__(self, (iRow, iCol), val)
 
