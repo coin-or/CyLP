@@ -2,7 +2,7 @@ import numpy as np
 from operator import itemgetter
 from random import shuffle
 from math import floor
-from PivotPythonBase import PivotPythonBase
+from .PivotPythonBase import PivotPythonBase
 
 
 class MostFrequentPivot(PivotPythonBase):

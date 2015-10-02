@@ -4,7 +4,7 @@ import os
 from os.path import join
 import numpy as np
 from cylp.cy import CyClpSimplex
-from PySolve import solve
+from .PySolve import solve
 
 
 problem = os.path.join(os.path.dirname(__file__), '..', 'input',

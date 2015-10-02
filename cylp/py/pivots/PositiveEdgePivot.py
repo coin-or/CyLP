@@ -7,7 +7,7 @@ import random
 import numpy as np
 from cylp.cy import CyCoinIndexedVector
 from cylp.cy.CyClpSimplex import cydot
-from PivotPythonBase import PivotPythonBase
+from .PivotPythonBase import PivotPythonBase
 
 
 class PositiveEdgePivot(PivotPythonBase):

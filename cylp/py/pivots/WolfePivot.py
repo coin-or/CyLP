@@ -1,6 +1,6 @@
 from itertools import izip
 import numpy as np
-from PivotPythonBase import PivotPythonBase
+from .PivotPythonBase import PivotPythonBase
 
 
 class WolfePivot(PivotPythonBase):
