@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 
-from exceptions import TypeError
 import inspect
 import os.path
 from itertools import product

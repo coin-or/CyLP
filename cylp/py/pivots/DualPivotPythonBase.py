@@ -3,8 +3,6 @@ This class defines an interface all the Python DUAL pivot rules must implement.
 It consists of a method :py:func:`pivotRow` which must be implemented.
 '''
 
-from exceptions import NotImplementedError
-
 
 class DualPivotPythonBase:
     def pivotRow(self):
