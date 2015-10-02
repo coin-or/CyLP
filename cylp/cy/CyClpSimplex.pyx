@@ -6,7 +6,11 @@ from __future__ import print_function
 from exceptions import TypeError
 import inspect
 import os.path
-from itertools import izip, product
+from itertools import product
+try:
+    from itertools import izip
+except ImportError: # Python 3 does not have izip, use zip
+    izip = zip
 import numpy as np
 cimport numpy as np
 from scipy import sparse

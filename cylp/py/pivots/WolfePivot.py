@@ -1,5 +1,8 @@
 from __future__ import print_function
-from itertools import izip
+try:
+    from itertools import izip
+except ImportError:   # Python 3 does not have izip use zip
+    izip = zip
 import numpy as np
 from .PivotPythonBase import PivotPythonBase
 
