@@ -80,8 +80,8 @@ if __name__ == '__main__':
         s = CyClpSimplex(m)
     else:
         s = CyClpSimplex()
-        cylpDir = os.environ['CYLP_SOURCE_DIR']
-        inputFile = os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
+        #cylpDir = os.environ['CYLP_SOURCE_DIR']
+        inputFile = os.path.join('..', '..', 'input', 'p0033.mps')
         m = s.extractCyLPModel(inputFile)
         x = m.getVarByName('x')
         s.setInteger(x)
@@ -89,9 +89,10 @@ if __name__ == '__main__':
     cbcModel = s.getCbcModel()
 
     gc = GomoryCutGenerator(m)
-    cbcModel.addPythonCutGenerator(gc, name='PyGomory')
+    #cbcModel.addPythonCutGenerator(gc, name='PyGomory')
 
-    cbcModel.branchAndBound()
-
+    #cbcModel.branchAndBound()
+    cbcModel.solve()
+    
     print cbcModel.primalVariableSolution
 
