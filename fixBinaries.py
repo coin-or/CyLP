@@ -27,7 +27,7 @@ def install_name_tool(binaryFile, lib_origin_path, lib_new_path):
 
 def fixBinary(file):
         s = subprocess.check_output('otool -L %s' % file, shell=True)
-        lib_origin_paths = [libline.split()[0] for libline in s.splitlines()[1:] if 'Cbc' in libline]
+        lib_origin_paths = [libline.decode('utf-8').split()[0] for libline in s.splitlines()[1:] if 'Cbc' in libline.decode('utf-8')]
         for lib_origin_path in lib_origin_paths:
                 lib = basename(lib_origin_path)
                 install_name_tool(file, lib_origin_path, join(relative_path, lib))
