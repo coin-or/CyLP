@@ -1,4 +1,4 @@
-from __future__ impor print_function
+from __future__ import print_function
 #import random
 import numpy as np
 from numpy import random

@@ -1607,7 +1607,7 @@ class QP:
         x = x[:nVar]
         #print(x)
         G = G.todense()
-        print(0.5 * x * (x * G).T + np.dot(c, x) - self.objectiveOffset
+        print(0.5 * x * (x * G).T + np.dot(c, x) - self.objectiveOffset)
         return
 
         print('feasibility')
