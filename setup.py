@@ -70,7 +70,7 @@ def getBdistFriendlyString(s):
     Solve the issue with restructuredText README
     "ordinal not in range error" when using bdist_mpkg or bdist_wininst
     '''
-    return unicodedata.normalize('NFKD', u(s)).encode('ascii','ignore')
+    return unicodedata.normalize('NFKD', u(s))
 
 
 
