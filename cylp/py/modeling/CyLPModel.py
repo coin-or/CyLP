@@ -832,13 +832,13 @@ class CyLPModel(object):
         if dim == 0:
             return
         var = CyLPVar(name, dim, isInt)
-        self.variables.append(var)
 
         #If mulidim, correct dim
         if isinstance(dim, tuple):
             dim = reduce(mul, dim)
 
         if not self.inds.hasVar(var.name):
+            self.variables.append(var)
             self.inds.addVar(var.name, dim)
             self.nVars += dim
             self.varNames.append(var.name)
