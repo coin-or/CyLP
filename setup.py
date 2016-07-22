@@ -92,7 +92,9 @@ if 'CbcSolver' not in libs:
         libs.append('CbcSolver')
 
 libDirs = ['.', join('.', cythonFilesDir), join(CoinDir, 'lib'),
-           join('.', cythonFilesDir), join(CoinDir, 'lib', 'intel')]
+           join('.', cythonFilesDir)]
+if operatingSystem == 'windows':
+    libDirs.append(join(CoinDir, 'lib', 'intel'))
 includeDirs = [join('.', cppFilesDir), join('.', cythonFilesDir),
                 join(CoinDir, 'include', 'coin'),
                 numpy.get_include(), '.']
