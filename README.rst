@@ -161,7 +161,12 @@ Here is an example of how to model with CyLP's modeling facility::
     s.primal()
     print s.primalVariableSolution['x']
 
+This is the expected output::
 
+    Clp0006I 0  Obj 1.1 Primal inf 2.8999998 (2) Dual inf 5.01e+10 (5) w.o. free dual inf (4)
+    Clp0006I 5  Obj 1.3
+    Clp0000I Optimal - objective value 1.3
+    [ 0.2  2.   1.1]
 
 Documentation
 ===============
