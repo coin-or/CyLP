@@ -43,7 +43,8 @@ except:
     from os.path import abspath, dirname
 
     try:
-        location = dirname(check_output(['which', 'clp']).strip())
+        location = dirname(check_output(['which', 'clp'])
+                           .strip().decode('utf-8'))
         CoinDir = abspath(join(location, ".."))
     except:
         raise Exception('Please set the environment variable COIN_INSTALL_DIR'
@@ -53,15 +54,22 @@ def get_libs():
     '''
     Return a list of distinct library names used by ``dependencies``.
     '''
-    with open(join(CoinDir, 'share', 'coin',
-                   'doc', 'Cbc', 'cbc_addlibs.txt')) as f:
-        link_line = f.read()
-        if operatingSystem == 'windows':
-            libs = [flag[:-4] for flag in link_line.split() if
-                    flag.endswith('.lib')]
-        else:
-            libs = [flag[2:] for flag in link_line.split() if
-                    flag.startswith('-l')]
+    libs = []
+    try:
+        from subprocess import check_output
+        flags = (check_output(['pkg-config', '--libs', 'cbc'])
+                 .strip().decode('utf-8'))
+        libs = [flag[2:] for flag in flags.split() if flag.startswith('-l')]
+    except:
+        with open(join(CoinDir, 'share', 'coin',
+                       'doc', 'Cbc', 'cbc_addlibs.txt')) as f:
+            link_line = f.read()
+            if operatingSystem == 'windows':
+                libs = [flag[:-4] for flag in link_line.split() if
+                        flag.endswith('.lib')]
+            else:
+                libs = [flag[2:] for flag in link_line.split() if
+                        flag.startswith('-l')]
     return libs
 
 def getBdistFriendlyString(s):
