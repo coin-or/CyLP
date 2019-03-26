@@ -5,7 +5,8 @@ To get it, do
 ```
 pip install --pre cylp
 ```
-On Windows, you should get a binary wheel. On Linux and OSX, you still need to install [Cbc](https://github.com/coin-or/Cbc) first. The most trouble-free path is to build from source first and set the environment variable `COIN_INSTALL_DIR` to point to the installation directory. 
+On Windows, you should get a binary wheel. On Linux and OSX, you still need to install `Cbc
+<https://github.com/coin-or/Cbc/>`_ first. The most trouble-free path is to build from source first and set the environment variable `COIN_INSTALL_DIR` to point to the installation directory. 
 
 What is CyLP?
 ==============
