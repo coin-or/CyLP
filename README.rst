@@ -1,4 +1,7 @@
-There is now a beta release of CyLP with Python3 support. To get it, do
+There is now a beta release of CyLP with Python3 support! 
+=========================================================
+
+To get it, do
 ```
 pip install --pre cylp
 ```
