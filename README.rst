@@ -1,11 +1,8 @@
-Important Notice
-==================
-To comply with PEP8 we decided to rename the package name from CyLP to cylp,
-which was long overdue.
-It affects the package name ONLY and a simple replace can make your program
-work with the new settings.
-Thank you for your understanding.
-
+There is now a beta release of CyLP with Python3 support. To get it, do
+```
+pip install --pre cylp
+```
+On Windows, you should get a binary wheel. On Linux and OSX, you still need to install [Cbc](https://github.com/coin-or/Cbc) first. The most trouble-free path is to build from source first and set the environment variable `COIN_INSTALL_DIR` to point to the installation directory. 
 
 What is CyLP?
 ==============
@@ -60,7 +57,7 @@ Binary Installation
 
 If you have setuptools installed you may run::
 
-    $ easy_install cylp
+    $ pip install cylp
 
 If a binary is available for your architecture it will be installed. Otherwise
 you will see an error telling you to specify where to find a Cbc installation.
@@ -75,13 +72,8 @@ Installing from source
 ========================
 
 STEP 1:
-    Install CBC (http://www.coin-or.org/download/source/Cbc/).
-    CyLP can be compiled against
-    Cbc version 2.8.5. Please go to the installation directory and run::
-
-        $ ./configure
-        $ make
-        $ make install
+    Install CBC (http://github.com/coin-or/Cbc/).
+    CyLP can be compiled against any Cbc version later than 2.8.5.
 
 STEP 2:
     Create an environment variable called COIN_INSTALL_DIR pointing to your
@@ -95,7 +87,7 @@ it persistent.
 STEP 3:
     Install CyLP. Go to CyLP's root directory and run::
 
-        $ python setup.py install
+        $ pip install .
 
 STEP 4 (LINUX):
      In linux you might also need to add COIN's lib directory to
