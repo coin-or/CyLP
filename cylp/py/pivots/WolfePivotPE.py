@@ -1,3 +1,4 @@
+from __future__ import print_function
 from itertools import izip
 import random
 import numpy as np
@@ -54,7 +55,7 @@ class WolfePivotPE(PivotPythonBase):
 
         #self.p = np.where(np.abs(rhs) > self.EPSILON)[0]
         self.z = np.where(np.abs(rhs) <= self.EPSILON)[0]
-        print 'degeneracy level : ', (len(self.z)) / float(nRows)
+        print('degeneracy level : ', (len(self.z)) / float(nRows))
         #self.isDegenerate = (len(self.p) != nRows)
         self.isDegenerate = (len(self.z) > 0)
 
@@ -127,10 +128,10 @@ class WolfePivotPE(PivotPythonBase):
                     count = 0
                     #randinds = np.random.randint(len(comp_varInds), size=10)
                     nn = 15
-#                    for i in xrange(random.randint(0,
+#                    for i in range(random.randint(0,
 #                                    len(comp_varInds)),
 #                                    min(nn, len(comp_varInds))):
-                    for i in xrange(min(nn, len(comp_varInds))):
+                    for i in range(min(nn, len(comp_varInds))):
                     #for i in randinds:
                         ind = comp_varInds[i]
                         if (s.CLP_getVarStatus(cl[ind]) != 1 and
@@ -152,7 +153,7 @@ class WolfePivotPE(PivotPythonBase):
 
         if maxCompInd != -1 and abs(maxCompRc) > 0.00001 * abs(maxRc):
             self.compCount += 1
-            #print s.getVarNameByIndex(maxCompInd)
+            #print(s.getVarNameByIndex(maxCompInd))
             return maxCompInd
 
         if self.iCounter % self.iInterval == 0:
@@ -160,7 +161,7 @@ class WolfePivotPE(PivotPythonBase):
             s.getRightHandSide(rhs)
             p_count = len(np.where(np.abs(rhs) > self.EPSILON)[0])
             if abs(p_count - self.last_p_count) > 10:
-                #print s.iteration
+                #print(s.iteration)
                 self.iCounter = 0
                 self.updateW()
                 self.last_p_count = p_count
@@ -179,9 +180,9 @@ class WolfePivotPE(PivotPythonBase):
         #    self.numberOfIncompSinceLastUpdate += 1
 
 #
-#        for i in xrange(s.nConstraints):
-#            print s.getVarNameByIndex(s.getPivotVariable()[i]),
-#        print
+#        for i in range(s.nConstraints):
+#            print(s.getVarNameByIndex(s.getPivotVariable()[i]),)
+#        print()
 
         return maxInd
 
@@ -196,7 +197,7 @@ class WolfePivotPE(PivotPythonBase):
 #                    ind = np.argmax(rc2)
 #            else:
 #                    ind = np.argmax(rc2)
-#            #print 'incomming var: %d' % indicesToConsider[ind]
+#            #print('incomming var: %d' % indicesToConsider[ind])
 #            ret = indicesToConsider[ind]
 #            del indicesToConsider  # not sure if this is necessary
 #            del rc2  # HUGE memory leak otherwise
@@ -217,17 +218,17 @@ class WolfePivotPE(PivotPythonBase):
         pivotRow = s.pivotRow()
         if pivotRow < 0:
             colInd = s.sequenceIn()
-            #print 'entering: ', colInd, ' comp: ', cl[colInd]
+            #print('entering: ', colInd, ' comp: ', cl[colInd])
             return 1
 
         pivotVariable = s.getPivotVariable()
         leavingVarIndex = pivotVariable[pivotRow]
         colInd = s.sequenceIn()
 
-#        print 'Basis:'
-#        print s.getPivotVariable()
-#        print 'leave: ', leavingVarIndex
-#        print 'entering: ', colInd, ' comp: ', cl[colInd]
+#        print('Basis:'))
+#        print(s.getPivotVariable())
+#        print('leave: ', leavingVarIndex)
+#        print('entering: ', colInd, ' comp: ', cl[colInd])
 
         if s.CLP_getVarStatus(cl[colInd]) == 1 and \
             cl[colInd] != leavingVarIndex:

@@ -1,6 +1,10 @@
 # cython: embedsignature=True
 
-from itertools import izip, product
+from itertools import product
+try:
+    from itertools import izip
+except ImportError:  # Python 3 does not have izip, use zip
+    izip = zip
 from cylp.py.mip import NodeCompareBase
 from cylp.py.modeling.CyLPModel import CyLPSolution
 from cylp.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
@@ -110,6 +114,9 @@ cdef class CyCbcModel:
                         whatDepthInSub=-1):
         self.cutGenerators.append(generator)
         Py_INCREF(generator)
+        if isinstance(name, str):
+            # Cast strings/unicode to bytes
+            name = name.encode('utf-8')
         self.CppSelf.addCutGenerator(generator.CppSelf, howOften,
                                     name, normal, atSolution,
                                     infeasible, howOftenInSub, whatDepth,

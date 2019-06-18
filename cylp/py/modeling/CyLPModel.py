@@ -119,6 +119,15 @@
 
 '''
 
+from __future__ import print_function
+from functools import reduce
+
+# Python 3 does not have long, only int
+try:
+    long
+except NameError:
+    long = int
+
 from itertools import product
 from copy import deepcopy
 from operator import mul
@@ -205,14 +214,32 @@ class CyLPExpr:
         self.expr = v
         return v
 
+    def __mul__(self, other):
+        v = CyLPExpr(opr="*", left=self, right=other)
+        v.expr = v
+        self.expr = v
+        return v
+
     def __rsub__(self, other):
         v = CyLPExpr(opr="-", left=other, right=self)
         v.expr = v
         self.expr = v
         return v
 
+    def __sub__(self, other):
+        v = CyLPExpr(opr="-", left=self, right=other)
+        v.expr = v
+        self.expr = v
+        return v
+
     def __radd__(self, other):
         v = CyLPExpr(opr="+", left=other, right=self)
+        v.expr = v
+        self.expr = v
+        return v
+
+    def __add__(self, other):
+        v = CyLPExpr(opr="+", left=self, right=other)
         v.expr = v
         self.expr = v
         return v
@@ -714,7 +741,7 @@ class IndexFactory:
         if not varName:
             raise Exception('You must specify a name for a variable.')
         if varName in self.varIndex.keys():
-            print 'Variable already exists.'
+            print('Variable already exists.')
             #self.varIndex[varName] += range(self.currentVarIndex,
             #                                self.currentVarIndex +
             #                                numberOfVars)
@@ -751,7 +778,7 @@ class IndexFactory:
         if not constName:
             raise Exception('You must specify a name for a constraint.')
         if self.hasConst(constName):
-            print 'Constraint already exists: %s' % constName
+            print('Constraint already exists: %s' % constName)
             #self.constIndex[constName] += range(self.currentConstIndex,
             #        self.currentConstIndex + numberOfConsts)
         else:
@@ -848,7 +875,7 @@ class CyLPModel(object):
                 var.mpsNames = [var.name + '_' + '_'.join(x) for x in \
                         product(*[map(str, range(i)) for i in var.dims])]
             else:
-                var.mpsNames = ['%s_%s' % (var.name, i) for i in xrange(var.dim)]
+                var.mpsNames = ['%s_%s' % (var.name, i) for i in range(var.dim)]
 
             o = self.objective_
             if isinstance(o, np.ndarray):
@@ -880,7 +907,7 @@ class CyLPModel(object):
         else:
             if end == o.shape[1]:
                 if start == 0:
-                    print 'Problem empty.'
+                    print('Problem empty.')
                 else:
                     o = o[0, :start]
             elif start == 0:
@@ -905,7 +932,7 @@ class CyLPModel(object):
             if name in c.varNames:
                 c.varNames.remove(name)
                 del c.parentVarDims[name]
-                for v in c.varCoefs.keys():
+                for v in list(c.varCoefs.keys()):
                     if v.name == name:
                         del c.varCoefs[v]
 
@@ -987,7 +1014,7 @@ class CyLPModel(object):
 
         if addMpsNames:
             c.mpsNames = []
-            for i in xrange(c.nRows):
+            for i in range(c.nRows):
                 c.mpsNames.append('%s_%s' % (c.name, str(i)))
 
 
@@ -1137,7 +1164,7 @@ if __name__ == '__main__':
     s.writeMps('/Users/mehdi/Desktop/test.mps')
     s.primal()
     sol = s.primalVariableSolution
-    print sol
+    print(sol)
 
 #model = CyLPModel()
 #
@@ -1154,7 +1181,7 @@ if __name__ == '__main__':
 #
 #model.addConstraint(1.5 <=  x[1:3] + 5 * y[3:] - 6 * x[2:5]  + x[0] <= 14)
 #
-#print model.constraints[0].varCoefs
+#print(model.constraints[0].varCoefs)
 #
 #model.addConstraint(2 <= aa*x + dd * y <= b)
 #model.addConstraint(x[2:4] >= 3)
@@ -1163,21 +1190,21 @@ if __name__ == '__main__':
 #
 #A = model.makeMatrices()
 #
-#print 'x:'
-#print x.lower
-#print x.upper
-#print 'y:'
-#print y.lower
-#print y.upper
+#print('x:')
+#print(x.lower)
+#print(x.upper)
+#print('y:')
+#print(y.lower)
+#print(y.upper)
 #
-#print '+++++++++++++++++++++++++++++'
+#print('+++++++++++++++++++++++++++++')
 ##cc = x[0] - 2*x[1:3] -2.5 * y[1]
 ##cc = cc.evaluate()
 #model.objective = x[0] - 2*x[1:3] -2.5 * y[1]
-##print model.allParentVarDims
-##print model.generateVarObjCoef('x')
-##print model.generateVarObjCoef('y')
+##print(model.allParentVarDims)
+##print(model.generateVarObjCoef('x'))
+##print(model.generateVarObjCoef('y'))
 #
-#print model.objective
-##print cl
-##print cu
+#print(model.objective)
+##print(cl)
+##print(cu)
