@@ -142,14 +142,23 @@ cdef class CyClpSimplex:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
 
-                if isinstance(o, (np.ndarray)):
-                    self.setObjectiveArray(o.astype(np.double))
-                if isinstance(o, (sparse.coo_matrix,
-                                                sparse.csc_matrix,
-                                                sparse.csr_matrix,
-                                                sparse.lil_matrix)):
-                    for i in xrange(self.nVariables):
-                        self.setObjectiveCoefficient(i, o[0, i])
+                if not isinstance(o, (np.ndarray)):
+                    o = o.toarray()[0]
+                self.setObjectiveArray(o.astype(np.double))
+                # This old version doesn't work in some versions of Scipy
+                # For csr_matrixPlus, o[0,i] is still a matrix, not a number
+                # This does work in some versions of SciPy
+                # It would probably be OK if csr_matrixPlus didn't override
+                # __get_item__ to always cast the result back to csr_matrixPlus
+                # I'm not actually sure why the objective is stored as 
+                # csr_matrixPlus anyway... seems to not always be true.
+                #
+                #if isinstance(o, (sparse.coo_matrix,
+                #                                sparse.csc_matrix,
+                #                                sparse.csr_matrix,
+                #                                sparse.lil_matrix)):
+                #    for i in xrange(self.nVariables):
+                #        self.setObjectiveCoefficient(i, o[0,i])
                     #if not isinstance(o, sparse.coo_matrix):
                     #    o = o.tocoo()
                     #for i, j, v in izip(o.row, o.col, o.data):

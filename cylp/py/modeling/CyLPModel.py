@@ -883,6 +883,9 @@ class CyLPModel(object):
             else:
                 o = sparseConcat(o, csr_matrixPlus(np.zeros(dim)), 'h')
 
+            # I'm not exactly sure why the objective gets changed into
+            # csr_matrixPlus here when it may not be coming in. Shouldn't it
+            # just always be?
             self.objective_ = csr_matrixPlus(o)
 
         else:
@@ -915,6 +918,9 @@ class CyLPModel(object):
             else:
                 o = sparseConcat(o[0, :start], o[0, end:], how='h')
 
+        # I'm not exactly sure why the objective gets changed into
+        # csr_matrixPlus here when it may not be coming in. Shouldn't it
+        # just always be?
         self.objective_ = csr_matrixPlus(o)
 
         del self.pvdims[name]

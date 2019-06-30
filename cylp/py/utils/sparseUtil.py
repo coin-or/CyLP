@@ -119,6 +119,10 @@ class csc_matrixPlus(sparse.csc_matrix):
         ret = sparse.csc_matrix.__getitem__(self, key)
         if isinstance(ret, (int, long, float)):
             return ret
+        # This seems to cause some potential problems when the result is 1x1
+        # It should really be returned as an int/float in that case, but
+        # this prevents it and causes behavior to be different than
+        # sparse.csr_matrix
         return csc_matrixPlus(ret)
 
     def row_scale(self, scaleFactor=None):
@@ -354,6 +358,10 @@ class csr_matrixPlus(sparse.csr_matrix):
         ret = sparse.csr_matrix.__getitem__(self, key)
         if isinstance(ret, (int, long, float)):
             return ret
+        # This seems to cause some potential problems when the result is 1x1
+        # It should really be returned as an int/float in that case, but
+        # this prevents it and causes behavior to be different than
+        # sparse.csr_matrix
         return csr_matrixPlus(ret)
 
     def row_scale(self, scaleFactor=None):
