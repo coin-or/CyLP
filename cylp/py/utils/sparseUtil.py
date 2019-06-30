@@ -11,6 +11,12 @@ regardless of their dimension alignments. Fills with zeros where necessary.
 
 '''
 
+# Python 3 does not have long, only int
+try:
+    long
+except NameError:
+    long = int
+
 from scipy import sparse
 import numpy as np
 
@@ -26,7 +32,7 @@ class csc_matrixPlus(sparse.csc_matrix):
         self.CyLPExpr = CyLPExpr
         self.rowScaleFactor = self.colScaleFactor = None
 
-    def __setitem__(self, (iRow, iCol), val):
+    def __setitem__(self, location, val):
         '''
         Set the item in row ``i`` and column ``j`` to ``val``.
         Increases matrix's size if necessary
@@ -46,6 +52,7 @@ class csc_matrixPlus(sparse.csc_matrix):
                 [ 2,  3,  6,  0,  0, 11]])
 
         '''
+        iRow, iCol = location
         if not isinstance(val, (int, long, float)):
             return sparse.csc_matrix.__setitem__(self, (iRow, iCol), val)
 
@@ -61,7 +68,7 @@ class csc_matrixPlus(sparse.csc_matrix):
                     self.data[i] = val
                     return
             #If we reach here it means that index does NOT exist
-            for i in xrange(iCol + 1, nCols + 1):
+            for i in range(iCol + 1, nCols + 1):
                 self.indptr[i] += 1
             indexOfElement = self.indptr[iCol + 1] - 1
             #If indices is empty
@@ -112,6 +119,10 @@ class csc_matrixPlus(sparse.csc_matrix):
         ret = sparse.csc_matrix.__getitem__(self, key)
         if isinstance(ret, (int, long, float)):
             return ret
+        # This seems to cause some potential problems when the result is 1x1
+        # It should really be returned as an int/float in that case, but
+        # this prevents it and causes behavior to be different than
+        # sparse.csr_matrix
         return csc_matrixPlus(ret)
 
     def row_scale(self, scaleFactor=None):
@@ -233,7 +244,7 @@ class csr_matrixPlus(sparse.csr_matrix):
         self.CyLPExpr = CyLPExpr
         self.rowScaleFactor = self.colScaleFactor = None
 
-    def __setitem__(self, (iRow, iCol), val):
+    def __setitem__(self, location, val):
         '''
         Sets the item in row ``i`` and col ``j`` to ``val``.
         Increases matrix's ``shape[1]`` if necessary
@@ -247,7 +258,7 @@ class csr_matrixPlus(sparse.csr_matrix):
         >>> data = np.array([1, 2, 3, 4, 5, 6])
         >>> s = csr_matrixPlus((data, indices, indptr), shape=(3, 3))
         >>> s[5,2] = 11
-        >>> print s.todense()
+        >>> print(s.todense())
         [[ 1  0  2]
          [ 0  0  3]
          [ 4  5  6]
@@ -256,6 +267,7 @@ class csr_matrixPlus(sparse.csr_matrix):
          [ 0  0 11]]
 
         '''
+        iRow, iCol = location
         if not isinstance(val, (int, long, float)):
             return sparse.csr_matrix.__setitem__(self, (iRow, iCol), val)
 
@@ -297,7 +309,7 @@ class csr_matrixPlus(sparse.csr_matrix):
                     self.data[i] = val
                     return
             #if we reach here it means that index does NOT exist
-            for i in xrange(iRow + 1, nRows + 1):
+            for i in range(iRow + 1, nRows + 1):
                 self.indptr[i] += 1
             indexOfElement = self.indptr[iRow + 1] - 1
             # If indices is empty
@@ -346,6 +358,10 @@ class csr_matrixPlus(sparse.csr_matrix):
         ret = sparse.csr_matrix.__getitem__(self, key)
         if isinstance(ret, (int, long, float)):
             return ret
+        # This seems to cause some potential problems when the result is 1x1
+        # It should really be returned as an int/float in that case, but
+        # this prevents it and causes behavior to be different than
+        # sparse.csr_matrix
         return csr_matrixPlus(ret)
 
     def row_scale(self, scaleFactor=None):

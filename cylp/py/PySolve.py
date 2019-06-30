@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 from time import clock
 import cProfile
@@ -27,7 +28,7 @@ def solve(filename, method):
     elif method == 'p':
         pivot = PositiveEdgePivot(s)
     else:
-        print 'Unkown solution method.'
+        print('Unkown solution method.')
         sys.exit(1)
 
     s.setPivotMethod(pivot)
@@ -36,14 +37,14 @@ def solve(filename, method):
 
     start = clock()
     s.primal()
-    print 'Problem solved in %g seconds.' % (clock() - start)
+    print('Problem solved in %g seconds.' % (clock() - start))
     return s.objectiveValue
 
 
 #    s.copyInIntegerInformation(np.array(s.nCols * [True], np.uint8))
 #    #s.setInteger(100)
 #
-#    print "Solving relaxation"
+#    print("Solving relaxation")
 #    cbcModel = s.getCbcModel()
 #    from SimpleNodeCompare import SimpleNodeCompare
 #    from CyCgl import CyCglGomory, CyCglClique, CyCglKnapsackCover
@@ -63,11 +64,11 @@ def solve(filename, method):
 #
 #
 #    cbcModel.branchAndBound()
-#    print cbcModel.primalVariableSolution
+#    print(cbcModel.primalVariableSolution)
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print 'Usage example (Dantzig pivot): PySolve file.mps d'
+        print('Usage example (Dantzig pivot): PySolve file.mps d')
         sys.exit(1)
     solve(sys.argv[1], sys.argv[2])
     #cProfile.run('solve(sys.argv[1], sys.argv[2])')

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import inspect
 import os
@@ -107,7 +108,7 @@ class TestMIP(unittest.TestCase):
 
         s.copyInIntegerInformation(np.array(s.nCols * [True], np.uint8))
 
-        print "Solving relaxation"
+        print("Solving relaxation")
         cbcModel = s.getCbcModel()
         n = SimpleNodeCompare()
         cbcModel.setNodeCompare(n)

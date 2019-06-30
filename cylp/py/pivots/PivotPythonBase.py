@@ -4,9 +4,6 @@ It consists of a method :py:func:`pivotColumn` which must be implemented and
 :py:func:`isPivotAcceptable` whose implementation is optional.
 '''
 
-from exceptions import NotImplementedError
-
-
 class PivotPythonBase:
     def pivotColumn(self):
         '''

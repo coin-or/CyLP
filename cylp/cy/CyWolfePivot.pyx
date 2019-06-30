@@ -22,6 +22,9 @@ cdef class CyWolfePivot(CyClpPrimalColumnPivotBase):
         m = self.cyModel
 
         # Update the reduced costs, for both the original and the slack variables
+
+        s = self.cyModel
+
         if updates.nElements:
             m.updateColumnTranspose(spareRow2, updates)
             m.transposeTimes(-1, updates, spareCol2, spareCol1)
@@ -30,10 +33,9 @@ cdef class CyWolfePivot(CyClpPrimalColumnPivotBase):
         updates.clear()
         spareCol1.clear()
 
-
+        # cdef CyClpSimplex.Status s
         cdef double* reducedCosts = self.getReducedCosts()
         cdef int dim = self.nCols() + self.nRows()
-        cdef CyClpSimplex.Status s
 
         cdef double bestDj = self.cyModel.dualTolerance
         cdef int bestSequence = -1

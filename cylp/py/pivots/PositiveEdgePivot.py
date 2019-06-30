@@ -3,11 +3,12 @@ As a part of ``cylp.python.pivots`` it implements the positive edge
 pivot selection rule.
 '''
 
+from __future__ import print_function
 import random
 import numpy as np
 from cylp.cy import CyCoinIndexedVector
 from cylp.cy.CyClpSimplex import cydot
-from PivotPythonBase import PivotPythonBase
+from .PivotPythonBase import PivotPythonBase
 
 
 class PositiveEdgePivot(PivotPythonBase):
@@ -65,7 +66,7 @@ class PositiveEdgePivot(PivotPythonBase):
         #self.p = np.where(np.abs(rhs) > self.EPSILON)[0]
         self.z = np.where(np.abs(rhs) <= self.EPSILON)[0]
 
-        #print 'degeneracy level : ', (len(self.z)) / float(nRows)
+        #print('degeneracy level : ', (len(self.z)) / float(nRows)))
         self.isDegenerate = (len(self.z) > 0)
 
     def updateW(self):

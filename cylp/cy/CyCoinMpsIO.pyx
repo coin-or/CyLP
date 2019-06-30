@@ -64,6 +64,9 @@ cdef class CyCoinMpsIO:
         True
 
         '''
+        if isinstance(filename, str):
+            # Cast strings/unicode to bytes
+            filename = filename.encode('utf-8')
 
         ret = self.CppSelf.readMps(filename)
         if ret == 0 and self.CppSelf.IreadQuadraticMps(NULL, 0) == 0:

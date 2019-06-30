@@ -1,11 +1,16 @@
+# cython: c_string_type=str, c_string_encoding=ascii
 # cython: profile=True
 # cython: embedsignature=True
 
+from __future__ import print_function
 
-from exceptions import TypeError
 import inspect
 import os.path
-from itertools import izip, product
+from itertools import product
+try:
+    from itertools import izip
+except ImportError: # Python 3 does not have izip, use zip
+    izip = zip
 import numpy as np
 cimport numpy as np
 from scipy import sparse
@@ -137,14 +142,23 @@ cdef class CyClpSimplex:
                 self.cyLPModel.objective = obj
                 o = self.cyLPModel.objective
 
-                if isinstance(o, (np.ndarray)):
-                    self.setObjectiveArray(o.astype(np.double))
-                if isinstance(o, (sparse.coo_matrix,
-                                                sparse.csc_matrix,
-                                                sparse.csr_matrix,
-                                                sparse.lil_matrix)):
-                    for i in xrange(self.nVariables):
-                        self.setObjectiveCoefficient(i, o[0, i])
+                if not isinstance(o, (np.ndarray)):
+                    o = o.toarray()[0]
+                self.setObjectiveArray(o.astype(np.double))
+                # This old version doesn't work in some versions of Scipy
+                # For csr_matrixPlus, o[0,i] is still a matrix, not a number
+                # This does work in some versions of SciPy
+                # It would probably be OK if csr_matrixPlus didn't override
+                # __get_item__ to always cast the result back to csr_matrixPlus
+                # I'm not actually sure why the objective is stored as 
+                # csr_matrixPlus anyway... seems to not always be true.
+                #
+                #if isinstance(o, (sparse.coo_matrix,
+                #                                sparse.csc_matrix,
+                #                                sparse.csr_matrix,
+                #                                sparse.lil_matrix)):
+                #    for i in xrange(self.nVariables):
+                #        self.setObjectiveCoefficient(i, o[0,i])
                     #if not isinstance(o, sparse.coo_matrix):
                     #    o = o.tocoo()
                     #for i, j, v in izip(o.row, o.col, o.data):
@@ -1474,17 +1488,18 @@ cdef class CyClpSimplex:
                                     <int*>columns.data,
                                     <double*>elements.data)
 
-    cpdef int readMps(self, char* filename, int keepNames=False,
+    cpdef int readMps(self, filename, int keepNames=False,
             int ignoreErrors=False) except *:
         '''
         Read an mps file. See this :ref:`modeling example <modeling-usage>`.
         '''
+        filename = filename.encode('ascii')
         name, ext = os.path.splitext(filename)
-        if ext not in ['.mps', '.qps']:
-            print 'unrecognised extension %s' % ext
+        if ext not in [b'.mps', b'.qps']:
+            print('unrecognised extension %s' % ext)
             return -1
 
-        if ext == '.mps':
+        if ext == b'.mps':
             return self.CppSelf.readMps(filename, keepNames, ignoreErrors)
         else:
             m = CyCoinMpsIO.CyCoinMpsIO()
@@ -1750,7 +1765,7 @@ cdef class CyClpSimplex:
                                 numberPasses, dropNames, doRowObjective)
         s = CyClpSimplex()
         if model == NULL:
-            print "Presolve says problem infeasible."
+            print("Presolve says problem infeasible.")
             return s
 
         s.setCppSelf(model)
@@ -1767,7 +1782,7 @@ cdef class CyClpSimplex:
                                 feasibilityTolerance, keepIntegers,
                                 numberPasses, dropNames, doRowObjective)
         if ret == -2000:
-            print "Presolve says problem infeasible."
+            print("Presolve says problem infeasible.")
             return -2000
 
         return problemStatus[ret]
@@ -1779,7 +1794,7 @@ cdef class CyClpSimplex:
                                 feasibilityTolerance, keepIntegers,
                                 numberPasses, dropNames, doRowObjective)
         if ret == -2000:
-            print "Presolve says problem infeasible."
+            print("Presolve says problem infeasible.")
             return -2000
 
         return problemStatus[ret]
@@ -2110,7 +2125,7 @@ cdef class CyClpSimplex:
 #        #When you create LP using CoinModel getComplementarityList
 #        #cannot return with the right size
 #        #cl = self.getComplementarityList()
-#        #print var1, var2, len(cl)
+#        #print(var1, var2, len(cl))
 #        #cl[var1], cl[var2] = var2, var1
 #        self.CppSelf.setComplement(var1, var2)
 

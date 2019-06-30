@@ -1,5 +1,6 @@
 # cython: embedsignature=True
 
+from __future__ import print_function
 
 cdef class CyCoinIndexedVector:
     '''
@@ -46,7 +47,7 @@ cdef class CyCoinIndexedVector:
         #self.CppSelf.setItem(key, value)
 
     #def __setslice__(self, rg, val):
-        #print rg, val
+        #print(rg, val)
 
     def clear(self):
         self.CppSelf.clear()
