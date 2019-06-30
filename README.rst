@@ -185,10 +185,3 @@ You may access CyLP's documentation:
    perform all the doctest.
 
 
-.. image:: https://d2weczhvl823v0.cloudfront.net/mpy/cylp/trend.png
-   :alt: Bitdeli badge
-   :target: https://bitdeli.com/free
-
-.. image:: https://cruel-carlota.pagodabox.com/f8efbddd4f44bb098d20dafdd0b9e897
-   :alt: githalytics.com
-   :target: http://githalytics.com/mpy/cylp
