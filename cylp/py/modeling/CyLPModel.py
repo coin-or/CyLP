@@ -499,8 +499,8 @@ class CyLPConstraint:
             # FIXME: check this: I suppose never runs
             if self.isRange:
                 var = self.variables[0]
-                self.nRows = var.parentDim
-                dim = var.parentDim
+                self.nRows = var.dim
+                dim = var.dim
             #if not self.nRows:
                 #self.nRows = left.parentDim
                 #dim = left.parentDim
