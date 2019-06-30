@@ -1,10 +1,10 @@
 There is now a beta release of CyLP with Python3 support! 
 =========================================================
 
-To get it, do
-```
-pip install --pre cylp
-```
+To get it, do::
+
+    pip install --pre cylp
+
 On Windows, you should get a binary wheel. On Linux and OSX, you still need to install `Cbc
 <https://github.com/coin-or/Cbc/>`_ first. Once `Cbc <https://github.com/coin-or/Cbc/>`_
 is installed, add the `lib/pkgfig` directory to your `PKG_CONFIG_PATH` environment variable.
@@ -84,13 +84,13 @@ STEP 1:
     CyLP can be compiled against any Cbc version later than 2.8.5.
 
 STEP 2:
-    Create an environment variable called COIN_INSTALL_DIR pointing to your
-    installation of Coin. For example::
+    Either create an environment variable called COIN_INSTALL_DIR pointing to your
+    installation of COIN, e.g., ::
 
         $ export COIN_INSTALL_DIR=/Users/mehdi/Cbc-2.8.5
 
-You may also add this line to your ~/.bash_rc or ~/.profile to make
-it persistent.
+    or add the location of the `lib/pkgconfig/` directory (where you should find the `cbc.pc` 
+    file) to your `PKG_CONFIG_PATH`.
 
 STEP 3:
     Install CyLP. Go to CyLP's root directory and run::
