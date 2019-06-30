@@ -6,7 +6,11 @@ To get it, do
 pip install --pre cylp
 ```
 On Windows, you should get a binary wheel. On Linux and OSX, you still need to install `Cbc
-<https://github.com/coin-or/Cbc/>`_ first. The most trouble-free path is to build from source first and set the environment variable `COIN_INSTALL_DIR` to point to the installation directory. 
+<https://github.com/coin-or/Cbc/>`_ first. Once `Cbc <https://github.com/coin-or/Cbc/>`_
+is installed, add the `lib/pkgfig` directory to your `PKG_CONFIG_PATH` environment variable.
+Alternatively, you can build from source first and set the environment variable `COIN_INSTALL_DIR` 
+to point to the installation directory (if you use `coinbrew <https://github.com/coin-or/coinbrew>`_,
+this will be the `build/` directory).
 
 What is CyLP?
 ==============
