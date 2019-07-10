@@ -111,7 +111,7 @@ if 'CbcSolver' not in libs:
     else:
         libs.append('CbcSolver')
 
-libDirs.append(['.', join('.', cythonFilesDir)])
+libDirs.extend(['.', join('.', cythonFilesDir)])
 try:
     libDirs.append(join(CoinDir, 'lib'))
 except:
@@ -123,10 +123,10 @@ if operatingSystem == 'windows':
     except:
         pass
     
-incDirs.append([join('.', cppFilesDir), join('.', cythonFilesDir),
+incDirs.extend([join('.', cppFilesDir), join('.', cythonFilesDir),
                 numpy.get_include(), '.'])
 try:
-    incDirs.append([join(CoinDir, 'include', 'coin')])
+    incDirs.extend([join(CoinDir, 'include', 'coin')])
 except:
     pass
 
@@ -143,7 +143,7 @@ else:
     fileext = '.cpp'
 
 
-extra_compile_args = ['-w']
+extra_compile_args = ['-w', '-std=c++11']
 ext_modules = []
 
 if operatingSystem == 'mac':
