@@ -2,6 +2,7 @@ import os
 import sys
 import platform
 from os.path import join
+import numpy
 import unicodedata
 
 #A unicode function that is compatible with Python 2 and 3
