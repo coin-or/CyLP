@@ -2,12 +2,11 @@ import os
 import sys
 import platform
 from os.path import join
-import numpy
 import unicodedata
 
 #A unicode function that is compatible with Python 2 and 3
 u = lambda s: s if sys.version_info[0] > 2 else unicode(s, 'utf-8')
-
+myopen = lambda s: open(s) if sys.version_info[0] == 2 else open(s, encoding="utf-8") 
 
 # Setuptools seems to get confused with c++ extensions
 try:
@@ -398,7 +397,7 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
                           extra_link_args=extra_link_args), ]
 
 
-s_README = getBdistFriendlyString(open('README.rst').read())
+s_README = getBdistFriendlyString(myopen('README.rst').read())
 s_AUTHORS = u(open('AUTHORS').read())
 s_LICENSE = u(open('LICENSE').read())
 
