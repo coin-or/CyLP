@@ -80,12 +80,21 @@ Installing from source
 ========================
 
 STEP 1:
-    Install CBC (http://github.com/coin-or/Cbc/).
-    CyLP can be compiled against any Cbc version later than 2.8.5.
+    Install CBC either from source (http://github.com/coin-or/Cbc/) or by any of the following methods.
+    
+    1. Install the cbc package in Linux (`coinor-cbc` on Debian or `coin-or-Cbc` on Fedora).
+    2. Install with homebrew on OSX:
+    
+        ``$ brew tap coin-or-tools/coinor``
+        
+        ``$ brew install coin-or-tools/coinor/cbc``
+    
+    3. Download binaries from Bintray (https://bintray.com/coin-or/download/Cbc) for Windows.
 
 STEP 2:
-    Either create an environment variable called COIN_INSTALL_DIR pointing to your
-    installation of COIN, e.g., ::
+
+    In case of installing from Bintray on Windows or from source on any platform, either create an environment variable 
+    called COIN_INSTALL_DIR pointing to your installation of COIN, e.g., ::
 
         $ export COIN_INSTALL_DIR=/Users/mehdi/Cbc-2.8.5
 
