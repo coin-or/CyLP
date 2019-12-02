@@ -85,14 +85,13 @@ STEP 1:
     1. Install the cbc package in Linux (`coinor-cbc` on Debian or `coin-or-Cbc` on Fedora).
     2. Install with homebrew on OSX:
     
-        ``$ brew tap coin-or-tools/coinor``
+       ``$ brew tap coin-or-tools/coinor``
         
-        ``$ brew install coin-or-tools/coinor/cbc``
+       ``$ brew install coin-or-tools/coinor/cbc``
     
     3. Download binaries from Bintray (https://bintray.com/coin-or/download/Cbc) for Windows.
 
 STEP 2:
-
     In case of installing from Bintray on Windows or from source on any platform, either create an environment variable 
     called COIN_INSTALL_DIR pointing to your installation of COIN, e.g., ::
 
