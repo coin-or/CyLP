@@ -1,16 +1,18 @@
-There is now a beta release of CyLP with Python3 support! 
-=========================================================
+CyLP
+====
 
-To get it, do::
+CyLP now works in Python 3. To get the most recent release, do:
 
     pip install cylp
 
+Please note that although it is listed as a dependency in the `setup.py` file, 
+`numpy` does need to be installed prior to installing CyLP. 
 On Windows, you should get a binary wheel. On Linux and OSX, you still need to install `Cbc
 <https://github.com/coin-or/Cbc/>`_ first. Once `Cbc <https://github.com/coin-or/Cbc/>`_
 is installed, add the `lib/pkgfig` directory to your `PKG_CONFIG_PATH` environment variable.
 Alternatively, you can build from source first and set the environment variable `COIN_INSTALL_DIR` 
 to point to the installation directory (if you use `coinbrew <https://github.com/coin-or/coinbrew>`_,
-this will be the `build/` directory).
+this will be the `dist/` directory).
 
 What is CyLP?
 ==============
@@ -33,7 +35,6 @@ facility. Please find examples in the `documentation
    Moreover, in the case that you find a bug or a mistake, we would appreciate
    it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca.
 
-
 Who uses CyLP
 ==============
 CyLP is being used in a wide range of practical and research fields. Some of the users include:
@@ -46,8 +47,6 @@ CyLP is being used in a wide range of practical and research fields. Some of the
 #. Lehigh University: CyLP is used to teach mixed-integer cuts.
 #. IBM T. J. Watson research center
 #. Saarland University, Germany
-
-
 
 Installation
 ============
@@ -74,8 +73,6 @@ you'll have to compile Cbc and set and environment variable to point to it
 before calling easy_install again. The details are given in the `Installing
 from source`_ section.
 
-
-
 Installing from source
 ========================
 
@@ -95,7 +92,7 @@ STEP 2:
     In case of installing from Bintray on Windows or from source on any platform, either create an environment variable 
     called COIN_INSTALL_DIR pointing to your installation of COIN, e.g., ::
 
-        $ export COIN_INSTALL_DIR=/Users/mehdi/Cbc-2.8.5
+        $ export COIN_INSTALL_DIR=/Users/mehdi/Cbc-2.10.3
 
     or add the location of the `lib/pkgconfig/` directory (where you should find the `cbc.pc` 
     file) to your `PKG_CONFIG_PATH`.
@@ -133,8 +130,6 @@ Or simply go to CyLP and run::
     $ python -m unittest discover
 
 to run all CyLP unit tests.
-
-
 
 Modeling Example
 ==================
