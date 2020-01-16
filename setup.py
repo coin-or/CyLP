@@ -21,8 +21,10 @@ except ImportError:
 
 PROJECT = 'cylp'
 VERSION = open(join('cylp', 'VERSION')).read()
-URL = 'https://github.com/mpy/cylp'
+URL = 'https://github.com/coin-or/cylp'
 AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
+MAINTAINER = u('Ted Ralphs')
+MAINTAINER_EMAIL = u('ted@lehigh.edu')
 DESC = 'A Python interface for CLP, CBC, and CGL'
 
 cythonFilesDir = join('cylp', 'cy')
@@ -416,15 +418,19 @@ class customInstall(install):
             if os.system('grep -rI "std::isspace" cylp/cy/*.cpp'):
                 os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/isspace/std::isspace/g' ''' % currentDir)
 
-        if operatingSystem == 'mac':
-            from fixBinaries import platform_dir
-            extra_files.append(join('cbclibs', platform_dir, '*.dylib'))
+# These lines commented out per https://github.com/coin-or/CyLP/issues/80
+# fixBinaries is now not called, but it's not clear what it actually and
+# seems to be unneeded. TKR 1/15/2020
+
+#        if operatingSystem == 'mac':
+#            from fixBinaries import platform_dir
+#            extra_files.append(join('cbclibs', platform_dir, '*.dylib'))
 
         install.run(self)
 
-        if operatingSystem == 'mac':
-            from fixBinaries import fixAll
-            fixAll()
+#        if operatingSystem == 'mac':
+#            from fixBinaries import fixAll
+#            fixAll()
 
 
 cmdclass['install'] = customInstall
@@ -437,6 +443,8 @@ setup(name='cylp',
       long_description=s_README,
       author=s_AUTHORS,
       author_email=AUTHOR_EMAIL,
+      maintainer=MAINTAINER,
+      maintainer_email=MAINTAINER_EMAIL,
       url=URL,
       license=s_LICENSE,
       packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots', 'cylp.py.modeling',

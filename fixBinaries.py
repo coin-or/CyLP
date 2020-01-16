@@ -10,10 +10,6 @@ from os.path import join, basename, exists
 from os import makedirs
 import subprocess
 
-
-coin_dir = os.environ['COIN_INSTALL_DIR']
-cbc_libs_dir = join(coin_dir, 'lib')
-
 platform_dir = 'lib.%s-%s.%s' % (distutils.util.get_platform(),
                                     sys.version_info.major,
                                     sys.version_info.minor)
