@@ -3,7 +3,7 @@ There is now a beta release of CyLP with Python3 support!
 
 To get it, do::
 
-    pip install --pre cylp
+    pip install cylp
 
 On Windows, you should get a binary wheel. On Linux and OSX, you still need to install `Cbc
 <https://github.com/coin-or/Cbc/>`_ first. Once `Cbc <https://github.com/coin-or/Cbc/>`_

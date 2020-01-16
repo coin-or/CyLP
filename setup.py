@@ -19,14 +19,6 @@ except ImportError:
     from distutils.extension import Extension
     from distutils.command.install import install
 
-PROJECT = 'cylp'
-VERSION = open(join('cylp', 'VERSION')).read()
-URL = 'https://github.com/coin-or/cylp'
-AUTHOR_EMAIL = u('mehdi.towhidi@gerad.ca')
-MAINTAINER = u('Ted Ralphs')
-MAINTAINER_EMAIL = u('ted@lehigh.edu')
-DESC = 'A Python interface for CLP, CBC, and CGL'
-
 cythonFilesDir = join('cylp', 'cy')
 cppFilesDir = join('cylp', 'cpp')
 
@@ -402,8 +394,6 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
 
 s_README = getBdistFriendlyString(myopen('README.rst').read())
 s_AUTHORS = u(open('AUTHORS').read())
-s_LICENSE = u(open('LICENSE').read())
-
 
 class customInstall(install):
     '''
@@ -438,15 +428,16 @@ cmdclass['install'] = customInstall
 extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h', 'VERSION']
 
 setup(name='cylp',
-      version=VERSION,
-      description=DESC,
+      version='0.9.0',
+      description='A Python interface for CLP, CBC, and CGL',
       long_description=s_README,
-      author=s_AUTHORS,
-      author_email=AUTHOR_EMAIL,
-      maintainer=MAINTAINER,
-      maintainer_email=MAINTAINER_EMAIL,
-      url=URL,
-      license=s_LICENSE,
+      long_description_content_type='text/x-rst',
+      author='Mehdi Towhidi (mehdi.towhidi@gerad.ca), Dominique Orban (dominique.orban@gerad.ca)',
+      author_email='mehdi.towhidi@gerad.ca',
+      maintainer='Ted Ralphs',
+      maintainer_email='ted@lehigh.edu',
+      url='https://github.com/coin-or/cylp',
+      license='Eclipse Public License',
       packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots', 'cylp.py.modeling',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass=cmdclass,
