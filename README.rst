@@ -5,11 +5,12 @@ CyLP now works in Python 3. To get the most recent release, do:
 
     pip install cylp
 
-Please note that although it is listed as a dependency in the `setup.py` file, 
-`numpy` does need to be installed prior to installing CyLP. 
-On Windows, you should get a binary wheel. On Linux and OSX, you still need to install `Cbc
-<https://github.com/coin-or/Cbc/>`_ first. Once `Cbc <https://github.com/coin-or/Cbc/>`_
-is installed, add the `lib/pkgfig` directory to your `PKG_CONFIG_PATH` environment variable.
+Please note that `numpy` does need to be installed prior to installing CyLP,
+even though it is listed as a dependency in the `setup.py` file. 
+On Windows, installing will download a binary wheel that includes Cbc (no additional steps 
+required). On Linux and OSX, you will get a source distribution, which requires that you first install 
+`Cbc <https://github.com/coin-or/Cbc/>`_ first. Once `Cbc <https://github.com/coin-or/Cbc/>`_ 
+is installed, add the `<prefix>/lib/pkgfig` directory to your `PKG_CONFIG_PATH` environment variable. 
 Alternatively, you can build from source first and set the environment variable `COIN_INSTALL_DIR` 
 to point to the installation directory (if you use `coinbrew <https://github.com/coin-or/coinbrew>`_,
 this will be the `dist/` directory).
