@@ -19,10 +19,13 @@ except ImportError:
     from distutils.extension import Extension
     from distutils.command.install import install
 
+VERSION = open(join('cylp', 'VERSION')).read()
+
 cythonFilesDir = join('cylp', 'cy')
 cppFilesDir = join('cylp', 'cpp')
 
-#Do "export CYLP_USE_CYTHON=" if you want to build cylp from scratch, using Cython
+#Do "export CYLP_USE_CYTHON=" if you want to build cylp from scratch,
+#using Cython
 try:
     os.environ['CYLP_USE_CYTHON']
     USECYTHON = True
@@ -428,7 +431,7 @@ cmdclass['install'] = customInstall
 extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h', 'VERSION']
 
 setup(name='cylp',
-      version='0.9.0',
+      version=VERSION,
       description='A Python interface for CLP, CBC, and CGL',
       long_description=s_README,
       long_description_content_type='text/x-rst',
