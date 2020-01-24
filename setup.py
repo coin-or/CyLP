@@ -55,9 +55,9 @@ def get_libs():
     if CoinDir != None:
         
         if operatingSystem == 'windows':
-            if os.path.exists(join(CoinDir, 'Cbc.dll.lib')):
-                libs = ['CbcSolver.dll', 'Cbc.dll', 'Cgl.dll', 'OsiClp.dll',
-                        'Clp.dll', 'Osi.dll', 'CoinUtils.dll']
+            if os.path.exists(join(CoinDir, 'lib', 'Cbc.lib')):
+                libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp',
+                        'Clp', 'Osi', 'CoinUtils']
             else:
                 libs = ['libCbcSolver', 'libCbc', 'libCgl', 'libOsiClp',
                         'libClp', 'libOsi', 'libCoinUtils']
