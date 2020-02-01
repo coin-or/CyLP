@@ -45,7 +45,7 @@ except:
             check_output(['which', 'clp']).strip()).decode('utf-8')
         CoinDir = abspath(join(location, ".."))
     except:
-        print("Warning: Could not automatically find COIN installation")
+        pass
             
 def get_libs():
     '''
