@@ -572,11 +572,13 @@ class CyLPVar(CyLPExpr):
         self.upper = getCoinInfinity() * np.ones(dim)
 
         self.indices = np.arange(dim, dtype=np.int32)
-        self.fromInd = self.toInd = None
         if fromInd and toInd:
-            self.indices = np.arange(fromInd, toInd, dtype=np.int32)
-            self.formInd = fromInd
+            #self.indices = np.arange(fromInd, toInd, dtype=np.int32)
+            self.fromInd = fromInd
             self.toInd = toInd
+        else:
+            self.fromInd = 0
+            self.toInd = dim-1
 
     def __repr__(self):
         s = self.name
@@ -858,18 +860,20 @@ class CyLPModel(object):
 
         if dim == 0:
             return
-        var = CyLPVar(name, dim, isInt)
-        self.variables.append(var)
 
         #If mulidim, correct dim
         if isinstance(dim, tuple):
-            dim = reduce(mul, dim)
+            numVars = reduce(mul, dim)
+        else:
+            numVars = dim
+        var = CyLPVar(name, dim, isInt, self.nVars, self.nVars+numVars)
+        self.variables.append(var)
 
         if not self.inds.hasVar(var.name):
-            self.inds.addVar(var.name, dim)
-            self.nVars += dim
+            self.inds.addVar(var.name, numVars)
+            self.nVars += numVars
             self.varNames.append(var.name)
-            self.pvdims[var.name] = dim
+            self.pvdims[var.name] = numVars
 
             if var.dims:
                 var.mpsNames = [var.name + '_' + '_'.join(x) for x in \
@@ -879,9 +883,9 @@ class CyLPModel(object):
 
             o = self.objective_
             if isinstance(o, np.ndarray):
-                o = np.concatenate((o, np.zeros(dim)), axis=0)
+                o = np.concatenate((o, np.zeros(numVars)), axis=0)
             else:
-                o = sparseConcat(o, csr_matrixPlus(np.zeros(dim)), 'h')
+                o = sparseConcat(o, csr_matrixPlus(np.zeros(numVars)), 'h')
 
             # I'm not exactly sure why the objective gets changed into
             # csr_matrixPlus here when it may not be coming in. Shouldn't it
