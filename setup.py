@@ -37,7 +37,6 @@ CoinDir = None
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
 except:
-    from subprocess import check_output
     from os.path import abspath, dirname
 
     try:
@@ -52,43 +51,46 @@ def get_libs():
     Return a list of distinct library names used by ``dependencies``.
     '''
     libs = []
-    if CoinDir != None:
+
+    try:
+        from subprocess import check_output
         
-        if operatingSystem == 'windows':
-            if os.path.exists(join(CoinDir, 'lib', 'Cbc.lib')):
-                libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp',
-                        'Clp', 'Osi', 'CoinUtils']
+        flags = (check_output(['pkg-config', '--libs', 'cbc'])
+                 .strip().decode('utf-8'))
+        libs = [flag[2:] for flag in flags.split()
+                if flag.startswith('-l')]
+        libDirs = [flag[2:] for flag in flags.split()
+                   if flag.startswith('-L')]
+        flags = (check_output(['pkg-config', '--cflags', 'cbc'])
+                 .strip().decode('utf-8'))
+        incDirs = [flag[2:] for flag in flags.split() if
+                   flag.startswith('-I')]
+
+    except:
+        if CoinDir != None:
+            
+            if operatingSystem == 'windows':
+                if os.path.exists(join(CoinDir, 'lib', 'Cbc.lib')):
+                    libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp',
+                            'Clp', 'Osi', 'CoinUtils']
+                else:
+                    libs = ['libCbcSolver', 'libCbc', 'libCgl', 'libOsiClp',
+                            'libClp', 'libOsi', 'libCoinUtils']
             else:
-                libs = ['libCbcSolver', 'libCbc', 'libCgl', 'libOsiClp',
-                        'libClp', 'libOsi', 'libCoinUtils']
+                libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp', 'Clp', 'Osi',
+                        'CoinUtils']
+                
+                libDirs = [join(CoinDir, 'lib')]
+                incDirs = [join(CoinDir, 'include', 'coin-or')] 
+                
         else:
-            libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp', 'Clp', 'Osi',
-                    'CoinUtils']
-            
-        libDirs = [join(CoinDir, 'lib')]
-        incDirs = [join(CoinDir, 'include', 'coin-or')] 
-
-    else:
-
-        try:
-            from subprocess import check_output
-            
-            flags = (check_output(['pkg-config', '--libs', 'cbc'])
-                     .strip().decode('utf-8'))
-            libs = [flag[2:] for flag in flags.split()
-                    if flag.startswith('-l')]
-            libDirs = [flag[2:] for flag in flags.split()
-                       if flag.startswith('-L')]
-            flags = (check_output(['pkg-config', '--cflags', 'cbc'])
-                     .strip().decode('utf-8'))
-            incDirs = [flag[2:] for flag in flags.split() if
-                       flag.startswith('-I')]
-        except:
             raise Exception('''
             Could not find location of COIN installation.
-            If an error occus, please ensure that either COIN_INSTALL_DIR
-            is set to the location of the installation or PKG_CONFIG_PATH
-            points to the location of the .pc files.
+            Please ensure that either 
+            * COIN_INSTALL_DIR is set to the location of the installation,
+            * PKG_CONFIG_PATH points to the location of the .pc files, or
+            * The cbc executable is in your executable path and is installed
+            at the same location as the libraries. 
             ''')
 
     return libs, libDirs, incDirs
