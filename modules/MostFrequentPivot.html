@@ -1,38 +1,34 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>MostFrequentPivot &mdash; CyLP 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <title>MostFrequentPivot &#8212; cylp 0.9 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="CyLP 0.1 documentation" href="../index.html" />
-    <link rel="up" title="pivots" href="pivots.html" />
-    <link rel="next" title="CyLP.py.modeling" href="modeling.html" />
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cylp.py.modeling" href="modeling.html" />
     <link rel="prev" title="LIFOPivot" href="LIFOPivot.html" /> 
   </head>
   <body>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,36 +38,36 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="modeling.html" title="CyLP.py.modeling"
+          <a href="modeling.html" title="cylp.py.modeling"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="LIFOPivot.html" title="LIFOPivot"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
-          <li><a href="py.html" ><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li>
-          <li><a href="pivots.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal"><span class="pre">pivots</span></tt></a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pivots.html" accesskey="U"><code class="docutils literal"><span class="pre">pivots</span></code></a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
-  <div class="section" id="module-CyLP.py.pivots.MostFrequentPivot">
-<span id="mostfrequentpivot"></span><h1><tt class="xref py py-class docutils literal"><span class="pre">MostFrequentPivot</span></tt><a class="headerlink" href="#module-CyLP.py.pivots.MostFrequentPivot" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cylp.py.pivots.MostFrequentPivot">
+<span id="mostfrequentpivot"></span><h1><code class="xref py py-class docutils literal"><span class="pre">MostFrequentPivot</span></code><a class="headerlink" href="#module-cylp.py.pivots.MostFrequentPivot" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="CyLP.py.pivots.MostFrequentPivot.MostFrequentPivot">
-<em class="property">class </em><tt class="descclassname">CyLP.py.pivots.MostFrequentPivot.</tt><tt class="descname">MostFrequentPivot</tt><big>(</big><em>clpModel</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/pivots/MostFrequentPivot.html#MostFrequentPivot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.pivots.MostFrequentPivot.MostFrequentPivot" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.py.pivots.MostFrequentPivot.MostFrequentPivot">
+<em class="property">class </em><code class="descclassname">cylp.py.pivots.MostFrequentPivot.</code><code class="descname">MostFrequentPivot</code><span class="sig-paren">(</span><em>clpModel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/MostFrequentPivot.html#MostFrequentPivot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.MostFrequentPivot.MostFrequentPivot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Last-In-First-Out pivot rule implementation.</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.pivots</span> <span class="kn">import</span> <span class="n">MostFrequentPivot</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.pivots.MostFrequentPivot</span> <span class="kn">import</span> <span class="n">getMpsExample</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c"># Get the path to a sample mps file</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots</span> <span class="k">import</span> <span class="n">MostFrequentPivot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots.MostFrequentPivot</span> <span class="k">import</span> <span class="n">getMpsExample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get the path to a sample mps file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">getMpsExample</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c"># Returns 0 if OK</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># Returns 0 if OK</span>
 <span class="go">0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pivot</span> <span class="o">=</span> <span class="n">MostFrequentPivot</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">setPivotMethod</span><span class="p">(</span><span class="n">pivot</span><span class="p">)</span>
@@ -89,37 +85,36 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="LIFOPivot.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">LIFOPivot</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">LIFOPivot</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="modeling.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">CyLP.py.modeling</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/modules/MostFrequentPivot.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">cylp.py.modeling</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/MostFrequentPivot.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -129,19 +124,19 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="modeling.html" title="CyLP.py.modeling"
+          <a href="modeling.html" title="cylp.py.modeling"
              >next</a> |</li>
         <li class="right" >
           <a href="LIFOPivot.html" title="LIFOPivot"
              >previous</a> |</li>
-        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
-          <li><a href="py.html" ><tt class="docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li>
-          <li><a href="pivots.html" ><tt class="docutils literal docutils literal docutils literal"><span class="pre">pivots</span></tt></a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pivots.html" ><code class="docutils literal"><span class="pre">pivots</span></code></a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>

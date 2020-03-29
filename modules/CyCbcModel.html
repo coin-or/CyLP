@@ -1,38 +1,34 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CyLP.cy.CyCbcModel &mdash; CyLP 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <title>cylp.cy.CyCbcModel &#8212; cylp 0.9 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="CyLP 0.1 documentation" href="../index.html" />
-    <link rel="up" title="CyLP.cy" href="cy.html" />
-    <link rel="next" title="CyLP.cy.CyCoinModel" href="CyCoinModel.html" />
-    <link rel="prev" title="CyLP.cy.CyCoinPackedMatrix" href="CyCoinPackedMatrix.html" /> 
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="cylp.cy.CyCoinModel" href="CyCoinModel.html" />
+    <link rel="prev" title="cylp.cy.CyCoinPackedMatrix" href="CyCoinPackedMatrix.html" /> 
   </head>
   <body>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -42,41 +38,41 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="CyCoinModel.html" title="CyLP.cy.CyCoinModel"
+          <a href="CyCoinModel.html" title="cylp.cy.CyCoinModel"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="CyCoinPackedMatrix.html" title="CyLP.cy.CyCoinPackedMatrix"
+          <a href="CyCoinPackedMatrix.html" title="cylp.cy.CyCoinPackedMatrix"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
-          <li><a href="cy.html" accesskey="U"><tt class="docutils literal docutils literal"><span class="pre">CyLP.cy</span></tt></a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
-  <div class="section" id="module-CyLP.cy.CyCbcModel">
-<span id="cylp-cy-cycbcmodel"></span><h1><a class="reference internal" href="#module-CyLP.cy.CyCbcModel" title="CyLP.cy.CyCbcModel"><tt class="xref py py-mod docutils literal"><span class="pre">CyLP.cy.CyCbcModel</span></tt></a><a class="headerlink" href="#module-CyLP.cy.CyCbcModel" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cylp.cy.CyCbcModel">
+<span id="cylp-cy-cycbcmodel"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCbcModel" title="cylp.cy.CyCbcModel"><code class="xref py py-mod docutils literal"><span class="pre">cylp.cy.CyCbcModel</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCbcModel" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel">
-<em class="property">class </em><tt class="descclassname">CyLP.cy.CyCbcModel.</tt><tt class="descname">CyCbcModel</tt><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interfaces <tt class="docutils literal"><span class="pre">CbcModel</span></tt>. To solve a first you create a
-<a class="reference internal" href="CyClpSimplex.html#module-CyLP.cy.CyClpSimplex" title="CyLP.cy.CyClpSimplex"><tt class="xref py py-class docutils literal"><span class="pre">CyLP.cy.CyClpSimplex</span></tt></a> object either
-by reading it from an <tt class="docutils literal"><span class="pre">mps</span></tt> file using
-<a class="reference internal" href="CyClpSimplex.html#CyLP.cy.CyClpSimplex.CyClpSimplex.readMps" title="CyLP.cy.CyClpSimplex.CyClpSimplex.readMps"><tt class="xref py py-func docutils literal"><span class="pre">CyClpSimplex.readMps()</span></tt></a>
-or by using CyLP modeling tool
-<a class="reference internal" href="modeling.html#module-CyLP.py.modeling.CyLPModel" title="CyLP.py.modeling.CyLPModel"><tt class="xref py py-mod docutils literal"><span class="pre">CyLP.py.modeling.CyLPModel</span></tt></a>. Then you ask the object for a
-<tt class="docutils literal"><span class="pre">CyCbcModel</span></tt> which is capable solving MIPs using B&amp;B</p>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel">
+<em class="property">class </em><code class="descclassname">cylp.cy.CyCbcModel.</code><code class="descname">CyCbcModel</code><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interfaces <code class="docutils literal"><span class="pre">CbcModel</span></code>. To solve a first you create a
+<a class="reference internal" href="CyClpSimplex.html#module-cylp.cy.CyClpSimplex" title="cylp.cy.CyClpSimplex"><code class="xref py py-class docutils literal"><span class="pre">cylp.cy.CyClpSimplex</span></code></a> object either
+by reading it from an <code class="docutils literal"><span class="pre">mps</span></code> file using
+<a class="reference internal" href="CyClpSimplex.html#cylp.cy.CyClpSimplex.CyClpSimplex.readMps" title="cylp.cy.CyClpSimplex.CyClpSimplex.readMps"><code class="xref py py-func docutils literal"><span class="pre">CyClpSimplex.readMps()</span></code></a>
+or by using cylp modeling tool
+<a class="reference internal" href="modeling.html#module-cylp.py.modeling.CyLPModel" title="cylp.py.modeling.CyLPModel"><code class="xref py py-mod docutils literal"><span class="pre">cylp.py.modeling.CyLPModel</span></code></a>. Then you ask the object for a
+<code class="docutils literal"><span class="pre">CyCbcModel</span></code> which is capable solving MIPs using B&amp;B</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.cy</span> <span class="kn">import</span> <span class="n">CyCbcModel</span><span class="p">,</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyCbcModel</span><span class="p">,</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="k">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">CyLPModel</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&#39;x&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">isInt</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">isInt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
@@ -99,46 +95,58 @@ or by using CyLP modeling tool
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span><span class="o">.</span><span class="n">branchAndBound</span><span class="p">()</span>
 <span class="go">&#39;solution&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s">&#39;x&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol_x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>
 </div>
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.addCutGenerator">
-<tt class="descname">addCutGenerator</tt><big>(</big><em>self</em>, <em>CyCglCutGenerator generator</em>, <em>howOften=1</em>, <em>name=''</em>, <em>normal=True</em>, <em>atSolution=False</em>, <em>infeasible=False</em>, <em>howOftenInSub=-100</em>, <em>whatDepth=-1</em>, <em>whatDepthInSub=-1</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.addCutGenerator" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator">
+<code class="descname">addCutGenerator</code><span class="sig-paren">(</span><em>self</em>, <em>CyCglCutGenerator generator</em>, <em>howOften=1</em>, <em>name=''</em>, <em>normal=True</em>, <em>atSolution=False</em>, <em>infeasible=False</em>, <em>howOftenInSub=-100</em>, <em>whatDepth=-1</em>, <em>whatDepthInSub=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.branchAndBound">
-<tt class="descname">branchAndBound</tt><big>(</big><em>self</em>, <em>doStatistics=0</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.branchAndBound" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator">
+<code class="descname">addPythonCutGenerator</code><span class="sig-paren">(</span><em>self</em>, <em>pythonCutGeneratorObject</em>, <em>howOften=1</em>, <em>name=''</em>, <em>normal=True</em>, <em>atSolution=False</em>, <em>infeasible=False</em>, <em>howOftenInSub=-100</em>, <em>whatDepth=-1</em>, <em>whatDepthInSub=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationAbondoned">
-<tt class="descname">isRelaxationAbondoned</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationAbondoned" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.branchAndBound">
+<code class="descname">branchAndBound</code><span class="sig-paren">(</span><em>self</em>, <em>doStatistics=0</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.branchAndBound" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible">
-<tt class="descname">isRelaxationDualInfeasible</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbondoned">
+<code class="descname">isRelaxationAbondoned</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbondoned" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible">
-<tt class="descname">isRelaxationInfeasible</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible">
+<code class="descname">isRelaxationDualInfeasible</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal">
-<tt class="descname">isRelaxationOptimal</tt><big>(</big><em>self</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible">
+<code class="descname">isRelaxationInfeasible</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CyLP.cy.CyCbcModel.CyCbcModel.setNodeCompare">
-<tt class="descname">setNodeCompare</tt><big>(</big><em>self</em>, <em>nodeCompareObject</em><big>)</big><a class="headerlink" href="#CyLP.cy.CyCbcModel.CyCbcModel.setNodeCompare" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal">
+<code class="descname">isRelaxationOptimal</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare">
+<code class="descname">setNodeCompare</code><span class="sig-paren">(</span><em>self</em>, <em>nodeCompareObject</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cylp.cy.CyCbcModel.CyCbcModel.solve">
+<code class="descname">solve</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call CbcMain. Solve the problem using the same parameters used by CbcSolver.
+Equivalent to solving the model from the command line using cbc’s binary.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -148,37 +156,36 @@ or by using CyLP modeling tool
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="CyCoinPackedMatrix.html"
-                        title="previous chapter"><tt class="docutils literal"><span class="pre">CyLP.cy.CyCoinPackedMatrix</span></tt></a></p>
+                        title="previous chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="CyCoinModel.html"
-                        title="next chapter"><tt class="docutils literal"><span class="pre">CyLP.cy.CyCoinModel</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/modules/CyCbcModel.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="next chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCoinModel</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/CyCbcModel.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -188,18 +195,18 @@ or by using CyLP modeling tool
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="CyCoinModel.html" title="CyLP.cy.CyCoinModel"
+          <a href="CyCoinModel.html" title="cylp.cy.CyCoinModel"
              >next</a> |</li>
         <li class="right" >
-          <a href="CyCoinPackedMatrix.html" title="CyLP.cy.CyCoinPackedMatrix"
+          <a href="CyCoinPackedMatrix.html" title="cylp.cy.CyCoinPackedMatrix"
              >previous</a> |</li>
-        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
-          <li><a href="cy.html" ><tt class="docutils literal docutils literal"><span class="pre">CyLP.cy</span></tt></a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>

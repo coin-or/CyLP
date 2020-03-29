@@ -1,37 +1,33 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>utils.sparseUtil &mdash; CyLP 0.1 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <title>utils.sparseUtil &#8212; cylp 0.9 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1',
+        VERSION:     '0.9',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://d3eoax9i5htok0.cloudfront.net/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="top" title="CyLP 0.1 documentation" href="../index.html" />
-    <link rel="up" title="CyLP.py" href="py.html" />
-    <link rel="prev" title="CyLP.py.modeling" href="modeling.html" /> 
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="cylp.py.modeling" href="modeling.html" /> 
   </head>
   <body>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -41,41 +37,41 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="modeling.html" title="CyLP.py.modeling"
+          <a href="modeling.html" title="cylp.py.modeling"
              accesskey="P">previous</a> |</li>
-        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
-          <li><a href="py.html" accesskey="U"><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" accesskey="U"><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li> 
       </ul>
     </div>  
 
     <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
-          <div class="body">
+          <div class="body" role="main">
             
-  <div class="section" id="module-CyLP.py.utils.sparseUtil">
-<span id="utils-sparseutil"></span><h1><tt class="xref py py-mod docutils literal"><span class="pre">utils.sparseUtil</span></tt><a class="headerlink" href="#module-CyLP.py.utils.sparseUtil" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-cylp.py.utils.sparseUtil">
+<span id="utils-sparseutil"></span><h1><code class="xref py py-mod docutils literal"><span class="pre">utils.sparseUtil</span></code><a class="headerlink" href="#module-cylp.py.utils.sparseUtil" title="Permalink to this headline">¶</a></h1>
 <p>sparseUtil provides useful sparse matrix operations for incremental
 construction of large sparse matrices from its block elements. Class
-<a class="reference internal" href="#CyLP.py.utils.sparseUtil.csc_matrixPlus" title="CyLP.py.utils.sparseUtil.csc_matrixPlus"><tt class="xref py py-class docutils literal"><span class="pre">csc_matrixPlus</span></tt></a> derives from <tt class="docutils literal"><span class="pre">sparse.csc_matrix</span></tt> and makes it
+<a class="reference internal" href="#cylp.py.utils.sparseUtil.csc_matrixPlus" title="cylp.py.utils.sparseUtil.csc_matrixPlus"><code class="xref py py-class docutils literal"><span class="pre">csc_matrixPlus</span></code></a> derives from <code class="docutils literal"><span class="pre">sparse.csc_matrix</span></code> and makes it
 possible to set elements outside the matrix dimensions by resizing
-the matrix whenever necessary. Class <a class="reference internal" href="#CyLP.py.utils.sparseUtil.csr_matrixPlus" title="CyLP.py.utils.sparseUtil.csr_matrixPlus"><tt class="xref py py-class docutils literal"><span class="pre">csr_matrixPlus</span></tt></a> does
-the same thing with <tt class="docutils literal"><span class="pre">sparse.csr_matrix</span></tt>.</p>
-<p>Function <a class="reference internal" href="#CyLP.py.utils.sparseUtil.sparseConcat" title="CyLP.py.utils.sparseUtil.sparseConcat"><tt class="xref py py-func docutils literal"><span class="pre">sparseConcat()</span></tt></a> concatenates two sparse matrices
+the matrix whenever necessary. Class <a class="reference internal" href="#cylp.py.utils.sparseUtil.csr_matrixPlus" title="cylp.py.utils.sparseUtil.csr_matrixPlus"><code class="xref py py-class docutils literal"><span class="pre">csr_matrixPlus</span></code></a> does
+the same thing with <code class="docutils literal"><span class="pre">sparse.csr_matrix</span></code>.</p>
+<p>Function <a class="reference internal" href="#cylp.py.utils.sparseUtil.sparseConcat" title="cylp.py.utils.sparseUtil.sparseConcat"><code class="xref py py-func docutils literal"><span class="pre">sparseConcat()</span></code></a> concatenates two sparse matrices
 regardless of their dimension alignments. Fills with zeros where necessary.</p>
 <div class="section" id="csc-matrixplus">
-<h2><a class="reference internal" href="#CyLP.py.utils.sparseUtil.csc_matrixPlus" title="CyLP.py.utils.sparseUtil.csc_matrixPlus"><tt class="xref py py-class docutils literal"><span class="pre">csc_matrixPlus</span></tt></a><a class="headerlink" href="#csc-matrixplus" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference internal" href="#cylp.py.utils.sparseUtil.csc_matrixPlus" title="cylp.py.utils.sparseUtil.csc_matrixPlus"><code class="xref py py-class docutils literal"><span class="pre">csc_matrixPlus</span></code></a><a class="headerlink" href="#csc-matrixplus" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="CyLP.py.utils.sparseUtil.csc_matrixPlus">
-<em class="property">class </em><tt class="descclassname">CyLP.py.utils.sparseUtil.</tt><tt class="descname">csc_matrixPlus</tt><big>(</big><em>arg1</em>, <em>shape=None</em>, <em>dtype=None</em>, <em>copy=False</em>, <em>fromMatrix=None</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#csc_matrixPlus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.csc_matrixPlus" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.py.utils.sparseUtil.csc_matrixPlus">
+<em class="property">class </em><code class="descclassname">cylp.py.utils.sparseUtil.</code><code class="descname">csc_matrixPlus</code><span class="sig-paren">(</span><em>arg1</em>, <em>shape=None</em>, <em>dtype=None</em>, <em>copy=False</em>, <em>fromMatrix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csc_matrixPlus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csc_matrixPlus" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="CyLP.py.utils.sparseUtil.csc_matrixPlus.__setitem__">
-<tt class="descname">__setitem__</tt><big>(</big><em>(iRow</em>, <em>iCol)</em>, <em>val</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#csc_matrixPlus.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.csc_matrixPlus.__setitem__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the item in row <tt class="docutils literal"><span class="pre">i</span></tt> and column <tt class="docutils literal"><span class="pre">j</span></tt> to <tt class="docutils literal"><span class="pre">val</span></tt>.
-Increases matrix&#8217;s size if necessary</p>
+<dt id="cylp.py.utils.sparseUtil.csc_matrixPlus.__setitem__">
+<code class="descname">__setitem__</code><span class="sig-paren">(</span><em>location</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csc_matrixPlus.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csc_matrixPlus.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the item in row <code class="docutils literal"><span class="pre">i</span></code> and column <code class="docutils literal"><span class="pre">j</span></code> to <code class="docutils literal"><span class="pre">val</span></code>.
+Increases matrix’s size if necessary</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csc_matrixPlus</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csc_matrixPlus</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
@@ -90,11 +86,11 @@ Increases matrix&#8217;s size if necessary</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="CyLP.py.utils.sparseUtil.csc_matrixPlus.addColumns">
-<tt class="descname">addColumns</tt><big>(</big><em>nCol</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#csc_matrixPlus.addColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.csc_matrixPlus.addColumns" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <tt class="docutils literal"><span class="pre">nCol</span></tt> columns to the matrix</p>
+<dt id="cylp.py.utils.sparseUtil.csc_matrixPlus.addColumns">
+<code class="descname">addColumns</code><span class="sig-paren">(</span><em>nCol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csc_matrixPlus.addColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csc_matrixPlus.addColumns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add <code class="docutils literal"><span class="pre">nCol</span></code> columns to the matrix</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csc_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csc_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">csc_matrixPlus</span><span class="o">.</span><span class="n">getMatrixForTest</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(3, 3)</span>
@@ -109,24 +105,24 @@ Increases matrix&#8217;s size if necessary</p>
 
 </div>
 <div class="section" id="csr-matrixplus">
-<h2><a class="reference internal" href="#CyLP.py.utils.sparseUtil.csr_matrixPlus" title="CyLP.py.utils.sparseUtil.csr_matrixPlus"><tt class="xref py py-class docutils literal"><span class="pre">csr_matrixPlus</span></tt></a><a class="headerlink" href="#csr-matrixplus" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference internal" href="#cylp.py.utils.sparseUtil.csr_matrixPlus" title="cylp.py.utils.sparseUtil.csr_matrixPlus"><code class="xref py py-class docutils literal"><span class="pre">csr_matrixPlus</span></code></a><a class="headerlink" href="#csr-matrixplus" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
-<dt id="CyLP.py.utils.sparseUtil.csr_matrixPlus">
-<em class="property">class </em><tt class="descclassname">CyLP.py.utils.sparseUtil.</tt><tt class="descname">csr_matrixPlus</tt><big>(</big><em>arg1</em>, <em>shape=None</em>, <em>dtype=None</em>, <em>copy=False</em>, <em>fromMatrix=None</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#csr_matrixPlus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.csr_matrixPlus" title="Permalink to this definition">¶</a></dt>
+<dt id="cylp.py.utils.sparseUtil.csr_matrixPlus">
+<em class="property">class </em><code class="descclassname">cylp.py.utils.sparseUtil.</code><code class="descname">csr_matrixPlus</code><span class="sig-paren">(</span><em>arg1</em>, <em>shape=None</em>, <em>dtype=None</em>, <em>copy=False</em>, <em>fromMatrix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csr_matrixPlus"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csr_matrixPlus" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="method">
-<dt id="CyLP.py.utils.sparseUtil.csr_matrixPlus.__setitem__">
-<tt class="descname">__setitem__</tt><big>(</big><em>(iRow</em>, <em>iCol)</em>, <em>val</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#csr_matrixPlus.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.csr_matrixPlus.__setitem__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the item in row <tt class="docutils literal"><span class="pre">i</span></tt> and col <tt class="docutils literal"><span class="pre">j</span></tt> to <tt class="docutils literal"><span class="pre">val</span></tt>.
-Increases matrix&#8217;s <tt class="docutils literal"><span class="pre">shape[1]</span></tt> if necessary</p>
+<dt id="cylp.py.utils.sparseUtil.csr_matrixPlus.__setitem__">
+<code class="descname">__setitem__</code><span class="sig-paren">(</span><em>location</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csr_matrixPlus.__setitem__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csr_matrixPlus.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the item in row <code class="docutils literal"><span class="pre">i</span></code> and col <code class="docutils literal"><span class="pre">j</span></code> to <code class="docutils literal"><span class="pre">val</span></code>.
+Increases matrix’s <code class="docutils literal"><span class="pre">shape[1]</span></code> if necessary</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csr_matrixPlus</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csr_matrixPlus</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">11</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
 <span class="go">[[ 1  0  2]</span>
 <span class="go"> [ 0  0  3]</span>
 <span class="go"> [ 4  5  6]</span>
@@ -138,11 +134,11 @@ Increases matrix&#8217;s <tt class="docutils literal"><span class="pre">shape[1]
 </dd></dl>
 
 <dl class="method">
-<dt id="CyLP.py.utils.sparseUtil.csr_matrixPlus.addRows">
-<tt class="descname">addRows</tt><big>(</big><em>nRow</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#csr_matrixPlus.addRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.csr_matrixPlus.addRows" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add <tt class="docutils literal"><span class="pre">nRow</span></tt> rows to the matrix</p>
+<dt id="cylp.py.utils.sparseUtil.csr_matrixPlus.addRows">
+<code class="descname">addRows</code><span class="sig-paren">(</span><em>nRow</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csr_matrixPlus.addRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csr_matrixPlus.addRows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add <code class="docutils literal"><span class="pre">nRow</span></code> rows to the matrix</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csr_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csr_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="o">.</span><span class="n">getMatrixForTest</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(3, 3)</span>
@@ -159,39 +155,39 @@ Increases matrix&#8217;s <tt class="docutils literal"><span class="pre">shape[1]
 <div class="section" id="sparse-matrix-concatenation">
 <h2>Sparse Matrix Concatenation<a class="headerlink" href="#sparse-matrix-concatenation" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="CyLP.py.utils.sparseUtil.sparseConcat">
-<tt class="descclassname">CyLP.py.utils.sparseUtil.</tt><tt class="descname">sparseConcat</tt><big>(</big><em>a</em>, <em>b</em>, <em>how</em>, <em>v_offset=0</em>, <em>h_offset=0</em><big>)</big><a class="reference internal" href="../_modules/CyLP/py/utils/sparseUtil.html#sparseConcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CyLP.py.utils.sparseUtil.sparseConcat" title="Permalink to this definition">¶</a></dt>
-<dd><p>Concatenate two sparse matrices, <tt class="docutils literal"><span class="pre">a</span></tt> and <tt class="docutils literal"><span class="pre">b</span></tt>, horizontally if
-<tt class="docutils literal"><span class="pre">how</span> <span class="pre">=</span> <span class="pre">'h'</span></tt>, and vertically if <tt class="docutils literal"><span class="pre">how</span> <span class="pre">=</span> <span class="pre">'v'</span></tt>.
-Add zero rows and columns if dimensions don&#8217;t align.
-<tt class="docutils literal"><span class="pre">v_offset</span></tt> specifies how to align <tt class="docutils literal"><span class="pre">b</span></tt> along side <tt class="docutils literal"><span class="pre">a</span></tt>. The 
-value of <tt class="docutils literal"><span class="pre">v_offset</span></tt> will be added to each row index of <tt class="docutils literal"><span class="pre">b</span></tt>.
-<tt class="docutils literal"><span class="pre">v_offset=-1</span></tt> means that we want the greatest possible offset without 
+<dt id="cylp.py.utils.sparseUtil.sparseConcat">
+<code class="descclassname">cylp.py.utils.sparseUtil.</code><code class="descname">sparseConcat</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>how</em>, <em>v_offset=0</em>, <em>h_offset=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#sparseConcat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.sparseConcat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenate two sparse matrices, <code class="docutils literal"><span class="pre">a</span></code> and <code class="docutils literal"><span class="pre">b</span></code>, horizontally if
+<code class="docutils literal"><span class="pre">how</span> <span class="pre">=</span> <span class="pre">'h'</span></code>, and vertically if <code class="docutils literal"><span class="pre">how</span> <span class="pre">=</span> <span class="pre">'v'</span></code>.
+Add zero rows and columns if dimensions don’t align.
+<code class="docutils literal"><span class="pre">v_offset</span></code> specifies how to align <code class="docutils literal"><span class="pre">b</span></code> along side <code class="docutils literal"><span class="pre">a</span></code>. The
+value of <code class="docutils literal"><span class="pre">v_offset</span></code> will be added to each row index of <code class="docutils literal"><span class="pre">b</span></code>.
+<code class="docutils literal"><span class="pre">v_offset=-1</span></code> means that we want the greatest possible offset without
 changeing the dimensions.
-<tt class="docutils literal"><span class="pre">h_offset</span></tt> is a similar argument but to specify horizontal offset.</p>
+<code class="docutils literal"><span class="pre">h_offset</span></code> is a similar argument but to specify horizontal offset.</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">CyLP.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">sparseConcat</span><span class="p">,</span> <span class="n">csc_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">sparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">sparseConcat</span><span class="p">,</span> <span class="n">csc_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">csc_matrixPlus</span><span class="o">.</span><span class="n">getMatrixForTest</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="s">&#39;v&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
 <span class="go">matrix([[1, 0, 4],</span>
 <span class="go">        [0, 0, 5],</span>
 <span class="go">        [2, 3, 6],</span>
 <span class="go">        [1, 0, 2],</span>
 <span class="go">        [0, 5, 0]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
 <span class="go">matrix([[1, 0, 4, 1, 0, 2],</span>
 <span class="go">        [0, 0, 5, 0, 5, 0],</span>
 <span class="go">        [2, 3, 6, 0, 0, 0]])</span>
 </pre></div>
 </div>
-<p>If <tt class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">None</span></tt> then return <tt class="docutils literal"><span class="pre">b</span></tt>. This makes possible an incremental
+<p>If <code class="docutils literal"><span class="pre">a</span> <span class="pre">=</span> <span class="pre">None</span></code> then return <code class="docutils literal"><span class="pre">b</span></code>. This makes possible an incremental
 construction of large sparse matrices from scratch without the hassle
 of the initial value check.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">s3</span> <span class="o">=</span> <span class="bp">None</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">((</span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s3</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span> <span class="o">==</span> <span class="n">s1</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span>
-<span class="gp">... </span> <span class="p">(</span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s3</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="s">&#39;v&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span> <span class="o">==</span> <span class="n">s1</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s3</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">((</span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s3</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span> <span class="o">==</span> <span class="n">s1</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">()</span> <span class="ow">and</span>
+<span class="gp">... </span> <span class="p">(</span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s3</span><span class="p">,</span> <span class="n">s1</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span> <span class="o">==</span> <span class="n">s1</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
 <span class="go">True</span>
 </pre></div>
 </div>
@@ -204,13 +200,13 @@ of the initial value check.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar">
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">utils.sparseUtil</span></tt></a><ul>
-<li><a class="reference internal" href="#csc-matrixplus"><tt class="docutils literal"><span class="pre">csc_matrixPlus</span></tt></a></li>
-<li><a class="reference internal" href="#csr-matrixplus"><tt class="docutils literal"><span class="pre">csr_matrixPlus</span></tt></a></li>
+<li><a class="reference internal" href="#"><code class="docutils literal"><span class="pre">utils.sparseUtil</span></code></a><ul>
+<li><a class="reference internal" href="#csc-matrixplus"><code class="docutils literal"><span class="pre">csc_matrixPlus</span></code></a></li>
+<li><a class="reference internal" href="#csr-matrixplus"><code class="docutils literal"><span class="pre">csr_matrixPlus</span></code></a></li>
 <li><a class="reference internal" href="#sparse-matrix-concatenation">Sparse Matrix Concatenation</a></li>
 </ul>
 </li>
@@ -218,30 +214,29 @@ of the initial value check.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="modeling.html"
-                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">CyLP.py.modeling</span></tt></a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="../_sources/modules/sparseUtil.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
+                        title="previous chapter"><code class="docutils literal"><span class="pre">cylp.py.modeling</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/sparseUtil.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
       <input type="hidden" name="check_keywords" value="yes" />
       <input type="hidden" name="area" value="default" />
     </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related">
+    <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -251,15 +246,15 @@ of the initial value check.</p>
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="modeling.html" title="CyLP.py.modeling"
+          <a href="modeling.html" title="cylp.py.modeling"
              >previous</a> |</li>
-        <li><a href="../index.html">CyLP 0.1 documentation</a> &raquo;</li>
-          <li><a href="py.html" ><tt class="docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal docutils literal"><span class="pre">CyLP.py</span></tt></a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li> 
       </ul>
     </div>
-    <div class="footer">
-        &copy; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
     </div>
   </body>
 </html>
