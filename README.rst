@@ -11,11 +11,8 @@ You may read your LP from an mps file or use the CyLP’s easy modeling
 facility. Please find examples in the `documentation
 <http://coin-or.github.io/CyLP/>`_.
 
-Installation
-============
-
-Requirements
---------------
+Prerequisites
+=============
 
 CyLP depends on Numpy (www.numpy.org) and Scipy (www.scipy.org). Please note that 
 Numpy does need to be installed prior to installing CyLP,
@@ -40,8 +37,8 @@ either set the `COIN_INSTALL_DIR` variable to point to the installation or set `
 the directory where the `.pc` files are installed. You may also need to set either `LD_LIBRARY_PATH` (Linux)
 or `DYLD_LIBRARY_PATH` (OS X).
 
-Installation of CyLP
---------------------
+Installation
+============
 
 Once Numpy and Cbc are installed, simply do::
 
