@@ -1,0 +1,655 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cylp.py.utils.sparseUtil &#8212; cylp 0.9 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cylp.py.utils.sparseUtil</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">sparseUtil provides useful sparse matrix operations for incremental</span>
+<span class="sd">construction of large sparse matrices from its block elements. Class</span>
+<span class="sd">:class:`csc_matrixPlus` derives from ``sparse.csc_matrix`` and makes it</span>
+<span class="sd">possible to set elements outside the matrix dimensions by resizing</span>
+<span class="sd">the matrix whenever necessary. Class :class:`csr_matrixPlus` does</span>
+<span class="sd">the same thing with ``sparse.csr_matrix``.</span>
+
+<span class="sd">Function :py:func:`sparseConcat` concatenates two sparse matrices</span>
+<span class="sd">regardless of their dimension alignments. Fills with zeros where necessary.</span>
+
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c1"># Python 3 does not have long, only int</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">long</span>
+<span class="k">except</span> <span class="ne">NameError</span><span class="p">:</span>
+    <span class="n">long</span> <span class="o">=</span> <span class="nb">int</span>
+
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">sparse</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+
+<div class="viewcode-block" id="csc_matrixPlus"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.csc_matrixPlus">[docs]</a><span class="k">class</span> <span class="nc">csc_matrixPlus</span><span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fromMatrix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fromMatrix</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fromMatrix</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">cylp.py.modeling</span> <span class="k">import</span> <span class="n">CyLPExpr</span> <span class="k">as</span> <span class="n">CyLPExpr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span> <span class="o">=</span> <span class="n">CyLPExpr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="csc_matrixPlus.__setitem__"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.csc_matrixPlus.__setitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Set the item in row ``i`` and column ``j`` to ``val``.</span>
+<span class="sd">        Increases matrix&#39;s size if necessary</span>
+
+<span class="sd">        **Usage**</span>
+
+<span class="sd">        &gt;&gt;&gt; from cylp.py.utils.sparseUtil import csc_matrixPlus</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; indptr = np.array([0, 2, 3, 6])</span>
+<span class="sd">        &gt;&gt;&gt; indices = np.array([0, 2, 2, 0, 1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; data = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">        &gt;&gt;&gt; s = csc_matrixPlus((data, indices, indptr), shape=(3, 3))</span>
+<span class="sd">        &gt;&gt;&gt; s[2, 5] = 11</span>
+<span class="sd">        &gt;&gt;&gt; s.todense()</span>
+<span class="sd">        matrix([[ 1,  0,  4,  0,  0,  0],</span>
+<span class="sd">                [ 0,  0,  5,  0,  0,  0],</span>
+<span class="sd">                [ 2,  3,  6,  0,  0, 11]])</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="n">nCols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1">#update shape if nec.</span>
+        <span class="k">if</span> <span class="n">iRow</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">iCol</span> <span class="o">&lt;</span> <span class="n">nCols</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iCol</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">iRow</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                    <span class="k">return</span>
+            <span class="c1">#If we reach here it means that index does NOT exist</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nCols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">indexOfElement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="c1">#If indices is empty</span>
+            <span class="k">if</span> <span class="n">indexOfElement</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iRow</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[:</span><span class="n">indexOfElement</span><span class="p">],</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iRow</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">indexOfElement</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">indexOfElement</span><span class="p">],</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">]),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">indexOfElement</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#We don&#39;t have enough columns, increase dimension 1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addColumns</span><span class="p">(</span><span class="n">iCol</span> <span class="o">-</span> <span class="n">nCols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iRow</span><span class="p">],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="csc_matrixPlus.addColumns"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.csc_matrixPlus.addColumns">[docs]</a>    <span class="k">def</span> <span class="nf">addColumns</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nCol</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add ``nCol`` columns to the matrix</span>
+
+<span class="sd">        **Usage**</span>
+
+<span class="sd">        &gt;&gt;&gt; from cylp.py.utils.sparseUtil import csc_matrixPlus</span>
+<span class="sd">        &gt;&gt;&gt; s = csc_matrixPlus.getMatrixForTest()</span>
+<span class="sd">        &gt;&gt;&gt; s.shape</span>
+<span class="sd">        (3, 3)</span>
+<span class="sd">        &gt;&gt;&gt; s.addColumns(3)</span>
+<span class="sd">        &gt;&gt;&gt; s.shape</span>
+<span class="sd">        (3, 6)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">nElement</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nCol</span> <span class="o">*</span> <span class="p">[</span><span class="n">nElement</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">nCol</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="c1"># This seems to cause some potential problems when the result is 1x1</span>
+        <span class="c1"># It should really be returned as an int/float in that case, but</span>
+        <span class="c1"># this prevents it and causes behavior to be different than</span>
+        <span class="c1"># sparse.csr_matrix</span>
+        <span class="k">return</span> <span class="n">csc_matrixPlus</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">row_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+        <span class="n">irow</span><span class="p">,</span> <span class="n">jcol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">col</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">/=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">irow</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="n">scaleFactor</span>
+            <span class="k">return</span> <span class="n">scaleFactor</span>
+
+        <span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">irow</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">rowScaleFactor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">irow</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="n">rowScaleFactor</span>
+        <span class="k">return</span> <span class="n">rowScaleFactor</span>
+
+
+    <span class="k">def</span> <span class="nf">col_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+        <span class="n">irow</span><span class="p">,</span> <span class="n">jcol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">col</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">/=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">jcol</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span> <span class="o">=</span> <span class="n">scaleFactor</span>
+            <span class="k">return</span> <span class="n">scaleFactor</span>
+
+        <span class="n">colScaleFactor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">jcol</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">colScaleFactor</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">colScaleFactor</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">colScaleFactor</span><span class="p">[</span><span class="n">colScaleFactor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="n">colScaleFactor</span><span class="p">[</span><span class="n">jcol</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span> <span class="o">=</span> <span class="n">colScaleFactor</span>
+        <span class="k">return</span> <span class="n">colScaleFactor</span>
+
+    <span class="k">def</span> <span class="nf">col_unscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scaleFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">jcol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span><span class="o">.</span><span class="n">col</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">jcol</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">row_unscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scaleFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">irow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span><span class="o">.</span><span class="n">row</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">irow</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">T</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csc_matrix</span><span class="o">.</span><span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getMatrixForTest</span><span class="p">():</span>
+        <span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csr_matrixPlus</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">csc_matrixPlus</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+<div class="viewcode-block" id="csr_matrixPlus"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.csr_matrixPlus">[docs]</a><span class="k">class</span> <span class="nc">csr_matrixPlus</span><span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fromMatrix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fromMatrix</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">fromMatrix</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+        <span class="kn">from</span> <span class="nn">cylp.py.modeling</span> <span class="k">import</span> <span class="n">CyLPExpr</span> <span class="k">as</span> <span class="n">CyLPExpr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span> <span class="o">=</span> <span class="n">CyLPExpr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="csr_matrixPlus.__setitem__"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.csr_matrixPlus.__setitem__">[docs]</a>    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Sets the item in row ``i`` and col ``j`` to ``val``.</span>
+<span class="sd">        Increases matrix&#39;s ``shape[1]`` if necessary</span>
+
+<span class="sd">        **Usage**</span>
+
+<span class="sd">        &gt;&gt;&gt; from cylp.py.utils.sparseUtil import csr_matrixPlus</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; indptr = np.array([0, 2, 3, 6])</span>
+<span class="sd">        &gt;&gt;&gt; indices = np.array([0, 2, 2, 0, 1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; data = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">        &gt;&gt;&gt; s = csr_matrixPlus((data, indices, indptr), shape=(3, 3))</span>
+<span class="sd">        &gt;&gt;&gt; s[5,2] = 11</span>
+<span class="sd">        &gt;&gt;&gt; print(s.todense())</span>
+<span class="sd">        [[ 1  0  2]</span>
+<span class="sd">         [ 0  0  3]</span>
+<span class="sd">         [ 4  5  6]</span>
+<span class="sd">         [ 0  0  0]</span>
+<span class="sd">         [ 0  0  0]</span>
+<span class="sd">         [ 0  0 11]]</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span> <span class="o">=</span> <span class="n">location</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">(</span><span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span><span class="p">),</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="n">nRows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">nCols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">l</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tolil</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">iCol</span> <span class="o">&gt;=</span> <span class="n">nCols</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">nRows</span><span class="p">,</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">nCols</span> <span class="o">=</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">iRow</span> <span class="o">&gt;=</span> <span class="n">nRows</span><span class="p">:</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nCols</span><span class="p">)</span>
+            <span class="n">nRowsToAdd</span> <span class="o">=</span> <span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">nRows</span>
+            <span class="n">l_temp</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">((</span><span class="n">nRowsToAdd</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">l</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">l_temp</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">l</span><span class="o">.</span><span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">l</span><span class="o">.</span><span class="n">rows</span><span class="p">,</span> <span class="n">l_temp</span><span class="o">.</span><span class="n">rows</span><span class="p">))</span>
+
+        <span class="n">l</span><span class="p">[</span><span class="n">iRow</span><span class="p">,</span> <span class="n">iCol</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nnz</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">nnz</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">_shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">indptr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_sorted_indices</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">has_sorted_indices</span>
+        <span class="k">return</span>
+
+        <span class="n">nRows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">iCol</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iCol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">iRow</span> <span class="o">&lt;</span> <span class="n">nRows</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iRow</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">iCol</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                    <span class="k">return</span>
+            <span class="c1">#if we reach here it means that index does NOT exist</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">nRows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">indexOfElement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="c1"># If indices is empty</span>
+            <span class="k">if</span> <span class="n">indexOfElement</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iCol</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[:</span><span class="n">indexOfElement</span><span class="p">],</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iCol</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">indexOfElement</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">indexOfElement</span><span class="p">],</span>
+                                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">]),</span>
+                                        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">indexOfElement</span><span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#We don&#39;t have enough columns, increase dimension 1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addRows</span><span class="p">(</span><span class="n">iRow</span> <span class="o">-</span> <span class="n">nRows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">[</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">iCol</span><span class="p">],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">val</span><span class="p">],</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">iRow</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="csr_matrixPlus.addRows"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.csr_matrixPlus.addRows">[docs]</a>    <span class="k">def</span> <span class="nf">addRows</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nRow</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Add ``nRow`` rows to the matrix</span>
+
+<span class="sd">        **Usage**</span>
+
+<span class="sd">        &gt;&gt;&gt; from cylp.py.utils.sparseUtil import csr_matrixPlus</span>
+<span class="sd">        &gt;&gt;&gt; s = csr_matrixPlus.getMatrixForTest()</span>
+<span class="sd">        &gt;&gt;&gt; s.shape</span>
+<span class="sd">        (3, 3)</span>
+<span class="sd">        &gt;&gt;&gt; s.addRows(2)</span>
+<span class="sd">        &gt;&gt;&gt; s.shape</span>
+<span class="sd">        (5, 3)</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">nElement</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">nRow</span> <span class="o">*</span> <span class="p">[</span><span class="n">nElement</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">indptr</span><span class="p">,</span> <span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">nRow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ret</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">long</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="n">ret</span>
+        <span class="c1"># This seems to cause some potential problems when the result is 1x1</span>
+        <span class="c1"># It should really be returned as an int/float in that case, but</span>
+        <span class="c1"># this prevents it and causes behavior to be different than</span>
+        <span class="c1"># sparse.csr_matrix</span>
+        <span class="k">return</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">row_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+        <span class="n">irow</span><span class="p">,</span> <span class="n">jcol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">col</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">/=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">irow</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="n">scaleFactor</span>
+            <span class="k">return</span> <span class="n">scaleFactor</span>
+
+        <span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">irow</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">rowScaleFactor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="n">rowScaleFactor</span><span class="p">[</span><span class="n">irow</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span> <span class="o">=</span> <span class="n">rowScaleFactor</span>
+        <span class="k">return</span> <span class="n">rowScaleFactor</span>
+
+
+    <span class="k">def</span> <span class="nf">col_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span>
+        <span class="n">irow</span><span class="p">,</span> <span class="n">jcol</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">col</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">/=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">jcol</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span> <span class="o">=</span> <span class="n">scaleFactor</span>
+            <span class="k">return</span> <span class="n">scaleFactor</span>
+
+        <span class="n">colScaleFactor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)):</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">jcol</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+            <span class="n">colScaleFactor</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">colScaleFactor</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">val</span><span class="p">)</span>
+        <span class="n">colScaleFactor</span><span class="p">[</span><span class="n">colScaleFactor</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">data</span> <span class="o">/=</span> <span class="n">colScaleFactor</span><span class="p">[</span><span class="n">jcol</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span> <span class="o">=</span> <span class="n">colScaleFactor</span>
+        <span class="k">return</span> <span class="n">colScaleFactor</span>
+
+    <span class="k">def</span> <span class="nf">col_unscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scaleFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colScaleFactor</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">jcol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span><span class="o">.</span><span class="n">col</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">jcol</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">row_unscale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scaleFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowScaleFactor</span>
+        <span class="k">if</span> <span class="n">scaleFactor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">irow</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tocoo</span><span class="p">()</span><span class="o">.</span><span class="n">row</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">*=</span> <span class="n">scaleFactor</span><span class="p">[</span><span class="n">irow</span><span class="p">]</span>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">T</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">csc_matrixPlus</span><span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__le__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__ge__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__rsub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">CyLPExpr</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">NotImplemented</span>
+        <span class="k">return</span> <span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="o">.</span><span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">getMatrixForTest</span><span class="p">():</span>
+        <span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csr_matrixPlus</span>
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+        <span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">csr_matrixPlus</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="sparseConcat"><a class="viewcode-back" href="../../../../modules/sparseUtil.html#cylp.py.utils.sparseUtil.sparseConcat">[docs]</a><span class="k">def</span> <span class="nf">sparseConcat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">how</span><span class="p">,</span> <span class="n">v_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">h_offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Concatenate two sparse matrices, ``a`` and ``b``, horizontally if</span>
+<span class="sd">    ``how = &#39;h&#39;``, and vertically if ``how = &#39;v&#39;``.</span>
+<span class="sd">    Add zero rows and columns if dimensions don&#39;t align.</span>
+<span class="sd">    ``v_offset`` specifies how to align ``b`` along side ``a``. The</span>
+<span class="sd">    value of ``v_offset`` will be added to each row index of ``b``.</span>
+<span class="sd">    ``v_offset=-1`` means that we want the greatest possible offset without</span>
+<span class="sd">    changeing the dimensions.</span>
+<span class="sd">    ``h_offset`` is a similar argument but to specify horizontal offset.</span>
+
+<span class="sd">    **Usage**</span>
+
+<span class="sd">    &gt;&gt;&gt; from scipy import sparse</span>
+<span class="sd">    &gt;&gt;&gt; from cylp.py.utils.sparseUtil import sparseConcat, csc_matrixPlus</span>
+<span class="sd">    &gt;&gt;&gt; s1 = csc_matrixPlus.getMatrixForTest()</span>
+<span class="sd">    &gt;&gt;&gt; s2 = sparse.lil_matrix([[1,0,2],[0,5,0]])</span>
+<span class="sd">    &gt;&gt;&gt; sparseConcat(s1, s2, &#39;v&#39;).todense()</span>
+<span class="sd">    matrix([[1, 0, 4],</span>
+<span class="sd">            [0, 0, 5],</span>
+<span class="sd">            [2, 3, 6],</span>
+<span class="sd">            [1, 0, 2],</span>
+<span class="sd">            [0, 5, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; sparseConcat(s1, s2, &#39;h&#39;).todense()</span>
+<span class="sd">    matrix([[1, 0, 4, 1, 0, 2],</span>
+<span class="sd">            [0, 0, 5, 0, 5, 0],</span>
+<span class="sd">            [2, 3, 6, 0, 0, 0]])</span>
+
+<span class="sd">    If ``a = None`` then return ``b``. This makes possible an incremental</span>
+<span class="sd">    construction of large sparse matrices from scratch without the hassle</span>
+<span class="sd">    of the initial value check.</span>
+
+<span class="sd">    &gt;&gt;&gt; s3 = None</span>
+<span class="sd">    &gt;&gt;&gt; ((sparseConcat(s3, s1, &#39;h&#39;).todense() == s1.todense()).all() and</span>
+<span class="sd">    ...  (sparseConcat(s3, s1, &#39;v&#39;).todense() == s1.todense()).all())</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">b</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">csr_matrixPlus</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">h_offset</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">v_offset</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">a</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s1">&#39;h&#39;</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">v_offset</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">v_offset</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">h_offset</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">row</span> <span class="o">+</span> <span class="n">v_offset</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">col</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h_offset</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">nRows</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v_offset</span><span class="p">)</span>
+        <span class="n">nCols</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h_offset</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span>
+                              <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nRows</span><span class="p">,</span> <span class="n">nCols</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s1">&#39;v&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">h_offset</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">assert</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">h_offset</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">v_offset</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">row</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v_offset</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">col</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">col</span> <span class="o">+</span> <span class="n">h_offset</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">nCols</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h_offset</span><span class="p">)</span>
+        <span class="n">nRows</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">v_offset</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span>
+                              <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nRows</span><span class="p">,</span> <span class="n">nCols</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
+
+<span class="k">def</span> <span class="nf">I</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return a sparse identity matrix of size *n*</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">csc_matrixPlus</span><span class="p">(</span><span class="n">sparse</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    </div>
+  </body>
+</html>

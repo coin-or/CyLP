@@ -1,0 +1,241 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cylp.py.pivots.PositiveEdgePivot &#8212; cylp 0.9 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cylp.py.pivots.PositiveEdgePivot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">As a part of ``cylp.python.pivots`` it implements the positive edge</span>
+<span class="sd">pivot selection rule.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyCoinIndexedVector</span>
+<span class="kn">from</span> <span class="nn">cylp.cy.CyClpSimplex</span> <span class="k">import</span> <span class="n">cydot</span>
+<span class="kn">from</span> <span class="nn">.PivotPythonBase</span> <span class="k">import</span> <span class="n">PivotPythonBase</span>
+
+
+<div class="viewcode-block" id="PositiveEdgePivot"><a class="viewcode-back" href="../../../../modules/PositiveEdgePivot.html#cylp.py.pivots.PositiveEdgePivot.PositiveEdgePivot">[docs]</a><span class="k">class</span> <span class="nc">PositiveEdgePivot</span><span class="p">(</span><span class="n">PivotPythonBase</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Positive Edge pivot rule implementation.</span>
+
+<span class="sd">    .. _custom-pivot-usage:</span>
+
+<span class="sd">    **Usage**</span>
+
+<span class="sd">    &gt;&gt;&gt; from cylp.cy import CyClpSimplex</span>
+<span class="sd">    &gt;&gt;&gt; from cylp.py.pivots import PositiveEdgePivot</span>
+<span class="sd">    &gt;&gt;&gt; from cylp.py.pivots.PositiveEdgePivot import getMpsExample</span>
+<span class="sd">    &gt;&gt;&gt; # Get the path to a sample mps file</span>
+<span class="sd">    &gt;&gt;&gt; f = getMpsExample()</span>
+<span class="sd">    &gt;&gt;&gt; s = CyClpSimplex()</span>
+<span class="sd">    &gt;&gt;&gt; s.readMps(f)  # Returns 0 if OK</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; pivot = PositiveEdgePivot(s)</span>
+<span class="sd">    &gt;&gt;&gt; s.setPivotMethod(pivot)</span>
+<span class="sd">    &gt;&gt;&gt; s.primal()</span>
+<span class="sd">    &#39;optimal&#39;</span>
+<span class="sd">    &gt;&gt;&gt; round(s.objectiveValue, 5)</span>
+<span class="sd">    2520.57174</span>
+
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clpModel</span><span class="p">,</span> <span class="n">EPSILON</span><span class="o">=</span><span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mi">7</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span> <span class="o">=</span> <span class="n">clpModel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span><span class="o">.</span><span class="n">nRows</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span><span class="o">.</span><span class="n">nCols</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">isDegenerate</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Create some numpy arrays here ONCE to prevent memory</span>
+        <span class="c1"># allocation at each iteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aColumn</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aColumn</span><span class="o">.</span><span class="n">reserve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">reserve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span><span class="o">.</span><span class="n">nRows</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span><span class="o">.</span><span class="n">nRows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">EPSILON</span> <span class="o">=</span> <span class="n">EPSILON</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastUpdateIteration</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">updateP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Finds constraints with abs(rhs) &lt;=  epsilon and put</span>
+<span class="sd">        their indices in &quot;z&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span>
+        <span class="n">nRows</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">nRows</span>
+
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rhs</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">getRightHandSide</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span>
+
+        <span class="c1">#self.p = np.where(np.abs(rhs) &gt; self.EPSILON)[0]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">rhs</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">EPSILON</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1">#print(&#39;degeneracy level : &#39;, (len(self.z)) / float(nRows)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">isDegenerate</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">updateW</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Sets &quot;w&quot; to be a vector of random vars with &quot;0&quot;</span>
+<span class="sd">        at indices defined in &quot;p&quot;</span>
+<span class="sd">        Note that vectorTimesB_1 changes &quot;w&quot;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateP</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">vectorTimesB_1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lastUpdateIteration</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">iteration</span>
+
+    <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s1">&#39;Defines how random vector &quot;w&quot; components are generated&#39;</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">isCompatible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varInd</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isDegenerate</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">getACol</span><span class="p">(</span><span class="n">varInd</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">aColumn</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">cydot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aColumn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">))</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">EPSILON</span>
+
+    <span class="k">def</span> <span class="nf">checkVar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isCompatible</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pivotColumn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">updates</span><span class="p">,</span> <span class="n">spareRow1</span><span class="p">,</span> <span class="n">spareRow2</span><span class="p">,</span> <span class="n">spareCol1</span><span class="p">,</span> <span class="n">spareCol2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateReducedCosts</span><span class="p">(</span><span class="n">updates</span><span class="p">,</span> <span class="n">spareRow1</span><span class="p">,</span> <span class="n">spareRow2</span><span class="p">,</span> <span class="n">spareCol1</span><span class="p">,</span> <span class="n">spareCol2</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span>
+        <span class="n">rc</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">reducedCosts</span>
+
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">dualTolerance</span>
+        <span class="n">indicesToConsider</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">varNotFlagged</span> <span class="o">&amp;</span> <span class="n">s</span><span class="o">.</span><span class="n">varNotFixed</span> <span class="o">&amp;</span>
+                                     <span class="n">s</span><span class="o">.</span><span class="n">varNotBasic</span> <span class="o">&amp;</span>
+                                     <span class="p">(((</span><span class="n">rc</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">s</span><span class="o">.</span><span class="n">varIsAtUpperBound</span><span class="p">)</span> <span class="o">|</span>
+                                     <span class="p">((</span><span class="n">rc</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">tol</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">s</span><span class="o">.</span><span class="n">varIsAtLowerBound</span><span class="p">)</span> <span class="o">|</span>
+                                     <span class="n">s</span><span class="o">.</span><span class="n">varIsFree</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">rc2</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rc</span><span class="p">[</span><span class="n">indicesToConsider</span><span class="p">])</span>
+
+        <span class="n">maxRc</span> <span class="o">=</span> <span class="n">maxCompRc</span> <span class="o">=</span> <span class="n">maxInd</span> <span class="o">=</span> <span class="n">maxCompInd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isDegenerate</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="o">.</span><span class="n">elements</span>
+            <span class="n">compatibility</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">nCols</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">nRows</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indicesToConsider</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">s</span><span class="o">.</span><span class="n">transposeTimesSubsetAll</span><span class="p">(</span><span class="n">indicesToConsider</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+                                          <span class="n">w</span><span class="p">,</span> <span class="n">compatibility</span><span class="p">)</span>
+            <span class="n">comp_varInds</span> <span class="o">=</span> <span class="n">indicesToConsider</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span>
+                                    <span class="n">compatibility</span><span class="p">[</span><span class="n">indicesToConsider</span><span class="p">])</span> <span class="o">&lt;</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">EPSILON</span><span class="p">)[</span><span class="mi">0</span><span class="p">]]</span>
+
+            <span class="n">comp_rc</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">rc</span><span class="p">[</span><span class="n">comp_varInds</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comp_rc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">maxCompInd</span> <span class="o">=</span> <span class="n">comp_varInds</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">comp_rc</span><span class="p">)]</span>
+                <span class="n">maxCompRc</span> <span class="o">=</span> <span class="n">rc</span><span class="p">[</span><span class="n">maxCompInd</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rc2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">maxInd</span> <span class="o">=</span> <span class="n">indicesToConsider</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">rc2</span><span class="p">)]</span>
+            <span class="n">maxRc</span> <span class="o">=</span> <span class="n">rc</span><span class="p">[</span><span class="n">maxInd</span><span class="p">]</span>
+
+        <span class="k">del</span> <span class="n">rc2</span>
+        <span class="k">if</span> <span class="n">maxCompInd</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">maxCompRc</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">maxRc</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">maxCompInd</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateW</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">maxInd</span>
+
+    <span class="k">def</span> <span class="nf">saveWeights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span> <span class="o">=</span> <span class="n">model</span>
+
+    <span class="k">def</span> <span class="nf">isPivotAcceptable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<span class="k">def</span> <span class="nf">getMpsExample</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">inspect</span>
+    <span class="n">cylpDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CYLP_SOURCE_DIR&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cylpDir</span><span class="p">,</span> <span class="s1">&#39;cylp&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="s1">&#39;p0033.mps&#39;</span><span class="p">)</span>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    </div>
+  </body>
+</html>

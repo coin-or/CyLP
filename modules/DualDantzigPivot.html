@@ -1,0 +1,147 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>DualDantzigPivot &#8212; cylp 0.9 documentation</title>
+    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PositiveEdgePivot" href="PositiveEdgePivot.html" />
+    <link rel="prev" title="DantzigPivot" href="DantzigPivot.html" /> 
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="PositiveEdgePivot.html" title="PositiveEdgePivot"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="DantzigPivot.html" title="DantzigPivot"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pivots.html" accesskey="U"><code class="docutils literal"><span class="pre">pivots</span></code></a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-cylp.py.pivots.DualDantzigPivot">
+<span id="dualdantzigpivot"></span><h1><code class="xref py py-class docutils literal"><span class="pre">DualDantzigPivot</span></code><a class="headerlink" href="#module-cylp.py.pivots.DualDantzigPivot" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>As a part of <code class="docutils literal"><span class="pre">cylp.python.pivots</span></code> it implements Dantzig’s</dt>
+<dd>Simplex dual pivot rule. Although it already exists in CLP,</dd>
+</dl>
+<p>for testing purposes we implement one in Python.</p>
+<dl class="class">
+<dt id="cylp.py.pivots.DualDantzigPivot.DualDantzigPivot">
+<em class="property">class </em><code class="descclassname">cylp.py.pivots.DualDantzigPivot.</code><code class="descname">DualDantzigPivot</code><span class="sig-paren">(</span><em>clpModel</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/DualDantzigPivot.html#DualDantzigPivot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.DualDantzigPivot.DualDantzigPivot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dantzig’s dual pivot rule implementation.</p>
+<p id="custom-dual-pivot-usage"><strong>Usage</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots.DualDantzigPivot</span> <span class="k">import</span> <span class="n">DualDantzigPivot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots.DualDantzigPivot</span> <span class="k">import</span> <span class="n">getMpsExample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get the path to a sample mps file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">getMpsExample</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  <span class="c1"># Returns 0 if OK</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pivot</span> <span class="o">=</span> <span class="n">DualDantzigPivot</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">setDualPivotMethod</span><span class="p">(</span><span class="n">pivot</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">dual</span><span class="p">()</span>
+<span class="go">&#39;optimal&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">objectiveValue</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">2520.57174</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="DantzigPivot.html"
+                        title="previous chapter"><code class="docutils literal"><span class="pre">DantzigPivot</span></code></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="PositiveEdgePivot.html"
+                        title="next chapter"><code class="docutils literal"><span class="pre">PositiveEdgePivot</span></code></a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/modules/DualDantzigPivot.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="PositiveEdgePivot.html" title="PositiveEdgePivot"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="DantzigPivot.html" title="DantzigPivot"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pivots.html" ><code class="docutils literal"><span class="pre">pivots</span></code></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    </div>
+  </body>
+</html>
