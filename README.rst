@@ -27,7 +27,7 @@ or by building yourself from source using `coinbrew <https://github.com/coin-or/
     
        ``$ brew tap coin-or-tools/coinor``
         
-       ``$ brew install coin-or-tools/coinor/cbc``
+       ``$ brew install coin-or-tools/coinor/cbc pkg-config``
     
     3. On Windows, a binary wheel is available and it is not necessary to install Cbc.
     
