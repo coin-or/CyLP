@@ -80,8 +80,8 @@ def get_libs():
                 libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp', 'Clp', 'Osi',
                         'CoinUtils']
                 
-                libDirs = [join(CoinDir, 'lib')]
-                incDirs = [join(CoinDir, 'include', 'coin-or')] 
+            libDirs = [join(CoinDir, 'lib')]
+            incDirs = [join(CoinDir, 'include', 'coin')] 
                 
         else:
             raise Exception('''
@@ -108,7 +108,6 @@ if 'linux' in operatingSystem:
 elif 'darwin' in operatingSystem:
     operatingSystem = 'mac'
     mac_ver = platform.mac_ver()[0]
-
 elif 'win' in operatingSystem:
     operatingSystem = 'windows'
 
