@@ -18,7 +18,8 @@ CyLP depends on Numpy (www.numpy.org) and Scipy (www.scipy.org). Please note tha
 Numpy does need to be installed prior to installing CyLP,
 even though it is listed as a dependency in the `setup.py` file.
 
-You will also need to install binaries for Cbc. The version should be 2.10 or earlier.
+You will also need to install binaries for Cbc. The version should be 2.10 or earlier 
+(current master branch of Cbc will not work with this version of CyLP).
 You can install Cbc by either by 
 installing with a package manager, by downloading pre-built binaries,
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
