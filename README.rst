@@ -78,9 +78,6 @@ Or simply go to CyLP and run::
 
 to run all CyLP unit tests.
 
-Docker Container
-================
-
 Modeling Example
 ==================
 
