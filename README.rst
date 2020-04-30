@@ -11,6 +11,16 @@ You may read your LP from an mps file or use the CyLP’s easy modeling
 facility. Please find examples in the `documentation
 <http://coin-or.github.io/CyLP/>`_.
 
+Docker
+======
+
+If you're comfortable with Docker, you can get started right away with the container 
+available on Dockerhub that comes with CyLP pre-installed. 
+
+https://hub.docker.com/repository/docker/tkralphs/cylp
+
+Otherwise, read on. 
+
 Prerequisites
 =============
 
@@ -67,6 +77,9 @@ Or simply go to CyLP and run::
     $ python -m unittest discover
 
 to run all CyLP unit tests.
+
+Docker Container
+================
 
 Modeling Example
 ==================
