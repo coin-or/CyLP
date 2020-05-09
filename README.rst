@@ -43,7 +43,7 @@ or by building yourself from source using `coinbrew <https://github.com/coin-or/
     3. On Windows, a binary wheel is available and it is not necessary to install Cbc.
     
 If for some reason, you need to build from source, please go to the `Cbc <https://github.com/coin-or/Cbc>`_
-project page and follow the instructions there. After building and install make sure to 
+project page and follow the instructions there. After building and installing, make sure to 
 either set the `COIN_INSTALL_DIR` variable to point to the installation or set `PKG_CONFIG_PATH` to point to
 the directory where the `.pc` files are installed. You may also need to set either `LD_LIBRARY_PATH` (Linux)
 or `DYLD_LIBRARY_PATH` (OS X).
