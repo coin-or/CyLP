@@ -74,7 +74,9 @@ cdef class CyCbcModel:
     >>>
     >>> cbcModel = s.getCbcModel()
     >>>
-    >>> cbcModel.branchAndBound()
+    >>> cbcModel.solve()
+    0
+    >>> print (cbcModel.status)
     'solution'
     >>> sol_x = cbcModel.primalVariableSolution['x']
     >>>
@@ -163,7 +165,7 @@ cdef class CyCbcModel:
             self.CppSelf.setLogLevel(value)
 
     def isRelaxationInfeasible(self):
-        return self.CppSelf.isInitialSolveProvenPrimalInfeasible()
+        return self.CppSelf.()
 
     def isRelaxationDualInfeasible(self):
         return self.CppSelf.isInitialSolveProvenDualInfeasible()
