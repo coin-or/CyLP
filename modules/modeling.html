@@ -60,8 +60,8 @@ Although the current usage is to pass the resulting LP to CLP
 to solve it is independant of the solver.</p>
 <p id="modeling-usage"><strong>Usage (single dimension, using CyLPModel indirectly)</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="k">import</span> <span class="n">CyLPArray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">CyLPArray</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -108,8 +108,8 @@ to solve it is independant of the solver.</p>
 <dd>size could be faster than the indirect approach)**</dd>
 </dl>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="k">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">CyLPModel</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
@@ -155,8 +155,8 @@ to solve it is independant of the solver.</p>
 </pre></div>
 </div>
 <p><strong>Usage (multi-dimensions, using CyLPModel indirectly)</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="k">import</span> <span class="n">CyLPArray</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">CyLPArray</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">5</span>
@@ -239,7 +239,7 @@ helpful when we define LP constraints.</p>
 that you are adding to a problem gradually.</p>
 <p><strong>Usage</strong></p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="k">import</span> <span class="n">IndexFactory</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">IndexFactory</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="n">IndexFactory</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">i</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>

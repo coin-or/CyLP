@@ -63,9 +63,9 @@ pivot selection rule.</p>
 <em class="property">class </em><code class="descclassname">cylp.py.pivots.PositiveEdgePivot.</code><code class="descname">PositiveEdgePivot</code><span class="sig-paren">(</span><em>clpModel</em>, <em>EPSILON=1e-07</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PositiveEdgePivot.html#PositiveEdgePivot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.PositiveEdgePivot.PositiveEdgePivot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Positive Edge pivot rule implementation.</p>
 <p id="custom-pivot-usage"><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots</span> <span class="k">import</span> <span class="n">PositiveEdgePivot</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots.PositiveEdgePivot</span> <span class="k">import</span> <span class="n">getMpsExample</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots</span> <span class="kn">import</span> <span class="n">PositiveEdgePivot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.pivots.PositiveEdgePivot</span> <span class="kn">import</span> <span class="n">getMpsExample</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Get the path to a sample mps file</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">getMpsExample</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>

@@ -70,7 +70,7 @@ regardless of their dimension alignments. Fills with zeros where necessary.</p>
 <dd><p>Set the item in row <code class="docutils literal"><span class="pre">i</span></code> and column <code class="docutils literal"><span class="pre">j</span></code> to <code class="docutils literal"><span class="pre">val</span></code>.
 Increases matrix’s size if necessary</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csc_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csc_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
@@ -90,7 +90,7 @@ Increases matrix’s size if necessary</p>
 <code class="descname">addColumns</code><span class="sig-paren">(</span><em>nCol</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csc_matrixPlus.addColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csc_matrixPlus.addColumns" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add <code class="docutils literal"><span class="pre">nCol</span></code> columns to the matrix</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csc_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csc_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">csc_matrixPlus</span><span class="o">.</span><span class="n">getMatrixForTest</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(3, 3)</span>
@@ -115,7 +115,7 @@ Increases matrix’s size if necessary</p>
 <dd><p>Sets the item in row <code class="docutils literal"><span class="pre">i</span></code> and col <code class="docutils literal"><span class="pre">j</span></code> to <code class="docutils literal"><span class="pre">val</span></code>.
 Increases matrix’s <code class="docutils literal"><span class="pre">shape[1]</span></code> if necessary</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csr_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csr_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
@@ -138,7 +138,7 @@ Increases matrix’s <code class="docutils literal"><span class="pre">shape[1]</
 <code class="descname">addRows</code><span class="sig-paren">(</span><em>nRow</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/utils/sparseUtil.html#csr_matrixPlus.addRows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.utils.sparseUtil.csr_matrixPlus.addRows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add <code class="docutils literal"><span class="pre">nRow</span></code> rows to the matrix</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">csr_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">csr_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="o">.</span><span class="n">getMatrixForTest</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(3, 3)</span>
@@ -166,8 +166,8 @@ value of <code class="docutils literal"><span class="pre">v_offset</span></code>
 changeing the dimensions.
 <code class="docutils literal"><span class="pre">h_offset</span></code> is a similar argument but to specify horizontal offset.</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">sparse</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="k">import</span> <span class="n">sparseConcat</span><span class="p">,</span> <span class="n">csc_matrixPlus</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.utils.sparseUtil</span> <span class="kn">import</span> <span class="n">sparseConcat</span><span class="p">,</span> <span class="n">csc_matrixPlus</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s1</span> <span class="o">=</span> <span class="n">csc_matrixPlus</span><span class="o">.</span><span class="n">getMatrixForTest</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">lil_matrix</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sparseConcat</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">,</span> <span class="s1">&#39;v&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
