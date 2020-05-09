@@ -165,7 +165,7 @@ cdef class CyCbcModel:
             self.CppSelf.setLogLevel(value)
 
     def isRelaxationInfeasible(self):
-        return self.CppSelf.()
+        return self.CppSelf.isInitialSolveProvenPrimalInfeasible()
 
     def isRelaxationDualInfeasible(self):
         return self.CppSelf.isInitialSolveProvenDualInfeasible()
