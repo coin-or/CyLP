@@ -136,10 +136,6 @@ cdef class CyCbcModel:
                                     infeasible, howOftenInSub, whatDepth,
                                     whatDepthInSub)
 
-    def branchAndBound(self, doStatistics=0):
-        self.CppSelf.branchAndBound(doStatistics)
-        return self.status
-
     def solve(self):
         '''
         Call CbcMain. Solve the problem using the same parameters used by CbcSolver.

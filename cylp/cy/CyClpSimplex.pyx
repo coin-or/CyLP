@@ -1709,7 +1709,9 @@ cdef class CyClpSimplex:
         >>> s.setInteger(x[1:3])
         >>>
         >>> cbcModel = s.getCbcModel()
-        >>> cbcModel.branchAndBound()
+        >>> cbcModel.solve()
+        0
+        >>> print(cbcModel.status)
         'solution'
         >>>
         >>> sol_x = cbcModel.primalVariableSolution['x']
