@@ -93,8 +93,8 @@ or by using cylp modeling tool
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getCbcModel</span><span class="p">()</span>
 <span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span><span class="o">.</span><span class="n">branchAndBound</span><span class="p">()</span>
-<span class="go">&#39;solution&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
+<span class="go">0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
 <span class="go">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol_x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
