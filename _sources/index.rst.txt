@@ -32,13 +32,13 @@
 ..    class or method in CLP, CBC, and CGL that you need/want to use in Python
 ..    please don't hesitate to let us know; we will try to make the connections.
 ..    Moreover, in the case that you find a bug or a mistake, we would appreciate
-..    it if you notify us. Contact us at mehdi [dot] towhidi [at] gerad [dot] ca.
+..    it if you notify us.
 
 
 .. toctree::
    :maxdepth: 2
 
-.. include:: ../../../README.rst
+.. include:: README.rst
 
 Indices and tables
 ==================

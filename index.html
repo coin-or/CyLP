@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CyLP &#8212; cylp 0.9 documentation</title>
+    <title>Indices and tables &#8212; cylp 0.91 documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.9',
+        VERSION:     '0.91',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="modules/cy.html" title="cylp.cy"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">cylp 0.9 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">cylp 0.91 documentation</a> &#187;</li> 
       </ul>
     </div>  
 
@@ -49,145 +49,6 @@
           <div class="body" role="main">
             
   <div class="toctree-wrapper compound">
-</div>
-<div class="section" id="cylp">
-<h1>CyLP<a class="headerlink" href="#cylp" title="Permalink to this headline">¶</a></h1>
-<p>CyLP is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
-(CLP, CBC, and CGL). CyLP’s unique feature is that you can use it to alter the
-solution process of the solvers from within Python. For example, you may
-define cut generators, branch-and-bound strategies, and primal/dual Simplex
-pivot rules completely in Python.</p>
-<p>You may read your LP from an mps file or use the CyLP’s easy modeling
-facility. Please find examples in the <a class="reference external" href="http://coin-or.github.io/CyLP/">documentation</a>.</p>
-</div>
-<div class="section" id="prerequisites">
-<h1>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h1>
-<p>CyLP depends on Numpy (www.numpy.org) and Scipy (www.scipy.org). Please note that
-Numpy does need to be installed prior to installing CyLP,
-even though it is listed as a dependency in the <cite>setup.py</cite> file.</p>
-<p>You will also need to install binaries for Cbc. The version should be 2.10 or earlier.
-You can install Cbc by either by
-installing with a package manager, by downloading pre-built binaries,
-or by building yourself from source using <a class="reference external" href="https://github.com/coin-or/coinbrew">coinbrew</a>.</p>
-<blockquote>
-<div><ol class="arabic">
-<li><p class="first">To install Cbc in Linux, the easiest way is to use a package manager. Install either <cite>coinor-cbc</cite> on Debian or <cite>coin-or-Cbc</cite> on Fedora.</p>
-</li>
-<li><p class="first">On OS X, it is easiest to install Cbc with homebrew:</p>
-<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">brew</span> <span class="pre">tap</span> <span class="pre">coin-or-tools/coinor</span></code></p>
-<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">brew</span> <span class="pre">install</span> <span class="pre">coin-or-tools/coinor/cbc</span> <span class="pre">pkg-config</span></code></p>
-</li>
-<li><p class="first">On Windows, a binary wheel is available and it is not necessary to install Cbc.</p>
-</li>
-</ol>
-</div></blockquote>
-<p>If for some reason, you need to build from source, please go to the <a class="reference external" href="https://github.com/coin-or/Cbc">Cbc</a>
-project page and follow the instructions there. After building and install make sure to
-either set the <cite>COIN_INSTALL_DIR</cite> variable to point to the installation or set <cite>PKG_CONFIG_PATH</cite> to point to
-the directory where the <cite>.pc</cite> files are installed. You may also need to set either <cite>LD_LIBRARY_PATH</cite> (Linux)
-or <cite>DYLD_LIBRARY_PATH</cite> (OS X).</p>
-</div>
-<div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>Once Numpy and Cbc are installed, simply do:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install cylp
-</pre></div>
-</div>
-<dl class="docutils">
-<dt>Optional step:</dt>
-<dd><p class="first">If you want to run the doctests (i.e. <code class="docutils literal"><span class="pre">make</span> <span class="pre">doctest</span></code> in the <code class="docutils literal"><span class="pre">doc</span></code> directory)
-you should also define:</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span>$ export CYLP_SOURCE_DIR=/Path/to/cylp
-</pre></div>
-</div>
-</dd>
-</dl>
-<p>Now you can use CyLP in your python code. For example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="s1">&#39;../input/netlib/adlittle.mps&#39;</span><span class="p">)</span>
-<span class="go">0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">initialSolve</span><span class="p">()</span>
-<span class="go">&#39;optimal&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">objectiveValue</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="go">225494.963</span>
-</pre></div>
-</div>
-<p>Or simply go to CyLP and run:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ python -m unittest discover
-</pre></div>
-</div>
-<p>to run all CyLP unit tests.</p>
-</div>
-<div class="section" id="modeling-example">
-<h1>Modeling Example<a class="headerlink" href="#modeling-example" title="Permalink to this headline">¶</a></h1>
-<p>Here is an example of how to model with CyLP’s modeling facility:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="k">import</span> <span class="n">CyClpSimplex</span>
-<span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="k">import</span> <span class="n">CyLPArray</span>
-
-<span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
-
-<span class="c1"># Add variables</span>
-<span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="n">y</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-
-<span class="c1"># Create coefficients and bounds</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
-<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
-<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
-<span class="n">a</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
-<span class="n">b</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">4.2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
-<span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
-
-<span class="c1"># Add constraints</span>
-<span class="n">s</span> <span class="o">+=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
-<span class="n">s</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
-<span class="n">s</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>
-<span class="n">s</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>
-
-<span class="c1"># Set the objective function</span>
-<span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
-<span class="n">s</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-
-<span class="c1"># Solve using primal Simplex</span>
-<span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
-<span class="nb">print</span> <span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>This is the expected output:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Clp0006I</span> <span class="mi">0</span>  <span class="n">Obj</span> <span class="mf">1.1</span> <span class="n">Primal</span> <span class="n">inf</span> <span class="mf">2.8999998</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="n">Dual</span> <span class="n">inf</span> <span class="mf">5.01e+10</span> <span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="n">w</span><span class="o">.</span><span class="n">o</span><span class="o">.</span> <span class="n">free</span> <span class="n">dual</span> <span class="n">inf</span> <span class="p">(</span><span class="mi">4</span><span class="p">)</span>
-<span class="n">Clp0006I</span> <span class="mi">5</span>  <span class="n">Obj</span> <span class="mf">1.3</span>
-<span class="n">Clp0000I</span> <span class="n">Optimal</span> <span class="o">-</span> <span class="n">objective</span> <span class="n">value</span> <span class="mf">1.3</span>
-<span class="p">[</span> <span class="mf">0.2</span>  <span class="mf">2.</span>   <span class="mf">1.1</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="id1">
-<h1>Documentation<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
-<p>You may access CyLP’s documentation:</p>
-<ol class="arabic simple">
-<li><em>Online</em> : Please visit <a class="reference external" href="http://coin-or.github.io/CyLP/">http://coin-or.github.io/CyLP/</a></li>
-<li><em>Offline</em> : To install CyLP’s documentation in your repository, you need
-Sphinx (<a class="reference external" href="http://sphinx-doc.org/">http://sphinx-doc.org/</a>). You can generate the documentation by
-going to cylp/doc and run <code class="docutils literal"><span class="pre">make</span> <span class="pre">html</span></code> or <code class="docutils literal"><span class="pre">make</span> <span class="pre">latex</span></code> and access the
-documentation under cylp/doc/build. You can also run <code class="docutils literal"><span class="pre">make</span> <span class="pre">doctest</span></code> to
-perform all the doctest.</li>
-</ol>
-</div>
-<div class="section" id="who-uses-cylp">
-<h1>Who uses CyLP<a class="headerlink" href="#who-uses-cylp" title="Permalink to this headline">¶</a></h1>
-<p>CyLP is being used in a wide range of practical and research fields. Some of the users include:</p>
-<ol class="arabic simple">
-<li>PyArt, The Python ARM Radar Toolkit, used by Atmospheric Radiation Measurement
-(U.S. Department of energy). <a class="reference external" href="https://github.com/ARM-DOE/pyart">https://github.com/ARM-DOE/pyart</a></li>
-<li>Meteorological Institute University of Bonn.</li>
-<li>Sherbrooke university hospital (Centre hospitalier universitaire de Sherbrooke): CyLP is used for nurse scheduling.</li>
-<li>Maisonneuve-Rosemont hospital (L’hôpital HMR): CyLP is used for  physician scheduling with preferences.</li>
-<li>Lehigh University: CyLP is used to teach mixed-integer cuts.</li>
-<li>IBM T. J. Watson research center</li>
-<li>Saarland University, Germany</li>
-</ol>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -247,13 +108,7 @@ perform all the doctest.</li>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">CyLP</a></li>
-<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
-<li><a class="reference internal" href="#installation">Installation</a></li>
-<li><a class="reference internal" href="#modeling-example">Modeling Example</a></li>
-<li><a class="reference internal" href="#id1">Documentation</a></li>
-<li><a class="reference internal" href="#who-uses-cylp">Who uses CyLP</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#">Indices and tables</a></li>
 <li><a class="reference internal" href="#modules">Modules</a></li>
 </ul>
 
@@ -293,7 +148,7 @@ perform all the doctest.</li>
         <li class="right" >
           <a href="modules/cy.html" title="cylp.cy"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">cylp 0.9 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">cylp 0.91 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
