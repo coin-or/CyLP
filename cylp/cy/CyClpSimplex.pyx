@@ -89,8 +89,8 @@ cdef class CyClpSimplex:
                                 'cylpSimplex constructor. Got %s' %
                                 cyLPModel.__class__)
 
-    #def __dealloc__(self):
-    #    del self.CppSelf
+    def __dealloc__(self):
+        del self.CppSelf
 
     cdef setCppSelf(self,  CppIClpSimplex* s):
         del self.CppSelf
