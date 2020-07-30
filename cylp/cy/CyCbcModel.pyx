@@ -89,9 +89,15 @@ cdef class CyCbcModel:
         self.cyLPModel = cyLPModel
         self.cutGenerators = []
 
-    def __dealloc(self):
+    def __dealloc__(self):
         for generator in self.cutGenerators:
             Py_DECREF(generator)
+
+        try:
+            if self.CppSelf:
+                del self.CppSelf
+        except AttributeError:
+            pass
 
     cdef setCppSelf(self, CppICbcModel* cppmodel):
         self.CppSelf = cppmodel
