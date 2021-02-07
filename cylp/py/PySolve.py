@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-from time import clock
+from time import perf_counter
 import cProfile
 import numpy as np
 from cylp.cy import CyClpSimplex
@@ -35,9 +35,9 @@ def solve(filename, method):
 
     #s.setPerturbation(50)
 
-    start = clock()
+    start = perf_counter()
     s.primal()
-    print('Problem solved in %g seconds.' % (clock() - start))
+    print('Problem solved in %g seconds.' % (perf_counter() - start))
     return s.objectiveValue
 
 

@@ -1,6 +1,6 @@
 from __future__ import print_function
 import sys
-from time import clock
+from time import perf_counter
 from cylp.cy.CyClpSimplex cimport CyClpSimplex
 from cylp.cy.CyDantzigPivot cimport CyDantzigPivot
 from cylp.cy.CyPEPivot cimport CyPEPivot
@@ -21,7 +21,7 @@ def CySolve(fileName, method):
         ppivot = CyPEPivot(s)
         s.setPrimalColumnPivotAlgorithm(ppivot.CppSelf)
 
-    start = clock()
+    start = perf_counter()
     s.primal()
-    print('Exec time: ',  clock() - start)
+    print('Exec time: ',  perf_counter() - start)
     return s.objectiveValue
