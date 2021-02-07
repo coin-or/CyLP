@@ -4,7 +4,7 @@ from __future__ import print_function
 import sys
 import cProfile
 import inspect
-from time import clock
+from time import perf_counter
 import numpy as np
 from scipy import sparse
 from cylp.cy import CyClpSimplex
@@ -326,7 +326,7 @@ class QP:
 
     def WolfeEquality(self, method='w'):
         assert(self.nInEquality == 0)
-        start = clock()
+        start = perf_counter()
         A = self.A
         b = CyLPArray(self.b)
         c = CyLPArray(self.c)
@@ -415,10 +415,10 @@ class QP:
         #print('comp list:\n', p.complementarityList)
 
         s.setPivotMethod(p)
-        timeToMake = clock() - start
-        start = clock()
+        timeToMake = perf_counter() - start
+        start = perf_counter()
         s.primal()
-        timeToSolve = clock() - start
+        timeToSolve = perf_counter() - start
 
         self.writeReport('qpout', s, timeToMake, timeToSolve, method, p)
 
@@ -487,13 +487,13 @@ class QP:
 #        #print('comp list:\n', p.complementarityList)
 #
 #        s.setPivotMethod(p)
-##        timeToMake = clock() - start
-##        start = clock()
+##        timeToMake = perf_counter() - start
+##        start = perf_counter()
 #        s.primal()
 
 
 
-#        timeToSolve = clock() - start
+#        timeToSolve = perf_counter() - start
         #s.initialPrimalSolve()
         if method == 'wp':
             total = p.compCount + p.nonCompCount
@@ -872,9 +872,9 @@ class QP:
         p = PositiveEdgeWolfePivot(s, bucketSize=float(sys.argv[2]))
         s.setPivotMethod(p)
 
-        st = clock()
+        st = perf_counter()
         s.primal()
-        print("CLP time : %g seconds" % (clock() - st))
+        print("CLP time : %g seconds" % (perf_counter() - st))
 
         x = s.getPrimalVariableSolution()
         print("sol = ")
@@ -894,7 +894,7 @@ class QP:
         Solves a QP using Wolfe's method (``method = 'w'``) or Wolfe's method using
         positive edge as pivot rule (``method = 'wp'``).
         '''
-        start = clock()
+        start = perf_counter()
         A = self.A
         G = self.G
         b = CyLPArray(self.b)
@@ -1243,10 +1243,10 @@ class QP:
 
         #print(p.complementarityList)
         s.setPivotMethod(p)
-        timeToMake = clock() - start
-        start = clock()
+        timeToMake = perf_counter() - start
+        start = perf_counter()
         s.primal()
-        timeToSolve = clock() - start
+        timeToSolve = perf_counter() - start
         #s.initialPrimalSolve()
         if method == 'wp':
             total = p.compCount + p.nonCompCount
@@ -1598,9 +1598,9 @@ class QP:
         #p = PositiveEdgeWolfePivot(s, bucketSize=float(sys.argv[2]))
         s.setPivotMethod(p)
 
-        st = clock()
+        st = perf_counter()
         s.primal()
-        print("CLP time : %g seconds" % (clock() - st))
+        print("CLP time : %g seconds" % (perf_counter() - st))
 
         x = s.getPrimalVariableSolution()
         print("sol = ")
@@ -1651,7 +1651,7 @@ def getStat():
 
 def QPTest():
     qp = QP()
-    start = clock()
+    start = perf_counter()
     qp.fromQps(sys.argv[1])
     qp.convertToEqualityOnly()
     if len(sys.argv) > 2:
@@ -1659,13 +1659,13 @@ def QPTest():
     else:
         qp.WolfeEquality()
     return
-    r = clock() - start
+    r = perf_counter() - start
     if len(sys.argv) > 2:
         qp.Wolfe(sys.argv[2])
     else:
         qp.Wolfe()
     print('took %g seconds to read the problem' % r)
-    print('took %g seconds to solve the problem' % (clock() - start))
+    print('took %g seconds to solve the problem' % (perf_counter() - start))
     print("done")
 
 import sys
