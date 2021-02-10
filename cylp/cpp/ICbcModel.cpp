@@ -31,10 +31,13 @@ int ICbcModel::cbcMain(){
         // initialize
         int returnCode = -1;
 	int logLevel = this->logLevel();
-        CbcMain0(*this);
         const char* argv[] = {"ICbcModel", "-solve","-quit"};
-        // Solve ICbcModel and quit
+        //CbcMain0(*this);
+	//this->setLogLevel(logLevel);
+        //return CbcMain1(3, argv, *this);
+        //const char* argv = "-solve -quit";
+        CbcSolverUsefulData solverData;
+        CbcMain0(*this, solverData);
 	this->setLogLevel(logLevel);
-        returnCode = CbcMain1 (3, argv, *this);
-        return returnCode;
+        return CbcMain1(3, argv, *this, NULL, solverData);
 }
