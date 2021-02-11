@@ -1259,15 +1259,14 @@ class QP:
         qobj = 0.5 * x.T * G * x + np.dot(c, x) - self.objectiveOffset
 
         print(s.iteration)
-        f = open('qpout', 'a')
-        st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
+        with open('qpout', 'a') as f:
+            st = '%s %s %s %s %s %s %s\n' % (self.filename.ljust(30), method.ljust(2),
                 str(round(s.objectiveValue, 5)).ljust(8),
                 str(round(qobj, 5)).ljust(8),
                 str(timeToMake),
                 str(timeToSolve),
                 str(timeToMake + timeToSolve))
-        f.write(st)
-        f.close()
+            f.write(st)
 
 #        print(checkComp(s.primalVariableSolution['k1'],
 #                        s.primalVariableSolution['zk1']))
