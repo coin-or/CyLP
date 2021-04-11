@@ -20,6 +20,13 @@ except ImportError:
     from distutils.extension import Extension
     from distutils.command.install import install
 
+def getBdistFriendlyString(s):
+    '''
+    Solve the issue with restructuredText README
+    "ordinal not in range error" when using bdist_mpkg or bdist_wininst
+    '''
+    return unicodedata.normalize('NFKD', u(s))
+
 VERSION = open(join('cylp', 'VERSION')).read()
 
 cythonFilesDir = join('cylp', 'cy')
@@ -33,24 +40,22 @@ try:
 except:
     USECYTHON = False
 
+operatingSystem = sys.platform
+if 'linux' in operatingSystem:
+    operatingSystem = 'linux'
+elif 'darwin' in operatingSystem:
+    operatingSystem = 'mac'
+    mac_ver = platform.mac_ver()[0]
+elif 'win' in operatingSystem:
+    operatingSystem = 'windows'
+
+
 CoinDir = None
-    
+
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
 except:
-    try:
-        location = dirname(
-            check_output(['which', 'cbc']).strip()).decode('utf-8')
-        CoinDir = abspath(join(location, ".."))
-    except:
-        pass
-            
-def get_libs():
-    '''
-    Return a list of distinct library names used by ``dependencies``.
-    '''
-    libs = []
-
+    # If user didn't supply location, then try pkg-config
     try:
         flags = (check_output(['pkg-config', '--libs', 'cbc'])
                  .strip().decode('utf-8'))
@@ -62,25 +67,14 @@ def get_libs():
                  .strip().decode('utf-8'))
         incDirs = [flag[2:] for flag in flags.split() if
                    flag.startswith('-I')]
-
     except:
-        if CoinDir != None:
-            
-            if operatingSystem == 'windows':
-                if os.path.exists(join(CoinDir, 'lib', 'Cbc.lib')):
-                    libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp',
-                            'Clp', 'Osi', 'CoinUtils']
-                else:
-                    libs = ['libCbcSolver', 'libCbc', 'libCgl', 'libOsiClp',
-                            'libClp', 'libOsi', 'libCoinUtils']
-            else:
-                libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp', 'Clp', 'Osi',
-                        'CoinUtils']
-                
-            libDirs = [join(CoinDir, 'lib')]
-            incDirs = [join(CoinDir, 'include', 'coin')] 
-                
-        else:
+        # If pkg-config fails, then look for an installed Cbc 
+        try:
+            location = dirname(
+                check_output(['which', 'cbc']).strip()).decode('utf-8')
+            CoinDir = abspath(join(location, ".."))
+        except:
+            #Otherwise, raise an exception
             raise Exception('''
             Could not find location of COIN installation.
             Please ensure that either 
@@ -89,28 +83,25 @@ def get_libs():
             * The cbc executable is in your executable path and is installed
             at the same location as the libraries. 
             ''')
-
-    return libs, libDirs, incDirs
-
-def getBdistFriendlyString(s):
-    '''
-    Solve the issue with restructuredText README
-    "ordinal not in range error" when using bdist_mpkg or bdist_wininst
-    '''
-    return unicodedata.normalize('NFKD', u(s))
-
-operatingSystem = sys.platform
-if 'linux' in operatingSystem:
-    operatingSystem = 'linux'
-elif 'darwin' in operatingSystem:
-    operatingSystem = 'mac'
-    mac_ver = platform.mac_ver()[0]
-elif 'win' in operatingSystem:
-    operatingSystem = 'windows'
-
-libs, libDirs, incDirs = get_libs()
+        
+if CoinDir != None:
+    # We come here if user supplied the installation directory or pkg-config failed
+    if operatingSystem == 'windows':
+        if os.path.exists(join(CoinDir, 'lib', 'Cbc.lib')):
+            libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp',
+                    'Clp', 'Osi', 'CoinUtils']
+        else:
+            libs = ['libCbcSolver', 'libCbc', 'libCgl', 'libOsiClp',
+                    'libClp', 'libOsi', 'libCoinUtils']
+    else:
+        libs = ['CbcSolver', 'Cbc', 'Cgl', 'OsiClp', 'Clp', 'Osi',
+                'CoinUtils']
+        
+    libDirs = [join(CoinDir, 'lib')]
+    incDirs = [join(CoinDir, 'include', 'coin')] 
+        
 #Take care of Ubuntu case
-if 'CbcSolver' not in libs and operatingSystem == 'linux':
+if 'CbcSolver' not in libs:
     if operatingSystem == 'windows':
         libs.append('libCbcSolver')
     else:
