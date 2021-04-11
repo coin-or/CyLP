@@ -34,7 +34,8 @@ You can install Cbc by either by
 installing with a package manager, by downloading pre-built binaries,
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
 
-    1. To install Cbc in Linux, the easiest way is to use a package manager. Install either `coinor-cbc` and `coin-or-libcbc-dev` on Debian or `coin-or-Cbc` and `coin-or-Cbc-devel` on Fedora.
+    1. To install Cbc in Linux, the easiest way is to use a package manager. Install `coinor-libcbc-dev` on Ubuntu/Debian 
+    or `coin-or-Cbc` and `coin-or-Cbc-devel` on Fedora.
     2. On OS X, it is easiest to install Cbc with homebrew:
     
        ``$ brew tap coin-or-tools/coinor``
