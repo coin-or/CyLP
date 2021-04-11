@@ -1,9 +1,10 @@
 import os
 import sys
 import platform
-from os.path import join
+from os.path import join, abspath, dirname
 import numpy
 import unicodedata
+from subprocess import check_output
 
 #A unicode function that is compatible with Python 2 and 3
 u = lambda s: s if sys.version_info[0] > 2 else unicode(s, 'utf-8')
@@ -37,11 +38,9 @@ CoinDir = None
 try:
     CoinDir = os.environ['COIN_INSTALL_DIR']
 except:
-    from os.path import abspath, dirname
-
     try:
         location = dirname(
-            check_output(['which', 'clp']).strip()).decode('utf-8')
+            check_output(['which', 'cbc']).strip()).decode('utf-8')
         CoinDir = abspath(join(location, ".."))
     except:
         pass
@@ -53,8 +52,6 @@ def get_libs():
     libs = []
 
     try:
-        from subprocess import check_output
-        
         flags = (check_output(['pkg-config', '--libs', 'cbc'])
                  .strip().decode('utf-8'))
         libs = [flag[2:] for flag in flags.split()
@@ -415,7 +412,7 @@ class customInstall(install):
     This is currently an issue for Mac OS Mavericks.
     '''
     def run(self):
-        currentDir = os.path.dirname(os.path.realpath(__file__))
+        currentDir = dirname(os.path.realpath(__file__))
         from distutils.version import LooseVersion
         if operatingSystem == 'mac' and LooseVersion(mac_ver) >= LooseVersion('10.9'):
             # If std::isspace is not already replaced
