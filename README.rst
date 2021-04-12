@@ -34,22 +34,22 @@ You can install Cbc by either by
 installing with a package manager, by downloading pre-built binaries,
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
 
-    1. To install Cbc in Linux, the easiest way is to use a package manager. Install `coinor-libcbc-dev` on Ubuntu/Debian 
-    or `coin-or-Cbc-devel` on Fedora. Cbc is also available on Linux through conda with  
+1. To install Cbc in Linux, the easiest way is to use a package manager. Install `coinor-libcbc-dev` on Ubuntu/Debian 
+   or `coin-or-Cbc-devel` on Fedora. Cbc is also available on Linux through conda with  
 
-       ``$ conda create -n cbc coin-or-cbc -c conda-forge``
-       
-    2. On OS X, it is easiest to install Cbc with homebrew:
+   ``$ conda create -n cbc coin-or-cbc -c conda-forge``    
     
-       ``$ brew tap coin-or-tools/coinor``
-        
-       ``$ brew install coin-or-tools/coinor/cbc pkg-config``
+#. On OS X, it is easiest to install Cbc with homebrew:
+    
+   ``$ brew tap coin-or-tools/coinor``
+     
+   ``$ brew install coin-or-tools/coinor/cbc pkg-config``
 
-    Cbc is also available on OS X through conda with  
+   Cbc is also available on OS X through conda with  
 
-       ``$ conda create -n cbc coin-or-cbc -c conda-forge``  
-
-    3. On Windows, a binary wheel is available and it is not necessary to install Cbc.
+   ``$ conda create -n cbc coin-or-cbc -c conda-forge``  
+    
+#. On Windows, a binary wheel is available and it is not necessary to install Cbc.
     
 You should no longer need to build Cbc from source on any platform unless for some reason, none of the
 above recipes applies to you. If you do need to build from source, please go to the `Cbc <https://github.com/coin-or/Cbc>`_
