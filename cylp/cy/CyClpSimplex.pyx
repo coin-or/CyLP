@@ -150,7 +150,7 @@ cdef class CyClpSimplex:
                 # This does work in some versions of SciPy
                 # It would probably be OK if csr_matrixPlus didn't override
                 # __get_item__ to always cast the result back to csr_matrixPlus
-                # I'm not actually sure why the objective is stored as 
+                # I'm not actually sure why the objective is stored as
                 # csr_matrixPlus anyway... seems to not always be true.
                 #
                 #if isinstance(o, (sparse.coo_matrix,
@@ -292,6 +292,15 @@ cdef class CyClpSimplex:
         def __get__(self):
             return self.CppSelf.objectiveValue()
 
+    property primalColumnSolution:
+        '''
+        Raw Solution to the primal variables.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getPrimalColumnSolution()
+
     property primalVariableSolution:
         '''
         Solution to the primal variables.
@@ -387,6 +396,17 @@ cdef class CyClpSimplex:
                         d[names[i]] = ret[i]
                     ret = d
             return ret
+
+
+    property dualColumnSolution:
+        '''
+        reduced costs
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getDualColumnSolution()
+
 
     property primalConstraintSolution:
         '''
