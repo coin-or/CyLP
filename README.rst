@@ -61,7 +61,8 @@ or `DYLD_LIBRARY_PATH` (OS X).
 Installation
 ============
 
-Once Numpy and Cbc are installed, simply do::
+If you are building against the `coin-or-cbc` package installed by conda, be sure to conda install `pkg-config`,
+which is needed to find he Cbc libraries installed by conda. Once Numpy and Cbc are installed, simply do::
 
     $ pip install cylp
 
