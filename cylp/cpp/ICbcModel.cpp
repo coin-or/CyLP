@@ -13,6 +13,36 @@ PyObject* ICbcModel::getPrimalVariableSolution(){
     return Arr;
 }
 
+PyObject* ICbcModel::getDualColumnSolution(){
+
+    _import_array();
+    npy_intp dims = this->solver()->getNumCols();
+    double* d = (double*)(this->solver()->getReducedCost());
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, d );
+
+    return Arr;
+}
+
+PyObject* ICbcModel::getPrimalRowSolution(){
+
+    _import_array();
+    npy_intp dims = this->solver()->getNumRows();
+    double* d = (double*)(this->solver()->getRowActivity());
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, d );
+
+    return Arr;
+}
+
+PyObject* ICbcModel::getDualRowSolution(){
+
+    _import_array();
+    npy_intp dims = this->solver()->getNumRows();
+    double* d = (double*)(this->solver()->getRowPrice());
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, d );
+
+    return Arr;
+}
+
 ICbcModel::ICbcModel(OsiClpSolverInterface& osiint):CbcModel(osiint){
     _import_array();
 }
