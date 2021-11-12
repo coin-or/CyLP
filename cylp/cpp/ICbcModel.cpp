@@ -2,6 +2,8 @@
 
 #include "CbcCompareUser.hpp"
 #include "CbcSolver.hpp"
+#include <string>
+#include <thread>
 
 PyObject* ICbcModel::getPrimalVariableSolution(){
 
@@ -31,10 +33,12 @@ int ICbcModel::cbcMain(){
         // initialize
         int returnCode = -1;
 	int logLevel = this->logLevel();
-        const char* argv[] = {"ICbcModel", "-solve","-quit"};
+        const char* argv[] = {"ICbcModel", "-threads",
+                                std::to_string(std::max(std::thread::hardware_concurrency(), 1u)).c_str(),
+                                "-solve", "-quit"};
         CbcMain0(*this);
 	this->setLogLevel(logLevel);
-        return CbcMain1(3, argv, *this);
+        return CbcMain1(5, argv, *this);
         //const char* argv = "-solve -quit";
         //CbcSolverUsefulData solverData;
         //CbcMain0(*this, solverData);
