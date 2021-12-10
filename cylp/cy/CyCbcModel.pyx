@@ -184,6 +184,40 @@ cdef class CyCbcModel:
             osi.setCppSelf(self.CppSelf.solver())
             return osi
 
+
+    property primalColumnSolution:
+        '''
+        Raw primalVariableSolution
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getPrimalVariableSolution()
+
+    property dualColumnSolution:
+        '''
+        Raw dualVariableSolution
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getDualColumnSolution()
+
+    property primalRowSolution:
+        '''
+        Raw primalConstraintSolution
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getPrimalRowSolution()
+
+    property dualRowSolution:
+        '''
+        Raw dualConstraintSolution
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return <object>self.CppSelf.getDualRowSolution()
+
+
     property primalVariableSolution:
         def __get__(self):
             ret = <object>self.CppSelf.getPrimalVariableSolution()

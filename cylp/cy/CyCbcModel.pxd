@@ -22,6 +22,9 @@ cdef extern from "CbcCompareUser.hpp":
 cdef extern from "ICbcModel.hpp":
     cdef cppclass CppICbcModel "ICbcModel":
         PyObject* getPrimalVariableSolution()
+        PyObject* getPrimalRowSolution()
+        PyObject* getDualColumnSolution()
+        PyObject* getDualRowSolution()
 
         int cbcMain()
         int getSolutionCount()
