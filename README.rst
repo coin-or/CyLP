@@ -37,17 +37,15 @@ or by building yourself from source using `coinbrew <https://github.com/coin-or/
 1. To install Cbc in Linux, the easiest way is to use a package manager. Install `coinor-libcbc-dev` on Ubuntu/Debian 
    or `coin-or-Cbc-devel` on Fedora. Cbc is also available on Linux through conda with  
 
-   ``$ conda create -n cbc coin-or-cbc -c conda-forge``    
+   ``$ conda create -n cbc coin-or-cbc numpy pkg-config -c conda-forge``    
     
 #. On OS X, it is easiest to install Cbc with homebrew:
-    
-   ``$ brew tap coin-or-tools/coinor``
-     
-   ``$ brew install coin-or-tools/coinor/cbc pkg-config``
+         
+   ``$ brew install cbc pkg-config``
 
    Cbc is also available on OS X through conda with  
 
-   ``$ conda create -n cbc coin-or-cbc -c conda-forge``  
+   ``$ conda create -n cbc coin-or-cbc numpy pkg-config -c conda-forge``  
     
 #. On Windows, a binary wheel is available and it is not necessary to install Cbc.
     
@@ -62,9 +60,9 @@ Installation
 ============
 
 If you are building against the `coin-or-cbc` package installed by conda, be sure to conda install `pkg-config`,
-which is needed to find he Cbc libraries installed by conda. Once Numpy and Cbc are installed, simply do::
+which is needed to find the Cbc libraries installed by conda. Once Numpy and Cbc are installed, simply do::
 
-    $ pip install cylp
+    $ python -m pip install cylp
 
 Optional step:
     If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
@@ -87,7 +85,7 @@ Or simply go to CyLP and run::
 
     $ python -m unittest discover
 
-to run all CyLP unit tests.
+to run all CyLP unit tests (this is currently broken).
 
 Modeling Example
 ==================
@@ -124,7 +122,7 @@ Here is an example of how to model with CyLP's modeling facility::
 
     # Solve using primal Simplex
     s.primal()
-    print s.primalVariableSolution['x']
+    print(s.primalVariableSolution['x'])
 
 This is the expected output::
 
