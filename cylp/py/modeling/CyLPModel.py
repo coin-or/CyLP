@@ -170,6 +170,8 @@ def identitySub(var):
     return I(n)[var.indices, :]
 
 class CyLPExpr:
+    __array_ufunc__ = None
+    
     operators = ('>=', '<=', '==', '+', '-', '*', 'u-', 'sum')
 
     def __init__(self, opr='', left='', right=''):
@@ -209,17 +211,33 @@ class CyLPExpr:
         return v
 
     def __rmul__(self, other):
+        if type(other)==np.ndarray:
+            raise ValueError("You should use @ when multiplying a variable with a numpy array")
         v = CyLPExpr(opr="*", left=other, right=self)
         v.expr = v
         self.expr = v
         return v
 
     def __mul__(self, other):
+        if type(other)==np.ndarray:
+            raise ValueError("You should use @ when multiplying a variable with a numpy array")
         v = CyLPExpr(opr="*", left=self, right=other)
         v.expr = v
         self.expr = v
         return v
 
+    def __rmatmul__(self, other):
+        v = CyLPExpr(opr="*", left=other, right=self)
+        v.expr = v
+        self.expr = v
+        return v
+
+    def __matmul__(self, other):
+        v = CyLPExpr(opr="*", left=self, right=other)
+        v.expr = v
+        self.expr = v
+        return v
+    
     def __rsub__(self, other):
         v = CyLPExpr(opr="-", left=other, right=self)
         v.expr = v
