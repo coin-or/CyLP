@@ -45,6 +45,8 @@ cdef extern from "ICbcModel.hpp":
         void branchAndBound(int doStatistics)
         int status()
         int secondaryStatus()
+        bint isProvenOptimal()
+        bint isProvenInfeasible()
         bint isInitialSolveProvenPrimalInfeasible()
         bint isInitialSolveProvenDualInfeasible()
         bint isInitialSolveProvenOptimal()
