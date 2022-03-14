@@ -152,11 +152,14 @@ cdef class CyCbcModel:
     property status:
         def __get__(self):
             # secondaryStatus() should be used instead of status() (??)
-            #if self.isRelaxationInfeasible():
-            #    return problemStatus[1]
-            #if self.isRelaxationAbondoned():
-            #    return 'relaxation abondoned'
-            #return problemStatus[self.CppSelf.status()]
+            if self.isRelaxationInfeasible():
+               return problemStatus[1]
+            if self.isRelaxationAbondoned():
+               return 'relaxation abondoned'
+            if self.CppSelf.isProvenInfeasible():
+               return 'problem proven infeasible'
+            if self.CppSelf.isProvenOptimal():
+               return 'solution'
             return problemStatus[self.CppSelf.secondaryStatus()]
 
     property logLevel:
