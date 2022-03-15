@@ -30,7 +30,7 @@ cdef int RunEvery1000Nodes(void* ptr, CppICbcModel* model, int numberNodes):
                                  numberNodes)
 
 # Understandable messages to translate what branchAndBound() returns
-problemStatus =  ['solution', 'relaxation infeasible',
+problemStatus =  ['search completed', 'relaxation infeasible',
          'stopped on gap', 'stopped on nodes', 'stopped on time',
          'stopped on user event', 'stopped on solutions'
          'linear relaxation unbounded', 'unset']
@@ -155,7 +155,7 @@ cdef class CyCbcModel:
             if self.isRelaxationInfeasible():
                return problemStatus[1]
             if self.isRelaxationAbandoned():
-               return 'relaxation abondoned'
+               return 'relaxation abandoned'
             if self.CppSelf.isProvenInfeasible():
                return 'problem proven infeasible'
             if self.CppSelf.isProvenOptimal():
