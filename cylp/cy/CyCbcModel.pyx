@@ -154,7 +154,7 @@ cdef class CyCbcModel:
             # secondaryStatus() should be used instead of status() (??)
             if self.isRelaxationInfeasible():
                return problemStatus[1]
-            if self.isRelaxationAbondoned():
+            if self.isRelaxationAbandoned():
                return 'relaxation abondoned'
             if self.CppSelf.isProvenInfeasible():
                return 'problem proven infeasible'
@@ -178,7 +178,7 @@ cdef class CyCbcModel:
     def isRelaxationOptimal(self):
         return self.CppSelf.isInitialSolveProvenOptimal()
 
-    def isRelaxationAbondoned(self):
+    def isRelaxationAbandoned(self):
         return self.CppSelf.isInitialSolveAbandoned()
 
     property osiSolverInteface:
