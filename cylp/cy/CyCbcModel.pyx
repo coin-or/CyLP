@@ -32,7 +32,7 @@ cdef int RunEvery1000Nodes(void* ptr, CppICbcModel* model, int numberNodes):
 # Understandable messages to translate what branchAndBound() returns
 problemStatus =  ['search completed', 'relaxation infeasible',
          'stopped on gap', 'stopped on nodes', 'stopped on time',
-         'stopped on user event', 'stopped on solutions'
+         'stopped on user event', 'stopped on solutions',
          'linear relaxation unbounded', 'unset']
 
 cdef class CyCbcModel:
