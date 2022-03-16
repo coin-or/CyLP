@@ -2757,6 +2757,7 @@ static const char __pyx_k_search_completed[] = "search completed";
 static const char __pyx_k_stopped_on_nodes[] = "stopped on nodes";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_relaxation_abandoned[] = "relaxation abandoned";
+static const char __pyx_k_stopped_on_solutions[] = "stopped on solutions";
 static const char __pyx_k_isRelaxationAbandoned[] = "isRelaxationAbandoned";
 static const char __pyx_k_relaxation_infeasible[] = "relaxation infeasible";
 static const char __pyx_k_stopped_on_user_event[] = "stopped on user event";
@@ -2764,11 +2765,11 @@ static const char __pyx_k_isRelaxationInfeasible[] = "isRelaxationInfeasible";
 static const char __pyx_k_pythonCutGeneratorObject[] = "pythonCutGeneratorObject";
 static const char __pyx_k_problem_proven_infeasible[] = "problem proven infeasible";
 static const char __pyx_k_cylp_py_modeling_CyLPModel[] = "cylp.py.modeling.CyLPModel";
+static const char __pyx_k_linear_relaxation_unbounded[] = "linear relaxation unbounded";
 static const char __pyx_k_numpy_core_multiarray_failed_to[] = "numpy.core.multiarray failed to import";
 static const char __pyx_k_no_default___reduce___due_to_non[] = "no default __reduce__ due to non-trivial __cinit__";
 static const char __pyx_k_numpy_core_umath_failed_to_impor[] = "numpy.core.umath failed to import";
 static const char __pyx_k_setNodeCompare_argument_should_b[] = "setNodeCompare argument should be a NodeCompareBase object. Got %s";
-static const char __pyx_k_stopped_on_solutionslinear_relax[] = "stopped on solutionslinear relaxation unbounded";
 static PyObject *__pyx_kp_s_;
 static PyObject *__pyx_n_s_AttributeError;
 static PyObject *__pyx_n_s_CyCbcModel;
@@ -2803,6 +2804,7 @@ static PyObject *__pyx_n_s_isRelaxationInfeasible;
 static PyObject *__pyx_n_s_itertools;
 static PyObject *__pyx_n_s_izip;
 static PyObject *__pyx_n_s_keys;
+static PyObject *__pyx_kp_s_linear_relaxation_unbounded;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_name_2;
@@ -2829,7 +2831,7 @@ static PyObject *__pyx_n_s_setstate_cython;
 static PyObject *__pyx_n_s_solution;
 static PyObject *__pyx_kp_s_stopped_on_gap;
 static PyObject *__pyx_kp_s_stopped_on_nodes;
-static PyObject *__pyx_kp_s_stopped_on_solutionslinear_relax;
+static PyObject *__pyx_kp_s_stopped_on_solutions;
 static PyObject *__pyx_kp_s_stopped_on_time;
 static PyObject *__pyx_kp_s_stopped_on_user_event;
 static PyObject *__pyx_n_s_test;
@@ -9065,6 +9067,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_itertools, __pyx_k_itertools, sizeof(__pyx_k_itertools), 0, 0, 1, 1},
   {&__pyx_n_s_izip, __pyx_k_izip, sizeof(__pyx_k_izip), 0, 0, 1, 1},
   {&__pyx_n_s_keys, __pyx_k_keys, sizeof(__pyx_k_keys), 0, 0, 1, 1},
+  {&__pyx_kp_s_linear_relaxation_unbounded, __pyx_k_linear_relaxation_unbounded, sizeof(__pyx_k_linear_relaxation_unbounded), 0, 0, 1, 0},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_name_2, __pyx_k_name_2, sizeof(__pyx_k_name_2), 0, 0, 1, 1},
@@ -9091,7 +9094,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_solution, __pyx_k_solution, sizeof(__pyx_k_solution), 0, 0, 1, 1},
   {&__pyx_kp_s_stopped_on_gap, __pyx_k_stopped_on_gap, sizeof(__pyx_k_stopped_on_gap), 0, 0, 1, 0},
   {&__pyx_kp_s_stopped_on_nodes, __pyx_k_stopped_on_nodes, sizeof(__pyx_k_stopped_on_nodes), 0, 0, 1, 0},
-  {&__pyx_kp_s_stopped_on_solutionslinear_relax, __pyx_k_stopped_on_solutionslinear_relax, sizeof(__pyx_k_stopped_on_solutionslinear_relax), 0, 0, 1, 0},
+  {&__pyx_kp_s_stopped_on_solutions, __pyx_k_stopped_on_solutions, sizeof(__pyx_k_stopped_on_solutions), 0, 0, 1, 0},
   {&__pyx_kp_s_stopped_on_time, __pyx_k_stopped_on_time, sizeof(__pyx_k_stopped_on_time), 0, 0, 1, 0},
   {&__pyx_kp_s_stopped_on_user_event, __pyx_k_stopped_on_user_event, sizeof(__pyx_k_stopped_on_user_event), 0, 0, 1, 0},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
@@ -9813,9 +9816,9 @@ if (!__Pyx_RefNanny) {
  * # Understandable messages to translate what branchAndBound() returns
  * problemStatus =  ['search completed', 'relaxation infeasible',             # <<<<<<<<<<<<<<
  *          'stopped on gap', 'stopped on nodes', 'stopped on time',
- *          'stopped on user event', 'stopped on solutions'
+ *          'stopped on user event', 'stopped on solutions',
  */
-  __pyx_t_7 = PyList_New(8); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 33, __pyx_L1_error)
+  __pyx_t_7 = PyList_New(9); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_INCREF(__pyx_kp_s_search_completed);
   __Pyx_GIVEREF(__pyx_kp_s_search_completed);
@@ -9835,12 +9838,15 @@ if (!__Pyx_RefNanny) {
   __Pyx_INCREF(__pyx_kp_s_stopped_on_user_event);
   __Pyx_GIVEREF(__pyx_kp_s_stopped_on_user_event);
   PyList_SET_ITEM(__pyx_t_7, 5, __pyx_kp_s_stopped_on_user_event);
-  __Pyx_INCREF(__pyx_kp_s_stopped_on_solutionslinear_relax);
-  __Pyx_GIVEREF(__pyx_kp_s_stopped_on_solutionslinear_relax);
-  PyList_SET_ITEM(__pyx_t_7, 6, __pyx_kp_s_stopped_on_solutionslinear_relax);
+  __Pyx_INCREF(__pyx_kp_s_stopped_on_solutions);
+  __Pyx_GIVEREF(__pyx_kp_s_stopped_on_solutions);
+  PyList_SET_ITEM(__pyx_t_7, 6, __pyx_kp_s_stopped_on_solutions);
+  __Pyx_INCREF(__pyx_kp_s_linear_relaxation_unbounded);
+  __Pyx_GIVEREF(__pyx_kp_s_linear_relaxation_unbounded);
+  PyList_SET_ITEM(__pyx_t_7, 7, __pyx_kp_s_linear_relaxation_unbounded);
   __Pyx_INCREF(__pyx_n_s_unset);
   __Pyx_GIVEREF(__pyx_n_s_unset);
-  PyList_SET_ITEM(__pyx_t_7, 7, __pyx_n_s_unset);
+  PyList_SET_ITEM(__pyx_t_7, 8, __pyx_n_s_unset);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_problemStatus, __pyx_t_7) < 0) __PYX_ERR(0, 33, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
