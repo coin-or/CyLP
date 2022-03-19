@@ -10,15 +10,9 @@ from subprocess import check_output
 u = lambda s: s if sys.version_info[0] > 2 else unicode(s, 'utf-8')
 myopen = lambda s: open(s) if sys.version_info[0] == 2 else open(s, encoding="utf-8") 
 
-# Setuptools seems to get confused with c++ extensions
-try:
-    from setuptools import setup
-    from setuptools import Extension
-    from setuptools.command.install import install
-except ImportError:
-    from distutils.core import setup
-    from distutils.extension import Extension
-    from distutils.command.install import install
+from setuptools import setup
+from setuptools import Extension
+from setuptools.command.install import install
 
 def getBdistFriendlyString(s):
     '''
@@ -31,14 +25,6 @@ VERSION = open(join('cylp', 'VERSION')).read()
 
 cythonFilesDir = join('cylp', 'cy')
 cppFilesDir = join('cylp', 'cpp')
-
-#Do "export CYLP_USE_CYTHON=" if you want to build cylp from scratch,
-#using Cython
-try:
-    os.environ['CYLP_USE_CYTHON']
-    USECYTHON = True
-except:
-    USECYTHON = False
 
 operatingSystem = sys.platform
 if 'linux' in operatingSystem:
@@ -127,16 +113,14 @@ except:
     pass
 
 cmdclass = {}
-if USECYTHON:
-    from Cython.Distutils import build_ext
-    from Cython.Distutils import extension
-    Extension = extension.Extension
-    import Cython.Compiler.Options
-    Cython.Compiler.Options.annotate = True
-    cmdclass.update({'build_ext': build_ext})
-    fileext = '.pyx'
-else:
-    fileext = '.cpp'
+
+from Cython.Distutils import build_ext
+from Cython.Distutils import extension
+Extension = extension.Extension
+import Cython.Compiler.Options
+Cython.Compiler.Options.annotate = True
+cmdclass.update({'build_ext': build_ext})
+fileext = '.pyx'
 
 
 extra_compile_args = ['-w', '-std=c++11']
