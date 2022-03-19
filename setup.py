@@ -21,7 +21,7 @@ def getBdistFriendlyString(s):
     '''
     return unicodedata.normalize('NFKD', u(s))
 
-VERSION = open(join('cylp', 'VERSION')).read()
+VERSION = open(join('cylp', 'VERSION')).read().strip()
 
 cythonFilesDir = join('cylp', 'cy')
 cppFilesDir = join('cylp', 'cpp')
