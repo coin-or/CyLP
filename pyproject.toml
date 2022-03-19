@@ -3,6 +3,7 @@ requires = [
   'setuptools',
   'wheel',
   'Cython < 3',
-  'numpy'
+  # https://numpy.org/devdocs/user/depending_on_numpy.html#build-time-dependency
+  'oldest-supported-numpy'
 ]
 build-backend = "setuptools.build_meta"
