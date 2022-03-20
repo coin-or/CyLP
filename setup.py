@@ -411,7 +411,7 @@ class customInstall(install):
 
 cmdclass['install'] = customInstall
 
-extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h', 'VERSION']
+extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION']
 
 setup(name='cylp',
       version=VERSION,
