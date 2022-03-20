@@ -1,0 +1,53 @@
+name: Integration testing with CVXPY
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+concurrency:
+  # Cancel previous runs of this workflow for the same branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]  # Add ubuntu-latest when cvxpy pytest issue is solved
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install CBC
+        run: |
+          brew install coin-or-tools/coinor/cbc
+          echo "PKG_CONFIG_PATH=$(brew --prefix)/opt/cbc/lib/pkgconfig:$(brew --prefix)/opt/clp/lib/pkgconfig:$(brew --prefix)/opt/cgl/lib/pkgconfig:$(brew --prefix)/opt/osi/lib/pkgconfig:$(brew --prefix)/opt/coinutils/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+        with:
+          path: cylp
+
+      - name: Install CyLP
+        run: |
+          python3 -m pip install numpy   # Can remove when https://github.com/coin-or/CyLP/pull/153 is merged
+          python3 -m pip install ./cylp
+
+      - name: Check out CVXPY
+        uses: actions/checkout@v2
+        with:
+          repository: cvxpy/cvxpy
+          path: cvxpy
+
+      - name: Install CVXPY
+        run: |
+          python3 -m pip install ./cvxpy
+
+      - name: Test CVXPY
+        run: |
+          python3 -m pip install pytest
+          (cd cvxpy/cvxpy/tests && python3 -m pytest -v .)
