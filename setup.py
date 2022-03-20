@@ -396,7 +396,7 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
 s_README = getBdistFriendlyString(myopen('README.rst').read())
 s_AUTHORS = u(open('AUTHORS').read())
 
-extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION']
+extra_files = ['cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION']
 
 setup(name='cylp',
       version=VERSION,
