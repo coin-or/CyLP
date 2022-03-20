@@ -34,7 +34,6 @@ jobs:
 
       - name: Install CyLP
         run: |
-          python3 -m pip install numpy   # Can remove when https://github.com/coin-or/CyLP/pull/153 is merged
           python3 -m pip install ./cylp
 
       - name: Check out CVXPY
