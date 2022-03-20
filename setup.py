@@ -396,36 +396,6 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
 s_README = getBdistFriendlyString(myopen('README.rst').read())
 s_AUTHORS = u(open('AUTHORS').read())
 
-class customInstall(install):
-    '''
-    Take care of adding std:: to isspace in Cython-generated files.
-    This is currently an issue for Mac OS Mavericks.
-    '''
-    def run(self):
-        currentDir = dirname(os.path.realpath(__file__))
-        from distutils.version import LooseVersion
-        if operatingSystem == 'mac' and LooseVersion(mac_ver) >= LooseVersion('10.9'):
-            # If std::isspace is not already replaced
-            if os.system('grep -rI "std::isspace" cylp/cy/*.cpp'):
-                os.system('''find %s -name "*.cpp" -print | xargs sed -i "" 's/isspace/std::isspace/g' ''' % currentDir)
-
-# These lines commented out per https://github.com/coin-or/CyLP/issues/80
-# fixBinaries is now not called, but it's not clear what it actually and
-# seems to be unneeded. TKR 1/15/2020
-
-#        if operatingSystem == 'mac':
-#            from fixBinaries import platform_dir
-#            extra_files.append(join('cbclibs', platform_dir, '*.dylib'))
-
-        install.run(self)
-
-#        if operatingSystem == 'mac':
-#            from fixBinaries import fixAll
-#            fixAll()
-
-
-cmdclass['install'] = customInstall
-
 extra_files = ['cpp/*.cpp', 'cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION']
 
 setup(name='cylp',
@@ -441,7 +411,7 @@ setup(name='cylp',
       license='Eclipse Public License',
       packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots', 'cylp.py.modeling',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
-      cmdclass=cmdclass,
+      cmdclass={'build_ext': build_ext},
       ext_modules=ext_modules,
       install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'],
       zip_safe = False,
