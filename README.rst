@@ -24,9 +24,8 @@ Otherwise, read on.
 Prerequisites
 =============
 
-CyLP depends on Numpy (www.numpy.org) and Scipy (www.scipy.org). Please note that 
-Numpy does need to be installed prior to installing CyLP,
-even though it is listed as a dependency in the `setup.py` file.
+CyLP depends on `NumPy <https://numpy.org>`_ and `Cython <https://cython.org/`_
+as prerequisites for building from source (`build-system requires`).
 
 You will also need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
 (current master branch of Cbc will not work with this version of CyLP).
@@ -54,15 +53,19 @@ above recipes applies to you. If you do need to build from source, please go to 
 project page and follow the instructions there. After building and installing, make sure to 
 either set the `COIN_INSTALL_DIR` variable to point to the installation or set `PKG_CONFIG_PATH` to point to
 the directory where the `.pc` files are installed. You may also need to set either `LD_LIBRARY_PATH` (Linux)
-or `DYLD_LIBRARY_PATH` (OS X).
+or `DYLD_LIBRARY_PATH` (macOS).
 
 Installation
 ============
 
 If you are building against the `coin-or-cbc` package installed by conda, be sure to conda install `pkg-config`,
-which is needed to find the Cbc libraries installed by conda. Once Numpy and Cbc are installed, simply do::
+which is needed to find the Cbc libraries installed by conda. Once Cbc is installed, simply do::
 
     $ python -m pip install cylp
+
+This will build CyLP in an isolated environment that provides the build prerequisites
+and install it together with its runtime dependencies (`install-requires`),
+NumPy and `SciPy <https://scipy.org>`.
 
 Optional step:
     If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
