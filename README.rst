@@ -21,33 +21,57 @@ https://hub.docker.com/repository/docker/coinor/cylp
 
 Otherwise, read on. 
 
-Prerequisites
-=============
+Prerequisites and installation
+==============================
+
+On Windows: Installation as a binary wheel
+---------------------------------------
+
+On Windows, a binary wheel is available and it is not necessary to install Cbc.
+Just do::
+
+    $ python -m pip install cylp
+
+On Linux/macOS with conda: Installation from source
+---------------------------------------------------
 
 CyLP depends on `NumPy <https://numpy.org>`_ and `Cython <https://cython.org/`_
 as prerequisites for building from source (`build-system requires`).
-
 You will also need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
 (current master branch of Cbc will not work with this version of CyLP).
-You can install Cbc by either by 
-installing with a package manager, by downloading pre-built binaries,
+
+The following commands will create and activate a new conda environment with all
+these prerequisites installed::
+
+    $ conda create -n cbc coin-or-cbc cython numpy pkg-config scipy -c conda-forge
+    $ conda activate cbc
+
+Now you can install CyLP from PyPI::
+
+    $ pip install --no-build-isolation cylp
+
+(The option `--no-build-isolation` ensures that `cylp` uses the Python packages
+installed by conda in the build phase.)
+
+Alternatively, if you have cloned CyLP from GitHub::
+
+    $ pip install --no-build-isolation .
+
+On Linux/macOS with pip: Installation from source
+-------------------------------------------------
+
+First of all, you will need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
+(current master branch of Cbc will not work with this version of CyLP).
+You can install Cbc by either by installing with your system's package manager, by downloading pre-built binaries,
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
 
 1. To install Cbc in Linux, the easiest way is to use a package manager. Install `coinor-libcbc-dev` on Ubuntu/Debian 
-   or `coin-or-Cbc-devel` on Fedora. Cbc is also available on Linux through conda with  
-
-   ``$ conda create -n cbc coin-or-cbc numpy pkg-config -c conda-forge``    
+   or `coin-or-Cbc-devel` on Fedora.
     
 #. On macOS, it is easiest to install Cbc with homebrew:
          
    ``$ brew install cbc pkg-config``
 
-   Cbc is also available on macOS through conda with
-
-   ``$ conda create -n cbc coin-or-cbc numpy pkg-config -c conda-forge``  
-    
-#. On Windows, a binary wheel is available and it is not necessary to install Cbc.
-    
 You should no longer need to build Cbc from source on any platform unless for some reason, none of the
 above recipes applies to you. If you do need to build from source, please go to the `Cbc <https://github.com/coin-or/Cbc>`_
 project page and follow the instructions there. After building and installing, make sure to 
@@ -55,17 +79,16 @@ either set the `COIN_INSTALL_DIR` variable to point to the installation or set `
 the directory where the `.pc` files are installed. You may also need to set either `LD_LIBRARY_PATH` (Linux)
 or `DYLD_LIBRARY_PATH` (macOS).
 
-Installation
-============
-
-If you are building against the `coin-or-cbc` package installed by conda, be sure to conda install `pkg-config`,
-which is needed to find the Cbc libraries installed by conda. Once Cbc is installed, simply do::
+Next, build and install CyLP::
 
     $ python -m pip install cylp
 
 This will build CyLP in an isolated environment that provides the build prerequisites
 and install it together with its runtime dependencies (`install-requires`),
 NumPy and `SciPy <https://scipy.org>`.
+
+Testing your installation
+=========================
 
 Optional step:
     If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
