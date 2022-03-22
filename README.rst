@@ -38,11 +38,11 @@ or by building yourself from source using `coinbrew <https://github.com/coin-or/
 
    ``$ conda create -n cbc coin-or-cbc numpy pkg-config -c conda-forge``    
     
-#. On OS X, it is easiest to install Cbc with homebrew:
+#. On macOS, it is easiest to install Cbc with homebrew:
          
    ``$ brew install cbc pkg-config``
 
-   Cbc is also available on OS X through conda with  
+   Cbc is also available on macOS through conda with
 
    ``$ conda create -n cbc coin-or-cbc numpy pkg-config -c conda-forge``  
     
