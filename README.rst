@@ -148,10 +148,17 @@ You may access CyLP's documentation:
    
 Who uses CyLP
 ==============
-CyLP is being used in a wide range of practical and research fields. Some of the users include:
 
-#. PyArt, The Python ARM Radar Toolkit, used by Atmospheric Radiation Measurement
-   (U.S. Department of energy). https://github.com/ARM-DOE/pyart
+The following software packages make use of CyLP:
+#. `CVXPY <https://www.cvxpy.org/>`_, a Python-embedded modeling language for
+   convex optimization problems, uses CyLP for interfacing to CBC, which is one
+   of the `supported mixed-integer solvers
+   <https://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs>`_.
+
+CyLP has been used in a wide range of practical and research fields. Some of the users include:
+
+#. `PyArt <https://github.com/ARM-DOE/pyart>`_, The Python ARM Radar Toolkit,
+   used by Atmospheric Radiation Measurement (U.S. Department of energy).
 #. Meteorological Institute University of Bonn.
 #. Sherbrooke university hospital (Centre hospitalier universitaire de Sherbrooke): CyLP is used for nurse scheduling.
 #. Maisonneuve-Rosemont hospital (L'hôpital HMR): CyLP is used for  physician scheduling with preferences.
