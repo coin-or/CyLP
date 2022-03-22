@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize]
   push:
     tags:
-      - '*'
+      - 'releases/*'
   workflow_dispatch:
 
 concurrency:
