@@ -141,7 +141,7 @@ You may access CyLP's documentation:
 1. *Online* : Please visit http://coin-or.github.io/CyLP/
 
 2. *Offline* : To install CyLP's documentation in your repository, you need
-   Sphinx (http://sphinx-doc.org/). You can generate the documentation by
+   Sphinx (https://www.sphinx-doc.org/). You can generate the documentation by
    going to cylp/doc and run ``make html`` or ``make latex`` and access the
    documentation under cylp/doc/build. You can also run ``make doctest`` to
    perform all the doctest.
