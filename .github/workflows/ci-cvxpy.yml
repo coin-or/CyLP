@@ -4,8 +4,6 @@ on:
   pull_request:
     types: [opened, synchronize]
   push:
-    tags:
-      - 'releases/*'
   workflow_dispatch:
 
 concurrency:
