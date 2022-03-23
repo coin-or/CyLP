@@ -14,5 +14,6 @@ build-backend = "setuptools.build_meta"
 before-all = """
   apt-get install --yes wget || yum install -y wget
   wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
-  sh coinbrew build Cbc@2.10 --no-third-party --parallel-jobs 16 --prefix=/usr/local --verbosity 4
+  chmod +x coinbrew
+  ./coinbrew build Cbc@2.10 --no-third-party --parallel-jobs 16 --prefix=/usr/local --verbosity 4 || echo ignoring errors
 """
