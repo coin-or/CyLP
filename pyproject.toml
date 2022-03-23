@@ -7,3 +7,13 @@ requires = [
   'oldest-supported-numpy'
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+# Use --no-third-party to avoid linking in GLPK.
+# The resulting binary would not be distributable.
+before-all = """
+  apt-get install --yes wget || yum install -y wget
+  wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
+  chmod +x coinbrew
+  ./coinbrew build Cbc@2.10 --no-third-party --parallel-jobs 16 --prefix=/usr/local --verbosity 4 || echo ignoring errors
+"""
