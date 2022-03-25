@@ -11,3 +11,4 @@ CyLP.egg*
 cylp.egg-info
 setup.cfg
 dist/
+wheelhouse/
