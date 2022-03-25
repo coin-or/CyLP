@@ -39,7 +39,11 @@ elif 'win' in operatingSystem:
 CoinDir = None
 
 try:
-    CoinDir = os.environ['COIN_INSTALL_DIR']
+    if len(sys.argv) > 1 and (sys.argv[1] == "sdist" or sys.argv[1] == "egg_info"):
+        # Do not need CoinDir
+        pass
+    else:
+        CoinDir = os.environ['COIN_INSTALL_DIR']
 except:
     # If user didn't supply location, then try pkg-config
     try:
@@ -69,7 +73,11 @@ except:
             * The cbc executable is in your executable path and is installed
             at the same location as the libraries. 
             ''')
-        
+
+libs = []
+libDirs = []
+incDirs = []
+
 if CoinDir != None:
     # We come here if user supplied the installation directory or pkg-config failed
     if operatingSystem == 'windows':
