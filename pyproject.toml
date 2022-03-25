@@ -15,5 +15,6 @@ before-all = """
   apt-get install --yes wget || yum install -y wget || brew install bash
   wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
   chmod +x coinbrew
-  ./coinbrew build Cbc@2.10.7 --no-third-party --parallel-jobs 16 --prefix=/usr/local --verbosity 4 || echo ignoring errors
+  ./coinbrew build Cbc@2.10.7 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 || echo ignoring errors
 """
+environment = { PATH="$(pwd)/local/bin:$PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
