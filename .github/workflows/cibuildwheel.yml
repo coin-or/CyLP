@@ -35,16 +35,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Checkout coinbrew
-        uses: actions/checkout@v2
-        with:
-          repository: coin-or/coinbrew
-          path: coinbrew
-      - name: Build Cbc
-        run: |
-          bash coinbrew/coinbrew build Cbc@2.10.7 -j 16
-          export COIN_INSTALL_DIR=dist
-          
       - name: Build sdist
         run: pipx run build --sdist
 
