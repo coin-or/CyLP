@@ -38,6 +38,10 @@ elif 'win' in operatingSystem:
 
 CoinDir = None
 
+libs = []
+libDirs = []
+incDirs = []
+
 try:
     if len(sys.argv) > 1 and (sys.argv[1] == "sdist" or sys.argv[1] == "egg_info"):
         # Do not need CoinDir
@@ -73,10 +77,6 @@ except:
             * The cbc executable is in your executable path and is installed
             at the same location as the libraries. 
             ''')
-
-libs = []
-libDirs = []
-incDirs = []
 
 if CoinDir != None:
     # We come here if user supplied the installation directory or pkg-config failed
