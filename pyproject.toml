@@ -14,6 +14,7 @@ build-backend = "setuptools.build_meta"
 before-all = """
   apt-get install --yes wget || yum install -y wget || brew install bash coreutils
   wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
+  sed -i.bak '/invoke_make/s/install/-j1 install/' coinbrew
   chmod +x coinbrew
   ./coinbrew build Cbc@2.10.7 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 || echo ignoring errors
 """
