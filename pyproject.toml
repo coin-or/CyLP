@@ -12,7 +12,7 @@ build-backend = "setuptools.build_meta"
 # Use --no-third-party to avoid linking in GLPK.
 # The resulting binary would not be distributable.
 before-all = """
-  apt-get install --yes wget || yum install -y wget || brew install bash
+  apt-get install --yes wget || yum install -y wget || brew install bash coreutils
   wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
   chmod +x coinbrew
   ./coinbrew build Cbc@2.10.7 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 || echo ignoring errors
