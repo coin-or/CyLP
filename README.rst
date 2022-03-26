@@ -25,7 +25,7 @@ Prerequisites and installation
 ==============================
 
 On Windows: Installation as a binary wheel
----------------------------------------
+------------------------------------------
 
 On Windows, a binary wheel is available and it is not necessary to install Cbc.
 Just do::
@@ -114,7 +114,7 @@ Or simply go to CyLP and run::
 to run all CyLP unit tests (this is currently broken).
 
 Modeling Example
-==================
+================
 
 Here is an example of how to model with CyLP's modeling facility::
 
@@ -158,7 +158,8 @@ This is the expected output::
     [ 0.2  2.   1.1]
 
 Documentation
-===============
+=============
+
 You may access CyLP's documentation:
 
 1. *Online* : Please visit http://coin-or.github.io/CyLP/
@@ -170,7 +171,7 @@ You may access CyLP's documentation:
    perform all the doctest.
    
 Who uses CyLP
-==============
+=============
 
 The following software packages make use of CyLP:
 #. `CVXPY <https://www.cvxpy.org/>`_, a Python-embedded modeling language for
