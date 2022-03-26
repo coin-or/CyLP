@@ -174,6 +174,7 @@ Who uses CyLP
 =============
 
 The following software packages make use of CyLP:
+
 #. `CVXPY <https://www.cvxpy.org/>`_, a Python-embedded modeling language for
    convex optimization problems, uses CyLP for interfacing to CBC, which is one
    of the `supported mixed-integer solvers
