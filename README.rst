@@ -35,7 +35,7 @@ Just do::
 On Linux/macOS with conda: Installation from source
 ---------------------------------------------------
 
-CyLP depends on `NumPy <https://numpy.org>`_ and `Cython <https://cython.org/`_
+CyLP depends on `NumPy <https://numpy.org>`_ and `Cython <https://cython.org/>`_
 as prerequisites for building from source (`build-system requires`).
 You will also need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
 (current master branch of Cbc will not work with this version of CyLP).
