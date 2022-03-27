@@ -67,10 +67,9 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release'}}
     steps:
-      - name: Upload package to release
-        uses: actions/upload-release-asset@v1
+      - name: Upload artifacts to release
+        uses: alexellis/upload-assets@0.2.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./wheelhouse/*.whl
+          asset_paths: '["./wheelhouse/*.whl"]'
