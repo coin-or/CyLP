@@ -65,9 +65,11 @@ First of all, you will need to install binaries for Cbc. The version should be 2
 You can install Cbc by either by installing with your system's package manager, by downloading pre-built binaries,
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
 
-1. To install Cbc in Linux, the easiest way is to use a package manager. Install `coinor-libcbc-dev` on Ubuntu/Debian 
-   or `coin-or-Cbc-devel` on Fedora.
-    
+1. To install Cbc in Linux, the easiest way is to use a package manager. Install
+   `coinor-libcbc-dev` on Ubuntu/Debian or `coin-or-Cbc-devel` on Fedora, or the
+   `corresponding package on your distribution
+   <https://doc.sagemath.org/html/en/reference/spkg/cbc.html#equivalent-system-packages>`_.
+
 #. On macOS, it is easiest to install Cbc with homebrew:
          
    ``$ brew install cbc pkg-config``
