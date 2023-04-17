@@ -51,18 +51,21 @@ try:
 except:
     # If user didn't supply location, then try pkg-config
     try:
-        flags = (check_output(['pkg-config', '--libs', 'cbc'])
-                 .strip().decode('utf-8'))
-        libs = [flag[2:] for flag in flags.split()
-                if flag.startswith('-l')]
-        libDirs = [flag[2:] for flag in flags.split()
-                   if flag.startswith('-L')]
-        flags = (check_output(['pkg-config', '--cflags', 'cbc'])
-                 .strip().decode('utf-8'))
-        incDirs = [flag[2:] for flag in flags.split() if
-                   flag.startswith('-I')]
+        for p in ['cbc','cgl','osi-clp','clp','osi','coinutils']:
+            flags = (check_output(['pkg-config', '--libs', p])
+                     .strip().decode('utf-8'))
+            for flag in flags.split():
+                if flag.startswith('-l') and flag[2:] not in libs:
+                    libs.append(flag[2:]) 
+                if flag.startswith('-L') and flag[2:] not in libDirs:
+                    libDirs.append(flag[2:]) 
+            flags = (check_output(['pkg-config', '--cflags', p])
+                     .strip().decode('utf-8'))
+            for flag in flags.split():
+                if flag.startswith('-I') and flag[2:] not in incDirs:
+                    incDirs.append(flag[2:]) 
     except:
-        # If pkg-config fails, then look for an installed Cbc 
+        # If pkg-config fails, then look for an installed Cbc
         try:
             location = dirname(
                 check_output(['which', 'cbc']).strip()).decode('utf-8')
