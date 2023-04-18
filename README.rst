@@ -32,6 +32,30 @@ Just do::
 
     $ python -m pip install cylp
 
+On Linux/macOS: Installation as a binary wheel
+---------------------------------------------------------
+
+Binary wheels are available for Linux and some versions of OS X 
+for some versions of Python. To see if there is a wheel available
+for your platform, you can browse 
+
+https://pypi.org/project/cylp/#files
+
+or just try::
+
+    $ python -m pip install cylp
+
+In case this fails, it is most likely that there is no wheel for your platform.
+If you are on Linux, this can probably be addressed by switching to 
+a supported Python version with, e.g., conda::
+
+    $ conda create -n cylp python=3.9
+    $ conda activate cylp
+    
+If all else fails, it is easy to install from source, but Cbc must be 
+installed first, as detailed below. The easiest route for this is to use
+conda.
+
 On Linux/macOS with conda: Installation from source
 ---------------------------------------------------
 
@@ -43,8 +67,8 @@ You will also need to install binaries for Cbc. The version should be 2.10 (reco
 The following commands will create and activate a new conda environment with all
 these prerequisites installed::
 
-    $ conda create -n cbc coin-or-cbc cython numpy pkg-config scipy -c conda-forge
-    $ conda activate cbc
+    $ conda create -n cylp coin-or-cbc cython numpy pkg-config scipy -c conda-forge
+    $ conda activate cylp
 
 Now you can install CyLP from PyPI::
 
