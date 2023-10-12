@@ -10,12 +10,12 @@ cdef extern from "CbcCompareUser.hpp":
     cdef cppclass CppCbcCompareUser "CbcCompareUser":
         pass
     ctypedef int (*runTest_t)(void* instance, CppICbcNode* x,
-                              CppICbcNode* y)
+                              CppICbcNode* y) except? -1
     ctypedef bint (*runNewSolution_t)(void*instance, CppICbcModel* model,
                        double objectiveAtContinuous,
-                       int numberInfeasibilitiesAtContinuous)
+                       int numberInfeasibilitiesAtContinuous) except? -1
     ctypedef int (*runEvery1000Nodes_t)(void* instance,
-                            CppICbcModel* model, int numberNodes)
+                            CppICbcModel* model, int numberNodes) except? -1
     bint equalityTest(CppICbcNode* x, CppICbcNode* y)
 
 
