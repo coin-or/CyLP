@@ -1,4 +1,4 @@
-from CyClpPrimalColumnPivotBase cimport *
+from cylp.cy.CyClpPrimalColumnPivotBase cimport *
 from cylp.cy cimport CyClpSimplex
 from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector
 
