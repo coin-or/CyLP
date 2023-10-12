@@ -1,8 +1,5 @@
 # cython: embedsignature=True
 
-cimport CyCglCutGeneratorBase
-from cylp.cy.CyCglCutGeneratorBase import CyCglCutGeneratorBase
-
 cdef void RunGenerateCuts(void *ptr, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):

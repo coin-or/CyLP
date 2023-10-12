@@ -1,8 +1,6 @@
 # cython: embedsignature=True
 
 
-from cylp.cy cimport CyWolfePivot
-
 cdef class CyWolfePivot(CyClpPrimalColumnPivotBase):
 
     cdef pivotColumn(self, CppCoinIndexedVector* cppupdates, CppCoinIndexedVector* cppspareRow1,

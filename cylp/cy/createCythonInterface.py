@@ -34,7 +34,6 @@ with open(pxdFile, 'w') as f:
 
 #Create the pyx file
 pyxContent = '''
-cimport Cy%s
 
 cdef class Cy%s:
     'Cy%s documentation'

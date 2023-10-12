@@ -1,6 +1,5 @@
 import scipy
 from scipy.sparse import csr_matrix
-cimport CyOsiCuts
 from cylp.py.modeling.CyLPModel import CyLPModel
 cimport numpy as np
 import numpy as np

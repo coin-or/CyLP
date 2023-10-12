@@ -1,8 +1,6 @@
 # cython: embedsignature=True
 
 
-cimport CyPivotPythonBase
-
 cdef class CyPivotPythonBase(CyClpPrimalColumnPivotBase):
     def __init__(self, pivotMethodObject):
         CyClpPrimalColumnPivotBase.__init__(self)

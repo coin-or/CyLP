@@ -1,8 +1,5 @@
 # cython: embedsignature=True
 
-
-cimport CyCbcNode
-
 cdef class CyCbcNode:
     def __cinit__(self):
         self.CppSelf = new CppICbcNode()

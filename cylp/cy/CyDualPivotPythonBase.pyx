@@ -1,8 +1,5 @@
 # cython: embedsignature=True
 
-
-cimport CyDualPivotPythonBase
-
 cdef class CyDualPivotPythonBase(CyClpDualRowPivotBase):
     def __init__(self, dualPivotMethodObject):
         CyClpDualRowPivotBase.__init__(self)
