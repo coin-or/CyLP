@@ -45,7 +45,7 @@ cdef extern from "ICoinMpsIO.hpp":
 
 cdef class CyCoinMpsIO:
     cdef CppICoinMpsIO *CppSelf
-    cpdef Hessian
+    cdef Hessian
 #    cpdef  getColLower(self)
 #    cpdef  getColUpper(self)
 #    cpdef getRowSense(self)

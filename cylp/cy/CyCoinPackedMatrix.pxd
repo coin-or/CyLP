@@ -25,7 +25,7 @@ cdef extern from "ICoinPackedMatrix.hpp":
 
 
 cdef class CyCoinPackedMatrix:
-    cpdef CppCoinPackedMatrix* CppSelf
+    cdef CppCoinPackedMatrix* CppSelf
     #cpdef getIndices(self)
     #cpdef getElements(self)
     #cpdef getNumElements(self)
