@@ -16,10 +16,6 @@ cdef extern from "CglCutGenerator.hpp":
     #CppCglCutGenerator* new_CyCglCutGenerator \
     #                                "new ICglCutGenerator" ()
 
-cdef extern from "OsiSolverInterface.hpp":
-    cdef cppclass CppOsiSolverInterface "OsiSolverInterface":
-        pass
-
 cdef extern from "ICglCutGeneratorBase.h":
     #cdef cppclass CoinIndexedVector:
     #   pass
