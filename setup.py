@@ -425,5 +425,6 @@ setup(name='cylp',
       cmdclass={'build_ext': build_ext},
       ext_modules=ext_modules,
       install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'],
+      python_requires="<3.12",
       zip_safe = False,
       package_data={"cylp": extra_files})
