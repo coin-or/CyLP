@@ -13,12 +13,20 @@ on:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }}, arch ${{ matrix.arch }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            arch: x86_64
+          - os: ubuntu-latest
+            arch: i686
+          - os: macos-latest
+            arch: auto
+    env:
+      CIBW_ARCHS: ${{ matrix.arch }}
 
     steps:
       - uses: actions/checkout@v4
