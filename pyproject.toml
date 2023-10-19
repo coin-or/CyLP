@@ -21,4 +21,4 @@ before-all = """
   ./coinbrew build Cbc@2.10.10 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 || echo ignoring errors
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
-skip = ["pp*-macosx*", "*-musllinux*"]
+skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*"]
