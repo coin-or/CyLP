@@ -3,8 +3,6 @@
 
 import numpy as np
 cimport numpy as np
-cimport CyDantzigPivot
-#cimport CyClpSimplex
 
 # varStatus defined to mimic 'enum ClpSimplex::Status'.
 # But is too slow obviously

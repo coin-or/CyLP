@@ -1,4 +1,4 @@
-from CyClpPrimalColumnPivotBase cimport *
+from cylp.cy.CyClpPrimalColumnPivotBase cimport *
 cimport cython.operator.dereference as deref
 from cylp.cy.CyClpSimplex cimport CyClpSimplex, CppIClpSimplex
 from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector

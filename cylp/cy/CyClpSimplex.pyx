@@ -15,11 +15,10 @@ import numpy as np
 cimport numpy as np
 from scipy import sparse
 cimport cpython.ref as cpy_ref
-from CyWolfePivot cimport CyWolfePivot
-from CyPEPivot cimport CyPEPivot
-from CyPivotPythonBase cimport CyPivotPythonBase
-from CyDualPivotPythonBase cimport CyDualPivotPythonBase
-from cylp.cy cimport CyClpSimplex
+from cylp.cy.CyWolfePivot cimport CyWolfePivot
+from cylp.cy.CyPEPivot cimport CyPEPivot
+from cylp.cy.CyPivotPythonBase cimport CyPivotPythonBase
+from cylp.cy.CyDualPivotPythonBase cimport CyDualPivotPythonBase
 from cylp.cy cimport CyCoinModel
 from cylp.py.utils.sparseUtil import sparseConcat, csc_matrixPlus
 from cylp.py.modeling.CyLPModel import CyLPVar, CyLPArray, CyLPSolution

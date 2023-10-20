@@ -1,6 +1,3 @@
-
-cimport CyCglTreeInfo
-
 cdef class CyCglTreeInfo:
     'CyCglTreeInfo documentation'
     def __cinit__(self):

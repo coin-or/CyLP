@@ -20,7 +20,7 @@ cdef extern from "ICoinIndexedVector.hpp":
 
 
 cdef class CyCoinIndexedVector:
-    cpdef CppCoinIndexedVector *CppSelf
+    cdef CppCoinIndexedVector *CppSelf
     cpdef reserve(self, n)
     cpdef assign(self, ind, other)
     cdef setCppSelf(self, CppCoinIndexedVector* s)

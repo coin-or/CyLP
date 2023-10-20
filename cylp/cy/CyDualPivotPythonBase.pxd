@@ -1,6 +1,6 @@
 import numpy as np
 cimport numpy as np
-from CyClpDualRowPivotBase cimport *
+from cylp.cy.CyClpDualRowPivotBase cimport *
 cimport cython.operator.dereference as deref
 from cylp.cy cimport CyClpSimplex
 from cylp.cy.CyCoinIndexedVector cimport CyCoinIndexedVector

@@ -304,8 +304,8 @@ cdef class CyClpSimplex:
     This is the documentation of CyClpSimpelx in the pyx class
     '''
 
-    cpdef CppIClpSimplex *CppSelf
-    cpdef vars
+    cdef CppIClpSimplex *CppSelf
+    cdef vars
     cdef object varSelCriteria
     cdef CyCoinModel coinModel
     cdef object cyLPModel

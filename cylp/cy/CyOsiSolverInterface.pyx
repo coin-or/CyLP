@@ -1,7 +1,3 @@
-
-cimport CyOsiSolverInterface
-
-
 cdef extern from *:
     CppOsiClpSolverInterface* dynamic_cast_osi_2_clp "dynamic_cast<OsiClpSolverInterface*>" (CppOsiSolverInterface*)
     CppIClpSimplex* static_cast_clp_2_iclp "static_cast<IClpSimplex*>" (CppClpSimplex*)

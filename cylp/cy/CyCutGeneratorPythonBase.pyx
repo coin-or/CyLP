@@ -1,9 +1,5 @@
 # cython: embedsignature=True
 
-
-cimport CyCutGeneratorPythonBase
-
-
 cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
     def __init__(self, cutGeneratorObject, cyLPModel=None):
         CyCglCutGeneratorBase.__init__(self)
