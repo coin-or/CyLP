@@ -4,7 +4,9 @@ requires = [
   'wheel',
   'Cython < 3',
   # https://numpy.org/devdocs/user/depending_on_numpy.html#build-time-dependency
-  'oldest-supported-numpy'
+  # from https://github.com/scipy/oldest-supported-numpy/pull/78#issuecomment-1747936818:
+  "oldest-supported-numpy; platform_python_implementation != 'PyPy'",
+  "numpy; platform_python_implementation=='PyPy'"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -19,4 +21,4 @@ before-all = """
   ./coinbrew build Cbc@2.10.10 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 || echo ignoring errors
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
-skip = ["pp*-macosx*", "*-musllinux*"]
+skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*", "pp*-*i686"]
