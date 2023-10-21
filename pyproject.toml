@@ -18,7 +18,10 @@ before-all = """
   wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
   sed -i.bak '/invoke_make/s/install/-j1 install/' coinbrew
   chmod +x coinbrew
-  ./coinbrew build Cbc@2.10.10 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 || echo ignoring errors
+  case "$CIBW_ARCHS" in
+      arm64) config_args='--build=arm-apple-darwin';;
+  esac
+  eval ./coinbrew build Cbc@2.10.10 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args || echo ignoring errors
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
 skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*", "pp*-*i686"]
