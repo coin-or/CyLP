@@ -7,7 +7,6 @@ from __future__ import print_function
 import random
 import numpy as np
 from cylp.cy import CyCoinIndexedVector
-from cylp.cy.CyClpSimplex import cydot
 from .PivotPythonBase import PivotPythonBase
 
 
@@ -92,7 +91,7 @@ class PositiveEdgePivot(PivotPythonBase):
         s = self.clpModel
         s.getACol(varInd, self.aColumn)
 
-        return abs(cydot(self.aColumn, self.w)) < self.EPSILON
+        return abs(cylp.cy.CyClpSimplex.cydot(self.aColumn, self.w)) < self.EPSILON
 
     def checkVar(self, i):
         return self.isCompatible(i)

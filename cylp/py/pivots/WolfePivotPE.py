@@ -3,7 +3,6 @@ from itertools import izip
 import random
 import numpy as np
 from cylp.cy import CyCoinIndexedVector
-from cylp.cy.CyClpSimplex import cydot
 from PivotPythonBase import PivotPythonBase
 
 
@@ -82,7 +81,7 @@ class WolfePivotPE(PivotPythonBase):
         s = self.clpModel
         s.getACol(varInd, self.aColumn)
 
-        return abs(cydot(self.aColumn, self.w)) < self.EPSILON
+        return abs(cylp.cy.CyClpSImplex.cydot(self.aColumn, self.w)) < self.EPSILON
 
     # End of Positive-Edge-related attributes
 
