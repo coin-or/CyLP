@@ -4,7 +4,6 @@ from random import shuffle
 from cylp.cy import CyCoinIndexedVector
 import random
 from math import floor
-#from cylp.cy.CyClpSimplex import cydot
 from cylp.py.pivots import PositiveEdgePivot
 
 
