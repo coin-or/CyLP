@@ -2,15 +2,9 @@
 # cython: profile=True
 # cython: embedsignature=True
 
-from __future__ import print_function
-
 import inspect
 import os.path
 from itertools import product
-try:
-    from itertools import izip
-except ImportError: # Python 3 does not have izip, use zip
-    izip = zip
 import numpy as np
 cimport numpy as np
 from scipy import sparse
@@ -160,7 +154,7 @@ cdef class CyClpSimplex:
                 #        self.setObjectiveCoefficient(i, o[0,i])
                     #if not isinstance(o, sparse.coo_matrix):
                     #    o = o.tocoo()
-                    #for i, j, v in izip(o.row, o.col, o.data):
+                    #for i, j, v in zip(o.row, o.col, o.data):
                     #    self.setObjectiveCoefficient(j, v)
                 #self.setObjectiveArray(
                 #       self.cyLPModel.objective.astype(np.double))

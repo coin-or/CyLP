@@ -1,4 +1,3 @@
-from __future__ import print_function
 import urllib
 f = urllib.urlopen("http://www.netlib.org/lp/data/")
 lines = f.read().splitlines()
