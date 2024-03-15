@@ -46,6 +46,7 @@ or just try::
     $ python -m pip install cylp
 
 In case this fails, it is most likely that there is no wheel for your platform.
+In particular, there are no wheels for MacOS running on Apple Silicon. 
 If you are on Linux, this can probably be addressed by switching to 
 a supported Python version with, e.g., conda::
 
@@ -59,9 +60,8 @@ conda.
 On Linux/macOS with conda: Installation from source
 ---------------------------------------------------
 
-CyLP depends on `NumPy <https://numpy.org>`_ and `Cython <https://cython.org/>`_
-as prerequisites for building from source (`build-system requires`).
-You will also need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
+To install from source, you will need to install binaries for Cbc or also build Cbc from source. 
+The version should be 2.10 (recommended) or earlier 
 (current master branch of Cbc will not work with this version of CyLP).
 
 The following commands will create and activate a new conda environment with all
@@ -84,7 +84,7 @@ Alternatively, if you have cloned CyLP from GitHub::
 On Linux/macOS with pip: Installation from source
 -------------------------------------------------
 
-First of all, you will need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
+You will need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier 
 (current master branch of Cbc will not work with this version of CyLP).
 You can install Cbc by either by installing with your system's package manager, by downloading pre-built binaries,
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
@@ -109,9 +109,8 @@ Next, build and install CyLP::
 
     $ python -m pip install cylp
 
-This will build CyLP in an isolated environment that provides the build prerequisites
-and install it together with its runtime dependencies (`install-requires`),
-NumPy and `SciPy <https://scipy.org>`.
+This will build CyLP install the runtime dependencies (`install-requires`),
+NumPy and `SciPy <https://scipy.org>` and build and install CyLP.
 
 Testing your installation
 =========================
