@@ -24,7 +24,7 @@ jobs:
           - os: ubuntu-latest
             arch: i686
           - os: ubuntu-latest
-            arch: arm64
+            arch: aarch64
           - os: macos-latest
             arch: auto
           - os: macos-latest
