@@ -1,10 +1,6 @@
 # cython: embedsignature=True
 
 from itertools import product
-try:
-    from itertools import izip
-except ImportError:  # Python 3 does not have izip, use zip
-    izip = zip
 from cylp.py.mip import NodeCompareBase
 from cylp.py.modeling.CyLPModel import CyLPSolution
 from cylp.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase

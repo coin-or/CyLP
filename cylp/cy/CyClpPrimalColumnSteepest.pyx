@@ -1,8 +1,5 @@
 # cython: embedsignature=True
 
-from __future__ import print_function
-
-
 #cimport cClpPrimalColumnSteepest
 from cClpPrimalColumnSteepest cimport c_ClpPrimalColumnSteepest, new_ClpPrimalColumnSteepest
 #cimport cClpPrimalColumnPivot

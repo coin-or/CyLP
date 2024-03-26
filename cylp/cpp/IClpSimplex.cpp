@@ -8,15 +8,6 @@
 #include "OsiClpSolverInterface.hpp"
 #include <sstream>
 
-// define PyInt_* macros for Python 3.x
-#ifndef PyInt_Check
-#define PyInt_Check             PyLong_Check
-#define PyInt_FromLong          PyLong_FromLong
-#define PyInt_AsLong            PyLong_AsLong
-#define PyInt_Type              PyLong_Type
-#endif
-
-
 int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, PyObject* w_ind){
     //_import_array();
 
@@ -28,9 +19,9 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
     int wholeArray = false;
 
     double w_num_val;
-    if (PyInt_Check(w)){
+    if (PyLong_Check(w)){
         wIsNum = true;
-        w_num_val = (double)PyInt_AsLong(w);
+        w_num_val = PyLong_AsDouble(w);
     }else if (PyFloat_Check(w)){
         wIsNum = true;
         w_num_val = PyFloat_AsDouble(w);
@@ -41,7 +32,7 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
     }
 
 
-    if (PyInt_Check(arr_ind) || PyFloat_Check(arr_ind)){
+    if (PyLong_Check(arr_ind) || PyFloat_Check(arr_ind)){
         wholeArray = true;
     }else if (!PyArray_Check(arr_ind)){
         PyErr_SetString(PyExc_ValueError,

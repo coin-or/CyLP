@@ -3,7 +3,6 @@ As a part of ``cylp.python.pivots`` it implements the positive edge
 pivot selection rule.
 '''
 
-from __future__ import print_function
 import random
 import numpy as np
 from cylp.cy import CyCoinIndexedVector

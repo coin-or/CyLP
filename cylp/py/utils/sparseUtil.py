@@ -10,17 +10,8 @@ Function :py:func:`sparseConcat` concatenates two sparse matrices
 regardless of their dimension alignments. Fills with zeros where necessary.
 
 '''
-
-# Python 3 does not have long, only int
-try:
-    long
-except NameError:
-    long = int
-
 from scipy import sparse
 import numpy as np
-
-
 
 class csc_matrixPlus(sparse.csc_matrix):
     def __init__(self, arg1, shape=None, dtype=None,
@@ -53,7 +44,7 @@ class csc_matrixPlus(sparse.csc_matrix):
 
         '''
         iRow, iCol = location
-        if not isinstance(val, (int, long, float)):
+        if not isinstance(val, (int, float)):
             return sparse.csc_matrix.__setitem__(self, (iRow, iCol), val)
 
         nCols = self.shape[1]
@@ -117,7 +108,7 @@ class csc_matrixPlus(sparse.csc_matrix):
 
     def __getitem__(self, key):
         ret = sparse.csc_matrix.__getitem__(self, key)
-        if isinstance(ret, (int, long, float)):
+        if isinstance(ret, (int, float)):
             return ret
         # This seems to cause some potential problems when the result is 1x1
         # It should really be returned as an int/float in that case, but
@@ -268,7 +259,7 @@ class csr_matrixPlus(sparse.csr_matrix):
 
         '''
         iRow, iCol = location
-        if not isinstance(val, (int, long, float)):
+        if not isinstance(val, (int, float)):
             return sparse.csr_matrix.__setitem__(self, (iRow, iCol), val)
 
         nRows = self.shape[0]
@@ -356,7 +347,7 @@ class csr_matrixPlus(sparse.csr_matrix):
 
     def __getitem__(self, key):
         ret = sparse.csr_matrix.__getitem__(self, key)
-        if isinstance(ret, (int, long, float)):
+        if isinstance(ret, (int, float)):
             return ret
         # This seems to cause some potential problems when the result is 1x1
         # It should really be returned as an int/float in that case, but

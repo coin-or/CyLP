@@ -1,11 +1,3 @@
-from __future__ import print_function
-
-# Python 3 does not have long, only int
-try:
-    long
-except NameError:
-    long = int
-
 import numpy as np
 from math import atan2
 from cylp.py import Constants
@@ -138,7 +130,7 @@ class Ind:
                 start = sl.start
             self.indices = range(start, stop)
             self.dim = dim
-        elif isinstance(key, (int, long)):
+        elif isinstance(key, int):
             if key >= dim:
                 raise Exception('Index (%d) out of range (%d)' % (key, dim))
             self.indices = [key]

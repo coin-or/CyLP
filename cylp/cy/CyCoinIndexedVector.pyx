@@ -1,7 +1,5 @@
 # cython: embedsignature=True
 
-from __future__ import print_function
-
 cdef class CyCoinIndexedVector:
     '''
     ``CyCoinIndexedVector`` interfaces ``CoinIndexedVector``.

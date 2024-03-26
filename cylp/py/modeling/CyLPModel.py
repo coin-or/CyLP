@@ -119,15 +119,7 @@
 
 '''
 
-from __future__ import print_function
 from functools import reduce
-
-# Python 3 does not have long, only int
-try:
-    long
-except NameError:
-    long = int
-
 from itertools import product
 from copy import deepcopy
 from operator import mul
@@ -136,7 +128,7 @@ from scipy import sparse
 from scipy.sparse import identity, lil_matrix
 from cylp.py.utils.util import Ind, getMultiDimMatrixIndex, getTupleIndex
 
-NUMBERS = (int, float, long, np.int64, np.int32, np.double)
+NUMBERS = (int, float, np.int64, np.int32, np.double)
 def isNumber(n):
     return (isinstance(n, NUMBERS) or
             (isinstance(n, CyLPArray) and n.shape == ()))
@@ -524,7 +516,7 @@ class CyLPConstraint:
                 #dim = left.parentDim
             else:
 #                # FIXME: Think of the correct way to check bound dimensions
-#                if (not isinstance(right, (float, long, int)) and
+#                if (not isinstance(right, (float, int)) and
 #                            right.shape[0] != self.nRows):
 #                    #raise Exception('Bound dim: %d, expected dim: %d '
 #                    #                % (right.shape[0], self.nRows))
