@@ -39,6 +39,9 @@ cdef class CyCoinModel:
     def __cinit__(self):
         self.CppSelf = new CppCoinModel()
 
+    def __dealloc__(self):
+        del self.CppSelf
+
 #   cdef void CLP_addColumn(self, int numberInColumn,
 #                           int * rows,
 #                           double * elements,
