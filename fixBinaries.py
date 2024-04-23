@@ -2,7 +2,6 @@
 This module contains code that copies CBC libraries into CyLP's source,
 and make CyLP binaries' refernces to them relative.
 '''
-from __future__ import print_function
 import distutils.util
 import sys
 import os
