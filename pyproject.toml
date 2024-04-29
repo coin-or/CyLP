@@ -20,6 +20,7 @@ before-all = """
   chmod +x coinbrew
   case "$CIBW_ARCHS" in
       arm64) config_args='--build=arm-apple-darwin';;
+      aarch64) config_args='--build=aarch64-pc-linux-gnu';;      
   esac
   eval ./coinbrew build Cbc@2.10.11 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args || echo ignoring errors
 """
