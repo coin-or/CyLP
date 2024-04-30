@@ -22,6 +22,7 @@ before-all = """
       arm64) config_args='--build=arm-apple-darwin';;
       aarch64) config_args='--build=aarch64-pc-linux-gnu';;      
   esac
+  echo $config_args
   eval ./coinbrew build Cbc@2.10.11 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args || echo ignoring errors
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
