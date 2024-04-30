@@ -33,7 +33,7 @@ jobs:
       CIBW_ARCHS: ${{ matrix.arch }}
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Set up QEMU
         if: runner.os == 'Linux'
@@ -44,7 +44,7 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.17.0
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
 
@@ -52,12 +52,12 @@ jobs:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v3
         with:
           path: dist/*.tar.gz
 
