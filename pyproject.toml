@@ -19,8 +19,8 @@ before-all = """
   sed -i.bak '/invoke_make/s/install/-j1 install/' coinbrew
   chmod +x coinbrew
   case "$CIBW_ARCHS" in
-      arm64) config_args='--build=arm-apple-darwin';;
-      aarch64) config_args='--build=aarch64-unknown-linux-gnu';;      
+      arm64) config_args="--build=arm-apple-darwin";;
+      aarch64) config_args="--build=aarch64-unknown-linux-gnu";;      
   esac
   eval ./coinbrew build Cbc@2.10.11 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args || echo ignoring errors
 """
