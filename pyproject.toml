@@ -20,10 +20,10 @@ before-all = """
   chmod +x coinbrew
   case "$CIBW_ARCHS" in
       arm64) config_args='--build=arm-apple-darwin';;
-      aarch64) config_args='--build=aarch64-pc-linux-gnu';;      
+      aarch64) config_args='--build=aarch64-unknown-linux-gnu';;      
   esac
   echo $config_args
-  eval ./coinbrew build Cbc@2.10.11 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 --build=aarch64-linux-gnu || echo ignoring errors
+  eval ./coinbrew build Cbc@2.10.11 --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 --build=aarch64-unknown-linux-gnu || echo ignoring errors
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
 skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*", "pp*-*i686", "cp312-*i686"]
