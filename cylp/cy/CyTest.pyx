@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sys
 from time import perf_counter
 from cylp.cy.CyClpSimplex cimport CyClpSimplex
