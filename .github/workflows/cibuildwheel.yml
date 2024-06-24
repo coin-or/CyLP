@@ -25,9 +25,9 @@ jobs:
             arch: i686
           - os: ubuntu-latest
             arch: aarch64
+          - os: macos-13
+            arch: x86_64
           - os: macos-latest
-            arch: auto
-          - os: macos-14
             arch: arm64
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
