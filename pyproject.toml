@@ -26,4 +26,4 @@ before-all = """
   ./coinbrew fetch Cbc@2.10.11 --no-third-party && eval ./coinbrew build Cbc --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args || (cat build/Data/Sample/1.2.12/config.log; echo ignoring errors)
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH", CIBW_ARCHS="$CIBW_ARCHS" }
-skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*", "pp*-*i686", "cp312-*i686"]
+skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*", "pp*-*i686", "pp39-manylinux_x86_64", "cp312-*i686"]
