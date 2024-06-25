@@ -42,7 +42,7 @@ jobs:
 
       - name: Install CVXPY
         run: |
-          python3 -m pip install ./cvxpy
+          python3 -m pip install --break-system-packages ./cvxpy
 
       - name: Test CVXPY
         run: |
