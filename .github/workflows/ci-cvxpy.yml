@@ -32,7 +32,7 @@ jobs:
 
       - name: Install CyLP
         run: |
-          python3 -m pip install ./cylp
+          python3 -m pip install --break-system-packages ./cylp
 
       - name: Check out CVXPY
         uses: actions/checkout@v2
