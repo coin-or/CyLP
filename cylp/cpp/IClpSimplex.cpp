@@ -553,7 +553,7 @@ void IClpSimplex::setVariableName(int varInd,  char* name){
 //        columnNames_.reserve(numberColumns_);
 //        for (iColumn=0;iColumn<numberColumns_;iColumn++) {
 //            const char * name = m.columnName(iColumn);
-//            maxLength = CoinMax(maxLength,static_cast<unsigned int> (strlen(name)));
+//            maxLength = std::max(maxLength,static_cast<unsigned int> (strlen(name)));
 //            columnNames_.push_back(name);
 //        }
         lengthNames_=static_cast<int> (maxLength);
@@ -1162,7 +1162,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
                 double * saveLower = CoinCopyOfArray(rowLower_,numberRows_);
                 double * saveUpper = CoinCopyOfArray(rowUpper_,numberRows_);
                 for (int i=0;i<numberProblems;i++) {
-                    int endColumn = CoinMin(startColumn+numberColumns,numberColumns_);
+                    int endColumn = std::min(startColumn+numberColumns,numberColumns_);
                     CoinZeroN(ClpModel::rowActivity_,numberRows_);
                     for (int iColumn=startColumn;iColumn<endColumn;iColumn++) {
                         whichColumns[iColumn-startColumn]=iColumn;
@@ -1216,7 +1216,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
                     whichRows[iRow]=1000*startValue;
                 }
                 for (int i=0;i<numberProblems;i++) {
-                    int endColumn = CoinMin(startColumn+numberColumns,numberColumns_);
+                    int endColumn = std::min(startColumn+numberColumns,numberColumns_);
                     ClpSimplex * simplex = model[i];
                     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                     // this line changed from columnActivity_ to getColSolution because columnactivity in protected in ClpModel
@@ -1275,7 +1275,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
                     for (int iColumn=0;iColumn<numberColumns_;iColumn++) {
                         if (getColumnStatus(iColumn)==basic) {
                             double value = ClpModel::columnActivity_[iColumn];
-                            value = CoinMin(value-columnLower_[iColumn],
+                            value = std::min(value-columnLower_[iColumn],
                                     columnUpper_[iColumn]-value);
                             away[numberBasic]=value;
                             whichColumns[numberBasic++]=iColumn;
@@ -1339,7 +1339,7 @@ int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
         if ((matrix_->generalExpanded(this,4,dummy)&2)!=0&&(specialOptions_&8192)==0) {
             double saveBound = dualBound_;
             // upperOut_ has largest away from bound
-            dualBound_=CoinMin(CoinMax(2.0*upperOut_,1.0e8),dualBound_);
+            dualBound_=std::min(std::max(2.0*upperOut_,1.0e8),dualBound_);
             returnCode = reinterpret_cast<ClpSimplexDual *> (this)->dual(0,startFinishOptions);
             dualBound_=saveBound;
         } else {

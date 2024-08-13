@@ -438,7 +438,7 @@ int IClpSimplexPrimal_Wolfe::primal (int ifValuesPass , int startFinishOptions)
 					lastObjectiveValue = objectiveValue()*optimizationDirection_;
 					// sort
 					CoinSort_2(weight,weight+numberColumns_,whichColumns);
-					numberSort = CoinMin(numberColumns_-numberFixed,numberBasic+numberSprintColumns);
+					numberSort = std::min(numberColumns_-numberFixed,numberBasic+numberSprintColumns);
 					// Sort to make consistent ?
 					std::sort(whichColumns,whichColumns+numberSort);
 					// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -723,7 +723,7 @@ IClpSimplexPrimal_Wolfe::whileIterating(int valuesOption)
 				problemStatus_=-4; // might be infeasible 
 			// Force to re-factorize early next time
 			int numberPivots = factorization_->pivots();
-			forceFactorization_=CoinMin(forceFactorization_,(numberPivots+1)>>1);
+			forceFactorization_=std::min(forceFactorization_,(numberPivots+1)>>1);
 			returnCode=0;
 			break;
 		}
@@ -827,7 +827,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 								setFlagged(sequenceOut_);
 							}
 	
-							double newTolerance = CoinMax(0.5 + 0.499*randomNumberGenerator_.randomDouble(),factorization_->pivotTolerance());
+							double newTolerance = std::max(0.5 + 0.499*randomNumberGenerator_.randomDouble(),factorization_->pivotTolerance());
 							factorization_->pivotTolerance(newTolerance);
 						} else {
 							// Go to safe 
@@ -1056,7 +1056,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 			double take = -dj_[which]*infeasibilityCost_;
 			//printf("XXXXZ inf cost %g take %g (range %g %g)\n",infeasibilityCost_,take,-dj_[0]*infeasibilityCost_,-dj_[n-1]*infeasibilityCost_);
 			take = -dj_[0]*infeasibilityCost_;
-			infeasibilityCost_ = CoinMin(CoinMax(1000.0*take,1.0e8),1.0000001e10);;
+			infeasibilityCost_ = std::min(std::max(1000.0*take,1.0e8),1.0000001e10);;
 			//printf("XXXX increasing weight to %g\n",infeasibilityCost_);
 		}
 		delete [] dj_;
@@ -1073,7 +1073,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 	double trueInfeasibility =nonLinearCost_->sumInfeasibilities();
 	if (!nonLinearCost_->numberInfeasibilities()&&infeasibilityCost_==1.0e10&&!ifValuesPass&&true) {
 		// relax if default
-		infeasibilityCost_ = CoinMin(CoinMax(100.0*sumDualInfeasibilities_,1.0e8),1.00000001e10);
+		infeasibilityCost_ = std::min(std::max(100.0*sumDualInfeasibilities_,1.0e8),1.00000001e10);
 		// reset looping criterion
 		progress->reset();
 		trueInfeasibility = 1.123456e10;
@@ -1090,7 +1090,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 		lastObj += infeasibilityCost_*2.0*lastInf;
 		double lastObj3 = progress->lastObjective(3);
 		lastObj3 += infeasibilityCost_*2.0*lastInf3;
-		if (lastObj<thisObj-1.0e-5*CoinMax(fabs(thisObj),fabs(lastObj))-1.0e-7
+		if (lastObj<thisObj-1.0e-5*std::max(fabs(thisObj),fabs(lastObj))-1.0e-7
 			&&firstFree_<0) {
 			if (handler_->logLevel()==63)
 				printf("lastobj %g this %g force %d ",lastObj,thisObj,forceFactorization_);
@@ -1098,11 +1098,11 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 			if (maxFactor>10) {
 				if (forceFactorization_<0)
 					forceFactorization_= maxFactor;
-				forceFactorization_ = CoinMax(1,(forceFactorization_>>2));
+				forceFactorization_ = std::max(1,(forceFactorization_>>2));
 				if (handler_->logLevel()==63)
 					printf("Reducing factorization frequency to %d\n",forceFactorization_);
 			}
-		} else if (lastObj3<thisObj-1.0e-5*CoinMax(fabs(thisObj),fabs(lastObj3))-1.0e-7
+		} else if (lastObj3<thisObj-1.0e-5*std::max(fabs(thisObj),fabs(lastObj3))-1.0e-7
 				   &&firstFree_<0) {
 			if (handler_->logLevel()==63)
 				printf("lastobj3 %g this3 %g `force %d ",lastObj3,thisObj,forceFactorization_);
@@ -1110,7 +1110,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 			if (maxFactor>10) {
 				if (forceFactorization_<0)
 					forceFactorization_= maxFactor;
-				forceFactorization_ = CoinMax(1,(forceFactorization_*2)/3);
+				forceFactorization_ = std::max(1,(forceFactorization_*2)/3);
 				if (handler_->logLevel()==63)
 					printf("Reducing factorization frequency to %d\n",forceFactorization_);
 			}
@@ -1145,7 +1145,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 			// most likely to happen if infeasible
 			double relaxedToleranceP=primalTolerance_;
 			// we can't really trust infeasibilities if there is primal error
-			double error = CoinMin(1.0e-2,largestPrimalError_);
+			double error = std::min(1.0e-2,largestPrimalError_);
 			// allow tolerance at least slightly bigger than standard
 			relaxedToleranceP = relaxedToleranceP +  error;
 			int ninfeas = nonLinearCost_->numberInfeasibilities();
@@ -1219,7 +1219,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 					problemStatus_=-1;
 				} else if (numberDualInfeasibilities_==0&&largestDualError_>1.0e-2) {
 					goToDual=true;
-					factorization_->pivotTolerance(CoinMax(0.9,factorization_->pivotTolerance()));
+					factorization_->pivotTolerance(std::max(0.9,factorization_->pivotTolerance()));
 				}
 				if (!goToDual) {
 					if (infeasibilityCost_>=1.0e20||
@@ -1278,7 +1278,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 					changeMade_++; // say change made
 					if (numberTimesOptimal_==1) {
 						// better to have small tolerance even if slower
-						factorization_->zeroTolerance(CoinMin(factorization_->zeroTolerance(),1.0e-15));
+						factorization_->zeroTolerance(std::min(factorization_->zeroTolerance(),1.0e-15));
 					}
 					lastCleaned=numberIterations_;
 					if (primalTolerance_!=dblParam_[ClpPrimalTolerance])
@@ -1413,7 +1413,7 @@ IClpSimplexPrimal_Wolfe::statusOfProblemInPrimal(int & lastCleaned,int type,
 	}
 	if (problemStatus_==0) {
 		double objVal = nonLinearCost_->feasibleCost();
-		double tol = 1.0e-10*CoinMax(fabs(objVal),fabs(objectiveValue_))+1.0e-8;
+		double tol = 1.0e-10*std::max(fabs(objVal),fabs(objectiveValue_))+1.0e-8;
 		if (fabs(objVal-objectiveValue_)>tol) {
 #ifdef COIN_DEVELOP
 			if (handler_->logLevel()>0)
@@ -1586,12 +1586,12 @@ IClpSimplexPrimal_Wolfe::primalRow(CoinIndexedVector * rowArray,
 	double way = directionIn_;
 	double maximumMovement;
 	if (way>0.0) 
-		maximumMovement = CoinMin(1.0e30,upperIn_-valueIn_);
+		maximumMovement = std::min(1.0e30,upperIn_-valueIn_);
 	else
-		maximumMovement = CoinMin(1.0e30,valueIn_-lowerIn_);
+		maximumMovement = std::min(1.0e30,valueIn_-lowerIn_);
 	
 	double averageTheta = nonLinearCost_->averageTheta();
-	double tentativeTheta = CoinMin(10.0*averageTheta,maximumMovement);
+	double tentativeTheta = std::min(10.0*averageTheta,maximumMovement);
 	double upperTheta = maximumMovement;
 	if (tentativeTheta>0.5*maximumMovement)
 		tentativeTheta=maximumMovement;
@@ -1601,7 +1601,7 @@ IClpSimplexPrimal_Wolfe::primalRow(CoinIndexedVector * rowArray,
 		tentativeTheta *= 1.1;
 	double dualCheck = fabs(dualIn_);
 	// but make a bit more pessimistic
-	dualCheck=CoinMax(dualCheck-100.0*dualTolerance_,0.99*dualCheck);
+	dualCheck=std::max(dualCheck-100.0*dualTolerance_,0.99*dualCheck);
 	
 	int iIndex;
 	int pivotOne=-1;
@@ -1865,14 +1865,14 @@ IClpSimplexPrimal_Wolfe::primalRow(CoinIndexedVector * rowArray,
 		else
 			distance=upperOut_-valueOut_;
 		if (distance-minimumTheta*fabs(alpha_)<-primalTolerance_)
-			minimumTheta = CoinMax(0.0,(distance+0.5*primalTolerance_)/fabs(alpha_));
+			minimumTheta = std::max(0.0,(distance+0.5*primalTolerance_)/fabs(alpha_));
 		// will we need to increase tolerance
 		//#define CLP_DEBUG
 		double largestInfeasibility = primalTolerance_;
 		if (theta_<minimumTheta&&(specialOptions_&4)==0&&!valuesPass) {
 			theta_=minimumTheta;
 			for (iIndex=0;iIndex<numberRemaining-numberRemaining;iIndex++) {
-				largestInfeasibility = CoinMax(largestInfeasibility,
+				largestInfeasibility = std::max(largestInfeasibility,
 											   -(rhs[iIndex]-spare[iIndex]*theta_));
 			}
 			//#define CLP_DEBUG
@@ -1882,7 +1882,7 @@ IClpSimplexPrimal_Wolfe::primalRow(CoinIndexedVector * rowArray,
 					   primalTolerance_,largestInfeasibility);
 #endif
 			//#undef CLP_DEBUG
-			primalTolerance_ = CoinMax(primalTolerance_,largestInfeasibility);
+			primalTolerance_ = std::max(primalTolerance_,largestInfeasibility);
 		}
 		// Need to look at all in some cases
 		if (theta_>tentativeTheta) {
@@ -1927,7 +1927,7 @@ IClpSimplexPrimal_Wolfe::primalRow(CoinIndexedVector * rowArray,
 		}
 	}
 	
-	double theta1 = CoinMax(theta_,1.0e-12);
+	double theta1 = std::max(theta_,1.0e-12);
 	double theta2 = numberIterations_*nonLinearCost_->averageTheta();
 	// Set average theta
 	nonLinearCost_->setAverageTheta((theta1+theta2)/(static_cast<double> (numberIterations_+1)));
@@ -2215,8 +2215,8 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 	double largestPositive;
 	matrix_->rangeOfElements(smallestNegative, largestNegative,
 							 smallestPositive, largestPositive);
-	smallestPositive = CoinMin(fabs(smallestNegative),smallestPositive);
-	largestPositive = CoinMax(fabs(largestNegative),largestPositive);
+	smallestPositive = std::min(fabs(smallestNegative),smallestPositive);
+	largestPositive = std::max(fabs(largestNegative),largestPositive);
 	double elementRatio = largestPositive/smallestPositive;
 	if (!numberIterations_&&perturbation_==50) {
 		// See if we need to perturb
@@ -2270,15 +2270,15 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 					upperValue = fabs(upper_[i]);
 				else
 					upperValue=0.0;
-				double value = CoinMax(fabs(lowerValue),fabs(upperValue));
-				value = CoinMin(value,upper_[i]-lower_[i]);
+				double value = std::max(fabs(lowerValue),fabs(upperValue));
+				value = std::min(value,upper_[i]-lower_[i]);
 #if 1
 				if (value) {
 					perturbation += value;
 					numberNonZero++;
 				}
 #else
-				perturbation = CoinMax(perturbation,value);
+				perturbation = std::max(perturbation,value);
 #endif
 			}
 		}
@@ -2341,10 +2341,10 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 				if (upperValue>lowerValue+tolerance) {
 					double solutionValue = solution_[iSequence];
 					double difference = upperValue-lowerValue;
-					difference = CoinMin(difference,perturbation);
-					difference = CoinMin(difference,fabs(solutionValue)+1.0);
+					difference = std::min(difference,perturbation);
+					difference = std::min(difference,fabs(solutionValue)+1.0);
 					double value = maximumFraction*(difference+1.0);
-					value = CoinMin(value,0.1);
+					value = std::min(value,0.1);
 #ifndef SAVE_PERT
 					value *= randomNumberGenerator_.randomDouble();
 #else
@@ -2374,11 +2374,11 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 							printf("col %d lower from %g to %g, upper from %g to %g\n",
 								   iSequence,lower_[iSequence],lowerValue,upper_[iSequence],upperValue);
 						if (solutionValue) {
-							largest = CoinMax(largest,value);
+							largest = std::max(largest,value);
 							if (value>(fabs(solutionValue)+1.0)*largestPerCent)
 								largestPerCent=value/(fabs(solutionValue)+1.0);
 						} else {
-							largestZero = CoinMax(largestZero,value);
+							largestZero = std::max(largestZero,value);
 						} 
 					}
 				}
@@ -2390,7 +2390,7 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 			double lowerValue=lower_[i], upperValue=upper_[i];
 			if (upperValue>lowerValue+primalTolerance_) {
 				double value = perturbation*maximumFraction;
-				value = CoinMin(value,0.1);
+				value = std::min(value,0.1);
 #ifndef SAVE_PERT
 				value *= randomNumberGenerator_.randomDouble();
 #else
@@ -2401,11 +2401,11 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 					if (fabs(value)<=primalTolerance_)
 						value=0.0;
 					if (lowerValue>-1.0e20&&lowerValue)
-						lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+						lowerValue -= value * (std::max(1.0e-2,1.0e-5*fabs(lowerValue))); 
 					if (upperValue<1.0e20&&upperValue)
-						upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(upperValue))); 
+						upperValue += value * (std::max(1.0e-2,1.0e-5*fabs(upperValue))); 
 				} else if (value) {
-					double valueL =value *(CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
+					double valueL =value *(std::max(1.0e-2,1.0e-5*fabs(lowerValue)));
 					// get in range 
 					if (valueL<=tolerance) {
 						valueL *= 10.0;
@@ -2418,7 +2418,7 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 					}
 					if (lowerValue>-1.0e20&&lowerValue)
 						lowerValue -= valueL;
-					double valueU =value *(CoinMax(1.0e-2,1.0e-5*fabs(upperValue)));
+					double valueU =value *(std::max(1.0e-2,1.0e-5*fabs(upperValue)));
 					// get in range 
 					if (valueU<=tolerance) {
 						valueU *= 10.0;
@@ -2434,13 +2434,13 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 				}
 				if (lowerValue!=lower_[i]) {
 					double difference = fabs(lowerValue-lower_[i]);
-					largest = CoinMax(largest,difference);
+					largest = std::max(largest,difference);
 					if (difference>fabs(lower_[i])*largestPerCent)
 						largestPerCent=fabs(difference/lower_[i]);
 				} 
 				if (upperValue!=upper_[i]) {
 					double difference = fabs(upperValue-upper_[i]);
-					largest = CoinMax(largest,difference);
+					largest = std::max(largest,difference);
 					if (difference>fabs(upper_[i])*largestPerCent)
 						largestPerCent=fabs(difference/upper_[i]);
 				} 
@@ -2454,18 +2454,18 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 		for (;i<numberColumns_+numberRows_;i++) {
 			double lowerValue=lower_[i], upperValue=upper_[i];
 			double value = perturbation*maximumFraction;
-			value = CoinMin(value,0.1);
+			value = std::min(value,0.1);
 			value *= randomNumberGenerator_.randomDouble();
 			if (upperValue>lowerValue+tolerance) {
 				if (savePerturbation!=50) {
 					if (fabs(value)<=primalTolerance_)
 						value=0.0;
 					if (lowerValue>-1.0e20&&lowerValue)
-						lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+						lowerValue -= value * (std::max(1.0e-2,1.0e-5*fabs(lowerValue))); 
 					if (upperValue<1.0e20&&upperValue)
-						upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(upperValue))); 
+						upperValue += value * (std::max(1.0e-2,1.0e-5*fabs(upperValue))); 
 				} else if (value) {
-					double valueL =value *(CoinMax(1.0e-2,1.0e-5*fabs(lowerValue)));
+					double valueL =value *(std::max(1.0e-2,1.0e-5*fabs(lowerValue)));
 					// get in range 
 					if (valueL<=tolerance) {
 						valueL *= 10.0;
@@ -2478,7 +2478,7 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 					}
 					if (lowerValue>-1.0e20&&lowerValue)
 						lowerValue -= valueL;
-					double valueU =value *(CoinMax(1.0e-2,1.0e-5*fabs(upperValue)));
+					double valueU =value *(std::max(1.0e-2,1.0e-5*fabs(upperValue)));
 					// get in range 
 					if (valueU<=tolerance) {
 						valueU *= 10.0;
@@ -2493,22 +2493,22 @@ IClpSimplexPrimal_Wolfe::perturb(int type)
 						upperValue += valueU;
 				}
 			} else if (upperValue>0.0) {
-				upperValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
-				lowerValue -= value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+				upperValue -= value * (std::max(1.0e-2,1.0e-5*fabs(lowerValue))); 
+				lowerValue -= value * (std::max(1.0e-2,1.0e-5*fabs(lowerValue))); 
 			} else if (upperValue<0.0) {
-				upperValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
-				lowerValue += value * (CoinMax(1.0e-2,1.0e-5*fabs(lowerValue))); 
+				upperValue += value * (std::max(1.0e-2,1.0e-5*fabs(lowerValue))); 
+				lowerValue += value * (std::max(1.0e-2,1.0e-5*fabs(lowerValue))); 
 			} else {
 			}
 			if (lowerValue!=lower_[i]) {
 				double difference = fabs(lowerValue-lower_[i]);
-				largest = CoinMax(largest,difference);
+				largest = std::max(largest,difference);
 				if (difference>fabs(lower_[i])*largestPerCent)
 					largestPerCent=fabs(difference/lower_[i]);
 			} 
 			if (upperValue!=upper_[i]) {
 				double difference = fabs(upperValue-upper_[i]);
-				largest = CoinMax(largest,difference);
+				largest = std::max(largest,difference);
 				if (difference>fabs(upper_[i])*largestPerCent)
 					largestPerCent=fabs(difference/upper_[i]);
 			} 
@@ -2580,7 +2580,7 @@ IClpSimplexPrimal_Wolfe::unflag()
 	int numberFlagged=0;
 	// we can't really trust infeasibilities if there is dual error
 	// allow tolerance bigger than standard to check on duals
-	double relaxedToleranceD=dualTolerance_ + CoinMin(1.0e-2,10.0*largestDualError_);
+	double relaxedToleranceD=dualTolerance_ + std::min(1.0e-2,10.0*largestDualError_);
 	for (i=0;i<number;i++) {
 		if (flagged(i)) {
 			clearFlagged(i);
@@ -2680,7 +2680,7 @@ IClpSimplexPrimal_Wolfe::pivotResult(int ifValuesPass)
 						int iPivot=pivotVariable_[iRow];
 						djval -= alpha*cost_[iPivot];
 					}
-					double comp = 1.0e-8 + 1.0e-7*(CoinMax(fabs(dj_[iSeq]),fabs(djval)));
+					double comp = 1.0e-8 + 1.0e-7*(std::max(fabs(dj_[iSeq]),fabs(djval)));
 					if (fabs(djval-dj_[iSeq])>comp)
 						printf("Bad dj %g for %d - true is %g\n",
 							   dj_[iSeq],iSeq,djval);
@@ -2933,12 +2933,12 @@ IClpSimplexPrimal_Wolfe::pivotResult(int ifValuesPass)
 			} else if (updateStatus==2) {
 				// major error
 				// better to have small tolerance even if slower
-				factorization_->zeroTolerance(CoinMin(factorization_->zeroTolerance(),1.0e-15));
+				factorization_->zeroTolerance(std::min(factorization_->zeroTolerance(),1.0e-15));
 				int maxFactor = factorization_->maximumPivots();
 				if (maxFactor>10) {
 					if (forceFactorization_<0)
 						forceFactorization_= maxFactor;
-					forceFactorization_ = CoinMax(1,(forceFactorization_>>1));
+					forceFactorization_ = std::max(1,(forceFactorization_>>1));
 				} 
 				// later we may need to unwind more e.g. fake bounds
 				if(lastGoodIteration_ != numberIterations_) {
@@ -3230,7 +3230,7 @@ IClpSimplexPrimal_Wolfe::nextSuperBasic(int superBasicType,CoinIndexedVector * c
 									break;
 								} else if (!flagged(iColumn)) {
 									// put ones near bounds at end after sorting
-									work[number]= - CoinMin(0.1*(solution_[iColumn]-lower_[iColumn]),
+									work[number]= - std::min(0.1*(solution_[iColumn]-lower_[iColumn]),
 															upper_[iColumn]-solution_[iColumn]);
 									which[number++] = iColumn;
 								}
@@ -3544,7 +3544,7 @@ IClpSimplexPrimal_Wolfe::lexSolve()
 					lastObjectiveValue = objectiveValue()*optimizationDirection_;
 					// sort
 					CoinSort_2(weight,weight+numberColumns_,whichColumns);
-					numberSort = CoinMin(numberColumns_-numberFixed,numberBasic+numberSprintColumns);
+					numberSort = std::min(numberColumns_-numberFixed,numberBasic+numberSprintColumns);
 					// Sort to make consistent ?
 					std::sort(whichColumns,whichColumns+numberSort);
 					saveModel = new IClpSimplex(this,numberSort,whichColumns);
