@@ -7,6 +7,8 @@
 #include "IClpPackedMatrix.hpp"
 #include "OsiClpSolverInterface.hpp"
 #include <sstream>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
+#include <numpy/ndarraytypes.h>
 
 int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, PyObject* w_ind){
     //_import_array();
