@@ -88,7 +88,7 @@ double * ICoinMpsIO::IObjCoefficients() const
 PyObject* ICoinMpsIO::np_getColLower(){
 	npy_intp dims = this->getNumCols();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IColLower() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IColLower() );
 	return Arr;
 }
 
@@ -96,14 +96,14 @@ PyObject* ICoinMpsIO::np_getColLower(){
 PyObject* ICoinMpsIO::np_getColUpper(){
 	npy_intp dims = this->getNumCols();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IColUpper() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IColUpper() );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::np_getRowSense(){
 	npy_intp dims = this->getNumRows();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT8, this->IRowSense() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT8, this->IRowSense() );
 	return Arr;
 }
 
@@ -111,42 +111,42 @@ PyObject* ICoinMpsIO::np_getRowSense(){
 PyObject* ICoinMpsIO::np_getRightHandSide(){
 	npy_intp dims = this->getNumRows();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IRightHandSide() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IRightHandSide() );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::np_getRowRange(){
 	npy_intp dims = this->getNumRows();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IRowRange() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IRowRange() );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::np_getRowLower(){
 	npy_intp dims = this->getNumRows();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IRowLower() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IRowLower() );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::np_getRowUpper(){
 	npy_intp dims = this->getNumRows();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IRowUpper() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IRowUpper() );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::np_getObjCoefficients(){
 	npy_intp dims = this->getNumCols();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->IObjCoefficients() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->IObjCoefficients() );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::np_integerColumns(){
 	npy_intp dims = this->getNumCols();
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT8, this->IintegerColumns() );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT8, this->IintegerColumns() );
 	return Arr;
 }
 
@@ -154,21 +154,21 @@ PyObject* ICoinMpsIO::np_integerColumns(){
 PyObject* ICoinMpsIO::getQPColumnStarts(){
 	npy_intp dims = this->getNumCols() + 1;
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT32, d_colStart );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT32, d_colStart );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::getQPColumns(){
 	npy_intp dims = d_colStart[this->getNumCols()];
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT32, d_cols );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT32, d_cols );
 	return Arr;
 }
 
 PyObject* ICoinMpsIO::getQPElements(){
 	npy_intp dims = d_colStart[this->getNumCols()];
 	_import_array();
-	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, d_elements );
+	PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, d_elements );
 	return Arr;
 }
 

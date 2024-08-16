@@ -345,7 +345,7 @@ bool IClpSimplex::varIsFixed(int ind){
 PyObject* IClpSimplex::getStatusArray(){
 
     npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_UINT8, this->status_ );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_UINT8, this->status_ );
 
     return Arr;
 }
@@ -354,7 +354,7 @@ PyObject* IClpSimplex::getStatusArray(){
 PyObject* IClpSimplex::getReducedCosts(){
 
     npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->djRegion() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->djRegion() );
 
     return Arr;
 }
@@ -370,7 +370,7 @@ void IClpSimplex::setReducedCosts(double* rc){
 PyObject* IClpSimplex::getComplementarityList(){
 
     npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT32, QP_ComplementarityList );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT32, QP_ComplementarityList );
 
     return Arr;
 }
@@ -378,7 +378,7 @@ PyObject* IClpSimplex::getComplementarityList(){
 PyObject* IClpSimplex::getPivotVariable(){
 
     npy_intp dims = getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT32, this->pivotVariable() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT32, this->pivotVariable() );
 
     return Arr;
 }
@@ -387,7 +387,7 @@ PyObject* IClpSimplex::getPivotVariable(){
 PyObject* IClpSimplex::getPrimalRowSolution(){
 
     npy_intp dims = getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->primalRowSolution() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->primalRowSolution() );
 
     return Arr;
 }
@@ -395,33 +395,33 @@ PyObject* IClpSimplex::getPrimalRowSolution(){
 PyObject* IClpSimplex::getPrimalColumnSolution(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->primalColumnSolution() );
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, NPY_DOUBLE, this->primalColumnSolution() );
 
     return Arr;
 }
 
 PyObject* IClpSimplex::getPrimalColumnSolutionAll(){
     npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->primalColumnSolution() );
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, NPY_DOUBLE, this->primalColumnSolution() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getSolutionRegion(){
     npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->solutionRegion() );
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, NPY_DOUBLE, this->solutionRegion() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getCostRegion(){
     npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_DOUBLE, this->costRegion() );
+    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, NPY_DOUBLE, this->costRegion() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getDualRowSolution(){
 
     npy_intp dims = getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->dualRowSolution() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->dualRowSolution() );
 
     return Arr;
 }
@@ -429,7 +429,7 @@ PyObject* IClpSimplex::getDualRowSolution(){
 PyObject* IClpSimplex::getDualColumnSolution(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->dualColumnSolution() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->dualColumnSolution() );
 
     return Arr;
 }
@@ -437,63 +437,63 @@ PyObject* IClpSimplex::getDualColumnSolution(){
 PyObject* IClpSimplex::getObjective(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->objective() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->objective() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getRowLower(){
 
     npy_intp dims = getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->rowLower() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->rowLower() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getRowUpper(){
 
     npy_intp dims = getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->rowUpper() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->rowUpper() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getUpper(){
 
     npy_intp dims = getNumRows() + getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->upperRegion() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->upperRegion() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getLower(){
 
     npy_intp dims = getNumRows() + getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->lowerRegion() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->lowerRegion() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getColLower(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnLower() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->columnLower() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getColUpper(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, this->columnUpper() );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, this->columnUpper() );
     return Arr;
 }
 
 PyObject* IClpSimplex::getColumnScale(){
 
     npy_intp dims = getNumCols();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE,  columnScale_);
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE,  columnScale_);
     return Arr;
 }
 
 PyObject* IClpSimplex::getRowScale(){
 
     npy_intp dims = getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, rowScale_ );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, rowScale_ );
     return Arr;
 }
 
@@ -503,9 +503,9 @@ PyObject* IClpSimplex::getIntegerInformation(){
     npy_intp dims = getNumCols();
     PyObject* Arr;
     if (this->integerInformation())
-        Arr = PyArray_SimpleNewFromData(1, &dims, PyArray_INT8, this->integerInformation());
+        Arr = PyArray_SimpleNewFromData(1, &dims, NPY_INT8, this->integerInformation());
     else
-        Arr = PyArray_ZEROS(1, &dims, PyArray_INT8, 0);
+        Arr = PyArray_ZEROS(1, &dims, NPY_INT8, 0);
     return Arr;
 }
 
@@ -1391,7 +1391,7 @@ PyObject* IClpSimplex::filterVars(PyObject* inds){
     npy_intp inds_len = PyArray_DIM(inds, 0);
     if (inds_len == 0){
         npy_intp dims = 0;
-        PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT, tempIntArray );
+        PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT, tempIntArray );
         return Arr;
     }
     if (tempArrayExists == false)
@@ -1417,7 +1417,7 @@ PyObject* IClpSimplex::filterVars(PyObject* inds){
     }
 
     npy_intp dims = ind_count;
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_INT, tempIntArray );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT, tempIntArray );
     return Arr;
 
 }

@@ -9,7 +9,7 @@ PyObject* ICoinIndexedVector::getIndicesNPArray(){
 
     npy_intp dims = this->getNumElements();
     PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, 
-            PyArray_INT32, 
+            NPY_INT32, 
             this->getIndices());
     return Arr;
 }
@@ -18,7 +18,7 @@ PyObject* ICoinIndexedVector::getDenseVectorNPArray(){
 
     npy_intp dims = this->capacity();
     PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, 
-            PyArray_DOUBLE, 
+            NPY_DOUBLE, 
             this->denseVector());
     return Arr;
 }
