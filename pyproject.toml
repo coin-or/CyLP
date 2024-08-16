@@ -5,7 +5,8 @@ requires = [
   # https://numpy.org/devdocs/user/depending_on_numpy.html#build-time-dependency
   # from https://github.com/scipy/oldest-supported-numpy/pull/78#issuecomment-1747936818:
   "oldest-supported-numpy; platform_python_implementation != 'PyPy'",
-  "numpy < 2.0.0; platform_python_implementation=='PyPy'"
+  "numpy < 2.0.0; platform_python_implementation=='PyPy'",
+  'hypothesis'
 ]
 build-backend = "setuptools.build_meta"
 
