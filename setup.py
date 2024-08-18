@@ -390,6 +390,9 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
+# Add language level directive per https://stackoverflow.com/a/58116368
+for e in ext_modules:
+    e.cython_directives = {'language_level': "3"} #all are Python-3
 
 s_README = open('README.rst').read()
 s_AUTHORS = open('AUTHORS').read()
