@@ -390,6 +390,9 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
                           extra_compile_args=extra_compile_args,
                           extra_link_args=extra_link_args), ]
 
+# Add language level directive per https://stackoverflow.com/a/58116368
+for e in ext_modules:
+    e.cython_directives = {'language_level': "3"} #all are Python-3
 
 s_README = open('README.rst').read()
 s_AUTHORS = open('AUTHORS').read()
@@ -411,6 +414,6 @@ setup(name='cylp',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass={'build_ext': build_ext},
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'],
+      install_requires=['numpy >= 1.5.0,<2.0.0', 'scipy >= 0.10.0', 'hypothesis'],
       zip_safe = False,
       package_data={"cylp": extra_files})

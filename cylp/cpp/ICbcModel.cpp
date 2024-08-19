@@ -8,7 +8,7 @@ PyObject* ICbcModel::getPrimalVariableSolution(){
     _import_array();
     npy_intp dims = this->solver()->getNumCols();
     double* d = (double*)(this->solver()->getColSolution());
-    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, PyArray_DOUBLE, d );
+    PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_DOUBLE, d );
 
     return Arr;
 }
