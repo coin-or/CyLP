@@ -21,11 +21,28 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+  
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install CBC
         run: |
           brew install coin-or-tools/coinor/cbc
           echo "PKG_CONFIG_PATH=$(brew --prefix)/opt/cbc/lib/pkgconfig:$(brew --prefix)/opt/clp/lib/pkgconfig:$(brew --prefix)/opt/cgl/lib/pkgconfig:$(brew --prefix)/opt/osi/lib/pkgconfig:$(brew --prefix)/opt/coinutils/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
+      - name: Job context
+        run: |
+          echo "::group::macos context"
+          system_profiler SPSoftwareDataType
+          echo "::endgroup::"
+
+          python -V
+
+          echo "::group::brew cbc info"
+          brew info coin-or-tools/coinor/cbc
+          echo "::endgroup::"
+          
       - uses: actions/checkout@v2
         with:
           path: cylp
