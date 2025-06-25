@@ -13,7 +13,7 @@
 int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, PyObject* w_ind){
     //_import_array();
 
-    npy_intp w_ind_len = PyArray_DIM(w_ind, 0);
+    npy_intp w_ind_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(w_ind), 0);
     if (w_ind_len == 0)
         return -1; //return PyArray_ArgMax(reinterpret_cast<PyArrayObject*>(arr));
 
@@ -50,7 +50,7 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
 
     PyObject* arr_it = PyArray_IterNew(arr);
 
-    npy_intp arr_len = PyArray_DIM(arr, 0);
+    npy_intp arr_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(arr), 0);
 
     if (arr_len == 0)
         return 0;
@@ -100,8 +100,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
             }
         }
         else{ //look in whole array, weights array
-            npy_intp w_len = PyArray_DIM(w, 0);
-            npy_intp w_ind_len = PyArray_DIM(w_ind, 0);
+            npy_intp w_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(w), 0);
+            npy_intp w_ind_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(w_ind), 0);
             if (w_ind_len != w_len){
                 PyErr_SetString(PyExc_ValueError,
                         "If w is a numpy array, w_ind should be a numpy array of the same size.");
@@ -141,8 +141,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
     }
     else{  //only indices specified in arr_ind
 
-        npy_intp arr_ind_len = PyArray_DIM(arr_ind, 0);
-        npy_intp arr_len = PyArray_DIM(arr, 0);
+        npy_intp arr_ind_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(arr_ind), 0);
+        npy_intp arr_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(arr), 0);
 
         if (arr_ind_len != arr_len){
             PyErr_SetString(PyExc_ValueError,
@@ -199,8 +199,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
         }
         else{  //just elements specified in arr_ind, weight's an array
 
-            npy_intp arr_ind_len = PyArray_DIM(arr_ind, 0);
-            npy_intp arr_len = PyArray_DIM(arr, 0);
+            npy_intp arr_ind_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(arr_ind), 0);
+            npy_intp arr_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(arr), 0);
 
             if (arr_ind_len != arr_len){
                 PyErr_SetString(PyExc_ValueError,
@@ -209,8 +209,8 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* arr_ind, PyObject* w, P
             }
 
 
-            npy_intp w_len = PyArray_DIM(w, 0);
-            npy_intp w_ind_len = PyArray_DIM(w_ind, 0);
+            npy_intp w_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(w), 0);
+            npy_intp w_ind_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(w_ind), 0);
             if (w_ind_len != w_len){
                 PyErr_SetString(PyExc_ValueError,
                         "If w is a numpy array, w_ind should be a numpy array of the same size.");
@@ -284,7 +284,7 @@ int IClpSimplex::argWeightedMax(PyObject* arr, PyObject* whr, double weight){
     PyObject* arr_it = PyArray_IterNew(arr);
     PyObject* whr_it = PyArray_IterNew(whr);
 
-    npy_intp arr_len = PyArray_DIM(arr, 0);
+    npy_intp arr_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(arr), 0);
 
     if (arr_len == 0)
         return 0;
@@ -1390,7 +1390,7 @@ PyObject* IClpSimplex::filterVars(PyObject* inds){
         return NULL;
     }
 
-    npy_intp inds_len = PyArray_DIM(inds, 0);
+    npy_intp inds_len = PyArray_DIM(reinterpret_cast<PyArrayObject*>(inds), 0);
     if (inds_len == 0){
         npy_intp dims = 0;
         PyObject *Arr = PyArray_SimpleNewFromData( 1, &dims, NPY_INT, tempIntArray );

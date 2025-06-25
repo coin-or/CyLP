@@ -121,7 +121,7 @@ void ICoinIndexedVector::assign(PyObject* ind, PyObject* other){
                         PyFloat_AsDouble(PyList_GetItem(other, (Py_ssize_t)i)));
             }
         }else if (other_is_array){
-            npy_intp other_length = PyArray_DIM(other, 0);
+            npy_intp other_length = PyArray_DIM(reinterpret_cast<PyArrayObject*>(other), 0);
             PyObject* iterator = PyArray_IterNew(other);
             if (ind_length != other_length){
                 PyErr_SetString(PyExc_ValueError, 
@@ -144,7 +144,7 @@ void ICoinIndexedVector::assign(PyObject* ind, PyObject* other){
 
         // If the index set is a numpy array 3 possibilities for the rhs: number, list, array 
         else if (ind_is_array){
-            npy_intp ind_length = PyArray_DIM(ind, 0);
+            npy_intp ind_length = PyArray_DIM(reinterpret_cast<PyArrayObject*>(ind), 0);
             PyObject* ind_iterator = PyArray_IterNew(ind);
 
             if (other_is_num){
@@ -169,7 +169,7 @@ void ICoinIndexedVector::assign(PyObject* ind, PyObject* other){
                         PyArray_ITER_NEXT(ind_iterator);
                     }
                 }else if (other_is_array){
-                    npy_intp other_length = PyArray_DIM(other, 0);
+                    npy_intp other_length = PyArray_DIM(reinterpret_cast<PyArrayObject*>(other), 0);
                     PyObject* iterator = PyArray_IterNew(other);
                     if (ind_length != other_length){
                         PyErr_SetString(PyExc_ValueError, 
