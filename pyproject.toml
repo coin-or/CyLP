@@ -6,7 +6,6 @@ requires = [
   # from https://github.com/scipy/oldest-supported-numpy/pull/78#issuecomment-1747936818:
   "oldest-supported-numpy; platform_python_implementation != 'PyPy'",
   "numpy; platform_python_implementation=='PyPy'",
-  'hypothesis'
 ]
 build-backend = "setuptools.build_meta"
 
@@ -27,3 +26,4 @@ before-all = """
 """
 environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH", CIBW_ARCHS="$CIBW_ARCHS" }
 skip = ["pp*-macosx*", "*-musllinux*", "pp31*-*", "pp*-*i686", "pp38-manylinux*", "pp39-manylinux*", "cp312-*i686", "cp313-*"]
+test-requires = ["cvxpy[testing]"]
