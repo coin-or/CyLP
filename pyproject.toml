@@ -1,3 +1,7 @@
+[project]
+name = "cylp"
+version = "0.93.0"
+]
 [build-system]
 requires = [
   'setuptools',
