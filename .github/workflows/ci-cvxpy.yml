@@ -64,5 +64,5 @@ jobs:
 
       - name: Test CVXPY
         run: |
-          python3 -m pip install --break-system-packages pytest hypothesis numpy==1.26.0
+          python3 -m pip install --break-system-packages pytest hypothesis ${{ matrix.numpy }}
           (cd cvxpy/cvxpy/tests && python3 -m pytest -v .)
