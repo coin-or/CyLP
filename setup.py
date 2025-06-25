@@ -414,6 +414,6 @@ setup(name='cylp',
                 'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
       cmdclass={'build_ext': build_ext},
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.5.0', 'scipy >= 0.10.0'],
+      install_requires=['numpy >= 1.26.0', 'scipy >= 0.10.0'],
       zip_safe = False,
       package_data={"cylp": extra_files})
