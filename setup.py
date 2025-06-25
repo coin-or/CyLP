@@ -394,26 +394,12 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
 for e in ext_modules:
     e.cython_directives = {'language_level': "3"} #all are Python-3
 
-s_README = open('README.rst').read()
-s_AUTHORS = open('AUTHORS').read()
-
 extra_files = ['cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION']
 
-setup(name='cylp',
-      version=VERSION,
-      description='A Python interface for CLP, CBC, and CGL',
-      long_description=s_README,
-      long_description_content_type='text/x-rst',
-      author='Mehdi Towhidi (mehdi.towhidi@gerad.ca), Dominique Orban (dominique.orban@gerad.ca)',
-      author_email='mehdi.towhidi@gerad.ca',
-      maintainer='Ted Ralphs',
-      maintainer_email='ted@lehigh.edu',
-      url='https://github.com/coin-or/cylp',
-      license='Eclipse Public License',
-      packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots', 'cylp.py.modeling',
-                'cylp.py.utils', 'cylp.py.mip','cylp.py.QP'],
+setup(packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots',
+                'cylp.py.modeling', 'cylp.py.utils', 'cylp.py.mip',
+                'cylp.py.QP'],
       cmdclass={'build_ext': build_ext},
       ext_modules=ext_modules,
-      install_requires=['numpy >= 1.26.0', 'scipy >= 0.10.0'],
       zip_safe = False,
       package_data={"cylp": extra_files})
