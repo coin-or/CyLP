@@ -1,5 +1,5 @@
 [project]
-name = "cylp",
+name = "cylp"
 version = "0.93.0"
 
 [build-system]
