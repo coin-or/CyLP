@@ -17,6 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]  # Add ubuntu-latest when cvxpy pytest issue is solved
+        numpy: ['numpy==1.26.0', numpy]
 
     runs-on: ${{ matrix.os }}
 
@@ -63,5 +64,5 @@ jobs:
 
       - name: Test CVXPY
         run: |
-          python3 -m pip install --break-system-packages pytest hypothesis
+          python3 -m pip install --break-system-packages pytest hypothesis numpy==1.26.0
           (cd cvxpy/cvxpy/tests && python3 -m pytest -v .)
