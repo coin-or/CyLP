@@ -5,7 +5,7 @@ description="A Python interface for CLP, CBC, and CGL"
 readme="README.rst"
 author='Mehdi Towhidi (mehdi.towhidi@gerad.ca), Dominique Orban (dominique.orban@gerad.ca), Ted Ralphs (ted@lehigh.edu)'
 maintainer='Ted Ralphs (ted@lehigh.edu)'
-license='Eclipse Public License 2.0'
+license='Eclipse Public License'
 
 [project.urls]
 "Home Page"="https://github.com/coin-or/cylp"
