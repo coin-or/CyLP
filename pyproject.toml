@@ -11,8 +11,8 @@ authors=[
 license='EPL-2.0'
 
 [project.urls]
-"Home Page"="https://github.com/coin-or/cylp"
-Documentation="https://coin-or.github.io/cylp"
+"Home Page"="https://github.com/coin-or/CyLP"
+Documentation="https://coin-or.github.io/CyLP"
 
 [build-system]
 requires = [
