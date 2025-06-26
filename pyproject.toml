@@ -3,7 +3,11 @@ name = "cylp"
 version = "0.93.0"
 description="A Python interface for CLP, CBC, and CGL"
 readme="README.rst"
-authors='Mehdi Towhidi (mehdi.towhidi@gerad.ca), Dominique Orban (dominique.orban@gerad.ca), Ted Ralphs (ted@lehigh.edu)'
+authors=[
+  {  name = 'Mehdi Towhidi', email = 'mehdi.towhidi@gerad.ca'  }, 
+  {  name = 'Dominique Orban', email = 'dominique.orban@gerad.ca' },
+  {  name =  'Ted Ralphs', email = 'ted@lehigh.edu'  }
+]
 license='EPL-2.0'
 
 [project.urls]
