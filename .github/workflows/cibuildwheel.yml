@@ -64,9 +64,12 @@ jobs:
   upload_pypi:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
-    environment: testpypi
+    environment:
+      name: pypi
+      url: https://pypi.org/p/cylp
     permissions:
       id-token: write
+
     # upload to PyPI on every tag starting with 'v'
     # if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/v')
     # alternatively, to publish when a GitHub Release is created, use the following rule:
@@ -79,8 +82,7 @@ jobs:
           merge-multiple: true
 
       - uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository_url: https://test.pypi.org/legacy/
+
 
   upload_release_assets:
     needs: [build_wheels, build_sdist]
