@@ -1,7 +1,7 @@
-import QP
+from cylp.py import Constants
+from cylp.py.QP import QP
+from cylp.py.utils import util
 import numpy as np
-import Constants
-import util
 #import ipdbc
 
 

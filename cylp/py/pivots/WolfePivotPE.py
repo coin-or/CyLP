@@ -1,7 +1,7 @@
 import random
 import numpy as np
 from cylp.cy import CyCoinIndexedVector
-from PivotPythonBase import PivotPythonBase
+from cylp.py.pivots.PivotPythonBase import PivotPythonBase
 
 
 class WolfePivotPE(PivotPythonBase):
