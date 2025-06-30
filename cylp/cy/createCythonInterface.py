@@ -44,7 +44,7 @@ cdef class Cy%s:
         del self.CppSelf
         self.CppSelf = s
 
-''' % (className, className, className, className, className)
+''' % (className, className, className, className)
 
 with open(pyxFile, 'w') as f:
     f.write(pyxContent)
