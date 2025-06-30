@@ -9,8 +9,8 @@ authors=[
   {  name =  'Ted Ralphs', email = 'ted@lehigh.edu'  }
 ]
 dependencies = [
-  "numpy",
-  "scipy",
+  "numpy >= 1.26.0",
+  "scipy >= 0.10.0",
 ]
 license='EPL-2.0'
 
