@@ -262,7 +262,51 @@ class TestModel(unittest.TestCase):
         self.assertTrue(abs(sol[1, 2, 3] - 1) <= 10**-6)
         self.assertTrue(abs(sol[1, 2, 5] - 1) <= 10**-6)
 
+    def test_primalAndDualColumnSolutions(self):
+        self.model = CyLPModel()
+        model = self.model
+
+        x = model.addVariable('x', 3)
+        y = model.addVariable('y', 2)
+
+        A = np.matrix([[1., 2., 0],[1., 0, 1.]])
+        B = np.matrix([[1., 0, 0], [0, 0, 1.]])
+        D = np.matrix([[1., 2.],[0, 1]])
+        a = CyLPArray([5, 2.5])
+        b = CyLPArray([4.2, 3])
+        x_u= CyLPArray([2., 3.5])
+
+        model.addConstraint(A*x <= a)
+        model.addConstraint(2 <= B * x + D * y <= b)
+        model.addConstraint(y >= 0)
+        model.addConstraint(1.1 <= x[1:3] <= x_u)
+
+        c = CyLPArray([1., -2., 3.])
+        model.objective = c * x + 2 * y.sum()
+
+        self.s = CyClpSimplex(model)
+        s = self.s
+
+        s.initialDualSolve()
+        self.assertEqual(s.getStatusCode(), 0)
+        self.assertEqual(round(s.objectiveValue, 4), 1.3000)
+
+        primal_sol = s.primalVariableSolution
+        dual_sol = s.dualVariableSolution
+
+        # assert that primalColumnSolution and primalVariableSolution are equivalent
+        # i.e. primalColumnSolution is single array containing all the primal variable solutions
+        self.assertTrue((s.primalColumnSolution == np.concatenate([primal_sol['x'], primal_sol['y']])).all())
+
+        # assert that dualColumnSolution and dualVariableSolution are equivalent
+        # i.e. dualColumnSolution is single array containing all the dual variable solutions
+        self.assertTrue((s.dualColumnSolution == np.concatenate([dual_sol['x'], dual_sol['y']])).all())
+
+        self.assertTrue((abs(primal_sol['x'] - np.array([0.2, 2.0 , 1.1]) ) <= 10**-6).all())
+        self.assertTrue((abs(primal_sol['y'] - np.array([0.0, 0.9]) ) <= 10**-6).all())
+
+        self.assertTrue((abs(dual_sol['x'] - np.array([0.0, -2.0,  3.0]) ) <= 10**-6).all())
+        self.assertTrue((abs(dual_sol['y'] - np.array([1.0, 0.0]) ) <= 10**-6).all())
 
 if __name__ == '__main__':
     unittest.main()
-
