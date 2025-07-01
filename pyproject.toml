@@ -1,6 +1,6 @@
 [project]
 name = "cylp"
-version = "0.93.0"
+version = "0.93.1"
 description="A Python interface for CLP, CBC, and CGL"
 readme="README.rst"
 authors=[
