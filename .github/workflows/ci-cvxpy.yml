@@ -2,7 +2,7 @@ name: Integration testing with CVXPY
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [reopened, opened, synchronize]
   push:
   workflow_dispatch:
 
