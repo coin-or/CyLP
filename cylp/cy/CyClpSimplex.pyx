@@ -1022,7 +1022,7 @@ cdef class CyClpSimplex:
 
         '''
         status = CLP_variableStatusEnum[StatusToInt[status]]
-        if isinstance(arg, (int, long)):
+        if isinstance(arg, int):
             self.CppSelf.setStatus(arg, status)
         elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel is None:
@@ -1047,7 +1047,7 @@ cdef class CyClpSimplex:
         '''
         Get the status of a variable.
         '''
-        if isinstance(arg, (int, long)):
+        if isinstance(arg, int):
             return IntToStatus[self.CppSelf.getStatus(arg)]
         elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel is None:
@@ -1096,7 +1096,7 @@ cdef class CyClpSimplex:
         'atLowerBound'
         '''
         status = CLP_variableStatusEnum[StatusToInt[status]]
-        if isinstance(arg, (int, long)):
+        if isinstance(arg, int):
             arg += self.nVariables
             self.CppSelf.setStatus(arg, status)
         elif True:  # isinstance(arg, CyLPVar):
@@ -1118,7 +1118,7 @@ cdef class CyClpSimplex:
         '''
         Get the status of a constraint.
         '''
-        if isinstance(arg, (int, long)):
+        if isinstance(arg, int):
             arg += self.nVariables
             return IntToStatus[self.CppSelf.getStatus(arg)]
         elif True:  # isinstance(arg, CyLPVar):
@@ -1718,7 +1718,7 @@ cdef class CyClpSimplex:
 
         '''
 
-        if isinstance(arg, (int, long)):
+        if isinstance(arg, int):
             self.CppSelf.setInteger(arg)
         elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel is None:
@@ -2088,7 +2088,7 @@ cdef class CyClpSimplex:
         arguments may be integers signifying indices, or CyLPVars.
         '''
 
-        if isinstance(var1, (int, long)) and isinstance(var2, (int, long)) :
+        if isinstance(var1, int) and isinstance(var2, int) :
            self.CppSelf.setComplement(var1, var2)
         elif True:  # isinstance(arg, CyLPVar):
             if self.cyLPModel is None:
