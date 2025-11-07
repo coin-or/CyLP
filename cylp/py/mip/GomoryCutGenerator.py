@@ -12,7 +12,7 @@ def isInt(x):
     Return True if x is an integer, or if x is a numpy array
     with all integer elements, False otherwise
     '''
-    if isinstance(x, (int, long, float)):
+    if isinstance(x, (int, float)):
         return abs(math.floor(x) - x) < epsilon
     return (np.abs(np.floor(x) - x) < epsilon).all()
 
