@@ -21,7 +21,7 @@ Documentation="https://coin-or.github.io/CyLP"
 [build-system]
 requires = [
   'setuptools',
-  'Cython == 3.0.10',
+  'Cython>=3.0.10, <3.2',
   'numpy>=2.0.0rc1',
 ]
 build-backend = "setuptools.build_meta"
