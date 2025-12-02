@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]  # Add ubuntu-latest when cvxpy pytest issue is solved
-        numpy: ['numpy==1.26.0', numpy]
+        numpy: [numpy] # We used to also test version 1.26.0, but now cvxpy requires numpy 2 
 
     runs-on: ${{ matrix.os }}
 
