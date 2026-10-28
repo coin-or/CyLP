@@ -12,7 +12,7 @@ class WolfePivotPE(PivotPythonBase):
         # Require extra check after leaving variable is chosen
         clpModel.useCustomPrimal(True)
         #self.banList = np.array([])
-        self.orgBan = np.array(self.dim * [True], np.bool)
+        self.orgBan = np.array(self.dim * [True], bool)
         self.notBanned = self.orgBan.copy()
         self.complementarityList = np.arange(self.dim)
 

@@ -10,7 +10,7 @@ class WolfePivot(PivotPythonBase):
         # Tell IClpSimplex that this pivot rules needs
         #an extra check after the leaving varible is chosen.
         clpModel.useCustomPrimal(True)
-        self.orgBan = np.array(self.dim * [True], np.bool)
+        self.orgBan = np.array(self.dim * [True], bool)
         self.notBanned = self.orgBan.copy()
         self.complementarityList = np.arange(self.dim)
 
