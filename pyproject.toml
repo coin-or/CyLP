@@ -8,6 +8,7 @@ authors=[
   {  name = 'Dominique Orban', email = 'dominique.orban@gerad.ca' },
   {  name =  'Ted Ralphs', email = 'ted@lehigh.edu'  }
 ]
+requires-python = ">=3.10"
 dependencies = [
   "numpy >= 1.26.0",
   "scipy >= 0.10.0",
@@ -21,8 +22,8 @@ Documentation="https://coin-or.github.io/CyLP"
 [build-system]
 requires = [
   'setuptools',
-  'Cython>=3.0.10, <3.3',
-  'numpy>=2.0.0rc1',
+  'Cython>=3.0.10, <3.4',
+  'numpy>=2.0.0',
 ]
 build-backend = "setuptools.build_meta"
 
