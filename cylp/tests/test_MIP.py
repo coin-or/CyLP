@@ -42,7 +42,7 @@ class TestMIP(unittest.TestCase):
 
         cbcModel = s.getCbcModel()
 
-        cbcModel.branchAndBound()
+        cbcModel.solve()
 
         sol_x = cbcModel.primalVariableSolution['x']
         self.assertTrue((abs(sol_x -
@@ -79,20 +79,20 @@ class TestMIP(unittest.TestCase):
         s.setInteger(x[1:3])
 
         cbcModel = s.getCbcModel()
-        cbcModel.branchAndBound()
+        cbcModel.solve()
 
+        # Every x = [t, 2, 2], y = [0, 1 - t/2] with 0 <= t <= 0.5 is optimal,
+        # so only check the objective and the integer variables
+        self.assertTrue(abs(cbcModel.objectiveValue - 4.0) <= 10**-6)
         sol_x = cbcModel.primalVariableSolution['x']
-        self.assertTrue((abs(sol_x -
-                        np.array([0.5, 2, 2]) ) <= 10**-6).all())
-        sol_y = cbcModel.primalVariableSolution['y']
-        self.assertTrue((abs(sol_y -
-                        np.array([0, 0.75]) ) <= 10**-6).all())
+        self.assertTrue((abs(sol_x[1:3] -
+                        np.array([2, 2]) ) <= 10**-6).all())
 
 
         s.copyInIntegerInformation(np.array(
                             [True, False, False, False, True], np.uint8))
         cbcModel = s.getCbcModel()
-        cbcModel.branchAndBound()
+        cbcModel.solve()
 
         sol_x = cbcModel.primalVariableSolution['x']
         self.assertTrue((abs(sol_x -
@@ -123,7 +123,7 @@ class TestMIP(unittest.TestCase):
         cbcModel.addCutGenerator(knap, name="Knapsack")
 
 
-        cbcModel.branchAndBound()
+        cbcModel.solve()
         self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
 
     def test_multiDim(self):
@@ -139,7 +139,7 @@ class TestMIP(unittest.TestCase):
         s.setInteger(x)
 
         cbcModel = s.getCbcModel()
-        cbcModel.branchAndBound()
+        cbcModel.solve()
 
         sol_x = cbcModel.primalVariableSolution['x']
         self.assertTrue(abs(sol_x[0, 1, 0] - 1) <= 10**-6)
