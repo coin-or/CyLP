@@ -7,6 +7,7 @@ name: Build and upload to PyPI
 on:
   #push:
   pull_request:
+  workflow_dispatch:
   release:
     types:
       - published
@@ -18,45 +19,44 @@ concurrency:
 
 jobs:
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}, arch ${{ matrix.arch }}
+    name: Build wheels for ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
-            arch: x86_64
-          - os: ubuntu-latest
-            arch: i686
-          - os: ubuntu-24.04-arm
-            arch: aarch64
-          - os: macos-15-intel
-            arch: x86_64
-          - os: macos-latest
-            arch: arm64
+          - { name: manylinux-x86_64,  os: ubuntu-latest,    arch: x86_64,  build: "*-manylinux_*" }
+          - { name: musllinux-x86_64,  os: ubuntu-latest,    arch: x86_64,  build: "*-musllinux_*" }
+          - { name: manylinux-aarch64, os: ubuntu-24.04-arm, arch: aarch64, build: "*-manylinux_*" }
+          - { name: musllinux-aarch64, os: ubuntu-24.04-arm, arch: aarch64, build: "*-musllinux_*" }
+          - { name: macos-x86_64,      os: macos-15-intel,   arch: x86_64,  build: "*" }
+          - { name: macos-arm64,       os: macos-latest,     arch: arm64,   build: "*" }
+          # Must match the runner image the Cbc MSVC release binaries were built on
+          - { name: windows-amd64,     os: windows-2025,     arch: AMD64,   build: "*" }
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
+      CIBW_BUILD: ${{ matrix.build }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Build wheels
-        uses: pypa/cibuildwheel@v3.2.1
+        uses: pypa/cibuildwheel@v4.3.5
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: cibuildwheel-${{ matrix.os }}-${{ matrix.arch }}
+          name: cibuildwheel-${{ matrix.name }}
           path: ./wheelhouse/*.whl
 
   build_sdist:
     name: Build source distribution
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Build sdist
         run: pipx run build --sdist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: cibuildwheel-sdist
           path: dist/*.tar.gz
@@ -75,7 +75,7 @@ jobs:
     # alternatively, to publish when a GitHub Release is created, use the following rule:
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: "cibuildwheel-*"
           path: dist
@@ -88,10 +88,16 @@ jobs:
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'release'}}
+    permissions:
+      contents: write
     steps:
-      - name: Upload artifacts to release
-        uses: alexellis/upload-assets@0.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v8
         with:
-          asset_paths: '["./wheelhouse/*.whl"]'
+          pattern: "cibuildwheel-*"
+          path: dist
+          merge-multiple: true
+
+      - name: Upload artifacts to release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" dist/* --clobber -R "${{ github.repository }}"

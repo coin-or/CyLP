@@ -31,17 +31,37 @@ build-backend = "setuptools.build_meta"
 # Use --no-third-party to avoid linking in GLPK.
 # The resulting binary would not be distributable.
 before-all = """
-  set -x
-  apt-get install --yes wget || yum install -y wget || brew install bash coreutils
-  wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
+  set -ex
+  if [ "$(uname -s)" = Darwin ]; then brew install bash coreutils; fi
+  curl -fsSLO https://raw.githubusercontent.com/coin-or/coinbrew/f624b48e996831ea98d6c40cfa3efeb980dc3b0b/coinbrew
   sed -i.bak '/invoke_make/s/install/-j1 install/' coinbrew
   chmod +x coinbrew
   case "$(uname -m)" in
       arm64) config_args="--build=arm-apple-darwin";;
-      aarch64) config_args="--build=aarch64-unknown-linux-gnu";;
+      aarch64)
+          if ldd --version 2>&1 | grep -qi musl; then
+              config_args="--build=aarch64-unknown-linux-musl"
+          else
+              config_args="--build=aarch64-unknown-linux-gnu"
+          fi;;
   esac
-  ./coinbrew fetch Cbc@2.10.12 --no-third-party && eval ./coinbrew build Cbc --no-third-party --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args || (cat build/Data/Sample/1.2.12/config.log; echo ignoring errors)
+  ./coinbrew fetch Cbc@2.10.13 --no-third-party
+  ./coinbrew build Cbc --no-third-party --tests none --parallel-jobs 16 --prefix=$(pwd)/local --verbosity 4 $config_args
+  test -f local/lib/pkgconfig/cbc.pc
 """
-environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH", CIBW_ARCHS="$CIBW_ARCHS" }
-skip = ["*-musllinux*", "cp38-*", "cp312-*i686"]
-test-requires = ["cvxpy[testing]"]
+environment = { PATH="$(pwd)/local/bin:$PATH", LD_LIBRARY_PATH="$(pwd)/local/lib:$LD_LIBRARY_PATH", PKG_CONFIG_PATH="$(pwd)/local/lib/pkgconfig:$PKG_CONFIG_PATH" }
+# numpy and scipy no longer ship i686 wheels, so 32-bit builds are not installable
+skip = ["*_i686", "*-win32"]
+test-requires = ["pytest"]
+test-sources = ["cylp/tests", "cylp/input"]
+test-command = "pytest cylp/tests"
+
+[tool.cibuildwheel.windows]
+# Use the prebuilt static MSVC (/MD) libraries from the Cbc release instead of coinbrew.
+# They are built on windows-2025, so the workflow must use the same runner image.
+before-all = [
+  'curl -fsSL -o C:\cbc.zip https://github.com/coin-or/Cbc/releases/download/releases/2.10.13/Cbc-releases.2.10.13-w64-msvc17-md.zip',
+  'mkdir C:\cbc',
+  'tar -xf C:\cbc.zip -C C:\cbc',
+]
+environment = { COIN_INSTALL_DIR="C:/cbc" }
