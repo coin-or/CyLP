@@ -12,17 +12,19 @@ cdef int RunTest(void* ptr, CppICbcNode*x, CppICbcNode*y):
     return obj.compare(CyCbcNode().setCppSelf(x),
                        CyCbcNode().setCppSelf(y))
 
+# The model passed to these callbacks belongs to Cbc, so the wrapper must
+# not delete it
 cdef bool RunNewSolution(void* ptr, CppICbcModel* model,
         double objectiveAtContinuous,
         int numberInfeasibilitiesAtContinuous):
     obj = <object> ptr
-    return obj.newSolution(CyCbcModel().setCppSelf(model),
+    return obj.newSolution(CyCbcModel().setCppSelf(model, False),
                                 objectiveAtContinuous,
                                 numberInfeasibilitiesAtContinuous)
 
 cdef int RunEvery1000Nodes(void* ptr, CppICbcModel* model, int numberNodes):
     obj = <object> ptr
-    return obj.every1000Nodes(CyCbcModel().setCppSelf(model),
+    return obj.every1000Nodes(CyCbcModel().setCppSelf(model, False),
                                  numberNodes)
 
 # Understandable messages to translate what branchAndBound() returns
@@ -90,13 +92,14 @@ cdef class CyCbcModel:
             Py_DECREF(generator)
 
         try:
-            if self.CppSelf:
+            if self.CppSelf and self.ownCppSelf:
                 del self.CppSelf
         except AttributeError:
             pass
 
-    cdef setCppSelf(self, CppICbcModel* cppmodel):
+    cdef setCppSelf(self, CppICbcModel* cppmodel, bint own=True):
         self.CppSelf = cppmodel
+        self.ownCppSelf = own
         return self
 
     cdef setClpModel(self, clpmodel):
