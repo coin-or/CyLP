@@ -126,6 +126,28 @@ class TestMIP(unittest.TestCase):
         cbcModel.solve()
         self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
 
+    def test_NodeCompareCallbacks(self):
+        # p0033 is solved at the root, so the node comparison is never
+        # called. This knapsack problem needs a tree search.
+        rs = np.random.RandomState(0)
+        A = rs.randint(10, 100, size=(5, 50)).astype(float)
+        c = rs.randint(10, 100, size=50).astype(float)
+
+        s = CyClpSimplex()
+        x = s.addVariable('x', 50, isInt=True)
+        s += A @ x <= CyLPArray(A.sum(axis=1) / 2)
+        s += 0 <= x <= 1
+        s.objective = -CyLPArray(c) * x
+
+        cbcModel = s.getCbcModel()
+        n = SimpleNodeCompare()
+        cbcModel.setNodeCompare(n)
+        cbcModel.solve()
+
+        # SimpleNodeCompare.newSolution switches to breadth-first
+        self.assertEqual(n.method, 'breadth')
+        self.assertTrue(abs(cbcModel.objectiveValue + 1837.0) < 10 ** -6)
+
     def test_multiDim(self):
         from cylp.cy import CyClpSimplex
         from cylp.py.modeling.CyLPModel import CyLPArray
