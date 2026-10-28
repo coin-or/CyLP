@@ -10,11 +10,11 @@ jobs:
   create_release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/create-release@v1
+      # Use a personal access token, not GITHUB_TOKEN, so that publishing the
+      # release triggers the workflow that builds and uploads the wheels
+      - name: Create release
         env:
-          GITHUB_TOKEN: ${{ secrets.TKRALPHS_RELEASE }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          GH_TOKEN: ${{ secrets.TKRALPHS_RELEASE }}
+        run: >
+          gh release create "$GITHUB_REF_NAME" -R "$GITHUB_REPOSITORY"
+          --verify-tag --title "Release $GITHUB_REF_NAME" --generate-notes
