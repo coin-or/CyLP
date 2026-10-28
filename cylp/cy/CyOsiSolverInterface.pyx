@@ -16,5 +16,5 @@ cdef class CyOsiSolverInterface:
             cdef CyClpSimplex s = CyClpSimplex()
             cdef CppOsiClpSolverInterface* si = dynamic_cast_osi_2_clp(self.CppSelf)
             cdef CppIClpSimplex* sp = static_cast_clp_2_iclp(si.getModelPtr())
-            s.setCppSelf(sp)
+            s.setCppSelf(sp, False)
             return s

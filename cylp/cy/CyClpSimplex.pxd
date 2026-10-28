@@ -305,6 +305,7 @@ cdef class CyClpSimplex:
     '''
 
     cdef CppIClpSimplex *CppSelf
+    cdef bint ownCppSelf
     cdef vars
     cdef object varSelCriteria
     cdef CyCoinModel coinModel
@@ -313,7 +314,7 @@ cdef class CyClpSimplex:
     cdef object _Hessian
 
     #cdef void prepareForCython(self, int useCustomPrimal)
-    cdef setCppSelf(self,  CppIClpSimplex* s)
+    cdef setCppSelf(self,  CppIClpSimplex* s, bint own=*)
 
     cdef CyClpPrimalColumnPivotBase cyPivot
     cdef CyClpDualRowPivotBase cyDualPivot

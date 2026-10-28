@@ -38,6 +38,6 @@ cdef class CyPivotPythonBase(CyClpPrimalColumnPivotBase):
 
     cdef void saveWeights(self, CppIClpSimplex * model, int mode):
         cymodel = CyClpSimplex()
-        cymodel.setCppSelf(model)
+        cymodel.setCppSelf(model, False)
         self.pivotMethodObject.saveWeights(cymodel, mode)
 
