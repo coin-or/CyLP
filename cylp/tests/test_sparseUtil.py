@@ -10,7 +10,7 @@ class TestSpaseUtil(unittest.TestCase):
     def test_scale_scale(self):
         m = csc_matrixPlus(([1, 2, 6, 4, 5, 7, 3, 2],
                             ([0, 0, 1, 1, 1, 2, 2, 2], [0, 1, 0, 2, 3, 0, 2, 3])),
-                            shape=(3, 4), dtype=np.float)
+                            shape=(3, 4), dtype=float)
         unscaledM = m.copy()
         row_scale = m.row_scale()
         col_scale = m.col_scale()
@@ -21,7 +21,7 @@ class TestSpaseUtil(unittest.TestCase):
     def test_scale_unscale(self):
         m = csc_matrixPlus(([1, 2, 6, 4, 5, 7, 3, 2],
                             ([0, 0, 1, 1, 1, 2, 2, 2], [0, 1, 0, 2, 3, 0, 2, 3])),
-                            shape=(3, 4), dtype=np.float)
+                            shape=(3, 4), dtype=float)
         unscaledM = m.copy()
         m.row_scale()
         m.col_scale()

@@ -125,7 +125,7 @@ class csc_matrixPlus(sparse.csc_matrix):
             self.rowScaleFactor = scaleFactor
             return scaleFactor
 
-        rowScaleFactor = np.zeros(self.shape[0], dtype=np.float)
+        rowScaleFactor = np.zeros(self.shape[0], dtype=float)
         for k in range(len(data)):
             row = irow[k]
             val = abs(data[k])
@@ -145,7 +145,7 @@ class csc_matrixPlus(sparse.csc_matrix):
             self.colScaleFactor = scaleFactor
             return scaleFactor
 
-        colScaleFactor = np.zeros(self.shape[1], dtype=np.float)
+        colScaleFactor = np.zeros(self.shape[1], dtype=float)
 
         for k in range(len(data)):
             col = jcol[k]
@@ -364,7 +364,7 @@ class csr_matrixPlus(sparse.csr_matrix):
             self.rowScaleFactor = scaleFactor
             return scaleFactor
 
-        rowScaleFactor = np.zeros(self.shape[0], dtype=np.float)
+        rowScaleFactor = np.zeros(self.shape[0], dtype=float)
         for k in range(len(data)):
             row = irow[k]
             val = abs(data[k])
@@ -384,7 +384,7 @@ class csr_matrixPlus(sparse.csr_matrix):
             self.colScaleFactor = scaleFactor
             return scaleFactor
 
-        colScaleFactor = np.zeros(self.shape[1], dtype=np.float)
+        colScaleFactor = np.zeros(self.shape[1], dtype=float)
 
         for k in range(len(data)):
             col = jcol[k]
