@@ -69,6 +69,7 @@ cdef class CyClpSimplex:
         self.CppSelf = new CppIClpSimplex(<cpy_ref.PyObject*>self,
                                 <runIsPivotAcceptable_t>RunIsPivotAcceptable,
                                 <varSelCriteria_t>RunVarSelCriteria)
+        self.ownCppSelf = True
         self.vars = []
         #self.cbcModelExists = False
         self.coinModel = CyCoinModel()
@@ -83,11 +84,19 @@ cdef class CyClpSimplex:
                                 cyLPModel.__class__)
 
     def __dealloc__(self):
-        del self.CppSelf
+        if self.ownCppSelf:
+            del self.CppSelf
 
-    cdef setCppSelf(self,  CppIClpSimplex* s):
-        del self.CppSelf
+    cdef setCppSelf(self,  CppIClpSimplex* s, bint own=True):
+        '''
+        Wrap ``s``. If ``own`` is False, ``s`` belongs to someone else
+        (e.g. Clp is in the middle of solving it) and is not deleted
+        when this object is.
+        '''
+        if self.ownCppSelf:
+            del self.CppSelf
         self.CppSelf = s
+        self.ownCppSelf = own
 
     #############################################
     # Properties
