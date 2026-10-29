@@ -262,6 +262,36 @@ class TestModel(unittest.TestCase):
         self.assertTrue(abs(sol[1, 2, 3] - 1) <= 10**-6)
         self.assertTrue(abs(sol[1, 2, 5] - 1) <= 10**-6)
 
+    def test_coefOnRight(self):
+        'x @ c, x * c and x @ A.T mean c @ x, c * x and A @ x (#230)'
+        A = np.array([[1., 2., 0], [1., 0, 1.]])
+        b = CyLPArray([4., 3.])
+        c = CyLPArray([-1., -2., -3.])
+        objectives = [lambda x: x @ np.asarray(c), lambda x: x @ c,
+                      lambda x: x * c]
+        for objective in objectives:
+            s = CyClpSimplex()
+            x = s.addVariable('x', 3)
+            s += 0 <= x <= 2
+            s.objective = objective(x)
+            s.primal()
+            self.assertTrue(abs(s.objectiveValue + 12) <= 10**-6)
+
+        s += x @ A.T <= b
+        s.primal()
+        self.assertTrue(abs(s.objectiveValue + 10) <= 10**-6)
+
+    def test_constantOnRight(self):
+        'expr * k means k * expr (#146)'
+        s = CyClpSimplex()
+        x = s.addVariable('x', 2)
+        y = s.addVariable('y', 2)
+        s += y >= 0
+        s += y.sum() - x.sum() * 3 <= -1
+        s.objective = x.sum()
+        s.primal()
+        self.assertTrue(abs(s.objectiveValue - 1. / 3) <= 10**-6)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -133,6 +133,16 @@ def isNumber(n):
     return (isinstance(n, NUMBERS) or
             (isinstance(n, CyLPArray) and n.shape == ()))
 
+def coefOnLeft(coef):
+    '''
+    Return the coefficient ``c`` such that ``c * x`` means ``x * coef``.
+    CyLPConstraint.perform expects the coefficient to be the left operand of
+    a product, and ``x @ A`` is ``A.T @ x``.
+    '''
+    if getattr(coef, 'ndim', 0) == 2:
+        return coef.T
+    return coef
+
 # Increase max stack size from 8MB to 512MB
 #resource.setrlimit(resource.RLIMIT_STACK, (2**5,-1))
 #sys.setrecursionlimit(10**6)
@@ -213,6 +223,8 @@ class CyLPExpr:
     def __mul__(self, other):
         if type(other)==np.ndarray:
             raise ValueError("You should use @ when multiplying a variable with a numpy array")
+        if not isinstance(other, CyLPExpr):
+            return self.__rmul__(coefOnLeft(other))
         v = CyLPExpr(opr="*", left=self, right=other)
         v.expr = v
         self.expr = v
@@ -225,6 +237,8 @@ class CyLPExpr:
         return v
 
     def __matmul__(self, other):
+        if not isinstance(other, CyLPExpr):
+            return self.__rmatmul__(coefOnLeft(other))
         v = CyLPExpr(opr="*", left=self, right=other)
         v.expr = v
         self.expr = v
