@@ -329,14 +329,18 @@ cdef class CyClpSimplex:
 
     property primalVariableSolutionAll:
         '''
-        Solution to the primal variables. Including the slacks.
+        Solution to the primal variables, followed by the slacks (the
+        constraints' activities), as one array. A copy.
 
         :rtype: Numpy array
         '''
         def __get__(self):
             #if self.cbcModelExists:
             #    return <object>self.cbcModel.getPrimalVariableSolution()
-            return <object>self.CppSelf.getPrimalColumnSolutionAll()
+            # Clp stores the columns and the rows in separate arrays
+            return np.concatenate((
+                        <object>self.CppSelf.getPrimalColumnSolution(),
+                        <object>self.CppSelf.getPrimalRowSolution()))
 
     property solution:
         '''

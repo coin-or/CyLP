@@ -56,6 +56,16 @@ class TestCyClpSimplex(unittest.TestCase):
         self.s.initialDualSolve()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
 
+    def test_primalVariableSolutionAll(self):
+        self.s.initialSolve()
+        n = self.s.nVariables
+        x = self.s.primalVariableSolution
+        sol = self.s.primalVariableSolutionAll
+        self.assertEqual(len(sol), n + self.s.nConstraints)
+        self.assertTrue((sol[:n] == x).all())
+        # The slacks are the constraints' activities
+        self.assertTrue((abs(sol[n:] - self.s.coefMatrix @ x) <= 10**-6).all())
+
     def test_direction(self):
         self.assertEqual(self.s.optimizationDirection, 'min')
         self.s.optimizationDirection = 'max'
