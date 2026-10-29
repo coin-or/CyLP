@@ -496,7 +496,7 @@ class CyLPConstraint:
 
         # Coef already set for the right operand
         if right.__class__ == CyLPExpr:
-            if opr == '-':
+            if opr == '-' or opr == 'u-':
                 # The expression on the right is in the form (left opr right)
                 # so the key to the coef in self.varCoefs is right.right i.e.
                 # the CyLPVar on the right
