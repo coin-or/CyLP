@@ -167,6 +167,25 @@ class TestMIP(unittest.TestCase):
         self.assertTrue(abs(sol_x[0, 1, 0] - 1) <= 10**-6)
         self.assertTrue(abs(sol_x[2, 0, 3] - 2) <= 10**-6)
 
+    def test_multiDimSecondVar(self):
+        'A multi-dimensional variable that is not the first one'
+        s = CyClpSimplex()
+        x = s.addVariable('x', 3, isInt=True)
+        y = s.addVariable('y', (2, 2))
+        s += 0 <= x <= 1
+        s += 0 <= y <= 1
+        s += x.sum() >= 1
+        s.objective = (CyLPArray([1., 2., 3.]) @ x +
+                       CyLPArray([-4., -5., -6., -7.]) @ y[:, :])
+
+        cbcModel = s.getCbcModel()
+        cbcModel.solve()
+
+        sol = cbcModel.primalVariableSolution
+        self.assertTrue((abs(sol['x'] - np.array([1, 0, 0])) <= 10**-6).all())
+        for element in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+            self.assertTrue(abs(sol['y'][element] - 1) <= 10**-6)
+
     def test_multiDim_Cbc_solve(self):
         from cylp.cy import CyClpSimplex
         from cylp.py.modeling.CyLPModel import CyLPArray

@@ -261,6 +261,27 @@ class TestModel(unittest.TestCase):
         self.assertTrue(abs(sol[0, 1, 0] - 1) <= 10**-6)
         self.assertTrue(abs(sol[2, 0, 3] - 1) <= 10**-6)
 
+    def test_multiDimSecondVar(self):
+        'A multi-dimensional variable that is not the first one'
+        s = CyClpSimplex()
+        x = s.addVariable('x', 3)
+        y = s.addVariable('y', (2, 2))
+        s += 0 <= x <= 1
+        s += 0 <= y <= 1
+        s += x.sum() >= 1
+        s.objective = (CyLPArray([1., 2., 3.]) @ x +
+                       CyLPArray([-4., -5., -6., -7.]) @ y[:, :])
+        s.primal()
+
+        # y is at its upper bound and in no constraint, so its reduced
+        # costs are its costs
+        sol = s.primalVariableSolution['y']
+        dj = s.dualVariableSolution['y']
+        for (i, j), cost in zip([(0, 0), (0, 1), (1, 0), (1, 1)],
+                                [-4, -5, -6, -7]):
+            self.assertTrue(abs(sol[i, j] - 1) <= 10**-6)
+            self.assertTrue(abs(dj[i, j] - cost) <= 10**-6)
+
     def test_ArrayIndexing(self):
         from cylp.cy import CyClpSimplex
         from cylp.py.modeling.CyLPModel import CyLPArray
