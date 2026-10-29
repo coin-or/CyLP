@@ -20,9 +20,9 @@ class TestModeling(unittest.TestCase):
 
         self.b = np.array([3.1, 4.2])
 
-        self.A = np.matrix([[1, 2, 3, 3, 4], [3, 2, 1, 2, 5]])
-        self.B = np.matrix([[0, 0, 0, -1.5, -1.5], [-3, 0, 0, -2,0 ]])
-        self.D = np.matrix([[1, 3, 1, 4], [2, 1,3, 5]])
+        self.A = np.array([[1, 2, 3, 3, 4], [3, 2, 1, 2, 5]])
+        self.B = np.array([[0, 0, 0, -1.5, -1.5], [-3, 0, 0, -2,0 ]])
+        self.D = np.array([[1, 3, 1, 4], [2, 1,3, 5]])
 
     def test_Obj1(self):
         m = self.model
@@ -36,7 +36,7 @@ class TestModeling(unittest.TestCase):
 
         m.addConstraint(x >= 0)
 
-        m.addConstraint(A * x <= b)
+        m.addConstraint(A @ x <= b)
 
         m.addConstraint(z >= 0)
 
@@ -174,7 +174,7 @@ class TestModeling(unittest.TestCase):
 
         m.addConstraint(x >= 0)
 
-        m.addConstraint(A * x == b)
+        m.addConstraint(A @ x == b)
 
         m.addConstraint(x[1:3].sum() >= 1, 'rr')
 
@@ -202,7 +202,7 @@ class TestModeling(unittest.TestCase):
         m.addConstraint(y >= -10)
         m.addConstraint(z >= -10)
 
-        m.addConstraint(A * x + D * y + B * z <= b)
+        m.addConstraint(A @ x + D @ y + B @ z <= b)
         m += x[0] + y[0] + z[0] >= 1.12
 
         m.objective = x.sum() + y.sum() + z.sum()
