@@ -1,6 +1,7 @@
 # cython: embedsignature=True
 
 from itertools import product
+import numpy as np
 from cylp.py.mip import NodeCompareBase
 from cylp.py.modeling.CyLPModel import CyLPSolution
 from cylp.cy.CyCutGeneratorPythonBase cimport CyCutGeneratorPythonBase
@@ -210,6 +211,97 @@ cdef class CyCbcModel:
                         d[names[i]] = ret[i]
                     ret = d
             return ret
+
+    property primalColumnSolution:
+        '''
+        Solution to the primal variables as one array, in column order.
+        Unlike :py:attr:`primalVariableSolution`, it is not split up by
+        variable, which is much faster for large models. A copy.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return np.array(<object>self.CppSelf.getPrimalVariableSolution())
+
+    property dualVariableSolution:
+        '''
+        Variables' reduced costs. See :py:attr:`dualConstraintSolution` for
+        the LP that they belong to.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return self._byVariable(self.dualColumnSolution)
+
+    property dualColumnSolution:
+        '''
+        Variables' reduced costs as one array, in column order. Unlike
+        :py:attr:`dualVariableSolution`, it is not split up by variable.
+        A copy.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return np.array(<object>self.CppSelf.getDualColumnSolution())
+
+    property primalConstraintSolution:
+        '''
+        Constraints' activities, i.e. the value of each constraint's
+        left-hand side at the solution.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return self._byConstraint(
+                    np.array(<object>self.CppSelf.getPrimalRowSolution()))
+
+    property dualConstraintSolution:
+        '''
+        Dual variables' solution. Once :py:meth:`solve` has found a
+        solution, Cbc fixes the integer variables at their values in it and
+        solves the LP relaxation again, so these are the duals of that LP.
+
+        :rtype: Numpy array
+        '''
+        def __get__(self):
+            return self._byConstraint(
+                    np.array(<object>self.CppSelf.getDualRowSolution()))
+
+    def _byVariable(self, ret):
+        '''
+        Split the column array ``ret`` up by variable, as
+        :py:attr:`primalVariableSolution` does.
+        '''
+        if self.cyLPModel:
+            m = self.cyLPModel
+            inds = m.inds
+            d = {}
+            for v in inds.varIndex.keys():
+                d[v] = ret[inds.varIndex[v]]
+                var = m.getVarByName(v)
+                if var.dims:
+                    d[v] = CyLPSolution()
+                    dimRanges = [range(i) for i in var.dims]
+                    for element in product(*dimRanges):
+                        d[v][element] = ret[var.fromInd +
+                                            var[element].indices[0]]
+            return d
+        names = self.clpModel.variableNames
+        if names:
+            d = CyLPSolution()
+            for i in range(len(names)):
+                d[names[i]] = ret[i]
+            return d
+        return ret
+
+    def _byConstraint(self, ret):
+        '''
+        Split the row array ``ret`` up by constraint.
+        '''
+        if self.cyLPModel:
+            inds = self.cyLPModel.inds
+            return {c: ret[inds.constIndex[c]] for c in inds.constIndex}
+        return ret
 
     property solutionCount:
         def __get__(self):
