@@ -296,12 +296,14 @@ cdef class CyClpSimplex:
 
     property primalColumnSolution:
         '''
-        Raw Solution to the primal variables.
+        Solution to the primal variables as one array, in column order.
+        Unlike :py:attr:`primalVariableSolution`, it is not split up by
+        variable, which is much faster for large models. A copy.
 
         :rtype: Numpy array
         '''
         def __get__(self):
-            return <object>self.CppSelf.getPrimalColumnSolution()
+            return np.array(<object>self.CppSelf.getPrimalColumnSolution())
 
     property primalVariableSolution:
         '''
@@ -399,16 +401,16 @@ cdef class CyClpSimplex:
                     ret = d
             return ret
 
-
     property dualColumnSolution:
         '''
-        reduced costs
+        Variables' reduced costs as one array, in column order. Unlike
+        :py:attr:`dualVariableSolution`, it is not split up by variable.
+        A copy.
 
         :rtype: Numpy array
         '''
         def __get__(self):
-            return <object>self.CppSelf.getDualColumnSolution()
-
+            return np.array(<object>self.CppSelf.getDualColumnSolution())
 
     property primalConstraintSolution:
         '''
