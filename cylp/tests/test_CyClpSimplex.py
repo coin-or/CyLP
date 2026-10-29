@@ -17,7 +17,8 @@ class TestCyClpSimplex(unittest.TestCase):
 
     def setUp(self):
         self.s = CyClpSimplex()
-        self.s.readMps(join(currentFilePath, '../input/p0033.mps'))
+        self.assertEqual(
+            self.s.readMps(join(currentFilePath, '../input/p0033.mps')), 0)
 
     def test_PE(self):
         #pivot = PositiveEdgePivot(self.s)

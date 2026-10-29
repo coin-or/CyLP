@@ -103,7 +103,7 @@ class TestMIP(unittest.TestCase):
 
     def test_NodeCompare(self):
         s = CyClpSimplex()
-        s.readMps(join(currentFilePath, '../input/p0033.mps'))
+        self.assertEqual(s.readMps(join(currentFilePath, '../input/p0033.mps')), 0)
 
         s.copyInIntegerInformation(np.array(s.nCols * [True], np.uint8))
 

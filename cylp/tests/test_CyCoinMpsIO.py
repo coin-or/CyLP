@@ -14,7 +14,8 @@ class TestCyCoinMpsIO(unittest.TestCase):
 
     def test(self):
         problem = CyCoinMpsIO()
-        problem.readMps(os.path.join(currentFilePath, '../input/hs268.qps'))
+        self.assertEqual(problem.readMps(
+            os.path.join(currentFilePath, '../input/hs268.qps')), 0)
         self.assertEqual(problem.nVariables, 5)
         self.assertEqual(problem.nConstraints, 5)
         self.assertTrue([chr(s) for s in problem.constraintSigns] ==

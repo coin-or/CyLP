@@ -13,7 +13,7 @@ class TestQP(unittest.TestCase):
     def test_1(self):
         """simplest QP test"""
         s = CyClpSimplex()
-        s.readMps(join(currentFilePath, '../input/hs35.qps'))
+        self.assertEqual(s.readMps(join(currentFilePath, '../input/hs35.qps')), 0)
         #self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
 
         #print(s.Hessian.todense())
