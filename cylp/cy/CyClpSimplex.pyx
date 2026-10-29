@@ -1300,7 +1300,7 @@ cdef class CyClpSimplex:
     def addConstraint(self, cons, name='', addMpsNames=True):
         '''
         Adds constraints ``cons``  to the problem. Example for the value
-        of ``cons`` is ``0 <= A * x <= b`` where ``A`` is a Numpy matrix and
+        of ``cons`` is ``0 <= A @ x <= b`` where ``A`` is a 2-d NumPy array and
         b is a :py:class:`CyLPArray`.
         '''
         if self.cyLPModel:
@@ -1691,15 +1691,15 @@ cdef class CyClpSimplex:
         >>> x = model.addVariable('x', 3)
         >>> y = model.addVariable('y', 2)
         >>>
-        >>> A = np.matrix([[1., 2., 0],[1., 0, 1.]])
-        >>> B = np.matrix([[1., 0, 0], [0, 0, 1.]])
-        >>> D = np.matrix([[1., 2.],[0, 1]])
+        >>> A = np.array([[1., 2., 0],[1., 0, 1.]])
+        >>> B = np.array([[1., 0, 0], [0, 0, 1.]])
+        >>> D = np.array([[1., 2.],[0, 1]])
         >>> a = CyLPArray([5, 2.5])
         >>> b = CyLPArray([4.2, 3])
         >>> x_u= CyLPArray([2., 3.5])
         >>>
-        >>> model += A*x <= a
-        >>> model += 2 <= B * x + D * y <= b
+        >>> model += A @ x <= a
+        >>> model += 2 <= B @ x + D @ y <= b
         >>> model += y >= 0
         >>> model += 1.1 <= x[1:3] <= x_u
         >>>
@@ -2189,15 +2189,15 @@ def getModelExample():
     x = model.addVariable('x', 3)
     y = model.addVariable('y', 2)
 
-    A = np.matrix([[1., 2., 0], [1., 0, 1.]])
-    B = np.matrix([[1., 0, 0], [0, 0, 1.]])
-    D = np.matrix([[1., 2.], [0, 1]])
+    A = np.array([[1., 2., 0], [1., 0, 1.]])
+    B = np.array([[1., 0, 0], [0, 0, 1.]])
+    D = np.array([[1., 2.], [0, 1]])
     a = CyLPArray([5, 2.5])
     b = CyLPArray([4.2, 3])
     x_u= CyLPArray([2., 3.5])
 
-    model += A * x <= a
-    model += 2 <= B * x + D * y <= b
+    model += A @ x <= a
+    model += 2 <= B @ x + D @ y <= b
     model += y >= 0
     model += 1.1 <= x[1:3] <= x_u
 

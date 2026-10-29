@@ -45,7 +45,7 @@ class TestCyCoinMpsIO(unittest.TestCase):
 
         H = problem.Hessian.todense()
         self.assertTrue((abs(H -
-            np.matrix([[20394., -24908., -2026., 3896., 658.],
+            np.array([[20394., -24908., -2026., 3896., 658.],
                        [-24908., 41818., -3466., -9828., -372.],
                        [-2026., -3466., 3510., 2178., -348.],
                        [3896., -9828., 2178., 3030., -44.],

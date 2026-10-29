@@ -23,13 +23,13 @@ class TestModel(unittest.TestCase):
 
         A = csc_matrixPlus(([1, 2, 1, 1], ([0, 0, 1, 1], [0, 1, 0, 2])),  shape=(2, 3))
         B = csc_matrixPlus(([1, 1], ([0, 1], [0, 2])),  shape=(2, 3))
-        D = np.matrix([[1., 2.],[0, 1]])
+        D = np.array([[1., 2.],[0, 1]])
         a = CyLPArray([3, 2.5])
         b = CyLPArray([4.2, 3])
         x_u= CyLPArray([2., 3.5])
 
-        model.addConstraint(A * x <= a, 'res1')
-        model.addConstraint(2 <= B * x + D * y <= b, 'res2')
+        model.addConstraint(A @ x <= a, 'res1')
+        model.addConstraint(2 <= B @ x + D @ y <= b, 'res2')
         model.addConstraint(y >= 0)
         model.addConstraint(1.1 <= x[1:3] <= x_u)
         model.addConstraint(x[0] >= 0.1)

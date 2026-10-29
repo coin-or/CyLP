@@ -69,10 +69,10 @@ if __name__ == '__main__':
     if (firstExample):
         x = m.addVariable('x', 2, isInt=True)
 
-        A = np.matrix([[7., -2.],[0., 1], [2., -2]])
+        A = np.array([[7., -2.],[0., 1], [2., -2]])
         b = CyLPArray([14, 3, 3])
 
-        m += A * x <= b
+        m += A @ x <= b
         m += x >= 0
 
         c = CyLPArray([-4, 1])

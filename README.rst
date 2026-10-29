@@ -154,16 +154,16 @@ Here is an example of how to model with CyLP's modeling facility::
     y = s.addVariable('y', 2)
 
     # Create coefficients and bounds
-    A = np.matrix([[1., 2., 0],[1., 0, 1.]])
-    B = np.matrix([[1., 0, 0], [0, 0, 1.]])
-    D = np.matrix([[1., 2.],[0, 1]])
+    A = np.array([[1., 2., 0],[1., 0, 1.]])
+    B = np.array([[1., 0, 0], [0, 0, 1.]])
+    D = np.array([[1., 2.],[0, 1]])
     a = CyLPArray([5, 2.5])
     b = CyLPArray([4.2, 3])
     x_u= CyLPArray([2., 3.5])
 
     # Add constraints
-    s += A * x <= a
-    s += 2 <= B * x + D * y <= b
+    s += A @ x <= a
+    s += 2 <= B @ x + D @ y <= b
     s += y >= 0
     s += 1.1 <= x[1:3] <= x_u
 
@@ -180,7 +180,7 @@ This is the expected output::
     Clp0006I 0  Obj 1.1 Primal inf 2.8999998 (2) Dual inf 5.01e+10 (5) w.o. free dual inf (4)
     Clp0006I 5  Obj 1.3
     Clp0000I Optimal - objective value 1.3
-    [ 0.2  2.   1.1]
+    [0.2 2.  1.1]
 
 Documentation
 =============
