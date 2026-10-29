@@ -402,12 +402,6 @@ PyObject* IClpSimplex::getPrimalColumnSolution(){
     return Arr;
 }
 
-PyObject* IClpSimplex::getPrimalColumnSolutionAll(){
-    npy_intp dims = getNumCols() + getNumRows();
-    PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, NPY_DOUBLE, this->primalColumnSolution() );
-    return Arr;
-}
-
 PyObject* IClpSimplex::getSolutionRegion(){
     npy_intp dims = getNumCols() + getNumRows();
     PyObject *Arr = PyArray_SimpleNewFromData(1, &dims, NPY_DOUBLE, this->solutionRegion() );
