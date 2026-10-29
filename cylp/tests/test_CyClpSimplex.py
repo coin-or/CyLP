@@ -60,6 +60,11 @@ class TestCyClpSimplex(unittest.TestCase):
         self.s.optimizationDirection = 'max'
         self.assertEqual(self.s.optimizationDirection, 'max')
 
+    def test_primalEmptyModel(self):
+        # A model that was never loaded has no objective or matrix
+        s = CyClpSimplex()
+        self.assertEqual(s.primal(), 'optimal')
+
 
 
 if __name__ == '__main__':
