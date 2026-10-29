@@ -31,6 +31,9 @@ class ICbcModel : public CbcModel{
 public:
     ICbcModel(OsiClpSolverInterface&);
     PyObject * getPrimalVariableSolution();
+    PyObject * getDualColumnSolution();
+    PyObject * getPrimalRowSolution();
+    PyObject * getDualRowSolution();
 
     void setNodeCompare(PyObject* obj,
                            runTest_t runTest, runNewSolution_t runNewSolution,
