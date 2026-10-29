@@ -1085,6 +1085,14 @@ int IClpSimplex::initialSolve(int preSolveType){
 
 int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
 {
+    // A model that was never loaded (e.g. because readMps failed) has no
+    // objective or matrix, and ClpSimplexPrimal would dereference them.
+    // Do what ClpSimplex::dual does.
+    if (!objective_) {
+        if (!numberRows_)
+            problemStatus_ = 0; // say optimal
+        return 0;
+    }
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     if (tempRow == NULL)
         tempRow = new double[numberRows()];
