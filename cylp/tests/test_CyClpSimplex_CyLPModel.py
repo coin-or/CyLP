@@ -197,6 +197,24 @@ class TestModel(unittest.TestCase):
         self.assertTrue((abs(sol -
                         np.array([2, 4, 2, 1, 1]) ) <= 10**-6).all())
 
+    def test_negatedExpr(self):
+        'Unary minus negates the coefficients of an expression'
+        c = CyLPArray([1., 2., 3.])
+        objectives = [(lambda x: -x.sum(), -6), (lambda x: -(2 * x.sum()), -12),
+                      (lambda x: -(c @ x), -12)]
+        for objective, value in objectives:
+            s = CyClpSimplex()
+            x = s.addVariable('x', 3)
+            s += 0 <= x <= 2
+            s.objective = objective(x)
+            s.primal()
+            self.assertTrue(abs(s.objectiveValue - value) <= 10**-6)
+
+        # x.sum() <= 3
+        s += -x.sum() >= -3
+        s.primal()
+        self.assertTrue(abs(s.objectiveValue + 8) <= 10**-6)
+
     def test_Sparse(self):
         model = CyLPModel()
 
