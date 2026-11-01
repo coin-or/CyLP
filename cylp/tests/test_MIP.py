@@ -186,6 +186,60 @@ class TestMIP(unittest.TestCase):
         self.assertTrue(abs(sol_x[0, 1, 0] - 1) <= 10**-6)
         self.assertTrue(abs(sol_x[2, 0, 3] - 2) <= 10**-6)
 
+    def test_constraintSolutions(self):
+        # Two suppliers with minimum amounts (#130). Supplier 1 meets the
+        # demand, so its cost is the marginal price of the demand
+        model = CyLPModel()
+        s1 = model.addVariable('supply_1', 1)
+        s2 = model.addVariable('supply_2', 1)
+        w1 = model.addVariable('switch_1', 1, isInt=True)
+        w2 = model.addVariable('switch_2', 1, isInt=True)
+        model += 0 <= s1 <= 100
+        model += 0 <= s2 <= 100
+        model += 0 <= w1 <= 1
+        model += 0 <= w2 <= 1
+        model += s1 - 50 * w1 >= 0
+        model += s1 - 100 * w1 <= 0
+        model += s2 - 70 * w2 >= 0
+        model += s2 - 100 * w2 <= 0
+        model.addConstraint(s1 + s2 == 60, 'demand')
+        model.objective = 10 * s1 + 8 * s2
+
+        cbcModel = CyClpSimplex(model).getCbcModel()
+        cbcModel.solve()
+
+        self.assertTrue((abs(cbcModel.primalColumnSolution -
+                             np.array([60, 0, 1, 0])) <= 10**-6).all())
+        self.assertTrue(abs(cbcModel.primalConstraintSolution['demand'] - 60)
+                        <= 10**-6)
+        self.assertTrue(abs(cbcModel.dualConstraintSolution['demand'] - 10)
+                        <= 10**-6)
+
+        # The arrays are copies, so changing them doesn't change the model
+        sol = cbcModel.primalColumnSolution
+        sol[:] = -1
+        self.assertTrue(abs(cbcModel.primalColumnSolution[0] - 60) <= 10**-6)
+
+    def test_dualVariableSolution(self):
+        s = CyClpSimplex()
+        x = s.addVariable('x', 2, isInt=True)
+        y = s.addVariable('y', (2, 2))
+        s += 0 <= x <= 3
+        s += 0 <= y <= 1
+        s += x.sum() + y[0, :].sum() >= 1.5
+        s.objective = x.sum() + CyLPArray([4., 5., 6., 7.]) @ y[:, :]
+
+        cbcModel = s.getCbcModel()
+        cbcModel.solve()
+
+        # y is 0 and its constraint isn't binding, so its reduced costs are
+        # its costs
+        dj = cbcModel.dualVariableSolution
+        self.assertTrue(abs(dj['y'][1, 0] - 6) <= 10**-6)
+        self.assertTrue(abs(dj['y'][1, 1] - 7) <= 10**-6)
+        self.assertTrue((abs(cbcModel.dualColumnSolution[2:] -
+                             np.array([4, 5, 6, 7])) <= 10**-6).all())
+
 if __name__ == '__main__':
     unittest.main()
 
