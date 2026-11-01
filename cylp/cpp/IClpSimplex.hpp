@@ -71,7 +71,6 @@ public:
 	PyObject * getPivotVariable();
 	PyObject * getPrimalRowSolution();
 	PyObject * getPrimalColumnSolution();
-    PyObject * getPrimalColumnSolutionAll();
     PyObject * getSolutionRegion();
     PyObject * getCostRegion();
 	PyObject * getDualRowSolution();
