@@ -577,6 +577,32 @@ class CyLPVar(CyLPExpr):
 
     See the :ref:`modeling example <modeling-usage>`.
 
+    Index a variable as you would a NumPy array to use some of its
+    elements:
+
+    - an integer selects one element. Negative integers count from the
+      end, so ``x[-1]`` is the last element.
+    - a slice selects a range of elements. It can leave out its start or
+      its stop, and have a step, as in ``x[:3]`` or ``x[::2]``.
+    - a list or an array of integers selects those elements, as in
+      ``x[[0, 2]]``.
+    - a variable with several dimensions takes one of these for each
+      dimension, as in ``y[1, :]`` or ``y[-1, ::2]``.
+
+    An index that is out of range raises ``IndexError``. The ``indices``
+    of the result are the positions of the elements it selects:
+
+    >>> from cylp.cy import CyClpSimplex
+    >>> s = CyClpSimplex()
+    >>> x = s.addVariable('x', 5)
+    >>> y = s.addVariable('y', (3, 4))
+    >>> x[::2].indices.tolist()
+    [0, 2, 4]
+    >>> x[-2:].indices.tolist()
+    [3, 4]
+    >>> y[-1, ::2].indices.tolist()
+    [8, 10]
+
     '''
 
     def __init__(self, name, dim, isInt=False, fromInd=None, toInd=None):
