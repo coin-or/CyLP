@@ -9,7 +9,7 @@ pivot rules completely in Python.
 
 You may read your LP from an mps file or use the CyLP’s easy modeling
 facility. Please find examples in the `documentation
-<http://coin-or.github.io/CyLP/>`_.
+<https://www.coin-or.org/CyLP/>`_.
 
 Docker
 ======
@@ -24,37 +24,28 @@ Otherwise, read on.
 Prerequisites and installation
 ==============================
 
-On Windows: Installation as a binary wheel
-------------------------------------------
+Installation as a binary wheel
+------------------------------
 
-On Windows, a binary wheel is available and it is not necessary to install Cbc.
-Just do::
-
-    $ python -m pip install cylp
-
-On Linux/macOS: Installation as a binary wheel
----------------------------------------------------------
-
-Binary wheels are available for Linux and some versions of OS X 
-for some versions of Python. To see if there is a wheel available
-for your platform, you can browse 
-
-https://pypi.org/project/cylp/#files
-
-or just try::
+Binary wheels are available on PyPI for Python 3.10 and later on Linux (x86_64
+and aarch64, including distributions based on musl, such as Alpine), macOS
+(Intel and Apple Silicon) and Windows (x86_64). They include Cbc, so there is
+nothing else to install::
 
     $ python -m pip install cylp
 
-In case this fails, it is most likely that there is no wheel for your platform.
-In particular, there are no wheels for MacOS running on Apple Silicon. 
-If you are on Linux, this can probably be addressed by switching to 
-a supported Python version with, e.g., conda::
+The wheels for each release are listed at https://pypi.org/project/cylp/#files.
 
-    $ conda create -n cylp python=3.9
-    $ conda activate cylp
-    
-If all else fails, it is easy to install from source, but Cbc must be 
-installed first, as detailed below. The easiest route for this is to use
+Installation with conda
+-----------------------
+
+CyLP is also available from `conda-forge <https://conda-forge.org>`_, for Linux
+(x86_64, aarch64 and ppc64le), macOS (Intel and Apple Silicon) and Windows::
+
+    $ conda install -c conda-forge cylp
+
+If neither works for your platform, it is easy to install from source, but Cbc
+must be installed first, as detailed below. The easiest route for this is to use
 conda.
 
 On Linux/macOS with conda: Installation from source
@@ -187,7 +178,7 @@ Documentation
 
 You may access CyLP's documentation:
 
-1. *Online* : Please visit http://coin-or.github.io/CyLP/
+1. *Online* : Please visit https://www.coin-or.org/CyLP/
 
 2. *Offline* : To install CyLP's documentation in your repository, you need
    Sphinx (https://www.sphinx-doc.org/). You can generate the documentation by

@@ -542,7 +542,7 @@ cdef class CyClpSimplex:
 
     property lower:
         '''
-        lower bounds (CLP's lower_)
+        lower bounds (CLP's ``lower_``)
 
         :rtype: Numpy array
         '''
@@ -551,7 +551,7 @@ cdef class CyClpSimplex:
 
     property upper:
         '''
-        upper bounds (CLP's upper_)
+        upper bounds (CLP's ``upper_``)
 
         :rtype: Numpy array
         '''

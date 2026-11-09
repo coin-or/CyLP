@@ -51,7 +51,7 @@
     array([ 0.,  1.])
 
     **Usage (single dimension, using CyLPModel directly, depending on the
-      size could be faster than the indirect approach)**
+    size could be faster than the indirect approach)**
 
     >>> import numpy as np
     >>> from cylp.cy import CyClpSimplex
