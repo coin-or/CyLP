@@ -76,6 +76,11 @@ class TestCyClpSimplex(unittest.TestCase):
         s = CyClpSimplex()
         self.assertEqual(s.primal(), 'optimal')
 
+    def test_matrixEmptyModel(self):
+        s = CyClpSimplex()
+        self.assertIsNone(s.matrix)
+        self.assertEqual(s.coefMatrix.shape, (0, 0))
+
 
 
 if __name__ == '__main__':

@@ -51,6 +51,16 @@ class TestCyCoinMpsIO(unittest.TestCase):
                        [3896., -9828., 2178., 3030., -44.],
                        [658., -372., -348., -44., 54.]])) <= 10 ** -8).all())
 
+    def test_noProblem(self):
+        # There is no matrix until a problem has been read
+        problem = CyCoinMpsIO()
+        self.assertIsNone(problem.matrixByRow)
+        self.assertIsNone(problem.matrixByCol)
+        self.assertEqual(problem.readMps(
+            os.path.join(currentFilePath, '../input/missing.mps')), -1)
+        self.assertIsNone(problem.matrixByRow)
+        self.assertIsNone(problem.matrixByCol)
+
 
 if __name__ == '__main__':
     unittest.main()
