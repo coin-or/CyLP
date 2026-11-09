@@ -67,6 +67,8 @@ cdef extern from "IClpSimplex.hpp":
         int initialSolve(int presolveType)
         int initialPrimalSolve()
         int initialDualSolve()
+        bint hasQuadraticObjective()
+        bint isQPWithoutBoundedRows()
         void setPerturbation(int value)
         double* djRegion()
         int getNumCols()

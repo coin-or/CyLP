@@ -126,6 +126,8 @@ public:
                    ClpSimplex::loadProblem(*matrix, collb, colub, obj, rowlb, rowub, rowObjective);}
 
 	int primal(int ifValuesPass=0, int startFinishOptions=0);
+	bool hasQuadraticObjective();
+	bool isQPWithoutBoundedRows();
 
 	IClpSimplex (ClpSimplex * wholeModel,
 	      int numberColumns, const int * whichColumns);
