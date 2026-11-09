@@ -27,14 +27,18 @@ class TestDocstrings(unittest.TestCase):
                     optionflags=doctest.ELLIPSIS |
                                 doctest.NORMALIZE_WHITESPACE)
                 report = []
-                docstrings = set()
+                done = set()
                 with np.printoptions(legacy=legacy):
                     for test in doctest.DocTestFinder().find(module, name):
                         # Cython also lists the docstrings of a module in
-                        # its __test__ dictionary, so some are found twice
-                        if test.docstring in docstrings:
+                        # its __test__ dictionary, so some are found twice.
+                        # The copies can differ in the signature that
+                        # embedsignature adds, but not in their examples.
+                        examples = tuple((e.source, e.want)
+                                         for e in test.examples)
+                        if examples in done:
                             continue
-                        docstrings.add(test.docstring)
+                        done.add(examples)
                         runner.run(test, out=report.append)
                 results = runner.summarize(verbose=False)
                 self.assertGreater(results.attempted, 0)
