@@ -113,37 +113,29 @@ class Ind:
     def __init__(self, key, dim):
         '''
         Create an instance of Ind using *key* that can be
-        an integer, a slice, a list, or a numpy array.
+        an integer, a slice, a list, or a numpy array. As in Python,
+        negative indices count from the end.
         '''
         if isinstance(key, slice):
-            sl = key
-            if sl.stop and (sl.start > dim or sl.start >= sl.stop):
-                raise Exception('Indexing problem: %s, dim=%d:' % (str(sl), dim))
-
-            if  not sl.stop or sl.stop > dim:
-                stop = dim
-            else:
-                stop = sl.stop
-            if not sl.start:
-                start = 0
-            else:
-                start = sl.start
-            self.indices = range(start, stop)
-            self.dim = dim
-        elif isinstance(key, int):
-            if key >= dim:
-                raise Exception('Index (%d) out of range (%d)' % (key, dim))
-            self.indices = [key]
-            self.dim = dim
+            self.indices = range(*key.indices(dim))
+            if len(self.indices) == 0:
+                raise IndexError('Indexing problem: %s, dim=%d:' % (str(key), dim))
+        elif isinstance(key, (int, np.integer)):
+            if not -dim <= key < dim:
+                raise IndexError('Index (%d) out of range (%d)' % (key, dim))
+            self.indices = [int(key) % dim]
         elif isinstance(key, (list, np.ndarray)):
-            self.indices = key
-            self.dim = dim
-            # Here to avoid checking all the inds, I suppose that normally
-            # the list of indices is sorted. So just check the last number
-            if key[-1] >= dim:
-                raise Exception('Index (%d) out of range (%d)' % (key[-1], dim))
+            ind = np.asarray(key)
+            if ind.size and ind.dtype.kind not in 'iu':
+                raise TypeError('Error indexing with %s' % ind.dtype)
+            outside = (ind < -dim) | (ind >= dim)
+            if outside.any():
+                raise IndexError('Index (%d) out of range (%d)' %
+                                 (ind[outside][0], dim))
+            self.indices = ind.astype(np.int64) % dim
         else:
-            raise Exception('Error indexing with unrecognized type %s' % key.__class__)
+            raise TypeError('Error indexing with unrecognized type %s' % key.__class__)
+        self.dim = dim
 
 
     def __repr__(self):

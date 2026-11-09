@@ -616,18 +616,21 @@ class CyLPVar(CyLPExpr):
         self.dims = ds
 
     def __getitem__(self, key):
-        if type(key) == int:
+        if isinstance(key, slice):
+            start, stop, step = key.indices(self.dim)
+            if step != 1:
+                # Not a range of columns, so index with a list
+                key = list(range(start, stop, step))
+
+        if isinstance(key, (int, np.integer)):
             newObj = CyLPVar(self.name, 1)
-            newObj.indices = np.array([key], np.int32)
+            newObj.indices = np.array(Ind(key, self.dim).indices, np.int32)
             newObj.parentDim = self.dim
             newObj.parent = self
             newObj.dim = 1
-        elif type(key) == slice:
-            newObj_fromInd = key.start
-            if key.stop > self.dim:
-                newObj_toInd = self.dim
-            else:
-                newObj_toInd = key.stop
+        elif isinstance(key, slice):
+            newObj_fromInd = start
+            newObj_toInd = max(start, stop)
 
             newObj = CyLPVar(self.name, newObj_toInd - newObj_fromInd)
             newObj.parentDim = self.dim
@@ -644,19 +647,15 @@ class CyLPVar(CyLPExpr):
             newObj.parent = self
             newObj.fromInd = None
             newObj.toInd = None
-            newObj.indices = np.array(key)
+            newObj.indices = np.array(Ind(key, self.dim).indices)
             newObj.dim = len(newObj.indices)
 
         elif isinstance(key, tuple):
-            inds = []
-            n = range(len(key))
-            for i in n:
-                k = key[i]
-                if isinstance(k, int):
-                    inds.append(Ind(slice(k, k+1), self.dims[i]))
-                else:
-                    inds.append(Ind(k, self.dims[i]))
-            newObj = self.__getitem__(getMultiDimMatrixIndex(inds))
+            inds = [Ind(k, d) for k, d in zip(key, self.dims)]
+            newObj = self.__getitem__(list(getMultiDimMatrixIndex(inds)))
+        else:
+            raise TypeError('Error indexing with unrecognized type %s' %
+                            key.__class__)
         return newObj
 
     def sum(self):
