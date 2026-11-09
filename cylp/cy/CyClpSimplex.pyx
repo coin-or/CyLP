@@ -226,6 +226,8 @@ cdef class CyClpSimplex:
         '''
         def __get__(self):
             mat = self.matrix
+            if mat is None:
+                return csc_matrixPlus((self.nConstraints, self.nVariables))
             if mat.hasGaps():
                 mat.removeGaps()
             return csc_matrixPlus((mat.elements, mat.indices, mat.vectorStarts),
@@ -240,10 +242,13 @@ cdef class CyClpSimplex:
 
     property matrix:
         '''
-        The coefficient matrix. A CyCoinPackedMatrix.
+        The coefficient matrix. A CyCoinPackedMatrix, or ``None`` if the
+        model was never loaded.
         '''
         def __get__(self):
             cdef CppCoinPackedMatrix* cppMat = self.CppSelf.getMatrix()
+            if cppMat == NULL:
+                return None
             mat = CyCoinPackedMatrix()
             mat.CppSelf = cppMat
             return mat

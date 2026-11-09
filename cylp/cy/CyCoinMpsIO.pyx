@@ -143,15 +143,27 @@ cdef class CyCoinMpsIO:
             return <object>self.CppSelf.getQPElements()
 
     property matrixByRow:
+        '''
+        The constraint matrix, stored by row. A CyCoinPackedMatrix, or
+        ``None`` if no problem has been read.
+        '''
         def __get__(self):
             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByRow()
+            if m == NULL:
+                return None
             cym = CyCoinPackedMatrix()
             cym.CppSelf = m
             return cym
 
     property matrixByCol:
+        '''
+        The constraint matrix, stored by column. A CyCoinPackedMatrix, or
+        ``None`` if no problem has been read.
+        '''
         def __get__(self):
             cdef CppCoinPackedMatrix* m = self.CppSelf.IgetMatrixByCol()
+            if m == NULL:
+                return None
             cym = CyCoinPackedMatrix()
             cym.CppSelf = m
             return cym
