@@ -200,7 +200,7 @@ cdef class CyCbcModel:
                         d[v] = CyLPSolution()
                         dimRanges = [range(i) for i in var.dims]
                         for element in product(*dimRanges):
-                            d[v][element] = ret[var.__getitem__(element).indices[0]]
+                            d[v][element] = ret[var.fromInd+var[element].indices[0]]
                 ret = d
             else:
                 names = self.clpModel.variableNames
