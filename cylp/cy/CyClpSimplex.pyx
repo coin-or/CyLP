@@ -727,26 +727,36 @@ cdef class CyClpSimplex:
             return (status & 64 == 0)
 
     property Hessian:
+        '''
+        The Hessian of the objective, i.e. :math:`Q` in
+        :math:`c^T x + \\frac{1}{2} x^T Q x`, as a symmetric matrix. It can
+        be set to any matrix that implements *tocoo*, such as a scipy
+        sparse matrix. Only its symmetric part, :math:`(Q + Q^T) / 2`,
+        matters, and that is what is kept.
+        '''
         def __get__(self):
             return self._Hessian
 
         def __set__(self, mat):
-            m = None
             try:
                 m = mat.tocoo()
             except:
                 raise Exception('Hessian can be set to a matrix that ' \
                                             'implements *tocoo* method')
-            if m:
-                coinMat = CyCoinPackedMatrix(True, m.row, m.col, m.data)
-                n = self.nVariables
-                if coinMat.majorDim < n:
-                    for i in xrange(n - coinMat.majorDim):
-                        coinMat.appendCol()
-                if coinMat.minorDim < n:
-                    for i in xrange(n - coinMat.majorDim):
-                        coinMat.appendRow()
-                self._Hessian = m
+            m = ((m + m.T) / 2).tocoo()
+            # Clp counts the elements off the diagonal twice, so give it
+            # only one triangle
+            u = sparse.triu(m).tocoo()
+            coinMat = CyCoinPackedMatrix(True, u.row.astype(np.int32),
+                                         u.col.astype(np.int32),
+                                         u.data.astype(np.double))
+            # Rows and columns after the last nonzero are missing
+            n = self.nVariables
+            for i in range(n - coinMat.majorDim):
+                coinMat.appendCol()
+            for i in range(n - coinMat.minorDim):
+                coinMat.appendRow()
+            self._Hessian = m
             self.loadQuadraticObjective(coinMat)
 
     property dualTolerance:
@@ -1786,6 +1796,12 @@ cdef class CyClpSimplex:
         self.CppSelf.replaceMatrix(matrix.CppSelf, deleteCurrent)
 
     def loadQuadraticObjective(self, CyCoinPackedMatrix matrix):
+        '''
+        Make :math:`\\frac{1}{2} x^T Q x` part of the objective, where
+        ``matrix`` is one triangle of :math:`Q`, as in a QPS file: Clp counts
+        each element off the diagonal twice. To give the whole of :math:`Q`
+        instead, set :py:attr:`Hessian`.
+        '''
         self.CppSelf.loadQuadraticObjective(matrix.CppSelf)
 
     def preSolve(self, feasibilityTolerance=0.0,
