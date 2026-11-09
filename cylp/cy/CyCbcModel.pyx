@@ -75,8 +75,8 @@ cdef class CyCbcModel:
     >>>
     >>> cbcModel.solve()
     0
-    >>> print (cbcModel.status)
-    'solution'
+    >>> print(cbcModel.status)
+    solution
     >>> sol_x = cbcModel.primalVariableSolution['x']
     >>>
     >>> (abs(sol_x - np.array([0, 2, 2])) <= 10**-6).all()

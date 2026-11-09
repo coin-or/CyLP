@@ -88,7 +88,6 @@ class LIFOPivot(PivotPythonBase):
 
 
 def getMpsExample():
-    import os
-    import inspect
-    cylpDir = os.environ['CYLP_SOURCE_DIR']
-    return os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
+    'Return full path to an MPS example file for doctests'
+    from cylp.cy.CyClpSimplex import getMpsExample
+    return getMpsExample()

@@ -1,7 +1,7 @@
-import os
 import math
 import numpy as np
 from cylp.cy import CyClpSimplex
+from cylp.cy.CyClpSimplex import getMpsExample
 from cylp.py.modeling import CyLPArray, CyLPModel
 from cylp.py.modeling.CyLPModel import getCoinInfinity
 
@@ -80,9 +80,7 @@ if __name__ == '__main__':
         s = CyClpSimplex(m)
     else:
         s = CyClpSimplex()
-        cylpDir = os.environ['CYLP_SOURCE_DIR']
-        inputFile = os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
-        m = s.extractCyLPModel(inputFile)
+        m = s.extractCyLPModel(getMpsExample())
         x = m.getVarByName('x')
         s.setInteger(x)
 
