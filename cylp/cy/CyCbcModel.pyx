@@ -188,29 +188,14 @@ cdef class CyCbcModel:
             return osi
 
     property primalVariableSolution:
+        '''
+        Solution to the primal variables.
+
+        :rtype: Numpy array
+        '''
         def __get__(self):
-            ret = <object>self.CppSelf.getPrimalVariableSolution()
-            if self.cyLPModel:
-                m = self.cyLPModel
-                inds = m.inds
-                d = {}
-                for v in inds.varIndex.keys():
-                    d[v] = ret[inds.varIndex[v]]
-                    var = m.getVarByName(v)
-                    if var.dims:
-                        d[v] = CyLPSolution()
-                        dimRanges = [range(i) for i in var.dims]
-                        for element in product(*dimRanges):
-                            d[v][element] = ret[var.fromInd+var[element].indices[0]]
-                ret = d
-            else:
-                names = self.clpModel.variableNames
-                if names:
-                    d = CyLPSolution()
-                    for i in range(len(names)):
-                        d[names[i]] = ret[i]
-                    ret = d
-            return ret
+            return self._byVariable(
+                    <object>self.CppSelf.getPrimalVariableSolution())
 
     property primalColumnSolution:
         '''
@@ -269,8 +254,9 @@ cdef class CyCbcModel:
 
     def _byVariable(self, ret):
         '''
-        Split the column array ``ret`` up by variable, as
-        :py:attr:`primalVariableSolution` does.
+        Split the column array ``ret`` up by the CyLPModel's variables, or
+        by column name if there is no model. If the columns have no names
+        either, return ``ret`` itself.
         '''
         if self.cyLPModel:
             m = self.cyLPModel
