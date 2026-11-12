@@ -1077,6 +1077,38 @@ int IClpSimplex::initialSolve(int preSolveType){
 }
 
 
+bool IClpSimplex::hasQuadraticObjective()
+{
+    return objective_ && objective_->type() > 1 && objective_->activated();
+}
+
+// Whether the objective is quadratic and no row with a finite bound has an
+// element. Clp can't solve such a QP: ClpSimplexNonlinear::primal gives up
+// with status 10 (try another algorithm), and ClpSimplex::initialSolve
+// throws std::bad_alloc.
+bool IClpSimplex::isQPWithoutBoundedRows()
+{
+    if (!hasQuadraticObjective())
+        return false;
+    const CoinPackedMatrix* m = matrix();
+    if (!m)
+        return true;
+    const bool colOrdered = m->isColOrdered();
+    const int* indices = m->getIndices();
+    const CoinBigIndex* starts = m->getVectorStarts();
+    const int* lengths = m->getVectorLengths();
+    const double* elements = m->getElements();
+    for (int i = 0; i < m->getMajorDim(); i++) {
+        for (CoinBigIndex k = starts[i]; k < starts[i] + lengths[i]; k++) {
+            int row = colOrdered ? indices[k] : i;
+            if (elements[k] && (rowLower_[row] > -COIN_DBL_MAX ||
+                                rowUpper_[row] < COIN_DBL_MAX))
+                return false;
+        }
+    }
+    return true;
+}
+
 int IClpSimplex::primal (int ifValuesPass , int startFinishOptions)
 {
     // A model that was never loaded (e.g. because readMps failed) has no

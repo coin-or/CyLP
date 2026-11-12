@@ -4,7 +4,9 @@ import os
 from os.path import join
 import numpy as np
 
-from cylp.cy import CyClpSimplex
+from cylp.cy import CyClpSimplex, CyCoinPackedMatrix
+from cylp.cy.CyClpSimplex import statusString
+from cylp.py.modeling.CyLPModel import CyLPArray
 
 from cylp.py.pivots import PositiveEdgePivot
 from cylp.py.pivots import LIFOPivot
@@ -55,6 +57,41 @@ class TestCyClpSimplex(unittest.TestCase):
     def test_initialDualSolve(self):
         self.s.initialDualSolve()
         self.assertEqual(round(self.s.objectiveValue, 4), 2520.5717)
+
+    def test_statusString(self):
+        # Clp's status is -1 until the problem is solved
+        self.assertEqual(self.s.getStatusString(), 'unknown')
+        self.assertEqual(statusString(10), 'stopped, try another algorithm')
+        self.assertEqual(statusString(42), 'unknown status 42')
+
+    def test_QPWithoutBoundedRows(self):
+        "Clp needs a QP to have a constraint with a finite bound"
+        def qp(constraint=None):
+            s = CyClpSimplex()
+            x = s.addVariable('x', 2)
+            if constraint:
+                s += constraint(x)
+            s += 0 <= x <= 10
+            s.objective = CyLPArray([-3., -3.]) * x
+            # x0^2 + x0 x1 + x1^2, given as one triangle
+            s.loadQuadraticObjective(CyCoinPackedMatrix(True,
+                    np.array([0, 0, 1], np.int32),
+                    np.array([0, 1, 1], np.int32), np.array([2., 1., 2.])))
+            return s
+
+        # Without one, Clp's primal gave up and initialSolve aborted
+        for constraint in (None, lambda x: -1e30 <= x[0] + x[1] <= 1e30):
+            s = qp(constraint)
+            for solve in (s.primal, s.initialSolve, s.initialPrimalSolve,
+                          s.initialDualSolve):
+                self.assertRaises(ValueError, solve)
+
+        # A constraint that can't be active is enough
+        for solve in ('primal', 'initialSolve'):
+            s = qp(lambda x: x.sum() <= 1e10)
+            self.assertEqual(getattr(s, solve)(), 'optimal')
+            self.assertTrue((abs(s.primalVariableSolution['x'] -
+                                 np.array([1, 1])) <= 10**-6).all())
 
     def test_primalVariableSolutionAll(self):
         self.s.initialSolve()

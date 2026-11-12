@@ -29,6 +29,17 @@ problemStatus = ['optimal', 'primal infeasible', 'dual infeasible',
                 'stopped due to errors',
                 'stopped by event handler (virtual int ' \
                                     'ClpEventHandler::event())']
+# Codes that Clp can also return
+otherProblemStatus = {-1: 'unknown', 10: 'stopped, try another algorithm'}
+
+
+def statusString(code):
+    '''
+    Return the name of Clp's problem status ``code``.
+    '''
+    if 0 <= code < len(problemStatus):
+        return problemStatus[code]
+    return otherProblemStatus.get(code, 'unknown status %d' % code)
 
 CLP_variableStatusEnum = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05]
 StatusToInt = {'free' : 0, 'basic' : 1, 'atUpperBound' : 2,
@@ -844,6 +855,7 @@ cdef class CyClpSimplex:
         * 3 - stopped on iterations or time
         * 4 - stopped due to errors
         * 5 - stopped by event handler (virtual int ClpEventHandler::event())
+        * 10 - stopped, try another algorithm
 
         '''
         return self.CppSelf.status()
@@ -853,7 +865,7 @@ cdef class CyClpSimplex:
         Return the problem status in string using the code from
         :func:`getStatusCode`
         '''
-        return problemStatus[self.getStatusCode()]
+        return statusString(self.getStatusCode())
 
     def setColumnLower(self, ind, val):
         '''
@@ -1291,8 +1303,11 @@ cdef class CyClpSimplex:
         2520.5717
 
         '''
-        presolve = 0 if presolve == 'on' and self.Hessian is None else 1
-        return problemStatus[self.CppSelf.initialSolve(presolve)]
+        self._checkQP()
+        # Hessian is None if the QP was set with loadQuadraticObjective
+        quadratic = self.CppSelf.hasQuadraticObjective()
+        presolve = 0 if presolve == 'on' and not quadratic else 1
+        return statusString(self.CppSelf.initialSolve(presolve))
 
     def initialPrimalSolve(self):
         '''
@@ -1312,7 +1327,8 @@ cdef class CyClpSimplex:
         2520.5717
 
         '''
-        return problemStatus[self.CppSelf.initialPrimalSolve()]
+        self._checkQP()
+        return statusString(self.CppSelf.initialPrimalSolve())
 
     def initialDualSolve(self):
         '''
@@ -1332,7 +1348,8 @@ cdef class CyClpSimplex:
         2520.5717
 
         '''
-        return problemStatus[self.CppSelf.initialDualSolve()]
+        self._checkQP()
+        return statusString(self.CppSelf.initialDualSolve())
 
     def __iadd__(self, cons):
         self.addConstraint(cons)
@@ -1598,6 +1615,18 @@ cdef class CyClpSimplex:
                 sf = sf | startFinishOptionsDic[option]
         return sf
 
+    def _checkQP(self):
+        '''
+        Raise ValueError if the problem is a QP that Clp can't solve
+        '''
+        if self.CppSelf.isQPWithoutBoundedRows():
+            raise ValueError(
+                "Clp can't solve a QP unless a constraint with a finite bound "
+                "has a nonzero coefficient, so it can't solve a QP with only "
+                "bounds on its variables. A constraint that can't be active, "
+                "such as an upper bound of 1e10 on the sum of the variables, "
+                "works around this.")
+
     def primal(self, ifValuesPass=0, startFinishOptions=0, presolve=False):
         '''
         Solve the problem using the primal simplex algorithm.
@@ -1610,16 +1639,18 @@ cdef class CyClpSimplex:
         's': skip initialization of work areas
         So one might call ``self.primal(startFinishOptions='sx')``
         '''
+        self._checkQP()
         sf = self._extractStartFinish(startFinishOptions)
         if presolve:
             return self.primalWithPresolve()
         else:
-            return problemStatus[self.CppSelf.primal(
-                             ifValuesPass, sf)]
+            return statusString(self.CppSelf.primal(ifValuesPass, sf))
 
     def dual(self, ifValuesPass=0, startFinishOptions=0, presolve=False):
         '''
-        Runs CLP dual simplex.
+        Runs CLP dual simplex. It ignores the quadratic part of the
+        objective, so use :py:meth:`primal` or :py:meth:`initialSolve` to
+        solve a QP.
 
         **Usage Example**
 
@@ -1636,8 +1667,7 @@ cdef class CyClpSimplex:
         if presolve:
             return self.dualWithPresolve()
         else:
-            return problemStatus[self.CppSelf.dual(
-                            ifValuesPass, sf)]
+            return statusString(self.CppSelf.dual(ifValuesPass, sf))
 
     def setPerturbation(self, value):
         '''
@@ -1836,11 +1866,12 @@ cdef class CyClpSimplex:
             print("Presolve says problem infeasible.")
             return -2000
 
-        return problemStatus[ret]
+        return statusString(ret)
 
     def primalWithPresolve(self, feasibilityTolerance=0.0,
                  keepIntegers=0, numberPasses=5,
                  dropNames=0, doRowObjective=0):
+        self._checkQP()
         ret = self.CppSelf.primalWithPresolve(self.CppSelf,
                                 feasibilityTolerance, keepIntegers,
                                 numberPasses, dropNames, doRowObjective)
@@ -1848,7 +1879,7 @@ cdef class CyClpSimplex:
             print("Presolve says problem infeasible.")
             return -2000
 
-        return problemStatus[ret]
+        return statusString(ret)
 
     def writeMps(self, filename, formatType=0, numberAcross=2, objSense=0):
         try:
