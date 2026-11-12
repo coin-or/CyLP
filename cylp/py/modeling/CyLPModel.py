@@ -577,6 +577,32 @@ class CyLPVar(CyLPExpr):
 
     See the :ref:`modeling example <modeling-usage>`.
 
+    Index a variable as you would a NumPy array to use some of its
+    elements:
+
+    - an integer selects one element. Negative integers count from the
+      end, so ``x[-1]`` is the last element.
+    - a slice selects a range of elements. It can leave out its start or
+      its stop, and have a step, as in ``x[:3]`` or ``x[::2]``.
+    - a list or an array of integers selects those elements, as in
+      ``x[[0, 2]]``.
+    - a variable with several dimensions takes one of these for each
+      dimension, as in ``y[1, :]`` or ``y[-1, ::2]``.
+
+    An index that is out of range raises ``IndexError``. The ``indices``
+    of the result are the positions of the elements it selects:
+
+    >>> from cylp.cy import CyClpSimplex
+    >>> s = CyClpSimplex()
+    >>> x = s.addVariable('x', 5)
+    >>> y = s.addVariable('y', (3, 4))
+    >>> x[::2].indices.tolist()
+    [0, 2, 4]
+    >>> x[-2:].indices.tolist()
+    [3, 4]
+    >>> y[-1, ::2].indices.tolist()
+    [8, 10]
+
     '''
 
     def __init__(self, name, dim, isInt=False, fromInd=None, toInd=None):
@@ -616,18 +642,21 @@ class CyLPVar(CyLPExpr):
         self.dims = ds
 
     def __getitem__(self, key):
-        if type(key) == int:
+        if isinstance(key, slice):
+            start, stop, step = key.indices(self.dim)
+            if step != 1:
+                # Not a range of columns, so index with a list
+                key = list(range(start, stop, step))
+
+        if isinstance(key, (int, np.integer)):
             newObj = CyLPVar(self.name, 1)
-            newObj.indices = np.array([key], np.int32)
+            newObj.indices = np.array(Ind(key, self.dim).indices, np.int32)
             newObj.parentDim = self.dim
             newObj.parent = self
             newObj.dim = 1
-        elif type(key) == slice:
-            newObj_fromInd = key.start
-            if key.stop > self.dim:
-                newObj_toInd = self.dim
-            else:
-                newObj_toInd = key.stop
+        elif isinstance(key, slice):
+            newObj_fromInd = start
+            newObj_toInd = max(start, stop)
 
             newObj = CyLPVar(self.name, newObj_toInd - newObj_fromInd)
             newObj.parentDim = self.dim
@@ -644,19 +673,15 @@ class CyLPVar(CyLPExpr):
             newObj.parent = self
             newObj.fromInd = None
             newObj.toInd = None
-            newObj.indices = np.array(key)
+            newObj.indices = np.array(Ind(key, self.dim).indices)
             newObj.dim = len(newObj.indices)
 
         elif isinstance(key, tuple):
-            inds = []
-            n = range(len(key))
-            for i in n:
-                k = key[i]
-                if isinstance(k, int):
-                    inds.append(Ind(slice(k, k+1), self.dims[i]))
-                else:
-                    inds.append(Ind(k, self.dims[i]))
-            newObj = self.__getitem__(getMultiDimMatrixIndex(inds))
+            inds = [Ind(k, d) for k, d in zip(key, self.dims)]
+            newObj = self.__getitem__(list(getMultiDimMatrixIndex(inds)))
+        else:
+            raise TypeError('Error indexing with unrecognized type %s' %
+                            key.__class__)
         return newObj
 
     def sum(self):

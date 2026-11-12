@@ -1,6 +1,7 @@
 import unittest
 import inspect
 import os
+from itertools import product
 from os.path import join
 import numpy as np
 
@@ -350,6 +351,38 @@ class TestModel(unittest.TestCase):
         self.assertTrue(abs(sol[1, 2, 0] - 1) <= 10**-6)
         self.assertTrue(abs(sol[1, 2, 3] - 1) <= 10**-6)
         self.assertTrue(abs(sol[1, 2, 5] - 1) <= 10**-6)
+
+    def test_indexing(self):
+        'Open, negative and stepped slices, and NumPy integers'
+        s = CyClpSimplex()
+        x = s.addVariable('x', 5)
+        y = s.addVariable('y', (3, 4))
+        indices = [(x[:2], [0, 1]), (x[3:], [3, 4]), (x[-2:], [3, 4]),
+                   (x[::2], [0, 2, 4]), (x[-1], [4]), (x[np.int64(1)], [1]),
+                   (x[[0, -1]], [0, 4]), (y[-1, 0], [8]), (y[:2, 1], [1, 5]),
+                   (y[1:, ::2], [4, 6, 8, 10]), (y[np.int64(1), -1], [7])]
+        for var, cols in indices:
+            self.assertEqual(list(var.indices), cols)
+        for key in (5, -6, [0, 5]):
+            self.assertRaises(IndexError, x.__getitem__, key)
+        self.assertRaises(IndexError, y.__getitem__, (3, 0))
+
+        s += 0 <= x <= 10
+        s += 0 <= y <= 10
+        s += x[:1] >= 1
+        s += x[np.int64(1)] >= 2
+        s += x[-2] >= 3
+        s += x[4:] >= 4
+        s += y[-1, 0] >= 5
+        s += y[:1, 1] >= 6
+        s.objective = x.sum() + y.sum()
+        s.primal()
+        sol = s.primalVariableSolution
+        self.assertTrue((abs(sol['x'] - np.array([1, 2, 0, 3, 4])) <=
+                         10**-6).all())
+        for i, j in product(range(3), range(4)):
+            value = {(2, 0): 5, (0, 1): 6}.get((i, j), 0)
+            self.assertTrue(abs(sol['y'][i, j] - value) <= 10**-6)
 
     def test_coefOnRight(self):
         'x @ c, x * c and x @ A.T mean c @ x, c * x and A @ x (#230)'
