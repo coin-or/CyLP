@@ -1,20 +1,38 @@
+import warnings
 import numpy as np
+from functools import wraps
 from math import atan2
 from cylp.py import Constants
 from operator import mul
 
+def deprecatedWithQP(f):
+    '''
+    Mark *f* as deprecated. Only cylp.py.QP uses it, and it will be removed
+    with cylp.py.QP.
+    '''
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        warnings.warn('cylp.py.utils.util.%s is deprecated and will be '
+                      'removed in CyLP 0.95, along with cylp.py.QP.' %
+                      f.__name__, DeprecationWarning, stacklevel=2)
+        return f(*args, **kwargs)
+    return wrapper
+
+@deprecatedWithQP
 def sign(x):
     if x > 0 or (x == 0 and atan2(x, -1.) > 0.):
         return 1
     else:
         return -1
 
+@deprecatedWithQP
 def get_cs(w1, w2):
     omega = float(sign(w1) * (w1**2 + w2**2)**0.5)
     c = w1 / omega
     s = w2 / omega
     return c, s
 
+@deprecatedWithQP
 def givens(n, i, j, w1, w2):
     g = np.identity(n, float)
     if abs(w1) < Constants.EPSILON and abs(w2) < Constants.EPSILON:
@@ -23,6 +41,7 @@ def givens(n, i, j, w1, w2):
     g[i,i], g[j,j], g[i,j], g[j,i] = c, -c, s, s
     return g
 
+@deprecatedWithQP
 def applyGivens(vec):
     'Applies dim-1 givens matrices so that vec contains only one non-zero element'
     v = vec.copy()
@@ -37,6 +56,7 @@ def applyGivens(vec):
             Q_bar = Q * Q_bar
     return Qlist, Q_bar, v[0,0]
 
+@deprecatedWithQP
 def UH2UT(mat):
     m = mat.copy()
     nrows, ncols = mat.shape

@@ -1,6 +1,8 @@
 import unittest
+import importlib
 import inspect
 import os
+import sys
 from os.path import join
 import numpy as np
 
@@ -24,6 +26,18 @@ class TestQP(unittest.TestCase):
         s.primal()
         print(s.primalVariableSolution)
         print(s.objectiveValue)
+
+    def test_deprecated(self):
+        'cylp.py.QP and the Givens functions that it uses are deprecated'
+        for name in list(sys.modules):
+            if name == 'cylp.py.QP' or name.startswith('cylp.py.QP.'):
+                del sys.modules[name]
+        with self.assertWarns(DeprecationWarning):
+            importlib.import_module('cylp.py.QP')
+
+        from cylp.py.utils import util
+        with self.assertWarns(DeprecationWarning):
+            util.givens(2, 0, 1, 1., 1.)
 
 if __name__ == '__main__':
     unittest.main()
