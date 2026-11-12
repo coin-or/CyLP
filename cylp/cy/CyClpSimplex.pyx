@@ -1745,15 +1745,14 @@ cdef class CyClpSimplex:
         >>> cbcModel.solve()
         0
         >>> print(cbcModel.status)
-        'solution'
+        solution
         >>>
+        >>> # Several solutions are optimal, but they all have the same
+        >>> # objective value, and x[1:3] = [2, 2]
+        >>> round(cbcModel.objectiveValue, 6)
+        4.0
         >>> sol_x = cbcModel.primalVariableSolution['x']
-        >>> (abs(sol_x -
-        ...     np.array([0.5, 2, 2]) ) <= 10**-6).all()
-        True
-        >>> sol_y = cbcModel.primalVariableSolution['y']
-        >>> (abs(sol_y -
-        ...     np.array([0, 0.75]) ) <= 10**-6).all()
+        >>> (abs(sol_x[1:3] - np.array([2, 2])) <= 10**-6).all()
         True
 
         '''
@@ -2247,9 +2246,9 @@ def getMpsExample():
     Return full path to an MPS example file for doctests
     '''
     import os
-    import inspect
-    curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
-    return os.path.join(curpath, '../input/p0033.mps')
+    # The examples are installed in cylp/input
+    cylpDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(cylpDir, 'input', 'p0033.mps')
 
 
 cdef int RunIsPivotAcceptable(void * ptr):

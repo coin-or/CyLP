@@ -99,11 +99,9 @@ class DualDantzigPivot(DualPivotPythonBase):
 
 
 def getMpsExample():
-    import os
-    import inspect
-    import sys
-    cylpDir = os.environ['CYLP_SOURCE_DIR']
-    return os.path.join(cylpDir, 'cylp', 'input', 'p0033.mps')
+    'Return full path to an MPS example file for doctests'
+    from cylp.cy.CyClpSimplex import getMpsExample
+    return getMpsExample()
 
 
 if __name__ == "__main__":

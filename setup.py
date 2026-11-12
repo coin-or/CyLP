@@ -394,7 +394,9 @@ ext_modules += [Extension('cylp.cy.CyCutGeneratorPythonBase',
 for e in ext_modules:
     e.cython_directives = {'language_level': "3"} #all are Python-3
 
-extra_files = ['cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION']
+extra_files = ['cpp/*.hpp', 'cpp/*.h', 'cy/*.pxd', 'VERSION',
+               # Used by getMpsExample and getQpsExample
+               'input/p0033.mps', 'input/hs268.qps']
 
 setup(packages=['cylp', 'cylp.cy', 'cylp.py', 'cylp.py.pivots',
                 'cylp.py.modeling', 'cylp.py.utils', 'cylp.py.mip',

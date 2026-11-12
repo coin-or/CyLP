@@ -39,16 +39,16 @@
     >>> s.primal()
     'optimal'
     >>> s.primalVariableSolution['x']
-    array([ 0.2,  2. ,  1.1])
+    array([0.2, 2. , 1.1])
     >>> s.primalVariableSolution['y']
-    array([ 0. ,  0.9])
+    array([0. , 0.9])
     >>> s += x[2] + y[1] >= 2.1
     >>> s.primal()
     'optimal'
     >>> s.primalVariableSolution['x']
-    array([ 0. ,  2. ,  1.1])
+    array([0. , 2. , 1.1])
     >>> s.primalVariableSolution['y']
-    array([ 0.,  1.])
+    array([0., 1.])
 
     **Usage (single dimension, using CyLPModel directly, depending on the
       size could be faster than the indirect approach)**
@@ -88,16 +88,16 @@
     >>> s.primal()
     'optimal'
     >>> s.primalVariableSolution['x']
-    array([ 0.2,  2. ,  1.1])
+    array([0.2, 2. , 1.1])
     >>> s.primalVariableSolution['y']
-    array([ 0. ,  0.9])
+    array([0. , 0.9])
     >>> s += x[2] + y[1] >= 2.1
     >>> s.primal()
     'optimal'
     >>> s.primalVariableSolution['x']
-    array([ 0. ,  2. ,  1.1])
+    array([0. , 2. , 1.1])
     >>> s.primalVariableSolution['y']
-    array([ 0.,  1.])
+    array([0., 1.])
 
     **Usage (multi-dimensions, using CyLPModel indirectly)**
 

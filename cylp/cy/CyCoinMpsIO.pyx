@@ -186,9 +186,9 @@ def getQpsExample():
     Return full path to a QPS example file for doctests
     '''
     import os
-    import inspect
-    curpath = os.path.dirname(inspect.getfile(inspect.currentframe()))
-    return os.path.join(curpath, '../input/hs268.qps')
+    # The examples are installed in cylp/input
+    cylpDir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(cylpDir, 'input', 'hs268.qps')
 
 
 #   cdef int CLP_readQuadraticMps(self, char* filename,

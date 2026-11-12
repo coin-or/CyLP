@@ -115,28 +115,23 @@ NumPy and `SciPy <https://scipy.org>` and build and install CyLP.
 Testing your installation
 =========================
 
-Optional step:
-    If you want to run the doctests (i.e. ``make doctest`` in the ``doc`` directory)
-    you should also define::
-
-        $ export CYLP_SOURCE_DIR=/Path/to/cylp
-
-Now you can use CyLP in your python code. For example::
+Now you can use CyLP in your python code. For example, to solve the LP
+relaxation of an example MIP that comes with CyLP::
 
     >>> from cylp.cy import CyClpSimplex
+    >>> from cylp.cy.CyClpSimplex import getMpsExample
     >>> s = CyClpSimplex()
-    >>> s.readMps('../input/netlib/adlittle.mps')
+    >>> s.readMps(getMpsExample())
     0
     >>> s.initialSolve()
     'optimal'
-    >>> round(s.objectiveValue, 3)
-    225494.963
+    >>> round(s.objectiveValue, 4)
+    2520.5717
 
-Or simply go to CyLP and run::
+To run CyLP's tests, including the examples in its docstrings, install
+`pytest <https://pytest.org>`_ and run this in the CyLP source directory::
 
-    $ python -m unittest discover
-
-to run all CyLP unit tests (this is currently broken).
+    $ pytest cylp/tests
 
 Modeling Example
 ================
