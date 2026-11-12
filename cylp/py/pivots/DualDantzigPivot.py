@@ -1,6 +1,6 @@
 '''
 As a part of ``cylp.python.pivots`` it implements Dantzig's
- Simplex dual pivot rule. Although it already exists in CLP,
+Simplex dual pivot rule. Although it already exists in CLP,
 for testing purposes we implement one in Python.
 '''
 

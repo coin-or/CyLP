@@ -108,6 +108,10 @@ cdef class CyCbcModel:
         return self
 
     def setNodeCompare(self, nodeCompareObject):
+        '''
+        Use ``nodeCompareObject``, a :class:`cylp.py.mip.NodeCompareBase`, to
+        choose the next node of the branch-and-bound tree to explore.
+        '''
         if not isinstance(nodeCompareObject, NodeCompareBase):
             raise TypeError('setNodeCompare argument should be a ' \
                         'NodeCompareBase object. Got %s' %
@@ -120,6 +124,10 @@ cdef class CyCbcModel:
                         howOften=1, name="", normal=True, atSolution=False,
                         infeasible=False, howOftenInSub=-100, whatDepth=-1,
                         whatDepthInSub=-1):
+        '''
+        Add a Cgl cut generator, such as :class:`cylp.cy.CyCgl.CyCglGomory`. The
+        other arguments are those of ``CbcModel::addCutGenerator``.
+        '''
         self.cutGenerators.append(generator)
         Py_INCREF(generator)
         if isinstance(name, str):
@@ -134,6 +142,12 @@ cdef class CyCbcModel:
                         howOften=1, name="", normal=True, atSolution=False,
                         infeasible=False, howOftenInSub=-100, whatDepth=-1,
                         whatDepthInSub=-1):
+        '''
+        Add a cut generator written in Python: an object whose
+        ``generateCuts(si, cglTreeInfo)`` method returns a list of cuts. See
+        ``cylp/py/mip/GomoryCutGenerator.py`` for an example. The other
+        arguments are those of :py:meth:`addCutGenerator`.
+        '''
         cdef CyCutGeneratorPythonBase generator = \
                             CyCutGeneratorPythonBase(pythonCutGeneratorObject)
         generator.cyLPModel = self.cyLPModel
@@ -150,6 +164,20 @@ cdef class CyCbcModel:
         return self.CppSelf.cbcMain()
 
     property status:
+        '''
+        The result of :py:meth:`solve`:
+
+        - ``'solution'`` if Cbc proved that its solution is optimal, or within
+          :py:attr:`allowableGap` or :py:attr:`allowableFractionGap` of the
+          optimum,
+        - ``'relaxation infeasible'``, ``'relaxation abandoned'`` or
+          ``'problem proven infeasible'``,
+        - otherwise, why Cbc stopped: ``'stopped on gap'``,
+          ``'stopped on nodes'``, ``'stopped on time'``,
+          ``'stopped on user event'``, ``'stopped on solutions'``,
+          ``'linear relaxation unbounded'``, ``'search completed'`` or
+          ``'unset'``.
+        '''
         def __get__(self):
             # secondaryStatus() should be used instead of status() (??)
             if self.isRelaxationInfeasible():
@@ -163,6 +191,9 @@ cdef class CyCbcModel:
             return problemStatus[self.CppSelf.secondaryStatus()]
 
     property logLevel:
+        '''
+        How much Cbc prints: 0 for nothing, more for more.
+        '''
         def __get__(self):
             return self.CppSelf.logLevel()
 
@@ -170,18 +201,36 @@ cdef class CyCbcModel:
             self.CppSelf.setLogLevel(value)
 
     def isRelaxationInfeasible(self):
+        '''
+        Whether Cbc proved that the LP relaxation it solved first is infeasible.
+        '''
         return self.CppSelf.isInitialSolveProvenPrimalInfeasible()
 
     def isRelaxationDualInfeasible(self):
+        '''
+        Whether Cbc proved that the LP relaxation it solved first is dual
+        infeasible, i.e. unbounded if it's feasible.
+        '''
         return self.CppSelf.isInitialSolveProvenDualInfeasible()
 
     def isRelaxationOptimal(self):
+        '''
+        Whether Cbc solved the LP relaxation it solved first to optimality.
+        '''
         return self.CppSelf.isInitialSolveProvenOptimal()
 
     def isRelaxationAbandoned(self):
+        '''
+        Whether Cbc gave up on the LP relaxation it solved first because of
+        numerical difficulties.
+        '''
         return self.CppSelf.isInitialSolveAbandoned()
 
     property osiSolverInteface:
+        '''
+        The solver that Cbc uses for the LP relaxations, as a
+        :class:`cylp.cy.CyOsiSolverInterface.CyOsiSolverInterface`.
+        '''
         def __get__(self):
             cdef CyOsiSolverInterface osi = CyOsiSolverInterface()
             osi.setCppSelf(self.CppSelf.solver())
@@ -290,30 +339,54 @@ cdef class CyCbcModel:
         return ret
 
     property solutionCount:
+        '''
+        The number of solutions that Cbc found.
+        '''
         def __get__(self):
             return self.CppSelf.getSolutionCount()
 
     property numberHeuristicSolutions:
+        '''
+        The number of solutions that Cbc's heuristics found.
+        '''
         def __get__(self):
             return self.CppSelf.getNumberHeuristicSolutions()
 
     property nodeCount:
+        '''
+        The number of nodes of the branch-and-bound tree that Cbc explored.
+        '''
         def __get__(self):
             return self.CppSelf.getNodeCount()
 
     property objectiveValue:
+        '''
+        The objective value of the best solution found.
+        '''
         def __get__(self):
             return self.CppSelf.getObjValue()
 
     property bestPossibleObjValue:
+        '''
+        A bound on the optimal objective value: the best of the best possible
+        value left in the branch-and-bound tree and the best solution found.
+        '''
         def __get__(self):
             return self.CppSelf.getBestPossibleObjValue()
 
     property numberObjects:
+        '''
+        The number of objects that Cbc branches on, such as integer variables.
+        It is 0 until :py:meth:`solve` creates them.
+        '''
         def __get__(self):
             return self.CppSelf.numberObjects()
 
     property integerTolerance:
+        '''
+        How far from an integer an integer variable's value can be and still
+        count as an integer.
+        '''
         def __get__(self):
             return self.CppSelf.getIntegerTolerance()
 
@@ -321,6 +394,9 @@ cdef class CyCbcModel:
            self.CppSelf.setIntegerTolerance(value)
 
     property maximumSeconds:
+        '''
+        The time limit of :py:meth:`solve`, in seconds.
+        '''
         def __get__(self):
             return self.CppSelf.getMaximumSeconds()
 
@@ -328,6 +404,9 @@ cdef class CyCbcModel:
            self.CppSelf.setMaximumSeconds(value)
 
     property maximumNodes:
+        '''
+        The maximum number of nodes that :py:meth:`solve` explores.
+        '''
         def __get__(self):
             return self.CppSelf.getMaximumNodes()
 
@@ -335,6 +414,10 @@ cdef class CyCbcModel:
            self.CppSelf.setMaximumNodes(value)
 
     property numberThreads:
+        '''
+        The number of threads that Cbc uses, if it was built with threads.
+        0 means the default.
+        '''
         def __get__(self):
             return self.CppSelf.getNumberThreads()
 
@@ -342,6 +425,10 @@ cdef class CyCbcModel:
             self.CppSelf.setNumberThreads(value)
 
     property allowableGap:
+        '''
+        Stop when the gap between the objective value of the best solution
+        and :py:attr:`bestPossibleObjValue` is less than this.
+        '''
         def __get__(self):
             return self.CppSelf.getAllowableGap()
 
@@ -349,6 +436,11 @@ cdef class CyCbcModel:
             self.CppSelf.setAllowableGap(value)
 
     property allowableFractionGap:
+        '''
+        Stop when the gap between the objective value of the best solution
+        and :py:attr:`bestPossibleObjValue` is less than this fraction of the
+        absolute value of the best solution's objective value.
+        '''
         def __get__(self):
             return self.CppSelf.getAllowableFractionGap()
 
@@ -356,6 +448,9 @@ cdef class CyCbcModel:
             self.CppSelf.setAllowableFractionGap(value)
 
     property allowablePercentageGap:
+        '''
+        :py:attr:`allowableFractionGap` as a percentage.
+        '''
         def __get__(self):
             return self.CppSelf.getAllowablePercentageGap()
 
@@ -363,6 +458,9 @@ cdef class CyCbcModel:
             self.CppSelf.setAllowablePercentageGap(value)
 
     property maximumSolutions:
+        '''
+        Stop after finding this many solutions.
+        '''
         def __get__(self):
             return self.CppSelf.getMaximumSolutions()
 
