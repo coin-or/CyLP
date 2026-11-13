@@ -1,10 +1,12 @@
 import unittest
 import inspect
 import os
+import tempfile
+import types
 from os.path import join
 import numpy as np
 
-from cylp.cy import CyClpSimplex, CyCoinPackedMatrix
+from cylp.cy import CyClpSimplex, CyCbcModel, CyCoinPackedMatrix
 from cylp.cy.CyClpSimplex import statusString
 from cylp.py.modeling.CyLPModel import CyLPArray
 
@@ -109,14 +111,38 @@ class TestCyClpSimplex(unittest.TestCase):
         self.assertEqual(self.s.optimizationDirection, 'max')
 
     def test_primalEmptyModel(self):
-        # A model that was never loaded has no objective or matrix
         s = CyClpSimplex()
         self.assertEqual(s.primal(), 'optimal')
 
     def test_matrixEmptyModel(self):
+        # A model that was never loaded has an empty matrix
         s = CyClpSimplex()
-        self.assertIsNone(s.matrix)
+        self.assertEqual((s.matrix.majorDim, s.matrix.minorDim), (0, 0))
         self.assertEqual(s.coefMatrix.shape, (0, 0))
+
+    def test_emptyModel(self):
+        # These segfaulted on a model that was never loaded, or whose
+        # readMps failed, since it had no matrix or objective
+        for missingFile in (False, True):
+            s = CyClpSimplex()
+            if missingFile:
+                self.assertEqual(s.readMps(
+                    join(currentFilePath, '../input/missing.mps')), -1)
+            with tempfile.TemporaryDirectory() as d:
+                self.assertEqual(s.writeMps(join(d, 'empty.mps')), 0)
+                s.writeLp(join(d, 'empty.lp'))
+                self.assertEqual(
+                    CyClpSimplex().readMps(join(d, 'empty.mps')), 0)
+            self.assertEqual(s.preSolve().nVariables, 0)
+            self.assertEqual(s.primalWithPresolve(), 'optimal')
+            self.assertEqual(s.dualWithPresolve(), 'optimal')
+            # Reading every property, as IPython's tab completion does
+            cbcModel = s.getCbcModel()
+            for name in dir(CyCbcModel):
+                if isinstance(getattr(CyCbcModel, name),
+                              types.GetSetDescriptorType):
+                    getattr(cbcModel, name)
+            cbcModel.solve()
 
 
 
