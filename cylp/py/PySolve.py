@@ -13,7 +13,8 @@ from cylp.py.pivots import DantzigPivot
 def solve(filename, method):
 
     s = CyClpSimplex()
-    s.readMps(filename)
+    if s.readMps(filename) != 0:
+        raise OSError("Couldn't read %s" % filename)
 
     s.preSolve(feasibilityTolerance=10 ** -8)
     #s.useCustomPrimal(1)
