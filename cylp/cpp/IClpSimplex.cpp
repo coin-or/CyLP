@@ -863,9 +863,12 @@ void IClpSimplex::getRightHandSide(double* righthandside)
     int* basis_index = pivotVariable();
 
 
-    //FIXME: change these lines to be like getColSoution and getRowActivity in OsiClp
+    // Clp's work regions hold the solution of the problem as Clp scaled it.
+    // Unscale it as ClpSimplex::deleteRim does, to go with the unscaled
+    // bounds from extractSenseRhsRange and with getBInvACol's results.
     const double *solution = solutionRegion(1);
     const double *row_act = solutionRegion(0);
+    const double scaleR = 1.0 / rhsScale_;
 
     //FIXME: This must be fixed. The first line causes seg fault
     //So I'm allocating and deleting in this function
@@ -873,13 +876,18 @@ void IClpSimplex::getRightHandSide(double* righthandside)
     double *slack_val = new double[nr];
 
     for(int i=0; i<nr; i++) {
-        slack_val[i] = righthandside[i] - row_act[i];
+        double activity = row_act[i] * scaleR;
+        if (rowScale_)
+            activity /= rowScale_[i];
+        slack_val[i] = righthandside[i] - activity;
     }
 
     int ncol = numberColumns();
     for (int i = 0 ; i < nr; i++) {
         if (basis_index[i] < ncol){
-            righthandside[i] = solution[basis_index[i]];
+            righthandside[i] = solution[basis_index[i]] * scaleR;
+            if (rowScale_)
+                righthandside[i] *= columnScale_[basis_index[i]];
             //std::cout << "sim: rhs " << i << " = " << solution[basis_index[i]] << "\n";
         }else {
             righthandside[i] = slack_val[basis_index[i]-ncol];

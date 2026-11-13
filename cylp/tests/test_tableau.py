@@ -3,7 +3,9 @@ import types
 import numpy as np
 
 from cylp.cy import CyClpSimplex
+from cylp.cy.CyClpSimplex import getMpsExample
 from cylp.py.modeling.CyLPModel import CyLPArray
+from cylp.py.pivots import DantzigPivot
 
 # The properties that need Clp's factorization of the basis
 factorizationProperties = ('basicVariables', 'rhs', 'basisInverse',
@@ -21,24 +23,59 @@ def getLP():
     return s, x
 
 
+def getScaledLP():
+    # Clp scales p0033
+    s = CyClpSimplex()
+    s.readMps(getMpsExample())
+    s.logLevel = 0
+    return s
+
+
+def basicValues(s, bv):
+    '''
+    The solution's values of the basic variables ``bv``. A slack's value is
+    its constraint's upper bound, or its lower bound if the upper bound is
+    infinite, minus its activity.
+    '''
+    n = s.nVariables
+    solution = s.primalVariableSolutionAll
+    lower, upper = s.constraintsLower, s.constraintsUpper
+    bound = np.where(upper < 1e16, upper, np.where(lower > -1e16, lower, 0.))
+    slacks = bound - solution[n:]
+    return np.array([solution[j] if j < n else slacks[j - n] for j in bv])
+
+
 class TestTableau(unittest.TestCase):
 
     def test_tableau(self):
-        for solve in ('primal', 'dual'):
-            s, x = getLP()
-            self.assertEqual(getattr(s, solve)(startFinishOptions='x'),
-                             'optimal')
-            n, m = s.nVariables, s.nConstraints
-            A = np.hstack([s.coefMatrix.toarray(), np.eye(m)])
-            bv = s.basicVariables
-            Binv = s.basisInverse
-            self.assertTrue(np.allclose(Binv @ A[:, bv], np.eye(m)))
-            self.assertTrue(np.allclose(s.tableau, Binv @ A))
-            # The basic variables' values
-            sol = s.primalVariableSolution['x']
-            structural = bv < n
-            self.assertTrue(np.allclose(s.rhs[structural],
-                                        sol[bv[structural]]))
+        for getModel in (lambda: getLP()[0], getScaledLP):
+            for solve in ('primal', 'dual'):
+                s = getModel()
+                self.assertEqual(getattr(s, solve)(startFinishOptions='x'),
+                                 'optimal')
+                m = s.nConstraints
+                A = np.hstack([s.coefMatrix.toarray(), np.eye(m)])
+                bv = s.basicVariables
+                Binv = s.basisInverse
+                self.assertTrue(np.allclose(Binv @ A[:, bv], np.eye(m)))
+                self.assertTrue(np.allclose(s.tableau, Binv @ A))
+                # On the scaled model, rhs mixed scaled and unscaled values
+                self.assertTrue(np.allclose(s.rhs, basicValues(s, bv)))
+
+    def test_rhsInPivotRule(self):
+        # Pivot rules call getRightHandSide during the solve. The last call
+        # is at the optimal basis, where no variable can enter.
+        class RecordingPivot(DantzigPivot):
+            def pivotColumn(self, *args):
+                self.last = self.clpModel.basicVariables, self.clpModel.rhs
+                return DantzigPivot.pivotColumn(self, *args)
+
+        s = getScaledLP()
+        pivot = RecordingPivot(s)
+        s.setPivotMethod(pivot)
+        self.assertEqual(s.primal(), 'optimal')
+        bv, rhs = pivot.last
+        self.assertTrue(np.allclose(rhs, basicValues(s, bv)))
 
     def test_noFactorization(self):
         # Clp aborted or segfaulted when there was no factorization, as when
