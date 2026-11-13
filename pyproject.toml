@@ -1,10 +1,10 @@
 [project]
 name = "cylp"
-version = "0.94.1"
+version = "0.94.2"
 description="A Python interface for CLP, CBC, and CGL"
 readme="README.rst"
 authors=[
-  {  name = 'Mehdi Towhidi', email = 'mehdi.towhidi@gerad.ca'  }, 
+  {  name = 'Mehdi Towhidi'  },
   {  name = 'Dominique Orban', email = 'dominique.orban@gerad.ca' },
   {  name =  'Ted Ralphs', email = 'ted@lehigh.edu'  }
 ]
