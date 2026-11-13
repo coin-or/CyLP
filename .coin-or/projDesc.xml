@@ -74,7 +74,7 @@
   </projectBasics>
 
   <leftMenuLinks>                                                   
-     <documentation>http://mpy.github.io/CyLPdoc</documentation>
+     <documentation>https://www.coin-or.org/CyLP/</documentation>
      <sourceCodeDownload>https://github.com/coin-or/CyLP/releases</sourceCodeDownload>
      <binaryDownload>https://pypi.org/project/cylp/</binaryDownload>
      <mailingList> </mailingList>
