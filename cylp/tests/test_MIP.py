@@ -259,6 +259,50 @@ class TestMIP(unittest.TestCase):
         self.assertTrue((abs(cbcModel.dualColumnSolution[2:] -
                              np.array([4, 5, 6, 7])) <= 10**-6).all())
 
+    def test_pythonCutGenerator(self):
+        class Generator:
+            calls = 0
+
+            def generateCuts(self, si, cglTreeInfo):
+                self.calls += 1
+                return []
+
+        # With and without a name. Either failed with "expected bytes, str
+        # found".
+        for kwargs in ({}, {'name': 'Python'}):
+            s = CyClpSimplex()
+            self.assertEqual(
+                s.readMps(join(currentFilePath, '../input/p0033.mps')), 0)
+            s.copyInIntegerInformation(np.array(s.nCols * [True], np.uint8))
+            cbcModel = s.getCbcModel()
+            generator = Generator()
+            cbcModel.addPythonCutGenerator(generator, **kwargs)
+            cbcModel.solve()
+            self.assertEqual(cbcModel.status, 'solution')
+            self.assertTrue(abs(cbcModel.objectiveValue - 3089.0) < 10 ** -6)
+            self.assertGreater(generator.calls, 0)
+
+    def test_pythonCutGeneratorException(self):
+        # Cbc can't handle the exception, which made every later call into
+        # Python raise SystemError
+        class Generator:
+            calls = 0
+
+            def generateCuts(self, si, cglTreeInfo):
+                self.calls += 1
+                raise ValueError('generateCuts failed')
+
+        s = CyClpSimplex()
+        self.assertEqual(
+            s.readMps(join(currentFilePath, '../input/p0033.mps')), 0)
+        s.copyInIntegerInformation(np.array(s.nCols * [True], np.uint8))
+        cbcModel = s.getCbcModel()
+        generator = Generator()
+        cbcModel.addPythonCutGenerator(generator)
+        with self.assertRaisesRegex(ValueError, 'generateCuts failed'):
+            cbcModel.solve()
+        self.assertEqual(generator.calls, 1)
+
 if __name__ == '__main__':
     unittest.main()
 

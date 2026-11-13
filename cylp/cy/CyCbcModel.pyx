@@ -87,6 +87,7 @@ cdef class CyCbcModel:
     def __cinit__(self, cyLPModel=None):
         self.cyLPModel = cyLPModel
         self.cutGenerators = []
+        self.pythonCutGenerators = []
 
     def __dealloc__(self):
         for generator in self.cutGenerators:
@@ -147,10 +148,22 @@ cdef class CyCbcModel:
         ``generateCuts(si, cglTreeInfo)`` method returns a list of cuts. See
         ``cylp/py/mip/GomoryCutGenerator.py`` for an example. The other
         arguments are those of :py:meth:`addCutGenerator`.
+
+        The cuts must be in terms of the model's variables, but Cbc calls
+        ``generateCuts`` on the problem after its preprocessing, which can
+        have fewer rows and columns. See
+        `issue 255 <https://github.com/coin-or/CyLP/issues/255>`__.
+
+        If ``generateCuts`` raises an exception, Cbc finishes its search
+        without calling it again, and :py:meth:`solve` then raises the
+        exception.
         '''
         cdef CyCutGeneratorPythonBase generator = \
                             CyCutGeneratorPythonBase(pythonCutGeneratorObject)
         generator.cyLPModel = self.cyLPModel
+        self.pythonCutGenerators.append(generator)
+        if isinstance(name, str):
+            name = name.encode('utf-8')
         self.CppSelf.addCutGenerator(<CppCglCutGenerator*>generator.CppSelf,
                                     howOften, name, normal, atSolution,
                                     infeasible, howOftenInSub, whatDepth,
@@ -161,7 +174,15 @@ cdef class CyCbcModel:
         Call CbcMain. Solve the problem using the same parameters used by CbcSolver.
         Equivalent to solving the model from the command line using cbc's binary.
         '''
-        return self.CppSelf.cbcMain()
+        cdef CyCutGeneratorPythonBase generator
+        for generator in self.pythonCutGenerators:
+            generator.exception = None
+        ret = self.CppSelf.cbcMain()
+        for generator in self.pythonCutGenerators:
+            if generator.exception is not None:
+                e, generator.exception = generator.exception, None
+                raise e
+        return ret
 
     property status:
         '''

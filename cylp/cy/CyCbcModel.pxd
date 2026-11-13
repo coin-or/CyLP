@@ -90,6 +90,7 @@ cdef class CyCbcModel:
     cdef object cyLPModel
     cdef object clpModel
     cdef object cutGenerators
+    cdef object pythonCutGenerators
     cdef setCppSelf(self, CppICbcModel* cppmodel, bint own=*)
     cdef setClpModel(self, clpmodel)
     cpdef addCutGenerator(self, CyCglCutGenerator generator,
