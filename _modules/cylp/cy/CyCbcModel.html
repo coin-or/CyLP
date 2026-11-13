@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cylp.cy.CyCbcModel &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../../../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyCbcModel</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cylp.cy.CyCbcModel</h1><div class="highlight"><pre>
+<span></span><span class="c1"># cython: embedsignature=True</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">product</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cylp.py.mip</span><span class="w"> </span><span class="kn">import</span> <span class="n">NodeCompareBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cylp.py.modeling.CyLPModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyLPSolution</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy.CyCutGeneratorPythonBase</span> <span class="n">cimport</span> <span class="n">CyCutGeneratorPythonBase</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">libcpp</span> <span class="n">cimport</span> <span class="nb">bool</span>
+
+
+<span class="n">cdef</span> <span class="nb">int</span> <span class="n">RunTest</span><span class="p">(</span><span class="n">void</span><span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="n">CppICbcNode</span><span class="o">*</span><span class="n">x</span><span class="p">,</span> <span class="n">CppICbcNode</span><span class="o">*</span><span class="n">y</span><span class="p">):</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span> <span class="n">ptr</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">compare</span><span class="p">(</span><span class="n">CyCbcNode</span><span class="p">()</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+                       <span class="n">CyCbcNode</span><span class="p">()</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+
+<span class="c1"># The model passed to these callbacks belongs to Cbc, so the wrapper must</span>
+<span class="c1"># not delete it</span>
+<span class="n">cdef</span> <span class="nb">bool</span> <span class="n">RunNewSolution</span><span class="p">(</span><span class="n">void</span><span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="n">CppICbcModel</span><span class="o">*</span> <span class="n">model</span><span class="p">,</span>
+        <span class="n">double</span> <span class="n">objectiveAtContinuous</span><span class="p">,</span>
+        <span class="nb">int</span> <span class="n">numberInfeasibilitiesAtContinuous</span><span class="p">):</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span> <span class="n">ptr</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">newSolution</span><span class="p">(</span><span class="n">CyCbcModel</span><span class="p">()</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                                <span class="n">objectiveAtContinuous</span><span class="p">,</span>
+                                <span class="n">numberInfeasibilitiesAtContinuous</span><span class="p">)</span>
+
+<span class="n">cdef</span> <span class="nb">int</span> <span class="n">RunEvery1000Nodes</span><span class="p">(</span><span class="n">void</span><span class="o">*</span> <span class="n">ptr</span><span class="p">,</span> <span class="n">CppICbcModel</span><span class="o">*</span> <span class="n">model</span><span class="p">,</span> <span class="nb">int</span> <span class="n">numberNodes</span><span class="p">):</span>
+    <span class="n">obj</span> <span class="o">=</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span> <span class="n">ptr</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">every1000Nodes</span><span class="p">(</span><span class="n">CyCbcModel</span><span class="p">()</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                                 <span class="n">numberNodes</span><span class="p">)</span>
+
+<span class="c1"># Understandable messages to translate what branchAndBound() returns</span>
+<span class="n">problemStatus</span> <span class="o">=</span>  <span class="p">[</span><span class="s1">'search completed'</span><span class="p">,</span> <span class="s1">'relaxation infeasible'</span><span class="p">,</span>
+         <span class="s1">'stopped on gap'</span><span class="p">,</span> <span class="s1">'stopped on nodes'</span><span class="p">,</span> <span class="s1">'stopped on time'</span><span class="p">,</span>
+         <span class="s1">'stopped on user event'</span><span class="p">,</span> <span class="s1">'stopped on solutions'</span><span class="p">,</span>
+         <span class="s1">'linear relaxation unbounded'</span><span class="p">,</span> <span class="s1">'unset'</span><span class="p">]</span>
+
+<div class="viewcode-block" id="CyCbcModel">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel">[docs]</a>
+<span class="n">cdef</span> <span class="k">class</span><span class="w"> </span><span class="nc">CyCbcModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    Interfaces ``CbcModel``. To solve a first you create a</span>
+<span class="sd">    :class:`cylp.cy.CyClpSimplex` object either</span>
+<span class="sd">    by reading it from an ``mps`` file using</span>
+<span class="sd">    :func:`CyClpSimplex.readMps() &lt;cylp.cy.CyClpSimplex.CyClpSimplex.readMps&gt;`</span>
+<span class="sd">    or by using cylp modeling tool</span>
+<span class="sd">    :mod:`cylp.py.modeling.CyLPModel`. Then you ask the object for a</span>
+<span class="sd">    ``CyCbcModel`` which is capable solving MIPs using B&amp;B</span>
+
+<span class="sd">    **Usage**</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from cylp.cy import CyCbcModel, CyClpSimplex</span>
+<span class="sd">    &gt;&gt;&gt; from cylp.py.modeling.CyLPModel import CyLPModel, CyLPArray</span>
+<span class="sd">    &gt;&gt;&gt; model = CyLPModel()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; x = model.addVariable('x', 3, isInt=True)</span>
+<span class="sd">    &gt;&gt;&gt; y = model.addVariable('y', 2)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; A = np.array([[1., 2., 0],[1., 0, 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; B = np.array([[1., 0, 0], [0, 0, 1.]])</span>
+<span class="sd">    &gt;&gt;&gt; D = np.array([[1., 2.],[0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; a = CyLPArray([5, 2.5])</span>
+<span class="sd">    &gt;&gt;&gt; b = CyLPArray([4.2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x_u= CyLPArray([2., 3.5])</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; model += A @ x &lt;= a</span>
+<span class="sd">    &gt;&gt;&gt; model += 2 &lt;= B @ x + D @ y &lt;= b</span>
+<span class="sd">    &gt;&gt;&gt; model += y &gt;= 0</span>
+<span class="sd">    &gt;&gt;&gt; model += 1.1 &lt;= x[1:3] &lt;= x_u</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; c = CyLPArray([1., -2., 3.])</span>
+<span class="sd">    &gt;&gt;&gt; model.objective = c * x + 2 * y.sum()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; s = CyClpSimplex(model)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; cbcModel = s.getCbcModel()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; cbcModel.solve()</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; print(cbcModel.status)</span>
+<span class="sd">    solution</span>
+<span class="sd">    &gt;&gt;&gt; sol_x = cbcModel.primalVariableSolution['x']</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; (abs(sol_x - np.array([0, 2, 2])) &lt;= 10**-6).all()</span>
+<span class="sd">    True</span>
+
+<span class="sd">    '''</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__cinit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cyLPModel</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cyLPModel</span> <span class="o">=</span> <span class="n">cyLPModel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutGenerators</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pythonCutGenerators</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__dealloc__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">generator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutGenerators</span><span class="p">:</span>
+            <span class="n">Py_DECREF</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownCppSelf</span><span class="p">:</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">cdef</span> <span class="n">setCppSelf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CppICbcModel</span><span class="o">*</span> <span class="n">cppmodel</span><span class="p">,</span> <span class="n">bint</span> <span class="n">own</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span> <span class="o">=</span> <span class="n">cppmodel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ownCppSelf</span> <span class="o">=</span> <span class="n">own</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="n">cdef</span> <span class="n">setClpModel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">clpmodel</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span> <span class="o">=</span> <span class="n">clpmodel</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="CyCbcModel.setNodeCompare">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setNodeCompare</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodeCompareObject</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Use ``nodeCompareObject``, a :class:`cylp.py.mip.NodeCompareBase`, to</span>
+<span class="sd">        choose the next node of the branch-and-bound tree to explore.</span>
+<span class="sd">        '''</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nodeCompareObject</span><span class="p">,</span> <span class="n">NodeCompareBase</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">'setNodeCompare argument should be a '</span> \
+                        <span class="s1">'NodeCompareBase object. Got </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span>
+                        <span class="n">nodeCompareObject</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setNodeCompare</span><span class="p">(</span><span class="o">&lt;</span><span class="n">PyObject</span><span class="o">*&gt;</span><span class="n">nodeCompareObject</span><span class="p">,</span>
+                                    <span class="n">RunTest</span><span class="p">,</span> <span class="n">RunNewSolution</span><span class="p">,</span> <span class="n">RunEvery1000Nodes</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.addCutGenerator">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator">[docs]</a>
+    <span class="n">cpdef</span> <span class="n">addCutGenerator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CyCglCutGenerator</span> <span class="n">generator</span><span class="p">,</span>
+                        <span class="n">howOften</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">normal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atSolution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">infeasible</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">howOftenInSub</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">whatDepth</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">whatDepthInSub</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Add a Cgl cut generator, such as :class:`cylp.cy.CyCgl.CyCglGomory`. The</span>
+<span class="sd">        other arguments are those of ``CbcModel::addCutGenerator``.</span>
+<span class="sd">        '''</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutGenerators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+        <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Cast strings/unicode to bytes</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">addCutGenerator</span><span class="p">(</span><span class="n">generator</span><span class="o">.</span><span class="n">CppSelf</span><span class="p">,</span> <span class="n">howOften</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="n">atSolution</span><span class="p">,</span>
+                                    <span class="n">infeasible</span><span class="p">,</span> <span class="n">howOftenInSub</span><span class="p">,</span> <span class="n">whatDepth</span><span class="p">,</span>
+                                    <span class="n">whatDepthInSub</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.addPythonCutGenerator">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addPythonCutGenerator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pythonCutGeneratorObject</span><span class="p">,</span>
+                        <span class="n">howOften</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">normal</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atSolution</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                        <span class="n">infeasible</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">howOftenInSub</span><span class="o">=-</span><span class="mi">100</span><span class="p">,</span> <span class="n">whatDepth</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">whatDepthInSub</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Add a cut generator written in Python: an object whose</span>
+<span class="sd">        ``generateCuts(si, cglTreeInfo)`` method returns a list of cuts. See</span>
+<span class="sd">        ``cylp/py/mip/GomoryCutGenerator.py`` for an example. The other</span>
+<span class="sd">        arguments are those of :py:meth:`addCutGenerator`.</span>
+
+<span class="sd">        The cuts must be in terms of the model's variables, but Cbc calls</span>
+<span class="sd">        ``generateCuts`` on the problem after its preprocessing, which can</span>
+<span class="sd">        have fewer rows and columns. See</span>
+<span class="sd">        `issue 255 &lt;https://github.com/coin-or/CyLP/issues/255&gt;`__.</span>
+
+<span class="sd">        If ``generateCuts`` raises an exception, Cbc finishes its search</span>
+<span class="sd">        without calling it again, and :py:meth:`solve` then raises the</span>
+<span class="sd">        exception.</span>
+<span class="sd">        '''</span>
+        <span class="n">cdef</span> <span class="n">CyCutGeneratorPythonBase</span> <span class="n">generator</span> <span class="o">=</span> \
+                            <span class="n">CyCutGeneratorPythonBase</span><span class="p">(</span><span class="n">pythonCutGeneratorObject</span><span class="p">)</span>
+        <span class="n">generator</span><span class="o">.</span><span class="n">cyLPModel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyLPModel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pythonCutGenerators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">addCutGenerator</span><span class="p">(</span><span class="o">&lt;</span><span class="n">CppCglCutGenerator</span><span class="o">*&gt;</span><span class="n">generator</span><span class="o">.</span><span class="n">CppSelf</span><span class="p">,</span>
+                                    <span class="n">howOften</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">normal</span><span class="p">,</span> <span class="n">atSolution</span><span class="p">,</span>
+                                    <span class="n">infeasible</span><span class="p">,</span> <span class="n">howOftenInSub</span><span class="p">,</span> <span class="n">whatDepth</span><span class="p">,</span>
+                                    <span class="n">whatDepthInSub</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.solve">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.solve">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Call CbcMain. Solve the problem using the same parameters used by CbcSolver.</span>
+<span class="sd">        Equivalent to solving the model from the command line using cbc's binary.</span>
+<span class="sd">        '''</span>
+        <span class="n">cdef</span> <span class="n">CyCutGeneratorPythonBase</span> <span class="n">generator</span>
+        <span class="k">for</span> <span class="n">generator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pythonCutGenerators</span><span class="p">:</span>
+            <span class="n">generator</span><span class="o">.</span><span class="n">exception</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">cbcMain</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">generator</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pythonCutGenerators</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">generator</span><span class="o">.</span><span class="n">exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">e</span><span class="p">,</span> <span class="n">generator</span><span class="o">.</span><span class="n">exception</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">exception</span><span class="p">,</span> <span class="kc">None</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.status">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.status">[docs]</a>
+    <span class="nb">property</span> <span class="n">status</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The result of :py:meth:`solve`:</span>
+
+<span class="sd">        - ``'solution'`` if Cbc proved that its solution is optimal, or within</span>
+<span class="sd">          :py:attr:`allowableGap` or :py:attr:`allowableFractionGap` of the</span>
+<span class="sd">          optimum,</span>
+<span class="sd">        - ``'relaxation infeasible'``, ``'relaxation abandoned'`` or</span>
+<span class="sd">          ``'problem proven infeasible'``,</span>
+<span class="sd">        - otherwise, why Cbc stopped: ``'stopped on gap'``,</span>
+<span class="sd">          ``'stopped on nodes'``, ``'stopped on time'``,</span>
+<span class="sd">          ``'stopped on user event'``, ``'stopped on solutions'``,</span>
+<span class="sd">          ``'linear relaxation unbounded'``, ``'search completed'`` or</span>
+<span class="sd">          ``'unset'``.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="c1"># secondaryStatus() should be used instead of status() (??)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRelaxationInfeasible</span><span class="p">():</span>
+               <span class="k">return</span> <span class="n">problemStatus</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isRelaxationAbandoned</span><span class="p">():</span>
+               <span class="k">return</span> <span class="s1">'relaxation abandoned'</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">isProvenInfeasible</span><span class="p">():</span>
+               <span class="k">return</span> <span class="s1">'problem proven infeasible'</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">isProvenOptimal</span><span class="p">():</span>
+               <span class="k">return</span> <span class="s1">'solution'</span>
+            <span class="k">return</span> <span class="n">problemStatus</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">secondaryStatus</span><span class="p">()]</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.logLevel">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.logLevel">[docs]</a>
+    <span class="nb">property</span> <span class="n">logLevel</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        How much Cbc prints: 0 for nothing, more for more.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">logLevel</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setLogLevel</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.isRelaxationInfeasible">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isRelaxationInfeasible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Whether Cbc proved that the LP relaxation it solved first is infeasible.</span>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">isInitialSolveProvenPrimalInfeasible</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.isRelaxationDualInfeasible">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isRelaxationDualInfeasible</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Whether Cbc proved that the LP relaxation it solved first is dual</span>
+<span class="sd">        infeasible, i.e. unbounded if it's feasible.</span>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">isInitialSolveProvenDualInfeasible</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.isRelaxationOptimal">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isRelaxationOptimal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Whether Cbc solved the LP relaxation it solved first to optimality.</span>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">isInitialSolveProvenOptimal</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.isRelaxationAbandoned">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbandoned">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isRelaxationAbandoned</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Whether Cbc gave up on the LP relaxation it solved first because of</span>
+<span class="sd">        numerical difficulties.</span>
+<span class="sd">        '''</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">isInitialSolveAbandoned</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.osiSolverInteface">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.osiSolverInteface">[docs]</a>
+    <span class="nb">property</span> <span class="n">osiSolverInteface</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The solver that Cbc uses for the LP relaxations, as a</span>
+<span class="sd">        :class:`cylp.cy.CyOsiSolverInterface.CyOsiSolverInterface`.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">cdef</span> <span class="n">CyOsiSolverInterface</span> <span class="n">osi</span> <span class="o">=</span> <span class="n">CyOsiSolverInterface</span><span class="p">()</span>
+            <span class="n">osi</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">solver</span><span class="p">())</span>
+            <span class="k">return</span> <span class="n">osi</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.primalVariableSolution">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.primalVariableSolution">[docs]</a>
+    <span class="nb">property</span> <span class="n">primalVariableSolution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Solution to the primal variables.</span>
+
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_byVariable</span><span class="p">(</span>
+                    <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getPrimalVariableSolution</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.primalColumnSolution">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.primalColumnSolution">[docs]</a>
+    <span class="nb">property</span> <span class="n">primalColumnSolution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Solution to the primal variables as one array, in column order.</span>
+<span class="sd">        Unlike :py:attr:`primalVariableSolution`, it is not split up by</span>
+<span class="sd">        variable, which is much faster for large models. A copy.</span>
+
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getPrimalVariableSolution</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.dualVariableSolution">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.dualVariableSolution">[docs]</a>
+    <span class="nb">property</span> <span class="n">dualVariableSolution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Variables' reduced costs. See :py:attr:`dualConstraintSolution` for</span>
+<span class="sd">        the LP that they belong to.</span>
+
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_byVariable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dualColumnSolution</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.dualColumnSolution">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.dualColumnSolution">[docs]</a>
+    <span class="nb">property</span> <span class="n">dualColumnSolution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Variables' reduced costs as one array, in column order. Unlike</span>
+<span class="sd">        :py:attr:`dualVariableSolution`, it is not split up by variable.</span>
+<span class="sd">        A copy.</span>
+
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getDualColumnSolution</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.primalConstraintSolution">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.primalConstraintSolution">[docs]</a>
+    <span class="nb">property</span> <span class="n">primalConstraintSolution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Constraints' activities, i.e. the value of each constraint's</span>
+<span class="sd">        left-hand side at the solution.</span>
+
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_byConstraint</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getPrimalRowSolution</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.dualConstraintSolution">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.dualConstraintSolution">[docs]</a>
+    <span class="nb">property</span> <span class="n">dualConstraintSolution</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Dual variables' solution. Once :py:meth:`solve` has found a</span>
+<span class="sd">        solution, Cbc fixes the integer variables at their values in it and</span>
+<span class="sd">        solves the LP relaxation again, so these are the duals of that LP.</span>
+
+<span class="sd">        :rtype: Numpy array</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_byConstraint</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getDualRowSolution</span><span class="p">()))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_byVariable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Split the column array ``ret`` up by the CyLPModel's variables, or</span>
+<span class="sd">        by column name if there is no model. If the columns have no names</span>
+<span class="sd">        either, return ``ret`` itself.</span>
+<span class="sd">        '''</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyLPModel</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyLPModel</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">inds</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">inds</span><span class="o">.</span><span class="n">varIndex</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">inds</span><span class="o">.</span><span class="n">varIndex</span><span class="p">[</span><span class="n">v</span><span class="p">]]</span>
+                <span class="n">var</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">getVarByName</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">:</span>
+                    <span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">CyLPSolution</span><span class="p">()</span>
+                    <span class="n">dimRanges</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">var</span><span class="o">.</span><span class="n">dims</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">dimRanges</span><span class="p">):</span>
+                        <span class="n">d</span><span class="p">[</span><span class="n">v</span><span class="p">][</span><span class="n">element</span><span class="p">]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">fromInd</span> <span class="o">+</span>
+                                            <span class="n">var</span><span class="p">[</span><span class="n">element</span><span class="p">]</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clpModel</span><span class="o">.</span><span class="n">variableNames</span>
+        <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">CyLPSolution</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)):</span>
+                <span class="n">d</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">ret</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">d</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_byConstraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ret</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Split the row array ``ret`` up by constraint.</span>
+<span class="sd">        '''</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyLPModel</span><span class="p">:</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cyLPModel</span><span class="o">.</span><span class="n">inds</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="n">ret</span><span class="p">[</span><span class="n">inds</span><span class="o">.</span><span class="n">constIndex</span><span class="p">[</span><span class="n">c</span><span class="p">]]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">inds</span><span class="o">.</span><span class="n">constIndex</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+<div class="viewcode-block" id="CyCbcModel.solutionCount">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.solutionCount">[docs]</a>
+    <span class="nb">property</span> <span class="n">solutionCount</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The number of solutions that Cbc found.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getSolutionCount</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.numberHeuristicSolutions">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.numberHeuristicSolutions">[docs]</a>
+    <span class="nb">property</span> <span class="n">numberHeuristicSolutions</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The number of solutions that Cbc's heuristics found.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getNumberHeuristicSolutions</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.nodeCount">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.nodeCount">[docs]</a>
+    <span class="nb">property</span> <span class="n">nodeCount</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The number of nodes of the branch-and-bound tree that Cbc explored.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getNodeCount</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.objectiveValue">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.objectiveValue">[docs]</a>
+    <span class="nb">property</span> <span class="n">objectiveValue</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The objective value of the best solution found.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getObjValue</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.bestPossibleObjValue">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue">[docs]</a>
+    <span class="nb">property</span> <span class="n">bestPossibleObjValue</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        A bound on the optimal objective value: the best of the best possible</span>
+<span class="sd">        value left in the branch-and-bound tree and the best solution found.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getBestPossibleObjValue</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.numberObjects">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.numberObjects">[docs]</a>
+    <span class="nb">property</span> <span class="n">numberObjects</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The number of objects that Cbc branches on, such as integer variables.</span>
+<span class="sd">        It is 0 until :py:meth:`solve` creates them.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">numberObjects</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.integerTolerance">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.integerTolerance">[docs]</a>
+    <span class="nb">property</span> <span class="n">integerTolerance</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        How far from an integer an integer variable's value can be and still</span>
+<span class="sd">        count as an integer.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getIntegerTolerance</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setIntegerTolerance</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.maximumSeconds">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.maximumSeconds">[docs]</a>
+    <span class="nb">property</span> <span class="n">maximumSeconds</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The time limit of :py:meth:`solve`, in seconds.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getMaximumSeconds</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setMaximumSeconds</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.maximumNodes">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.maximumNodes">[docs]</a>
+    <span class="nb">property</span> <span class="n">maximumNodes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The maximum number of nodes that :py:meth:`solve` explores.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getMaximumNodes</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setMaximumNodes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.numberThreads">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.numberThreads">[docs]</a>
+    <span class="nb">property</span> <span class="n">numberThreads</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The number of threads that Cbc uses, if it was built with threads.</span>
+<span class="sd">        0 means the default.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getNumberThreads</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setNumberThreads</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.allowableGap">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.allowableGap">[docs]</a>
+    <span class="nb">property</span> <span class="n">allowableGap</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Stop when the gap between the objective value of the best solution</span>
+<span class="sd">        and :py:attr:`bestPossibleObjValue` is less than this.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getAllowableGap</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setAllowableGap</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.allowableFractionGap">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap">[docs]</a>
+    <span class="nb">property</span> <span class="n">allowableFractionGap</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Stop when the gap between the objective value of the best solution</span>
+<span class="sd">        and :py:attr:`bestPossibleObjValue` is less than this fraction of the</span>
+<span class="sd">        absolute value of the best solution's objective value.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getAllowableFractionGap</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setAllowableFractionGap</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.allowablePercentageGap">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.allowablePercentageGap">[docs]</a>
+    <span class="nb">property</span> <span class="n">allowablePercentageGap</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        :py:attr:`allowableFractionGap` as a percentage.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getAllowablePercentageGap</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setAllowablePercentageGap</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCbcModel.maximumSolutions">
+<a class="viewcode-back" href="../../../modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel.maximumSolutions">[docs]</a>
+    <span class="nb">property</span> <span class="n">maximumSolutions</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Stop after finding this many solutions.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getMaximumSolutions</span><span class="p">()</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setMaximumSolutions</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+
+    <span class="c1">#TODO: add access to solver: getLower, getUpper,...</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyCbcModel</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+    </div>
+  </body>
+</html>

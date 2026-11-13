@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cylp.cy.CyCoinMpsIO &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../../../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyCoinMpsIO</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cylp.cy.CyCoinMpsIO</h1><div class="highlight"><pre>
+<span></span><span class="sd">'''</span>
+<span class="sd">This module interface COIN-OR's ``CoinMpsIO``. When you call</span>
+<span class="sd">:func:`cylp.cy.CyClpSimplex.readMps` then ``CoinMpsIO``'s ``readMps`` is</span>
+<span class="sd">called.  The main reason why cylp interfaces this class is to be able to read</span>
+<span class="sd">an ``mps`` file without creating a Simplex object. This way it is possible to</span>
+<span class="sd">read a QP using CoinMpsIO and work on the elements of the problem, e.g. the</span>
+<span class="sd">Hessian,...</span>
+<span class="sd">'''</span>
+<span class="c1"># cython: embedsignature=True</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">sparse</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">identity</span><span class="p">,</span> <span class="n">dia_matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cylp.py.utils.sparseUtil</span><span class="w"> </span><span class="kn">import</span> <span class="n">csc_matrixPlus</span><span class="p">,</span> <span class="n">csr_matrixPlus</span>
+
+<div class="viewcode-block" id="CyCoinMpsIO">
+<a class="viewcode-back" href="../../../modules/CyCoinMpsIO.html#cylp.cy.CyCoinMpsIO.CyCoinMpsIO">[docs]</a>
+<span class="n">cdef</span> <span class="k">class</span><span class="w"> </span><span class="nc">CyCoinMpsIO</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__cinit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CppICoinMpsIO</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Hessian</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="CyCoinMpsIO.readMps">
+<a class="viewcode-back" href="../../../modules/CyCoinMpsIO.html#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.readMps">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">readMps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Read an mps file. Check if the file is a QP symmetrisize its Hessian</span>
+<span class="sd">        and store it.</span>
+
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; from cylp.cy import CyCoinMpsIO</span>
+<span class="sd">        &gt;&gt;&gt; from cylp.cy.CyCoinMpsIO import getQpsExample</span>
+<span class="sd">        &gt;&gt;&gt; problem = CyCoinMpsIO()</span>
+<span class="sd">        &gt;&gt;&gt; problem.readMps(getQpsExample())</span>
+<span class="sd">        0</span>
+<span class="sd">        &gt;&gt;&gt; problem.nVariables</span>
+<span class="sd">        5</span>
+<span class="sd">        &gt;&gt;&gt; problem.nConstraints</span>
+<span class="sd">        5</span>
+<span class="sd">        &gt;&gt;&gt; signs = problem.constraintSigns</span>
+<span class="sd">        &gt;&gt;&gt; [chr(i) for i in signs] == problem.nConstraints * ['G']</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; c = problem.matrixByRow</span>
+<span class="sd">        &gt;&gt;&gt; (abs(c.elements -</span>
+<span class="sd">        ...     np.array([-1., -1., -1., -1., -1.,  10.,  10.,  -3.,</span>
+<span class="sd">        ...                5., 4.,  -8., 1., -2., -5., 3., 8., -1., 2.,</span>
+<span class="sd">        ...                5., -3.,  -4.,  -2., 3., -5., 1.])) &lt;</span>
+<span class="sd">        ...                            10 ** -8).all()</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; (c.indices ==</span>
+<span class="sd">        ...       np.array([0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1,</span>
+<span class="sd">        ...                 2, 3, 4, 0, 1, 2, 3, 4], dtype=np.int32)).all()</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; (c.vectorStarts ==</span>
+<span class="sd">        ...        np.array([0, 5, 10, 15, 20, 25], dtype=np.int32)).all()</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; (problem.rightHandSide ==</span>
+<span class="sd">        ...        np.array([-5., 20., -40., 11., -30.])).all()</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; H = problem.Hessian.todense()</span>
+<span class="sd">        &gt;&gt;&gt; (abs(H -</span>
+<span class="sd">        ... np.array([[20394., -24908., -2026., 3896., 658.],</span>
+<span class="sd">        ...            [-24908., 41818., -3466., -9828., -372.],</span>
+<span class="sd">        ...            [-2026., -3466., 3510., 2178., -348.],</span>
+<span class="sd">        ...            [3896., -9828., 2178., 3030., -44.],</span>
+<span class="sd">        ...            [658., -372., -348., -44., 54.]])) &lt;</span>
+<span class="sd">        ...                            10 ** -8).all()</span>
+<span class="sd">        True</span>
+
+<span class="sd">        '''</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Cast strings/unicode to bytes</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">IreadQuadraticMps</span><span class="p">(</span><span class="n">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">QPColumnStarts</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">QPColumns</span>
+            <span class="n">el</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">QPElements</span>
+
+            <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nVariables</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nConstraints</span>
+
+            <span class="n">Hessian</span> <span class="o">=</span> <span class="n">csr_matrixPlus</span><span class="p">((</span><span class="n">el</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">start</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+            <span class="c1"># Fill the other half of the symmetric Hessian</span>
+            <span class="n">Hessian</span> <span class="o">=</span> <span class="n">Hessian</span> <span class="o">+</span> <span class="n">Hessian</span><span class="o">.</span><span class="n">T</span> <span class="o">-</span> <span class="n">dia_matrix</span><span class="p">((</span><span class="n">Hessian</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(),[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hessian</span> <span class="o">=</span> <span class="n">Hessian</span>
+
+        <span class="k">return</span> <span class="n">ret</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">readQuadraticMps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">checkSymmetry</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">IreadQuadraticMps</span><span class="p">(</span><span class="n">NULL</span><span class="p">,</span> <span class="n">checkSymmetry</span><span class="p">)</span>
+
+    <span class="nb">property</span> <span class="n">Hessian</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hessian</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="fm">__set__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Hessian</span> <span class="o">=</span> <span class="n">h</span>
+
+    <span class="nb">property</span> <span class="n">variableLower</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getColLower</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">variableUpper</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getColUpper</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">constraintSigns</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getRowSense</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">rightHandSide</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getRightHandSide</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">constraintRange</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getRowRange</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">constraintLower</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getRowLower</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">constraintUpper</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getRowUpper</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">objCoefficients</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_getObjCoefficients</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">integerColumns</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">np_integerColumns</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">QPColumnStarts</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getQPColumnStarts</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">QPColumns</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getQPColumns</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">QPElements</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="o">&lt;</span><span class="nb">object</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getQPElements</span><span class="p">()</span>
+
+<div class="viewcode-block" id="CyCoinMpsIO.matrixByRow">
+<a class="viewcode-back" href="../../../modules/CyCoinMpsIO.html#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByRow">[docs]</a>
+    <span class="nb">property</span> <span class="n">matrixByRow</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The constraint matrix, stored by row. A CyCoinPackedMatrix, or</span>
+<span class="sd">        ``None`` if no problem has been read.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">cdef</span> <span class="n">CppCoinPackedMatrix</span><span class="o">*</span> <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">IgetMatrixByRow</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">cym</span> <span class="o">=</span> <span class="n">CyCoinPackedMatrix</span><span class="p">()</span>
+            <span class="n">cym</span><span class="o">.</span><span class="n">CppSelf</span> <span class="o">=</span> <span class="n">m</span>
+            <span class="k">return</span> <span class="n">cym</span></div>
+
+
+<div class="viewcode-block" id="CyCoinMpsIO.matrixByCol">
+<a class="viewcode-back" href="../../../modules/CyCoinMpsIO.html#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByCol">[docs]</a>
+    <span class="nb">property</span> <span class="n">matrixByCol</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        The constraint matrix, stored by column. A CyCoinPackedMatrix, or</span>
+<span class="sd">        ``None`` if no problem has been read.</span>
+<span class="sd">        '''</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">cdef</span> <span class="n">CppCoinPackedMatrix</span><span class="o">*</span> <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">IgetMatrixByCol</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="o">==</span> <span class="n">NULL</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">cym</span> <span class="o">=</span> <span class="n">CyCoinPackedMatrix</span><span class="p">()</span>
+            <span class="n">cym</span><span class="o">.</span><span class="n">CppSelf</span> <span class="o">=</span> <span class="n">m</span>
+            <span class="k">return</span> <span class="n">cym</span></div>
+
+
+    <span class="nb">property</span> <span class="n">objectiveOffset</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getObjectiveOffset</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">nVariables</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getNumCols</span><span class="p">()</span>
+
+    <span class="nb">property</span> <span class="n">nConstraints</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">getNumRows</span><span class="p">()</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">getQpsExample</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    Return full path to a QPS example file for doctests</span>
+<span class="sd">    '''</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+    <span class="c1"># The examples are installed in cylp/input</span>
+    <span class="n">cylpDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cylpDir</span><span class="p">,</span> <span class="s1">'input'</span><span class="p">,</span> <span class="s1">'hs268.qps'</span><span class="p">)</span>
+
+
+<span class="c1">#   cdef int CLP_readQuadraticMps(self, char* filename,</span>
+<span class="c1">#               int * columnStart, int * column2, double * elements,</span>
+<span class="c1">#               int checkSymmetry):</span>
+<span class="c1">#       return self.CppSelf.readQuadraticMps(filename, columnStart,</span>
+<span class="c1">#                                        column2, elements, checkSymmetry)</span>
+
+<span class="c1">#   def readQuadraticMps(self,</span>
+<span class="c1">#                           filename,</span>
+<span class="c1">#                           np.ndarray[np.int32_t,ndim=1] columnStart,</span>
+<span class="c1">#                           np.ndarray[np.int32_t,ndim=1] column2,</span>
+<span class="c1">#                           np.ndarray[np.double_t,ndim=1] elements,</span>
+<span class="c1">#                           checkSymmetry):</span>
+<span class="c1">#       return self.CLP_readQuadraticMps(filename,</span>
+<span class="c1">#                                           &lt;int*&gt;columnStart.data,</span>
+<span class="c1">#                                           &lt;int*&gt;column2.data,</span>
+<span class="c1">#                                           &lt;double*&gt;elements.data,</span>
+<span class="c1">#                                           checkSymmetry)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyCoinMpsIO</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+    </div>
+  </body>
+</html>

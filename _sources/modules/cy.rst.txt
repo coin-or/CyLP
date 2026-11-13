@@ -11,3 +11,4 @@
    CyCoinPackedMatrix <CyCoinPackedMatrix>
    CyCbcModel <CyCbcModel>
    CyCoinModel <CyCoinModel>
+   CyPivotPythonBase <CyPivotPythonBase>

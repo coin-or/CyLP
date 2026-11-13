@@ -1,34 +1,24 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>PivotPythonBase &#8212; cylp 0.9 documentation</title>
-    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.9',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PivotPythonBase &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="DantzigPivot" href="DantzigPivot.html" />
     <link rel="prev" title="pivots" href="pivots.html" /> 
-  </head>
-  <body>
-    <div class="related" role="navigation" aria-label="related navigation">
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,9 +33,10 @@
         <li class="right" >
           <a href="pivots.html" title="pivots"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="pivots.html" accesskey="U"><code class="docutils literal"><span class="pre">pivots</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.py</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pivots.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pivots</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-class docutils literal notranslate"><span class="pre">PivotPythonBase</span></code></a></li> 
       </ul>
     </div>  
 
@@ -54,51 +45,71 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-cylp.py.pivots.PivotPythonBase">
-<span id="pivotpythonbase"></span><h1><code class="xref py py-class docutils literal"><span class="pre">PivotPythonBase</span></code><a class="headerlink" href="#module-cylp.py.pivots.PivotPythonBase" title="Permalink to this headline">¶</a></h1>
+  <section id="module-cylp.py.pivots.PivotPythonBase">
+<span id="pivotpythonbase"></span><h1><code class="xref py py-class docutils literal notranslate"><span class="pre">PivotPythonBase</span></code><a class="headerlink" href="#module-cylp.py.pivots.PivotPythonBase" title="Link to this heading">¶</a></h1>
 <p>This class defines an interface all the Python pivot rules must implement.
-It consists of a method <code class="xref py py-func docutils literal"><span class="pre">pivotColumn()</span></code> which must be implemented and
-<code class="xref py py-func docutils literal"><span class="pre">isPivotAcceptable()</span></code> whose implementation is optional.</p>
-<dl class="class">
-<dt id="cylp.py.pivots.PivotPythonBase.PivotPythonBase">
-<em class="property">class </em><code class="descclassname">cylp.py.pivots.PivotPythonBase.</code><code class="descname">PivotPythonBase</code><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cylp.py.pivots.PivotPythonBase.PivotPythonBase.isPivotAcceptable">
-<code class="descname">isPivotAcceptable</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase.isPivotAcceptable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.isPivotAcceptable" title="Permalink to this definition">¶</a></dt>
+It consists of a method <code class="xref py py-func docutils literal notranslate"><span class="pre">pivotColumn()</span></code> which must be implemented and
+<code class="xref py py-func docutils literal notranslate"><span class="pre">isPivotAcceptable()</span></code> whose implementation is optional.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cylp.py.pivots.PivotPythonBase.PivotPythonBase">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cylp.py.pivots.PivotPythonBase.</span></span><span class="sig-name descname"><span class="pre">PivotPythonBase</span></span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase" title="Link to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="cylp.py.pivots.PivotPythonBase.PivotPythonBase.isPivotAcceptable">
+<span class="sig-name descname"><span class="pre">isPivotAcceptable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase.isPivotAcceptable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.isPivotAcceptable" title="Link to this definition">¶</a></dt>
 <dd><p>This is run just before the actual pivoting happens. Return False
 if the pivot is not acceptable for your method.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="cylp.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn">
-<code class="descname">pivotColumn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase.pivotColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Every subclass of <code class="docutils literal"><span class="pre">PivotPythonBase</span></code>, i.e. every pivot rule, must
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn">
+<span class="sig-name descname"><span class="pre">pivotColumn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase.pivotColumn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn" title="Link to this definition">¶</a></dt>
+<dd><p>Every subclass of <code class="docutils literal notranslate"><span class="pre">PivotPythonBase</span></code>, i.e. every pivot rule, must
 implement this method.</p>
 <p>Return the index of the entering variable, an integer.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="cylp.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts">
-<code class="descname">updateReducedCosts</code><span class="sig-paren">(</span><em>updates</em>, <em>spareRow1</em>, <em>spareRow2</em>, <em>spareCol1</em>, <em>spareCol2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase.updateReducedCosts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts">
+<span class="sig-name descname"><span class="pre">updateReducedCosts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">updates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spareRow1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spareRow2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spareCol1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spareCol2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/py/pivots/PivotPythonBase.html#PivotPythonBase.updateReducedCosts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts" title="Link to this definition">¶</a></dt>
 <dd><p>Update the reduced costs as its done in CLP’s Dantzig rule.</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="pivots.html"
-                        title="previous chapter"><code class="docutils literal"><span class="pre">pivots</span></code></a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="DantzigPivot.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">DantzigPivot</span></code></a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-class docutils literal notranslate"><span class="pre">PivotPythonBase</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase"><code class="docutils literal notranslate"><span class="pre">PivotPythonBase</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.isPivotAcceptable"><code class="docutils literal notranslate"><span class="pre">isPivotAcceptable()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.pivotColumn"><code class="docutils literal notranslate"><span class="pre">pivotColumn()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.py.pivots.PivotPythonBase.PivotPythonBase.updateReducedCosts"><code class="docutils literal notranslate"><span class="pre">updateReducedCosts()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="pivots.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pivots</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="DantzigPivot.html"
+                          title="next chapter"><code class="xref py py-class docutils literal notranslate"><span class="pre">DantzigPivot</span></code></a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -106,21 +117,21 @@ implement this method.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -135,14 +146,15 @@ implement this method.</p>
         <li class="right" >
           <a href="pivots.html" title="pivots"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="py.html" ><code class="docutils literal"><span class="pre">cylp.py</span></code></a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="pivots.html" ><code class="docutils literal"><span class="pre">pivots</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="py.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.py</span></code></a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="pivots.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">pivots</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-class docutils literal notranslate"><span class="pre">PivotPythonBase</span></code></a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
     </div>
   </body>
 </html>

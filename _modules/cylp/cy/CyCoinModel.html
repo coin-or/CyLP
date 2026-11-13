@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cylp.cy.CyCoinModel &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../../../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyCoinModel</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cylp.cy.CyCoinModel</h1><div class="highlight"><pre>
+<span></span><span class="c1"># cython: embedsignature=True</span>
+
+<div class="viewcode-block" id="CyCoinModel">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel">[docs]</a>
+<span class="n">cdef</span> <span class="k">class</span><span class="w"> </span><span class="nc">CyCoinModel</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">'''</span>
+
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; from cylp.cy import CyCoinModel, CyClpSimplex</span>
+<span class="sd">    &gt;&gt;&gt; m = CyCoinModel()</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; m.addVariable(3, np.array(</span>
+<span class="sd">    ...                 [0, 1, 2], np.int32),</span>
+<span class="sd">    ...                 np.array([1., 1., 1.], np.double), 0, 10, 5)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; m.addVariable(2, np.array(</span>
+<span class="sd">    ...                 [1,2], np.int32),</span>
+<span class="sd">    ...                 np.array([5, 2.], np.double), 0, 10, 2)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Add bounds for the three constraints (we have two variables)</span>
+<span class="sd">    &gt;&gt;&gt; m.setConstraintLower(0, 2.3)</span>
+<span class="sd">    &gt;&gt;&gt; m.setConstraintLower(1, 4.5)</span>
+<span class="sd">    &gt;&gt;&gt; m.setConstraintLower(0, 1.5)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; # Add a 4th constraint</span>
+<span class="sd">    &gt;&gt;&gt; m.addConstraint(2,</span>
+<span class="sd">    ...                     np.array([0, 1], np.int32),</span>
+<span class="sd">    ...                     np.array([1., 1.], np.double), 2, 7)</span>
+<span class="sd">    &gt;&gt;&gt;</span>
+<span class="sd">    &gt;&gt;&gt; s = CyClpSimplex()</span>
+<span class="sd">    &gt;&gt;&gt; # Load the problem from the CyCoinModel</span>
+<span class="sd">    &gt;&gt;&gt; s.loadProblemFromCyCoinModel(m)</span>
+<span class="sd">    0</span>
+<span class="sd">    &gt;&gt;&gt; s.primal()</span>
+<span class="sd">    'optimal'</span>
+<span class="sd">    &gt;&gt;&gt; abs(s.objectiveValue - 8.7) &lt; 10 ** -7</span>
+<span class="sd">    True</span>
+
+<span class="sd">    '''</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__cinit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CppCoinModel</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__dealloc__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span>
+
+<span class="c1">#   cdef void CLP_addColumn(self, int numberInColumn,</span>
+<span class="c1">#                           int * rows,</span>
+<span class="c1">#                           double * elements,</span>
+<span class="c1">#                           double columnLower,</span>
+<span class="c1">#                           double columnUpper,</span>
+<span class="c1">#                           double objectiveValue,</span>
+<span class="c1">#                           char * name,</span>
+<span class="c1">#                           int isInteger):</span>
+<span class="c1">#       self.CppSelf.addColumn(numberInColumn, rows, elements,</span>
+<span class="c1">#                              columnLower,columnUpper,</span>
+<span class="c1">#                              objectiveValue,name, isInteger)</span>
+
+    <span class="n">cdef</span> <span class="n">void</span> <span class="n">CLP_addColumn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">int</span> <span class="n">numberInColumn</span><span class="p">,</span>
+                            <span class="nb">int</span> <span class="o">*</span> <span class="n">rows</span><span class="p">,</span>
+                            <span class="n">double</span> <span class="o">*</span> <span class="n">elements</span><span class="p">,</span>
+                            <span class="n">double</span> <span class="n">columnLower</span><span class="p">,</span>
+                            <span class="n">double</span> <span class="n">columnUpper</span><span class="p">,</span>
+                            <span class="n">double</span> <span class="n">objectiveValue</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">addColumn</span><span class="p">(</span><span class="n">numberInColumn</span><span class="p">,</span> <span class="n">rows</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span>
+                               <span class="n">columnLower</span><span class="p">,</span> <span class="n">columnUpper</span><span class="p">,</span> <span class="n">objectiveValue</span><span class="p">)</span>
+
+<span class="c1">#   def addVariable(self, numberInColumn,</span>
+<span class="c1">#                       np.ndarray[np.int32_t, ndim=1] rows,</span>
+<span class="c1">#                       np.ndarray[np.double_t, ndim=1] elements,</span>
+<span class="c1">#                       columnLower,</span>
+<span class="c1">#                       columnUpper,</span>
+<span class="c1">#                       objective,</span>
+<span class="c1">#                       name,</span>
+<span class="c1">#                       isInteger):</span>
+<span class="c1">#        TODO: This makes adding a column real slower,</span>
+<span class="c1">#         but it is better than a COIN EXCEPTION!</span>
+<span class="c1">#        for r in rows:</span>
+<span class="c1">#           if r &gt;= self.getNumRows():</span>
+<span class="c1">#               raise Exception('CyClpSimplex.pyx:addColumn: Row number ' \</span>
+<span class="c1">#                                '%d should be less than row size %d' %</span>
+<span class="c1">#                                (r, self.getNumRows()))</span>
+<span class="c1">#       self.CLP_addColumn(numberInColumn, &lt;int*&gt;rows.data,</span>
+<span class="c1">#                            &lt;double*&gt; elements.data, columnLower, columnUpper,</span>
+<span class="c1">#                            objective, name, isInteger)</span>
+
+<div class="viewcode-block" id="CyCoinModel.addVariable">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.addVariable">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addVariable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numberInColumn</span><span class="p">,</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">rows</span><span class="p">,</span>
+                        <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">double_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">elements</span><span class="p">,</span>
+                        <span class="n">columnLower</span><span class="p">,</span>
+                        <span class="n">columnUpper</span><span class="p">,</span>
+                        <span class="n">objective</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CLP_addColumn</span><span class="p">(</span><span class="n">numberInColumn</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">*&gt;</span><span class="n">rows</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                          <span class="o">&lt;</span><span class="n">double</span><span class="o">*&gt;</span> <span class="n">elements</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columnLower</span><span class="p">,</span>
+                          <span class="n">columnUpper</span><span class="p">,</span> <span class="n">objective</span><span class="p">)</span></div>
+
+
+<span class="c1">#   cdef void CLP_addRow(self, int numberInRow, int * columns,</span>
+<span class="c1">#                       double * elements, double rowLower,</span>
+<span class="c1">#                       double rowUpper, char * name):</span>
+<span class="c1">#       self.CppSelf.addRow(numberInRow, columns, elements, rowLower,</span>
+<span class="c1">#                            rowUpper, name)</span>
+
+    <span class="n">cdef</span> <span class="n">void</span> <span class="n">CLP_addRow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">int</span> <span class="n">numberInRow</span><span class="p">,</span> <span class="nb">int</span> <span class="o">*</span> <span class="n">columns</span><span class="p">,</span>
+                        <span class="n">double</span> <span class="o">*</span> <span class="n">elements</span><span class="p">,</span> <span class="n">double</span> <span class="n">rowLower</span><span class="p">,</span>
+                        <span class="n">double</span> <span class="n">rowUpper</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">addRow</span><span class="p">(</span><span class="n">numberInRow</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">rowLower</span><span class="p">,</span> <span class="n">rowUpper</span><span class="p">)</span>
+
+<span class="c1">#   def addConstraint(self, numberInRow,</span>
+<span class="c1">#                   np.ndarray[np.int32_t, ndim=1] columns,</span>
+<span class="c1">#                   np.ndarray[np.double_t, ndim=1] elements,</span>
+<span class="c1">#                   rowLower,</span>
+<span class="c1">#                   rowUpper,</span>
+<span class="c1">#                   name = ''):</span>
+<span class="c1">#       self.CLP_addRow(numberInRow, &lt;int*&gt;columns.data,</span>
+<span class="c1">#                        &lt;double*&gt;elements.data, rowLower, rowUpper, name)</span>
+
+<div class="viewcode-block" id="CyCoinModel.addConstraint">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.addConstraint">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">addConstraint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numberInRow</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">columns</span><span class="p">,</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">double_t</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">1</span><span class="p">]</span> <span class="n">elements</span><span class="p">,</span>
+                    <span class="n">rowLower</span><span class="p">,</span>
+                    <span class="n">rowUpper</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CLP_addRow</span><span class="p">(</span><span class="n">numberInRow</span><span class="p">,</span> <span class="o">&lt;</span><span class="nb">int</span><span class="o">*&gt;</span><span class="n">columns</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                        <span class="o">&lt;</span><span class="n">double</span><span class="o">*&gt;</span><span class="n">elements</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">rowLower</span><span class="p">,</span> <span class="n">rowUpper</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.setVariableLower">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.setVariableLower">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setVariableLower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setColumnLower</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.setVariableUpper">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.setVariableUpper">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setVariableUpper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setColumnUpper</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.setConstraintLower">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.setConstraintLower">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setConstraintLower</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setRowLower</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.setConstraintUpper">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.setConstraintUpper">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setConstraintUpper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setRowUpper</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.setObjective">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.setObjective">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setObjective</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">varInd</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">setObjective</span><span class="p">(</span><span class="n">varInd</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.getNumVariables">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.getNumVariables">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getNumVariables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">numberColumns</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="CyCoinModel.getNumConstraints">
+<a class="viewcode-back" href="../../../modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel.getNumConstraints">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">getNumConstraints</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CppSelf</span><span class="o">.</span><span class="n">numberRows</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyCoinModel</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+    </div>
+  </body>
+</html>

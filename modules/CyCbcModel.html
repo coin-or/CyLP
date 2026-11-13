@@ -1,34 +1,24 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cylp.cy.CyCbcModel &#8212; cylp 0.9 documentation</title>
-    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.9',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cylp.cy.CyCbcModel &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="cylp.cy.CyCoinModel" href="CyCoinModel.html" />
     <link rel="prev" title="cylp.cy.CyCoinPackedMatrix" href="CyCoinPackedMatrix.html" /> 
-  </head>
-  <body>
-    <div class="related" role="navigation" aria-label="related navigation">
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,8 +33,9 @@
         <li class="right" >
           <a href="CyCoinPackedMatrix.html" title="cylp.cy.CyCoinPackedMatrix"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCbcModel</span></code></a></li> 
       </ul>
     </div>  
 
@@ -53,114 +44,379 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-cylp.cy.CyCbcModel">
-<span id="cylp-cy-cycbcmodel"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCbcModel" title="cylp.cy.CyCbcModel"><code class="xref py py-mod docutils literal"><span class="pre">cylp.cy.CyCbcModel</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCbcModel" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel">
-<em class="property">class </em><code class="descclassname">cylp.cy.CyCbcModel.</code><code class="descname">CyCbcModel</code><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Interfaces <code class="docutils literal"><span class="pre">CbcModel</span></code>. To solve a first you create a
-<a class="reference internal" href="CyClpSimplex.html#module-cylp.cy.CyClpSimplex" title="cylp.cy.CyClpSimplex"><code class="xref py py-class docutils literal"><span class="pre">cylp.cy.CyClpSimplex</span></code></a> object either
-by reading it from an <code class="docutils literal"><span class="pre">mps</span></code> file using
-<a class="reference internal" href="CyClpSimplex.html#cylp.cy.CyClpSimplex.CyClpSimplex.readMps" title="cylp.cy.CyClpSimplex.CyClpSimplex.readMps"><code class="xref py py-func docutils literal"><span class="pre">CyClpSimplex.readMps()</span></code></a>
+  <section id="module-cylp.cy.CyCbcModel">
+<span id="cylp-cy-cycbcmodel"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCbcModel" title="cylp.cy.CyCbcModel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCbcModel</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCbcModel" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cylp.cy.CyCbcModel.</span></span><span class="sig-name descname"><span class="pre">CyCbcModel</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel" title="Link to this definition">¶</a></dt>
+<dd><p>Interfaces <code class="docutils literal notranslate"><span class="pre">CbcModel</span></code>. To solve a first you create a
+<a class="reference internal" href="CyClpSimplex.html#module-cylp.cy.CyClpSimplex" title="cylp.cy.CyClpSimplex"><code class="xref py py-class docutils literal notranslate"><span class="pre">cylp.cy.CyClpSimplex</span></code></a> object either
+by reading it from an <code class="docutils literal notranslate"><span class="pre">mps</span></code> file using
+<a class="reference internal" href="CyClpSimplex.html#cylp.cy.CyClpSimplex.CyClpSimplex.readMps" title="cylp.cy.CyClpSimplex.CyClpSimplex.readMps"><code class="xref py py-func docutils literal notranslate"><span class="pre">CyClpSimplex.readMps()</span></code></a>
 or by using cylp modeling tool
-<a class="reference internal" href="modeling.html#module-cylp.py.modeling.CyLPModel" title="cylp.py.modeling.CyLPModel"><code class="xref py py-mod docutils literal"><span class="pre">cylp.py.modeling.CyLPModel</span></code></a>. Then you ask the object for a
-<code class="docutils literal"><span class="pre">CyCbcModel</span></code> which is capable solving MIPs using B&amp;B</p>
+<a class="reference internal" href="modeling.html#module-cylp.py.modeling.CyLPModel" title="cylp.py.modeling.CyLPModel"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.py.modeling.CyLPModel</span></code></a>. Then you ask the object for a
+<code class="docutils literal notranslate"><span class="pre">CyCbcModel</span></code> which is capable solving MIPs using B&amp;B</p>
 <p><strong>Usage</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyCbcModel</span><span class="p">,</span> <span class="n">CyClpSimplex</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.py.modeling.CyLPModel</span> <span class="kn">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyCbcModel</span><span class="p">,</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.py.modeling.CyLPModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyLPModel</span><span class="p">,</span> <span class="n">CyLPArray</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">CyLPModel</span><span class="p">()</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">isInt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">isInt</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">'y'</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">4.2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
-<span class="go">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">A</span><span class="o">*</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">*</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">@</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">@</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">getCbcModel</span><span class="p">()</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cbcModel</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 <span class="go">0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">(</span><span class="n">cbcModel</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
-<span class="go">&#39;solution&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">cbcModel</span><span class="o">.</span><span class="n">status</span><span class="p">)</span>
+<span class="go">solution</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sol_x</span> <span class="o">=</span> <span class="n">cbcModel</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s1">'x'</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">sol_x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]))</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="o">**-</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
 <span class="go">True</span>
 </pre></div>
 </div>
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator">
-<code class="descname">addCutGenerator</code><span class="sig-paren">(</span><em>self</em>, <em>CyCglCutGenerator generator</em>, <em>howOften=1</em>, <em>name=''</em>, <em>normal=True</em>, <em>atSolution=False</em>, <em>infeasible=False</em>, <em>howOftenInSub=-100</em>, <em>whatDepth=-1</em>, <em>whatDepthInSub=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator">
+<span class="sig-name descname"><span class="pre">addCutGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">CyCglCutGenerator</span> <span class="pre">generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">howOften</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atSolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infeasible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">howOftenInSub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whatDepth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whatDepthInSub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.addCutGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator" title="Link to this definition">¶</a></dt>
+<dd><p>Add a Cgl cut generator, such as <code class="xref py py-class docutils literal notranslate"><span class="pre">cylp.cy.CyCgl.CyCglGomory</span></code>. The
+other arguments are those of <code class="docutils literal notranslate"><span class="pre">CbcModel::addCutGenerator</span></code>.</p>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator">
-<code class="descname">addPythonCutGenerator</code><span class="sig-paren">(</span><em>self</em>, <em>pythonCutGeneratorObject</em>, <em>howOften=1</em>, <em>name=''</em>, <em>normal=True</em>, <em>atSolution=False</em>, <em>infeasible=False</em>, <em>howOftenInSub=-100</em>, <em>whatDepth=-1</em>, <em>whatDepthInSub=-1</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator">
+<span class="sig-name descname"><span class="pre">addPythonCutGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pythonCutGeneratorObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">howOften</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atSolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infeasible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">howOftenInSub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whatDepth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">whatDepthInSub</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.addPythonCutGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator" title="Link to this definition">¶</a></dt>
+<dd><p>Add a cut generator written in Python: an object whose
+<code class="docutils literal notranslate"><span class="pre">generateCuts(si,</span> <span class="pre">cglTreeInfo)</span></code> method returns a list of cuts. See
+<code class="docutils literal notranslate"><span class="pre">cylp/py/mip/GomoryCutGenerator.py</span></code> for an example. The other
+arguments are those of <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator" title="cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">addCutGenerator()</span></code></a>.</p>
+<p>The cuts must be in terms of the model’s variables, but Cbc calls
+<code class="docutils literal notranslate"><span class="pre">generateCuts</span></code> on the problem after its preprocessing, which can
+have fewer rows and columns. See
+<a class="reference external" href="https://github.com/coin-or/CyLP/issues/255">issue 255</a>.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">generateCuts</span></code> raises an exception, Cbc finishes its search
+without calling it again, and <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">solve()</span></code></a> then raises the
+exception.</p>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbondoned">
-<code class="descname">isRelaxationAbondoned</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbondoned" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap">
+<span class="sig-name descname"><span class="pre">allowableFractionGap</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.allowableFractionGap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap" title="Link to this definition">¶</a></dt>
+<dd><p>Stop when the gap between the objective value of the best solution
+and <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue" title="cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bestPossibleObjValue</span></code></a> is less than this fraction of the
+absolute value of the best solution’s objective value.</p>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible">
-<code class="descname">isRelaxationDualInfeasible</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.allowableGap">
+<span class="sig-name descname"><span class="pre">allowableGap</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.allowableGap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableGap" title="Link to this definition">¶</a></dt>
+<dd><p>Stop when the gap between the objective value of the best solution
+and <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue" title="cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bestPossibleObjValue</span></code></a> is less than this.</p>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible">
-<code class="descname">isRelaxationInfeasible</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.allowablePercentageGap">
+<span class="sig-name descname"><span class="pre">allowablePercentageGap</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.allowablePercentageGap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.allowablePercentageGap" title="Link to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap" title="cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap"><code class="xref py py-attr docutils literal notranslate"><span class="pre">allowableFractionGap</span></code></a> as a percentage.</p>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal">
-<code class="descname">isRelaxationOptimal</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue">
+<span class="sig-name descname"><span class="pre">bestPossibleObjValue</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.bestPossibleObjValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue" title="Link to this definition">¶</a></dt>
+<dd><p>A bound on the optimal objective value: the best of the best possible
+value left in the branch-and-bound tree and the best solution found.</p>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare">
-<code class="descname">setNodeCompare</code><span class="sig-paren">(</span><em>self</em>, <em>nodeCompareObject</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.dualColumnSolution">
+<span class="sig-name descname"><span class="pre">dualColumnSolution</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.dualColumnSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.dualColumnSolution" title="Link to this definition">¶</a></dt>
+<dd><p>Variables’ reduced costs as one array, in column order. Unlike
+<a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.dualVariableSolution" title="cylp.cy.CyCbcModel.CyCbcModel.dualVariableSolution"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dualVariableSolution</span></code></a>, it is not split up by variable.
+A copy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCbcModel.CyCbcModel.solve">
-<code class="descname">solve</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.dualConstraintSolution">
+<span class="sig-name descname"><span class="pre">dualConstraintSolution</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.dualConstraintSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.dualConstraintSolution" title="Link to this definition">¶</a></dt>
+<dd><p>Dual variables’ solution. Once <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">solve()</span></code></a> has found a
+solution, Cbc fixes the integer variables at their values in it and
+solves the LP relaxation again, so these are the duals of that LP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.dualVariableSolution">
+<span class="sig-name descname"><span class="pre">dualVariableSolution</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.dualVariableSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.dualVariableSolution" title="Link to this definition">¶</a></dt>
+<dd><p>Variables’ reduced costs. See <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.dualConstraintSolution" title="cylp.cy.CyCbcModel.CyCbcModel.dualConstraintSolution"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dualConstraintSolution</span></code></a> for
+the LP that they belong to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.integerTolerance">
+<span class="sig-name descname"><span class="pre">integerTolerance</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.integerTolerance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.integerTolerance" title="Link to this definition">¶</a></dt>
+<dd><p>How far from an integer an integer variable’s value can be and still
+count as an integer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbandoned">
+<span class="sig-name descname"><span class="pre">isRelaxationAbandoned</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.isRelaxationAbandoned"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbandoned" title="Link to this definition">¶</a></dt>
+<dd><p>Whether Cbc gave up on the LP relaxation it solved first because of
+numerical difficulties.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible">
+<span class="sig-name descname"><span class="pre">isRelaxationDualInfeasible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.isRelaxationDualInfeasible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible" title="Link to this definition">¶</a></dt>
+<dd><p>Whether Cbc proved that the LP relaxation it solved first is dual
+infeasible, i.e. unbounded if it’s feasible.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible">
+<span class="sig-name descname"><span class="pre">isRelaxationInfeasible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.isRelaxationInfeasible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible" title="Link to this definition">¶</a></dt>
+<dd><p>Whether Cbc proved that the LP relaxation it solved first is infeasible.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal">
+<span class="sig-name descname"><span class="pre">isRelaxationOptimal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.isRelaxationOptimal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal" title="Link to this definition">¶</a></dt>
+<dd><p>Whether Cbc solved the LP relaxation it solved first to optimality.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.logLevel">
+<span class="sig-name descname"><span class="pre">logLevel</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.logLevel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.logLevel" title="Link to this definition">¶</a></dt>
+<dd><p>How much Cbc prints: 0 for nothing, more for more.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.maximumNodes">
+<span class="sig-name descname"><span class="pre">maximumNodes</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.maximumNodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.maximumNodes" title="Link to this definition">¶</a></dt>
+<dd><p>The maximum number of nodes that <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">solve()</span></code></a> explores.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.maximumSeconds">
+<span class="sig-name descname"><span class="pre">maximumSeconds</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.maximumSeconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.maximumSeconds" title="Link to this definition">¶</a></dt>
+<dd><p>The time limit of <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">solve()</span></code></a>, in seconds.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.maximumSolutions">
+<span class="sig-name descname"><span class="pre">maximumSolutions</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.maximumSolutions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.maximumSolutions" title="Link to this definition">¶</a></dt>
+<dd><p>Stop after finding this many solutions.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.nodeCount">
+<span class="sig-name descname"><span class="pre">nodeCount</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.nodeCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.nodeCount" title="Link to this definition">¶</a></dt>
+<dd><p>The number of nodes of the branch-and-bound tree that Cbc explored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.numberHeuristicSolutions">
+<span class="sig-name descname"><span class="pre">numberHeuristicSolutions</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.numberHeuristicSolutions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.numberHeuristicSolutions" title="Link to this definition">¶</a></dt>
+<dd><p>The number of solutions that Cbc’s heuristics found.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.numberObjects">
+<span class="sig-name descname"><span class="pre">numberObjects</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.numberObjects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.numberObjects" title="Link to this definition">¶</a></dt>
+<dd><p>The number of objects that Cbc branches on, such as integer variables.
+It is 0 until <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">solve()</span></code></a> creates them.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.numberThreads">
+<span class="sig-name descname"><span class="pre">numberThreads</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.numberThreads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.numberThreads" title="Link to this definition">¶</a></dt>
+<dd><p>The number of threads that Cbc uses, if it was built with threads.
+0 means the default.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.objectiveValue">
+<span class="sig-name descname"><span class="pre">objectiveValue</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.objectiveValue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.objectiveValue" title="Link to this definition">¶</a></dt>
+<dd><p>The objective value of the best solution found.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.osiSolverInteface">
+<span class="sig-name descname"><span class="pre">osiSolverInteface</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.osiSolverInteface"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.osiSolverInteface" title="Link to this definition">¶</a></dt>
+<dd><p>The solver that Cbc uses for the LP relaxations, as a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">cylp.cy.CyOsiSolverInterface.CyOsiSolverInterface</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.primalColumnSolution">
+<span class="sig-name descname"><span class="pre">primalColumnSolution</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.primalColumnSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.primalColumnSolution" title="Link to this definition">¶</a></dt>
+<dd><p>Solution to the primal variables as one array, in column order.
+Unlike <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.primalVariableSolution" title="cylp.cy.CyCbcModel.CyCbcModel.primalVariableSolution"><code class="xref py py-attr docutils literal notranslate"><span class="pre">primalVariableSolution</span></code></a>, it is not split up by
+variable, which is much faster for large models. A copy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.primalConstraintSolution">
+<span class="sig-name descname"><span class="pre">primalConstraintSolution</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.primalConstraintSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.primalConstraintSolution" title="Link to this definition">¶</a></dt>
+<dd><p>Constraints’ activities, i.e. the value of each constraint’s
+left-hand side at the solution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.primalVariableSolution">
+<span class="sig-name descname"><span class="pre">primalVariableSolution</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.primalVariableSolution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.primalVariableSolution" title="Link to this definition">¶</a></dt>
+<dd><p>Solution to the primal variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Numpy array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare">
+<span class="sig-name descname"><span class="pre">setNodeCompare</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodeCompareObject</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.setNodeCompare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare" title="Link to this definition">¶</a></dt>
+<dd><p>Use <code class="docutils literal notranslate"><span class="pre">nodeCompareObject</span></code>, a <code class="xref py py-class docutils literal notranslate"><span class="pre">cylp.py.mip.NodeCompareBase</span></code>, to
+choose the next node of the branch-and-bound tree to explore.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.solutionCount">
+<span class="sig-name descname"><span class="pre">solutionCount</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.solutionCount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.solutionCount" title="Link to this definition">¶</a></dt>
+<dd><p>The number of solutions that Cbc found.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.solve">
+<span class="sig-name descname"><span class="pre">solve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="Link to this definition">¶</a></dt>
 <dd><p>Call CbcMain. Solve the problem using the same parameters used by CbcSolver.
 Equivalent to solving the model from the command line using cbc’s binary.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCbcModel.CyCbcModel.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCbcModel.html#CyCbcModel.status"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCbcModel.CyCbcModel.status" title="Link to this definition">¶</a></dt>
+<dd><p>The result of <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve" title="cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="xref py py-meth docutils literal notranslate"><span class="pre">solve()</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">'solution'</span></code> if Cbc proved that its solution is optimal, or within
+<a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableGap" title="cylp.cy.CyCbcModel.CyCbcModel.allowableGap"><code class="xref py py-attr docutils literal notranslate"><span class="pre">allowableGap</span></code></a> or <a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap" title="cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap"><code class="xref py py-attr docutils literal notranslate"><span class="pre">allowableFractionGap</span></code></a> of the
+optimum,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'relaxation</span> <span class="pre">infeasible'</span></code>, <code class="docutils literal notranslate"><span class="pre">'relaxation</span> <span class="pre">abandoned'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">'problem</span> <span class="pre">proven</span> <span class="pre">infeasible'</span></code>,</p></li>
+<li><p>otherwise, why Cbc stopped: <code class="docutils literal notranslate"><span class="pre">'stopped</span> <span class="pre">on</span> <span class="pre">gap'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'stopped</span> <span class="pre">on</span> <span class="pre">nodes'</span></code>, <code class="docutils literal notranslate"><span class="pre">'stopped</span> <span class="pre">on</span> <span class="pre">time'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'stopped</span> <span class="pre">on</span> <span class="pre">user</span> <span class="pre">event'</span></code>, <code class="docutils literal notranslate"><span class="pre">'stopped</span> <span class="pre">on</span> <span class="pre">solutions'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'linear</span> <span class="pre">relaxation</span> <span class="pre">unbounded'</span></code>, <code class="docutils literal notranslate"><span class="pre">'search</span> <span class="pre">completed'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">'unset'</span></code>.</p></li>
+</ul>
 </dd></dl>
 
-</div>
+</dd></dl>
+
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="CyCoinPackedMatrix.html"
-                        title="previous chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CyCoinModel.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCoinModel</span></code></a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCbcModel</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel"><code class="docutils literal notranslate"><span class="pre">CyCbcModel</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.addCutGenerator"><code class="docutils literal notranslate"><span class="pre">addCutGenerator()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.addPythonCutGenerator"><code class="docutils literal notranslate"><span class="pre">addPythonCutGenerator()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableFractionGap"><code class="docutils literal notranslate"><span class="pre">allowableFractionGap</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.allowableGap"><code class="docutils literal notranslate"><span class="pre">allowableGap</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.allowablePercentageGap"><code class="docutils literal notranslate"><span class="pre">allowablePercentageGap</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.bestPossibleObjValue"><code class="docutils literal notranslate"><span class="pre">bestPossibleObjValue</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.dualColumnSolution"><code class="docutils literal notranslate"><span class="pre">dualColumnSolution</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.dualConstraintSolution"><code class="docutils literal notranslate"><span class="pre">dualConstraintSolution</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.dualVariableSolution"><code class="docutils literal notranslate"><span class="pre">dualVariableSolution</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.integerTolerance"><code class="docutils literal notranslate"><span class="pre">integerTolerance</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationAbandoned"><code class="docutils literal notranslate"><span class="pre">isRelaxationAbandoned()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationDualInfeasible"><code class="docutils literal notranslate"><span class="pre">isRelaxationDualInfeasible()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationInfeasible"><code class="docutils literal notranslate"><span class="pre">isRelaxationInfeasible()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.isRelaxationOptimal"><code class="docutils literal notranslate"><span class="pre">isRelaxationOptimal()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.logLevel"><code class="docutils literal notranslate"><span class="pre">logLevel</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.maximumNodes"><code class="docutils literal notranslate"><span class="pre">maximumNodes</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.maximumSeconds"><code class="docutils literal notranslate"><span class="pre">maximumSeconds</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.maximumSolutions"><code class="docutils literal notranslate"><span class="pre">maximumSolutions</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.nodeCount"><code class="docutils literal notranslate"><span class="pre">nodeCount</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.numberHeuristicSolutions"><code class="docutils literal notranslate"><span class="pre">numberHeuristicSolutions</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.numberObjects"><code class="docutils literal notranslate"><span class="pre">numberObjects</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.numberThreads"><code class="docutils literal notranslate"><span class="pre">numberThreads</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.objectiveValue"><code class="docutils literal notranslate"><span class="pre">objectiveValue</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.osiSolverInteface"><code class="docutils literal notranslate"><span class="pre">osiSolverInteface</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.primalColumnSolution"><code class="docutils literal notranslate"><span class="pre">primalColumnSolution</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.primalConstraintSolution"><code class="docutils literal notranslate"><span class="pre">primalConstraintSolution</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.primalVariableSolution"><code class="docutils literal notranslate"><span class="pre">primalVariableSolution</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.setNodeCompare"><code class="docutils literal notranslate"><span class="pre">setNodeCompare()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solutionCount"><code class="docutils literal notranslate"><span class="pre">solutionCount</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.solve"><code class="docutils literal notranslate"><span class="pre">solve()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCbcModel.CyCbcModel.status"><code class="docutils literal notranslate"><span class="pre">status</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="CyCoinPackedMatrix.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="CyCoinModel.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinModel</span></code></a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -168,21 +424,21 @@ Equivalent to solving the model from the command line using cbc’s binary.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -197,13 +453,14 @@ Equivalent to solving the model from the command line using cbc’s binary.</p>
         <li class="right" >
           <a href="CyCoinPackedMatrix.html" title="cylp.cy.CyCoinPackedMatrix"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCbcModel</span></code></a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
     </div>
   </body>
 </html>

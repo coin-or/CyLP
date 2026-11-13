@@ -1,34 +1,24 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cylp.cy.CyCoinPackedMatrix &#8212; cylp 0.9 documentation</title>
-    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.9',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cylp.cy.CyCoinPackedMatrix &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="cylp.cy.CyCbcModel" href="CyCbcModel.html" />
     <link rel="prev" title="cylp.cy.CyCoinIndexedVector" href="CyCoinIndexedVector.html" /> 
-  </head>
-  <body>
-    <div class="related" role="navigation" aria-label="related navigation">
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,8 +33,9 @@
         <li class="right" >
           <a href="CyCoinIndexedVector.html" title="cylp.cy.CyCoinIndexedVector"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a></li> 
       </ul>
     </div>  
 
@@ -53,15 +44,15 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-cylp.cy.CyCoinPackedMatrix">
-<span id="cylp-cy-cycoinpackedmatrix"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCoinPackedMatrix" title="cylp.cy.CyCoinPackedMatrix"><code class="xref py py-mod docutils literal"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCoinPackedMatrix" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix">
-<em class="property">class </em><code class="descclassname">cylp.cy.CyCoinPackedMatrix.</code><code class="descname">CyCoinPackedMatrix</code><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix" title="Permalink to this definition">¶</a></dt>
-<dd><p><code class="docutils literal"><span class="pre">CyCoinPackedMatrix</span></code> interfaces <code class="docutils literal"><span class="pre">CoinPackedMatrix</span></code></p>
+  <section id="module-cylp.cy.CyCoinPackedMatrix">
+<span id="cylp-cy-cycoinpackedmatrix"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCoinPackedMatrix" title="cylp.cy.CyCoinPackedMatrix"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCoinPackedMatrix" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cylp.cy.CyCoinPackedMatrix.</span></span><span class="sig-name descname"><span class="pre">CyCoinPackedMatrix</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix" title="Link to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">CyCoinPackedMatrix</span></code> interfaces <code class="docutils literal notranslate"><span class="pre">CoinPackedMatrix</span></code></p>
 <p><strong>Usage Example</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyCoinPackedMatrix</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyCoinPackedMatrix</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">elements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
@@ -74,52 +65,75 @@
 <span class="go">5</span>
 </pre></div>
 </div>
-<dl class="method">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendCol">
-<code class="descname">appendCol</code><span class="sig-paren">(</span><em>self</em>, <em>ndarray vecInd=None</em>, <em>ndarray elements=None</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendCol" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendCol">
+<span class="sig-name descname"><span class="pre">appendCol</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarray[int32_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1]=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarray[double_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1]=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix.appendCol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendCol" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendRow">
-<code class="descname">appendRow</code><span class="sig-paren">(</span><em>self</em>, <em>ndarray vecInd=None</em>, <em>ndarray elements=None</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendRow" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendRow">
+<span class="sig-name descname"><span class="pre">appendRow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarray[int32_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1]=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndarray[double_t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1]=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix.appendRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendRow" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.dumpMatrix">
-<code class="descname">dumpMatrix</code><span class="sig-paren">(</span><em>self</em>, <em>char *s</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.dumpMatrix" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.dumpMatrix">
+<span class="sig-name descname"><span class="pre">dumpMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">char</span> <span class="pre">*s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix.dumpMatrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.dumpMatrix" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.hasGaps">
-<code class="descname">hasGaps</code><span class="sig-paren">(</span><em>self</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.hasGaps" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.hasGaps">
+<span class="sig-name descname"><span class="pre">hasGaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix.hasGaps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.hasGaps" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.removeGaps">
-<code class="descname">removeGaps</code><span class="sig-paren">(</span><em>self</em>, <em>removeValue=-1.0</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.removeGaps" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.removeGaps">
+<span class="sig-name descname"><span class="pre">removeGaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">removeValue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix.removeGaps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.removeGaps" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.reserve">
-<code class="descname">reserve</code><span class="sig-paren">(</span><em>self</em>, <em>newMaxMajorDim</em>, <em>newMaxSize</em>, <em>create=0</em><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.reserve" title="Permalink to this definition">¶</a></dt>
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.reserve">
+<span class="sig-name descname"><span class="pre">reserve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newMaxMajorDim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newMaxSize</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinPackedMatrix.html#CyCoinPackedMatrix.reserve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.reserve" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="CyCoinIndexedVector.html"
-                        title="previous chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCoinIndexedVector</span></code></a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CyCbcModel.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCbcModel</span></code></a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix"><code class="docutils literal notranslate"><span class="pre">CyCoinPackedMatrix</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendCol"><code class="docutils literal notranslate"><span class="pre">appendCol()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.appendRow"><code class="docutils literal notranslate"><span class="pre">appendRow()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.dumpMatrix"><code class="docutils literal notranslate"><span class="pre">dumpMatrix()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.hasGaps"><code class="docutils literal notranslate"><span class="pre">hasGaps()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.removeGaps"><code class="docutils literal notranslate"><span class="pre">removeGaps()</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix.reserve"><code class="docutils literal notranslate"><span class="pre">reserve()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="CyCoinIndexedVector.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinIndexedVector</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="CyCbcModel.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCbcModel</span></code></a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -127,21 +141,21 @@
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -156,13 +170,14 @@
         <li class="right" >
           <a href="CyCoinIndexedVector.html" title="cylp.cy.CyCoinIndexedVector"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinPackedMatrix</span></code></a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
     </div>
   </body>
 </html>

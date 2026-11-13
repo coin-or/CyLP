@@ -1,33 +1,23 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="./">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Indices and tables &#8212; cylp 0.91 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.91',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>CyLP &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="cylp.cy" href="modules/cy.html" /> 
-  </head>
-  <body>
-    <div class="related" role="navigation" aria-label="related navigation">
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -39,7 +29,8 @@
         <li class="right" >
           <a href="modules/cy.html" title="cylp.cy"
              accesskey="N">next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">cylp 0.91 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">cylp 0.94.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CyLP</a></li> 
       </ul>
     </div>  
 
@@ -50,47 +41,257 @@
             
   <div class="toctree-wrapper compound">
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
+<section id="cylp">
+<h1>CyLP<a class="headerlink" href="#cylp" title="Link to this heading">¶</a></h1>
+<p>CyLP is a Python interface to COIN-OR’s Linear and mixed-integer program solvers
+(CLP, CBC, and CGL). CyLP’s unique feature is that you can use it to alter the
+solution process of the solvers from within Python. For example, you may
+define cut generators, branch-and-bound strategies, and primal/dual Simplex
+pivot rules completely in Python.</p>
+<p>You may read your LP from an mps file or use the CyLP’s easy modeling
+facility. Please find examples in the <a class="reference external" href="https://www.coin-or.org/CyLP/">documentation</a>.</p>
+</section>
+<section id="docker">
+<h1>Docker<a class="headerlink" href="#docker" title="Link to this heading">¶</a></h1>
+<p>If you’re comfortable with Docker, you can get started right away with the container
+available on Dockerhub that comes with CyLP pre-installed.</p>
+<p><a class="reference external" href="https://hub.docker.com/repository/docker/coinor/cylp">https://hub.docker.com/repository/docker/coinor/cylp</a></p>
+<p>Otherwise, read on.</p>
+</section>
+<section id="prerequisites-and-installation">
+<h1>Prerequisites and installation<a class="headerlink" href="#prerequisites-and-installation" title="Link to this heading">¶</a></h1>
+<section id="installation-as-a-binary-wheel">
+<h2>Installation as a binary wheel<a class="headerlink" href="#installation-as-a-binary-wheel" title="Link to this heading">¶</a></h2>
+<p>Binary wheels are available on PyPI for Python 3.10 and later on Linux (x86_64
+and aarch64, including distributions based on musl, such as Alpine), macOS
+(Intel and Apple Silicon) and Windows (x86_64). They include Cbc, so there is
+nothing else to install:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pip install cylp
+</pre></div>
 </div>
-<div class="section" id="modules">
-<h1>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
+<p>The wheels for each release are listed at <a class="reference external" href="https://pypi.org/project/cylp/#files">https://pypi.org/project/cylp/#files</a>.</p>
+</section>
+<section id="installation-with-conda">
+<h2>Installation with conda<a class="headerlink" href="#installation-with-conda" title="Link to this heading">¶</a></h2>
+<p>CyLP is also available from <a class="reference external" href="https://conda-forge.org">conda-forge</a>, for Linux
+(x86_64, aarch64 and ppc64le), macOS (Intel and Apple Silicon) and Windows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda install -c conda-forge cylp
+</pre></div>
+</div>
+<p>If neither works for your platform, it is easy to install from source, but Cbc
+must be installed first, as detailed below. The easiest route for this is to use
+conda.</p>
+</section>
+<section id="on-linux-macos-with-conda-installation-from-source">
+<h2>On Linux/macOS with conda: Installation from source<a class="headerlink" href="#on-linux-macos-with-conda-installation-from-source" title="Link to this heading">¶</a></h2>
+<p>To install from source, you will need to install binaries for Cbc or also build Cbc from source.
+The version should be 2.10 (recommended) or earlier
+(current master branch of Cbc will not work with this version of CyLP).</p>
+<p>The following commands will create and activate a new conda environment with all
+these prerequisites installed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ conda create -n cylp coin-or-cbc cython numpy pkg-config scipy -c conda-forge
+$ conda activate cylp
+</pre></div>
+</div>
+<p>Now you can install CyLP from PyPI:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --no-build-isolation cylp
+</pre></div>
+</div>
+<p>(The option <code class="docutils literal notranslate"><span class="pre">--no-build-isolation</span></code> ensures that <code class="docutils literal notranslate"><span class="pre">cylp</span></code> uses the Python packages
+installed by conda in the build phase.)</p>
+<p>Alternatively, if you have cloned CyLP from GitHub:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install --no-build-isolation .
+</pre></div>
+</div>
+</section>
+<section id="on-linux-macos-with-pip-installation-from-source">
+<h2>On Linux/macOS with pip: Installation from source<a class="headerlink" href="#on-linux-macos-with-pip-installation-from-source" title="Link to this heading">¶</a></h2>
+<p>You will need to install binaries for Cbc. The version should be 2.10 (recommended) or earlier
+(current master branch of Cbc will not work with this version of CyLP).
+You can install Cbc by either by installing with your system’s package manager, by downloading pre-built binaries,
+or by building yourself from source using <a class="reference external" href="https://github.com/coin-or/coinbrew">coinbrew</a>.</p>
+<ol class="arabic">
+<li><p>To install Cbc in Linux, the easiest way is to use a package manager. Install
+<code class="docutils literal notranslate"><span class="pre">coinor-libcbc-dev</span></code> on Ubuntu/Debian or <code class="docutils literal notranslate"><span class="pre">coin-or-Cbc-devel</span></code> on Fedora, or the
+<a class="reference external" href="https://doc.sagemath.org/html/en/reference/spkg/cbc.html#equivalent-system-packages">corresponding package on your distribution</a>.</p></li>
+<li><p>On macOS, it is easiest to install Cbc with homebrew:</p>
+<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">brew</span> <span class="pre">install</span> <span class="pre">cbc</span> <span class="pre">pkg-config</span></code></p>
+</li>
+</ol>
+<p>You should no longer need to build Cbc from source on any platform unless for some reason, none of the
+above recipes applies to you. If you do need to build from source, please go to the <a class="reference external" href="https://github.com/coin-or/Cbc">Cbc</a>
+project page and follow the instructions there. After building and installing, make sure to
+either set the <code class="docutils literal notranslate"><span class="pre">COIN_INSTALL_DIR</span></code> variable to point to the installation or set <code class="docutils literal notranslate"><span class="pre">PKG_CONFIG_PATH</span></code> to point to
+the directory where the <code class="docutils literal notranslate"><span class="pre">.pc</span></code> files are installed. You may also need to set either <code class="docutils literal notranslate"><span class="pre">LD_LIBRARY_PATH</span></code> (Linux)
+or <code class="docutils literal notranslate"><span class="pre">DYLD_LIBRARY_PATH</span></code> (macOS).</p>
+<p>Next, build and install CyLP:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pip install cylp
+</pre></div>
+</div>
+<p>This builds and installs CyLP, along with NumPy and
+<a class="reference external" href="https://scipy.org">SciPy</a>, which it needs at run time.</p>
+</section>
+</section>
+<section id="testing-your-installation">
+<h1>Testing your installation<a class="headerlink" href="#testing-your-installation" title="Link to this heading">¶</a></h1>
+<p>Now you can use CyLP in your python code. For example, to solve the LP
+relaxation of an example MIP that comes with CyLP:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy.CyClpSimplex</span><span class="w"> </span><span class="kn">import</span> <span class="n">getMpsExample</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">getMpsExample</span><span class="p">())</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">initialSolve</span><span class="p">()</span>
+<span class="go">'optimal'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">objectiveValue</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="go">2520.5717</span>
+</pre></div>
+</div>
+<p>To run CyLP’s tests, including the examples in its docstrings, install
+<a class="reference external" href="https://pytest.org">pytest</a> and run this in the CyLP source directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pytest cylp/tests
+</pre></div>
+</div>
+</section>
+<section id="modeling-example">
+<h1>Modeling Example<a class="headerlink" href="#modeling-example" title="Link to this heading">¶</a></h1>
+<p>Here is an example of how to model with CyLP’s modeling facility:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyClpSimplex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cylp.py.modeling.CyLPModel</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyLPArray</span>
+
+<span class="n">s</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
+
+<span class="c1"># Add variables</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">'x'</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">addVariable</span><span class="p">(</span><span class="s1">'y'</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Create coefficients and bounds</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.</span><span class="p">]])</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">1.</span><span class="p">,</span> <span class="mf">2.</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">])</span>
+<span class="n">b</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">4.2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="n">x_u</span><span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">])</span>
+
+<span class="c1"># Add constraints</span>
+<span class="n">s</span> <span class="o">+=</span> <span class="n">A</span> <span class="o">@</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">a</span>
+<span class="n">s</span> <span class="o">+=</span> <span class="mi">2</span> <span class="o">&lt;=</span> <span class="n">B</span> <span class="o">@</span> <span class="n">x</span> <span class="o">+</span> <span class="n">D</span> <span class="o">@</span> <span class="n">y</span> <span class="o">&lt;=</span> <span class="n">b</span>
+<span class="n">s</span> <span class="o">+=</span> <span class="n">y</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+<span class="n">s</span> <span class="o">+=</span> <span class="mf">1.1</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x_u</span>
+
+<span class="c1"># Set the objective function</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">CyLPArray</span><span class="p">([</span><span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.</span><span class="p">,</span> <span class="mf">3.</span><span class="p">])</span>
+<span class="n">s</span><span class="o">.</span><span class="n">objective</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">y</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+<span class="c1"># Solve using primal Simplex</span>
+<span class="n">s</span><span class="o">.</span><span class="n">primal</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">primalVariableSolution</span><span class="p">[</span><span class="s1">'x'</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>This is the expected output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Clp0006I</span> <span class="mi">0</span>  <span class="n">Obj</span> <span class="mf">1.1</span> <span class="n">Primal</span> <span class="n">inf</span> <span class="mf">2.8999998</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="n">Dual</span> <span class="n">inf</span> <span class="mf">5.01e+10</span> <span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="n">w</span><span class="o">.</span><span class="n">o</span><span class="o">.</span> <span class="n">free</span> <span class="n">dual</span> <span class="n">inf</span> <span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">Clp0006I</span> <span class="mi">5</span>  <span class="n">Obj</span> <span class="mf">1.3</span>
+<span class="n">Clp0000I</span> <span class="n">Optimal</span> <span class="o">-</span> <span class="n">objective</span> <span class="n">value</span> <span class="mf">1.3</span>
+<span class="p">[</span><span class="mf">0.2</span> <span class="mf">2.</span>  <span class="mf">1.1</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h1>Documentation<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<p>You may access CyLP’s documentation:</p>
+<ol class="arabic simple">
+<li><p><em>Online</em> : Please visit <a class="reference external" href="https://www.coin-or.org/CyLP/">https://www.coin-or.org/CyLP/</a></p></li>
+<li><p><em>Offline</em> : To install CyLP’s documentation in your repository, you need
+Sphinx (<a class="reference external" href="https://www.sphinx-doc.org/">https://www.sphinx-doc.org/</a>). You can generate the documentation by
+going to cylp/doc and run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code> or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">latex</span></code> and access the
+documentation under cylp/doc/build. You can also run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">doctest</span></code> to
+perform all the doctest.</p></li>
+</ol>
+</section>
+<section id="who-uses-cylp">
+<h1>Who uses CyLP<a class="headerlink" href="#who-uses-cylp" title="Link to this heading">¶</a></h1>
+<p>The following software packages make use of CyLP:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://www.cvxpy.org/">CVXPY</a>, a Python-embedded modeling language for
+convex optimization problems, uses CyLP for interfacing to CBC, which is one
+of the <a class="reference external" href="https://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs">supported mixed-integer solvers</a>.</p></li>
+</ol>
+<p>CyLP has been used in a wide range of practical and research fields. Some of the users include:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://github.com/ARM-DOE/pyart">PyArt</a>, The Python ARM Radar Toolkit,
+used by Atmospheric Radiation Measurement (U.S. Department of energy).</p></li>
+<li><p>Meteorological Institute University of Bonn.</p></li>
+<li><p>Sherbrooke university hospital (Centre hospitalier universitaire de Sherbrooke): CyLP is used for nurse scheduling.</p></li>
+<li><p>Maisonneuve-Rosemont hospital (L’hôpital HMR): CyLP is used for  physician scheduling with preferences.</p></li>
+<li><p>Lehigh University: CyLP is used to teach mixed-integer cuts.</p></li>
+<li><p>IBM T. J. Watson research center</p></li>
+<li><p>Saarland University, Germany</p></li>
+</ol>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+<section id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/cy.html"><code class="docutils literal"><span class="pre">cylp.cy</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/CyClpSimplex.html">CyClpSimplex</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinMpsIO.html">CyCoinMpsIO</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinIndexedVector.html">CyCoinIndexedVector</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinPackedMatrix.html">CyCoinPackedMatrix</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/CyCbcModel.html">CyCbcModel</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinModel.html">CyCoinModel</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/cy.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyClpSimplex.html">CyClpSimplex</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyClpSimplex.html#cylp.cy.CyClpSimplex.CyClpSimplex"><code class="docutils literal notranslate"><span class="pre">CyClpSimplex</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/py.html"><code class="docutils literal"><span class="pre">cylp.py</span></code></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/pivots.html"><code class="docutils literal"><span class="pre">pivots</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/PivotPythonBase.html"><code class="docutils literal"><span class="pre">PivotPythonBase</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/DantzigPivot.html"><code class="docutils literal"><span class="pre">DantzigPivot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/DualDantzigPivot.html"><code class="docutils literal"><span class="pre">DualDantzigPivot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/PositiveEdgePivot.html"><code class="docutils literal"><span class="pre">PositiveEdgePivot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/LIFOPivot.html"><code class="docutils literal"><span class="pre">LIFOPivot</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/MostFrequentPivot.html"><code class="docutils literal"><span class="pre">MostFrequentPivot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinMpsIO.html">CyCoinMpsIO</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyCoinMpsIO.html#cylp.cy.CyCoinMpsIO.CyCoinMpsIO"><code class="docutils literal notranslate"><span class="pre">CyCoinMpsIO</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/modeling.html"><code class="docutils literal"><span class="pre">cylp.py.modeling</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#cylpvar"><code class="docutils literal"><span class="pre">CyLPVar</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#cylpmodel"><code class="docutils literal"><span class="pre">CyLPModel</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#cylparray"><code class="docutils literal"><span class="pre">CyLPArray</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#indexfactory"><code class="docutils literal"><span class="pre">IndexFactory</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinIndexedVector.html">CyCoinIndexedVector</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyCoinIndexedVector.html#cylp.cy.CyCoinIndexedVector.CyCoinIndexedVector"><code class="docutils literal notranslate"><span class="pre">CyCoinIndexedVector</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="modules/sparseUtil.html"><code class="docutils literal"><span class="pre">utils.sparseUtil</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="modules/sparseUtil.html#csc-matrixplus"><code class="docutils literal"><span class="pre">csc_matrixPlus</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="modules/sparseUtil.html#csr-matrixplus"><code class="docutils literal"><span class="pre">csr_matrixPlus</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinPackedMatrix.html">CyCoinPackedMatrix</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyCoinPackedMatrix.html#cylp.cy.CyCoinPackedMatrix.CyCoinPackedMatrix"><code class="docutils literal notranslate"><span class="pre">CyCoinPackedMatrix</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyCbcModel.html">CyCbcModel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyCbcModel.html#cylp.cy.CyCbcModel.CyCbcModel"><code class="docutils literal notranslate"><span class="pre">CyCbcModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyCoinModel.html">CyCoinModel</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyCoinModel.html#cylp.cy.CyCoinModel.CyCoinModel"><code class="docutils literal notranslate"><span class="pre">CyCoinModel</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/CyPivotPythonBase.html">CyPivotPythonBase</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/CyPivotPythonBase.html#cylp.cy.CyPivotPythonBase.CyPivotPythonBase"><code class="docutils literal notranslate"><span class="pre">CyPivotPythonBase</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="modules/py.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.py</span></code></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/pivots.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pivots</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/PivotPythonBase.html"><code class="xref py py-class docutils literal notranslate"><span class="pre">PivotPythonBase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/DantzigPivot.html"><code class="xref py py-class docutils literal notranslate"><span class="pre">DantzigPivot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/DualDantzigPivot.html"><code class="xref py py-class docutils literal notranslate"><span class="pre">DualDantzigPivot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/PositiveEdgePivot.html"><code class="xref py py-class docutils literal notranslate"><span class="pre">PositiveEdgePivot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/LIFOPivot.html"><code class="xref py py-class docutils literal notranslate"><span class="pre">LIFOPivot</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/MostFrequentPivot.html"><code class="xref py py-class docutils literal notranslate"><span class="pre">MostFrequentPivot</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/modeling.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.py.modeling</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#cylpvar"><code class="xref py py-class docutils literal notranslate"><span class="pre">CyLPVar</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#cylpmodel"><code class="xref py py-class docutils literal notranslate"><span class="pre">CyLPModel</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#cylparray"><code class="xref py py-class docutils literal notranslate"><span class="pre">CyLPArray</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/modeling.html#indexfactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">IndexFactory</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="modules/sparseUtil.html"><code class="xref py py-mod docutils literal notranslate"><span class="pre">utils.sparseUtil</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="modules/sparseUtil.html#csc-matrixplus"><code class="xref py py-class docutils literal notranslate"><span class="pre">csc_matrixPlus</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="modules/sparseUtil.html#csr-matrixplus"><code class="xref py py-class docutils literal notranslate"><span class="pre">csr_matrixPlus</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="modules/sparseUtil.html#sparse-matrix-concatenation">Sparse Matrix Concatenation</a></li>
 </ul>
 </li>
@@ -98,23 +299,41 @@
 </li>
 </ul>
 </div>
-</div>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="#">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">Indices and tables</a></li>
+  <div>
+    <h3><a href="#">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">CyLP</a></li>
+<li><a class="reference internal" href="#docker">Docker</a></li>
+<li><a class="reference internal" href="#prerequisites-and-installation">Prerequisites and installation</a><ul>
+<li><a class="reference internal" href="#installation-as-a-binary-wheel">Installation as a binary wheel</a></li>
+<li><a class="reference internal" href="#installation-with-conda">Installation with conda</a></li>
+<li><a class="reference internal" href="#on-linux-macos-with-conda-installation-from-source">On Linux/macOS with conda: Installation from source</a></li>
+<li><a class="reference internal" href="#on-linux-macos-with-pip-installation-from-source">On Linux/macOS with pip: Installation from source</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#testing-your-installation">Testing your installation</a></li>
+<li><a class="reference internal" href="#modeling-example">Modeling Example</a></li>
+<li><a class="reference internal" href="#id1">Documentation</a></li>
+<li><a class="reference internal" href="#who-uses-cylp">Who uses CyLP</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 <li><a class="reference internal" href="#modules">Modules</a></li>
 </ul>
 
-  <h4>Next topic</h4>
-  <p class="topless"><a href="modules/cy.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">cylp.cy</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="modules/cy.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -122,21 +341,21 @@
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -148,12 +367,13 @@
         <li class="right" >
           <a href="modules/cy.html" title="cylp.cy"
              >next</a> |</li>
-        <li class="nav-item nav-item-0"><a href="#">cylp 0.91 documentation</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="#">cylp 0.94.2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CyLP</a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
     </div>
   </body>
 </html>

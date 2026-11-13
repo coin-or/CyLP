@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cylp.cy.CyPivotPythonBase &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../../../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyPivotPythonBase</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for cylp.cy.CyPivotPythonBase</h1><div class="highlight"><pre>
+<span></span><span class="c1"># cython: embedsignature=True</span>
+
+
+<div class="viewcode-block" id="CyPivotPythonBase">
+<a class="viewcode-back" href="../../../modules/CyPivotPythonBase.html#cylp.cy.CyPivotPythonBase.CyPivotPythonBase">[docs]</a>
+<span class="n">cdef</span> <span class="k">class</span><span class="w"> </span><span class="nc">CyPivotPythonBase</span><span class="p">(</span><span class="n">CyClpPrimalColumnPivotBase</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pivotMethodObject</span><span class="p">):</span>
+        <span class="n">CyClpPrimalColumnPivotBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">Py_INCREF</span><span class="p">(</span><span class="n">pivotMethodObject</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pivotMethodObject</span> <span class="o">=</span> <span class="n">pivotMethodObject</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__dealloc__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Py_DECREF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pivotMethodObject</span><span class="p">)</span>
+
+    <span class="n">cdef</span> <span class="n">pivotColumn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CppCoinIndexedVector</span><span class="o">*</span> <span class="n">updates</span><span class="p">,</span>
+                     <span class="n">CppCoinIndexedVector</span><span class="o">*</span> <span class="n">spareRow1</span><span class="p">,</span> <span class="n">CppCoinIndexedVector</span><span class="o">*</span> <span class="n">spareRow2</span><span class="p">,</span>
+                     <span class="n">CppCoinIndexedVector</span><span class="o">*</span> <span class="n">spareCol1</span><span class="p">,</span> <span class="n">CppCoinIndexedVector</span><span class="o">*</span> <span class="n">spareCol2</span><span class="p">):</span>
+        <span class="n">cyupdates</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="n">cyupdates</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">updates</span><span class="p">)</span>
+        <span class="n">cyspareRow1</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="n">cyspareRow1</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">spareRow1</span><span class="p">)</span>
+        <span class="n">cyspareRow2</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="n">cyspareRow2</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">spareRow2</span><span class="p">)</span>
+        <span class="n">cyspareCol1</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="n">cyspareCol1</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">spareCol1</span><span class="p">)</span>
+        <span class="n">cyspareCol2</span> <span class="o">=</span> <span class="n">CyCoinIndexedVector</span><span class="p">()</span>
+        <span class="n">cyspareCol2</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">spareCol2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pivotMethodObject</span><span class="o">.</span><span class="n">pivotColumn</span><span class="p">(</span><span class="n">cyupdates</span><span class="p">,</span>
+                                    <span class="n">cyspareRow1</span><span class="p">,</span> <span class="n">cyspareRow2</span><span class="p">,</span>
+                                    <span class="n">cyspareCol1</span><span class="p">,</span> <span class="n">cyspareCol2</span><span class="p">)</span>
+
+    <span class="n">cdef</span> <span class="n">CyClpPrimalColumnPivot</span><span class="o">*</span> <span class="n">clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bint</span> <span class="n">copyData</span><span class="p">):</span>
+        <span class="n">cdef</span> <span class="n">CyClpPrimalColumnPivot</span><span class="o">*</span> <span class="n">ret</span> <span class="o">=</span>  \
+                <span class="o">&lt;</span><span class="n">CyClpPrimalColumnPivot</span><span class="o">*&gt;</span> <span class="n">new</span> <span class="n">CppClpPrimalColumnPivotBase</span><span class="p">(</span>
+                            <span class="o">&lt;</span><span class="n">cpy_ref</span><span class="o">.</span><span class="n">PyObject</span><span class="o">*&gt;</span><span class="bp">self</span><span class="p">,</span>
+                            <span class="o">&lt;</span><span class="n">runPivotColumn_t</span><span class="o">&gt;</span><span class="n">RunPivotColumn</span><span class="p">,</span>
+                            <span class="o">&lt;</span><span class="n">runClone_t</span><span class="o">&gt;</span><span class="n">RunClone</span><span class="p">,</span>
+                            <span class="o">&lt;</span><span class="n">runSaveWeights_t</span><span class="o">&gt;</span><span class="n">RunSaveWeights</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+    <span class="n">cdef</span> <span class="n">void</span> <span class="n">saveWeights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">CppIClpSimplex</span> <span class="o">*</span> <span class="n">model</span><span class="p">,</span> <span class="nb">int</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="n">cymodel</span> <span class="o">=</span> <span class="n">CyClpSimplex</span><span class="p">()</span>
+        <span class="n">cymodel</span><span class="o">.</span><span class="n">setCppSelf</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pivotMethodObject</span><span class="o">.</span><span class="n">saveWeights</span><span class="p">(</span><span class="n">cymodel</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">cylp.cy.CyPivotPythonBase</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
+    </div>
+  </body>
+</html>

@@ -1,34 +1,24 @@
+<!DOCTYPE html>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" data-content_root="../">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>cylp.cy.CyCoinMpsIO &#8212; cylp 0.9 documentation</title>
-    <link rel="stylesheet" href="../_static/classic.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.9',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>cylp.cy.CyCoinMpsIO &#8212; cylp 0.94.2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css?v=2bf1fcf8" />
+    
+    <script src="../_static/documentation_options.js?v=9bf3e4c5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="cylp.cy.CyCoinIndexedVector" href="CyCoinIndexedVector.html" />
     <link rel="prev" title="cylp.cy.CyClpSimplex" href="CyClpSimplex.html" /> 
-  </head>
-  <body>
-    <div class="related" role="navigation" aria-label="related navigation">
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -43,8 +33,9 @@
         <li class="right" >
           <a href="CyClpSimplex.html" title="cylp.cy.CyClpSimplex"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" accesskey="U"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinMpsIO</span></code></a></li> 
       </ul>
     </div>  
 
@@ -53,25 +44,39 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-cylp.cy.CyCoinMpsIO">
-<span id="cylp-cy-cycoinmpsio"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCoinMpsIO" title="cylp.cy.CyCoinMpsIO"><code class="xref py py-mod docutils literal"><span class="pre">cylp.cy.CyCoinMpsIO</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCoinMpsIO" title="Permalink to this headline">¶</a></h1>
-<p>This module interface COIN-OR’s <code class="docutils literal"><span class="pre">CoinMpsIO</span></code>. When you call
-<code class="xref py py-func docutils literal"><span class="pre">cylp.cy.CyClpSimplex.readMps()</span></code> then <code class="docutils literal"><span class="pre">CoinMpsIO</span></code>’s <code class="docutils literal"><span class="pre">readMps</span></code> is
+  <section id="module-cylp.cy.CyCoinMpsIO">
+<span id="cylp-cy-cycoinmpsio"></span><h1><a class="reference internal" href="#module-cylp.cy.CyCoinMpsIO" title="cylp.cy.CyCoinMpsIO"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinMpsIO</span></code></a><a class="headerlink" href="#module-cylp.cy.CyCoinMpsIO" title="Link to this heading">¶</a></h1>
+<p>This module interface COIN-OR’s <code class="docutils literal notranslate"><span class="pre">CoinMpsIO</span></code>. When you call
+<code class="xref py py-func docutils literal notranslate"><span class="pre">cylp.cy.CyClpSimplex.readMps()</span></code> then <code class="docutils literal notranslate"><span class="pre">CoinMpsIO</span></code>’s <code class="docutils literal notranslate"><span class="pre">readMps</span></code> is
 called.  The main reason why cylp interfaces this class is to be able to read
-an <code class="docutils literal"><span class="pre">mps</span></code> file without creating a Simplex object. This way it is possible to
+an <code class="docutils literal notranslate"><span class="pre">mps</span></code> file without creating a Simplex object. This way it is possible to
 read a QP using CoinMpsIO and work on the elements of the problem, e.g. the
 Hessian,…</p>
-<dl class="class">
-<dt id="cylp.cy.CyCoinMpsIO.CyCoinMpsIO">
-<em class="property">class </em><code class="descclassname">cylp.cy.CyCoinMpsIO.</code><code class="descname">CyCoinMpsIO</code><a class="headerlink" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="cylp.cy.CyCoinMpsIO.CyCoinMpsIO.readMps">
-<code class="descname">readMps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.readMps" title="Permalink to this definition">¶</a></dt>
+<dl class="py class">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinMpsIO.CyCoinMpsIO">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">cylp.cy.CyCoinMpsIO.</span></span><span class="sig-name descname"><span class="pre">CyCoinMpsIO</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCoinMpsIO.html#CyCoinMpsIO"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO" title="Link to this definition">¶</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByCol">
+<span class="sig-name descname"><span class="pre">matrixByCol</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCoinMpsIO.html#CyCoinMpsIO.matrixByCol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByCol" title="Link to this definition">¶</a></dt>
+<dd><p>The constraint matrix, stored by column. A CyCoinPackedMatrix, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if no problem has been read.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByRow">
+<span class="sig-name descname"><span class="pre">matrixByRow</span></span><a class="reference internal" href="../_modules/cylp/cy/CyCoinMpsIO.html#CyCoinMpsIO.matrixByRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByRow" title="Link to this definition">¶</a></dt>
+<dd><p>The constraint matrix, stored by row. A CyCoinPackedMatrix, or
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if no problem has been read.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cylp.cy.CyCoinMpsIO.CyCoinMpsIO.readMps">
+<span class="sig-name descname"><span class="pre">readMps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cylp/cy/CyCoinMpsIO.html#CyCoinMpsIO.readMps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.readMps" title="Link to this definition">¶</a></dt>
 <dd><p>Read an mps file. Check if the file is a QP symmetrisize its Hessian
 and store it.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy</span> <span class="kn">import</span> <span class="n">CyCoinMpsIO</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">cylp.cy.CyCoinMpsIO</span> <span class="kn">import</span> <span class="n">getQpsExample</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy</span><span class="w"> </span><span class="kn">import</span> <span class="n">CyCoinMpsIO</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">cylp.cy.CyCoinMpsIO</span><span class="w"> </span><span class="kn">import</span> <span class="n">getQpsExample</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span> <span class="o">=</span> <span class="n">CyCoinMpsIO</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span><span class="o">.</span><span class="n">readMps</span><span class="p">(</span><span class="n">getQpsExample</span><span class="p">())</span>
 <span class="go">0</span>
@@ -80,7 +85,7 @@ and store it.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">problem</span><span class="o">.</span><span class="n">nConstraints</span>
 <span class="go">5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">signs</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">constraintSigns</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signs</span><span class="p">]</span> <span class="o">==</span> <span class="n">problem</span><span class="o">.</span><span class="n">nConstraints</span> <span class="o">*</span> <span class="p">[</span><span class="s1">&#39;G&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="nb">chr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">signs</span><span class="p">]</span> <span class="o">==</span> <span class="n">problem</span><span class="o">.</span><span class="n">nConstraints</span> <span class="o">*</span> <span class="p">[</span><span class="s1">'G'</span><span class="p">]</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">matrixByRow</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">elements</span> <span class="o">-</span>
@@ -101,7 +106,7 @@ and store it.</p>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">Hessian</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">H</span> <span class="o">-</span>
-<span class="gp">... </span><span class="n">np</span><span class="o">.</span><span class="n">matrix</span><span class="p">([[</span><span class="mf">20394.</span><span class="p">,</span> <span class="o">-</span><span class="mf">24908.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2026.</span><span class="p">,</span> <span class="mf">3896.</span><span class="p">,</span> <span class="mf">658.</span><span class="p">],</span>
+<span class="gp">... </span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">20394.</span><span class="p">,</span> <span class="o">-</span><span class="mf">24908.</span><span class="p">,</span> <span class="o">-</span><span class="mf">2026.</span><span class="p">,</span> <span class="mf">3896.</span><span class="p">,</span> <span class="mf">658.</span><span class="p">],</span>
 <span class="gp">... </span>           <span class="p">[</span><span class="o">-</span><span class="mf">24908.</span><span class="p">,</span> <span class="mf">41818.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3466.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9828.</span><span class="p">,</span> <span class="o">-</span><span class="mf">372.</span><span class="p">],</span>
 <span class="gp">... </span>           <span class="p">[</span><span class="o">-</span><span class="mf">2026.</span><span class="p">,</span> <span class="o">-</span><span class="mf">3466.</span><span class="p">,</span> <span class="mf">3510.</span><span class="p">,</span> <span class="mf">2178.</span><span class="p">,</span> <span class="o">-</span><span class="mf">348.</span><span class="p">],</span>
 <span class="gp">... </span>           <span class="p">[</span><span class="mf">3896.</span><span class="p">,</span> <span class="o">-</span><span class="mf">9828.</span><span class="p">,</span> <span class="mf">2178.</span><span class="p">,</span> <span class="mf">3030.</span><span class="p">,</span> <span class="o">-</span><span class="mf">44.</span><span class="p">],</span>
@@ -114,20 +119,40 @@ and store it.</p>
 
 </dd></dl>
 
-</div>
+</section>
 
 
+            <div class="clearer"></div>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="CyClpSimplex.html"
-                        title="previous chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyClpSimplex</span></code></a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="CyCoinIndexedVector.html"
-                        title="next chapter"><code class="docutils literal"><span class="pre">cylp.cy.CyCoinIndexedVector</span></code></a></p>
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinMpsIO</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO"><code class="docutils literal notranslate"><span class="pre">CyCoinMpsIO</span></code></a><ul>
+<li><a class="reference internal" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByCol"><code class="docutils literal notranslate"><span class="pre">matrixByCol</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.matrixByRow"><code class="docutils literal notranslate"><span class="pre">matrixByRow</span></code></a></li>
+<li><a class="reference internal" href="#cylp.cy.CyCoinMpsIO.CyCoinMpsIO.readMps"><code class="docutils literal notranslate"><span class="pre">readMps()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="CyClpSimplex.html"
+                          title="previous chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyClpSimplex</span></code></a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="CyCoinIndexedVector.html"
+                          title="next chapter"><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinIndexedVector</span></code></a></p>
+  </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -135,21 +160,21 @@ and store it.</p>
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
     </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
         </div>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -164,13 +189,14 @@ and store it.</p>
         <li class="right" >
           <a href="CyClpSimplex.html" title="cylp.cy.CyClpSimplex"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.9 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="docutils literal"><span class="pre">cylp.cy</span></code></a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">cylp 0.94.2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="cy.html" ><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><code class="xref py py-mod docutils literal notranslate"><span class="pre">cylp.cy.CyCoinMpsIO</span></code></a></li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.7.
+    &#169; Copyright 2011, Mehdi Towhidi, Dominique Orban.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.2.0.
     </div>
   </body>
 </html>
