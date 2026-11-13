@@ -611,6 +611,13 @@ IClpSimplex::IClpSimplex(PyObject *obj_arg, runIsPivotAcceptable_t runIsPivotAcc
     runIsPivotAcceptable = runIsPivotAcceptable_arg;
     varSelCriteria = runVarSelCriteria;
     customPrimal = 0;
+    // ClpSimplex() leaves the matrix and the objective NULL until a problem
+    // is loaded, and writeMps, presolve and OsiClpSolverInterface, among
+    // others, dereference them. Make the empty ones that loading an empty
+    // problem would give, as Clp's addColumns and resize do when there are
+    // none.
+    createEmptyMatrix();
+    objective_ = new ClpLinearObjective(NULL, 0);
     createStatus();
     pinfo = ClpPresolve();
 
@@ -994,6 +1001,11 @@ IClpSimplex::IClpSimplex(const ClpSimplex &rhs,PyObject *obj,
     QP_BanList(NULL),
     QP_ComplementarityList(NULL)
 {
+    // See the other constructor
+    if (!matrix_)
+        createEmptyMatrix();
+    if (!objective_)
+        objective_ = new ClpLinearObjective(NULL, numberColumns_);
 }
 
 
