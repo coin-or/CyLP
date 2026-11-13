@@ -65,7 +65,7 @@ Now you can install CyLP from PyPI::
 
     $ pip install --no-build-isolation cylp
 
-(The option `--no-build-isolation` ensures that `cylp` uses the Python packages
+(The option ``--no-build-isolation`` ensures that ``cylp`` uses the Python packages
 installed by conda in the build phase.)
 
 Alternatively, if you have cloned CyLP from GitHub::
@@ -81,7 +81,7 @@ You can install Cbc by either by installing with your system's package manager, 
 or by building yourself from source using `coinbrew <https://github.com/coin-or/coinbrew>`_.
 
 1. To install Cbc in Linux, the easiest way is to use a package manager. Install
-   `coinor-libcbc-dev` on Ubuntu/Debian or `coin-or-Cbc-devel` on Fedora, or the
+   ``coinor-libcbc-dev`` on Ubuntu/Debian or ``coin-or-Cbc-devel`` on Fedora, or the
    `corresponding package on your distribution
    <https://doc.sagemath.org/html/en/reference/spkg/cbc.html#equivalent-system-packages>`_.
 
@@ -92,16 +92,16 @@ or by building yourself from source using `coinbrew <https://github.com/coin-or/
 You should no longer need to build Cbc from source on any platform unless for some reason, none of the
 above recipes applies to you. If you do need to build from source, please go to the `Cbc <https://github.com/coin-or/Cbc>`_
 project page and follow the instructions there. After building and installing, make sure to 
-either set the `COIN_INSTALL_DIR` variable to point to the installation or set `PKG_CONFIG_PATH` to point to
-the directory where the `.pc` files are installed. You may also need to set either `LD_LIBRARY_PATH` (Linux)
-or `DYLD_LIBRARY_PATH` (macOS).
+either set the ``COIN_INSTALL_DIR`` variable to point to the installation or set ``PKG_CONFIG_PATH`` to point to
+the directory where the ``.pc`` files are installed. You may also need to set either ``LD_LIBRARY_PATH`` (Linux)
+or ``DYLD_LIBRARY_PATH`` (macOS).
 
 Next, build and install CyLP::
 
     $ python -m pip install cylp
 
-This will build CyLP install the runtime dependencies (`install-requires`),
-NumPy and `SciPy <https://scipy.org>` and build and install CyLP.
+This builds and installs CyLP, along with NumPy and
+`SciPy <https://scipy.org>`_, which it needs at run time.
 
 Testing your installation
 =========================

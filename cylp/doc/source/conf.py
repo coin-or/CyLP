@@ -11,7 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, re
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -109,6 +109,10 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'default'
+
+# Show members in the sidebar without their class, e.g. primalVariableSolution
+# rather than CyClpSimplex.primalVariableSolution, so that they fit
+toc_object_entries_show_parents = 'hide'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -235,3 +239,82 @@ man_pages = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'python': ('https://docs.python.org/3', None)}
+
+
+def cythonTags(code):
+    '''
+    Find the classes, and the methods and properties in them, in the Cython
+    ``code``. Return them as viewcode's tags: a dictionary that maps each
+    name to its type and its first and last lines.
+    '''
+    pattern = re.compile(r'(\s*)(?:(?:cdef\s+)?class\s+(\w+)'
+                         r'|(?:def|cpdef)\s+(?:[\w.]+[\s*]+)?(\w+)\s*\('
+                         r'|property\s+(\w+)\s*:)')
+    tags = {}
+    blocks = []  # (indent, name, type, first line) of the enclosing blocks
+    last = 0  # the last line of code so far
+    inString = False
+    for n, line in enumerate(code.splitlines(), 1):
+        stripped = line.strip()
+        quotes = stripped.count("'''") + stripped.count('"""')
+        wasInString = inString
+        inString = inString != (quotes % 2 == 1)
+        # Lines in docstrings, blank lines and comments don't end blocks
+        if wasInString or not stripped or stripped.startswith('#'):
+            continue
+        indent = len(line) - len(line.lstrip())
+        while blocks and blocks[-1][0] >= indent:
+            _, name, type_, first = blocks.pop()
+            tags[name] = (type_, first, last)
+        last = n
+        m = pattern.match(line)
+        # Only classes, and functions and properties in them, have tags
+        if m and (not blocks or blocks[-1][2] == 'class'):
+            if m.group(2):
+                type_, name = 'class', m.group(2)
+            elif m.group(3):
+                type_, name = 'def', m.group(3)
+            else:
+                type_, name = 'other', m.group(4)
+            if blocks:
+                name = blocks[-1][1] + '.' + name
+            blocks.append((indent, name, type_, n))
+    for _, name, type_, first in blocks:
+        tags[name] = (type_, first, last)
+    return tags
+
+
+def cythonSource(modname):
+    '''
+    Return the path to the .pyx file of the module ``modname``, or None.
+    '''
+    root = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+    path = os.path.join(root, *modname.split('.')) + '.pyx'
+    return path if os.path.isfile(path) else None
+
+
+def findCythonSource(app, modname):
+    '''
+    viewcode can't read the source of a compiled module. Give it the .pyx
+    file, so that the documentation links to the Cython source.
+    '''
+    path = cythonSource(modname)
+    if path is None:
+        return None
+    with open(path) as f:
+        code = f.read()
+    return code, cythonTags(code)
+
+
+def followCython(app, modname, attribute):
+    '''
+    viewcode looks for the module that defines each object in its
+    ``__module__``, which Cython properties don't have. They are defined in
+    the module that they are documented in.
+    '''
+    return modname if cythonSource(modname) else None
+
+
+def setup(app):
+    app.connect('viewcode-find-source', findCythonSource)
+    app.connect('viewcode-follow-imported', followCython)
