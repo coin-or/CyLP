@@ -128,6 +128,7 @@ public:
 	int primal(int ifValuesPass=0, int startFinishOptions=0);
 	bool hasQuadraticObjective();
 	bool isQPWithoutBoundedRows();
+	bool hasFactorization();
 
 	IClpSimplex (ClpSimplex * wholeModel,
 	      int numberColumns, const int * whichColumns);
