@@ -115,12 +115,14 @@ cdef class CyClpSimplex:
 
     property basicVariables:
         def __get__(self):
+            self._checkFactorization('basicVariables')
             cdef np.ndarray[np.int32_t, ndim=1] bv = np.zeros(self.nConstraints, dtype=np.int32)
             self.CppSelf.getBasics(<int*>bv.data)
             return bv
 
     property rhs:
         def __get__(self):
+            self._checkFactorization('rhs')
             r = np.zeros(self.nConstraints, dtype=np.double)
             self.getRightHandSide(r)
             #Py_INCREF(r)
@@ -128,6 +130,7 @@ cdef class CyClpSimplex:
 
     property basisInverse:
         def __get__(self):
+            self._checkFactorization('basisInverse')
             b = np.empty((self.nConstraints, self.nConstraints), dtype=np.double)
             cdef np.ndarray[np.double_t, ndim=1] c = np.zeros(self.nConstraints, dtype=np.double)
             for colInd in xrange(self.nConstraints):
@@ -137,6 +140,7 @@ cdef class CyClpSimplex:
 
     property tableau:
         def __get__(self):
+            self._checkFactorization('tableau')
             nAllVars = self.nVariables + self.nConstraints
             t = np.empty((self.nConstraints, nAllVars), dtype=np.double)
             cdef np.ndarray[np.double_t, ndim=1] c = np.zeros(self.nConstraints, dtype=np.double)
@@ -842,6 +846,7 @@ cdef class CyClpSimplex:
         Take a spare array, ``rhs``, and store the current right-hand-side
         in it.
         '''
+        self._checkFactorization('getRightHandSide')
         self.CppSelf.getRightHandSide(<double*>rhs.data)
 
     def getStatusCode(self):
@@ -1627,6 +1632,18 @@ cdef class CyClpSimplex:
                 "such as an upper bound of 1e10 on the sum of the variables, "
                 "works around this.")
 
+    def _checkFactorization(self, name):
+        '''
+        Raise RuntimeError if Clp's factorization of the basis isn't
+        available, since Clp aborts or segfaults when ``name`` needs it
+        '''
+        if not self.CppSelf.hasFactorization():
+            raise RuntimeError(
+                "%s needs Clp's factorization of the basis, which exists "
+                "only during a solve, such as in a pivot rule, or after "
+                "primal() or dual() with startFinishOptions='x' until the "
+                "constraints change." % name)
+
     def primal(self, ifValuesPass=0, startFinishOptions=0, presolve=False):
         '''
         Solve the problem using the primal simplex algorithm.
@@ -1702,12 +1719,14 @@ cdef class CyClpSimplex:
         '''
         Compute :math:`A_B^{-1}A_{col}` and store the result in ``cl``.
         '''
+        self._checkFactorization('getBInvACol')
         self.CppSelf.getBInvACol(col, <double*>cl.data)
 
     def getBInvCol(self, col, np.ndarray[np.double_t, ndim=1] cl):
         '''
         Return :math:`A_B^{-1}_{col}` and store the result in ``cl``.
         '''
+        self._checkFactorization('getBInvCol')
         self.CppSelf.getBInvCol(col, <double*>cl.data)
 
     def transposeTimes(self, scalar, CyCoinIndexedVector x,

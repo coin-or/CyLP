@@ -895,7 +895,7 @@ void IClpSimplex::getRightHandSide(double* righthandside)
 
     }
 
-    delete slack_val;
+    delete[] slack_val;
 
     //return righthandside;
 }
@@ -1088,6 +1088,17 @@ int IClpSimplex::initialSolve(int preSolveType){
     return ClpSimplex::initialSolve(options);
 }
 
+
+// Whether Clp's factorization of the basis and the work areas that go with
+// it exist and have as many rows as the model, as getBasics, getBInvCol,
+// getBInvACol and getRightHandSide need. Clp keeps them during a solve, and
+// after one with startFinishOptions 1 until the model changes. Without them,
+// Clp's getBasics and getBInvCol abort, and getRightHandSide segfaults.
+bool IClpSimplex::hasFactorization()
+{
+    return rowArray_[0] && factorization_ &&
+        factorization_->numberRows() == numberRows_;
+}
 
 bool IClpSimplex::hasQuadraticObjective()
 {
