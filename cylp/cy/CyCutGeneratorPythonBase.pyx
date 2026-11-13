@@ -13,6 +13,19 @@ cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
     cdef generateCuts(self, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info):
+        # Cbc can't handle a Python exception, and one left pending breaks
+        # every later call into Python. So keep the first one, stop calling
+        # the generator, and let CyCbcModel.solve raise it when Cbc is done.
+        if self.exception is not None:
+            return
+        try:
+            self.addCuts(si, cs, info)
+        except BaseException as e:
+            self.exception = e
+
+    cdef addCuts(self, CppOsiSolverInterface *si,
+                                     CppOsiCuts *cs,
+                                     CppCglTreeInfo info):
         cysi =  CyOsiSolverInterface()
         cysi.setCppSelf(si)
         cycs = CyOsiCuts()

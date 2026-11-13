@@ -11,6 +11,10 @@ cdef class CyCutGeneratorPythonBase(CyCglCutGeneratorBase):
     cdef generateCuts(self, CppOsiSolverInterface *si,
                                      CppOsiCuts *cs,
                                      CppCglTreeInfo info)
+    cdef addCuts(self, CppOsiSolverInterface *si,
+                                     CppOsiCuts *cs,
+                                     CppCglTreeInfo info)
     cdef CppCglCutGenerator * clone(self)
     cdef object cutGeneratorObject
     cdef object cyLPModel
+    cdef object exception
