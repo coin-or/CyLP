@@ -113,7 +113,20 @@ public:
 	void setPrimalColumnPivotAlgorithm(ClpPrimalColumnPivot *choice){ClpSimplex::setPrimalColumnPivotAlgorithm(*choice);}
   void setDualRowPivotAlgorithm(ClpDualRowPivot *choice){ClpSimplex::setDualRowPivotAlgorithm(*choice);}
 
-    void loadQuadraticObjective(const CoinPackedMatrix* matrix){ClpModel::loadQuadraticObjective(*matrix);}
+    // Clp's loadQuadraticObjective asserts that the objective is linear, and
+    // builds the new one from its linear part. So replace an objective that
+    // isn't linear, e.g. the quadratic one read from a QPS file, by its linear
+    // part first, as Clp does when it is built without assertions.
+    void loadQuadraticObjective(const CoinPackedMatrix* matrix){
+        if (objective_ && !dynamic_cast<ClpLinearObjective*>(objective_)) {
+            double offset;
+            ClpObjective* linear = new ClpLinearObjective(
+                objective_->gradient(NULL, NULL, offset, false), numberColumns_);
+            delete objective_;
+            objective_ = linear;
+        }
+        ClpModel::loadQuadraticObjective(*matrix);
+    }
     ICoinPackedMatrix* getMatrix(){return static_cast<ICoinPackedMatrix*>(ClpModel::matrix());}
 
 	int loadProblem (CoinModel * modelObject,bool tryPlusMinusOne=false){return ClpSimplex::loadProblem(*modelObject, tryPlusMinusOne);}
