@@ -17,7 +17,7 @@ Docker
 If you're comfortable with Docker, you can get started right away with the container 
 available on Dockerhub that comes with CyLP pre-installed. 
 
-https://hub.docker.com/repository/docker/coinor/cylp
+https://hub.docker.com/r/coinor/cylp
 
 Otherwise, read on. 
 
